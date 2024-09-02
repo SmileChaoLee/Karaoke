@@ -1,0 +1,6 @@
+# ninja log v5
+43	1385	1659723148	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	49a372bc2111fd18
+1386	2008	1659723148	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/Debug/4p2l3d6c/obj/x86/libffmpegJNI.so	a4c7fcd19b8bef12
+0	5	0	clean	70596c1c0d2eb186
+2	233	1659895384	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	49a372bc2111fd18
+233	325	1659895384	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/Debug/4p2l3d6c/obj/x86/libffmpegJNI.so	a4c7fcd19b8bef12

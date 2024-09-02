@@ -1,0 +1,14 @@
+# Project exclude paths
+/.gradle/
+/app/build/
+/app/build/intermediates/javac/exoplayerDebug/classes/
+/extensions/av1/build/
+/extensions/av1/build/intermediates/javac/debug/classes/
+/extensions/ffmpeg/build/
+/extensions/ffmpeg/build/intermediates/javac/debug/classes/
+/extensions/flac/build/
+/extensions/flac/build/intermediates/javac/debug/classes/
+/extensions/opus/build/
+/extensions/opus/build/intermediates/javac/debug/classes/
+/extensions/vp9/build/
+/extensions/vp9/build/intermediates/javac/debug/classes/

@@ -1,0 +1,94 @@
+package exoplayer.listeners;
+
+import android.app.Activity;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.Player;
+import exoplayer.presenters.ExoPlayerPresenter;
+
+public class ExoPlayerListener implements Player.Listener {
+
+    private static final String TAG = "ExoPlayerListener";
+    private final ExoPlayerPresenter mPresenter;
+
+    public ExoPlayerListener(ExoPlayerPresenter presenter) {
+        mPresenter = presenter;
+        Log.d(TAG, "ExoPlayerListener is created.");
+    }
+
+    @Override
+    public synchronized void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+        Log.d(TAG, "onPlayWhenReadyChanged().playWhenReady = " + playWhenReady
+                        + ", reason = " + reason);
+        int state = mPresenter.getExoPlayer().getPlaybackState();
+        Log.d(TAG, "onPlayWhenReadyChanged().state = " + state);
+        boolean isPlaying = mPresenter.getExoPlayer().isPlaying();
+        Log.d(TAG, "onPlayWhenReadyChanged().isPlaying = " + isPlaying);
+        if (playWhenReady) {
+            // Start playing
+            if (isPlaying) {
+                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PLAYING");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            }
+        } else {
+            // Paused
+            if (!isPlaying) {
+                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PAUSED");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+            }
+        }
+    }
+
+    @Override
+    public synchronized void onPlaybackStateChanged(int state) {
+        Log.d(TAG, "onPlaybackStateChanged().state = " + state);
+        Log.d(TAG, "onPlaybackStateChanged().playWhenReady = " +
+                mPresenter.getExoPlayer().getPlayWhenReady() );
+        switch (state) {
+            case Player.STATE_BUFFERING:
+                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_BUFFERING");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING);
+                break;
+            case Player.STATE_READY:
+                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_READY");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                break;
+            case Player.STATE_ENDED:
+                // playing is finished and send PlaybackStateCompat.STATE_STOPPED
+                // to MediaControllerCallback
+                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_ENDED");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+                break;
+            case Player.STATE_IDLE:
+                // user stops the playing and send PlaybackStateCompat.STATE_NONE
+                // to MediaControllerCallback
+                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_IDLE");
+                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
+                break;
+            default:
+                Log.d(TAG, "onPlaybackStateChanged().Playback state (Default)");
+                break;
+        }
+    }
+
+    @Override
+    public synchronized void onIsPlayingChanged(boolean isPlaying) {
+        Log.d(TAG,"onIsPlayingChanged().isPlaying = " + isPlaying);
+    }
+
+    @Override
+    public void onPlayerErrorChanged(@Nullable PlaybackException error) {
+        Log.d(TAG,"onPlayerErrorChanged().error = " + error);
+        mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+    }
+
+    @Override
+    public synchronized void onPlayerError(@NonNull PlaybackException error) {
+        Log.d(TAG,"onPlayerError().error = " + error);
+        mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+    }
+}

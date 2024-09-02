@@ -1,0 +1,33 @@
+{
+  "buildFiles": [
+    "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/src/main/jni/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/chaolee/Android/Sdk/cmake/3.18.1/bin/ninja",
+      "-C",
+      "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/366d4h3y/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/chaolee/Android/Sdk/cmake/3.18.1/bin/ninja",
+    "-C",
+    "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/366d4h3y/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "ffmpegJNI-RelWithDebInfo-arm64-v8a": {
+      "artifactName": "ffmpegJNI",
+      "buildCommandComponents": [
+        "/home/chaolee/Android/Sdk/cmake/3.18.1/bin/ninja",
+        "-C",
+        "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/366d4h3y/arm64-v8a",
+        "ffmpegJNI"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/366d4h3y/obj/arm64-v8a/libffmpegJNI.so",
+      "runtimeFiles": []
+    }
+  }
+}

@@ -1,0 +1,7 @@
+Executable : /home/chaolee/Android/Sdk/cmake/3.18.1/bin/ninja
+arguments : 
+-C
+/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/Debug/342c1c6z/x86_64
+ffmpegJNI
+jvmArgs : 
+

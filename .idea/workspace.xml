@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_base.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/menu_main.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+    </layouts>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=2C141FDH20088Y)]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="KaraokePlayer" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="resourceFile" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Object" />
+        <option value="Class" />
+        <option value="valueResourceFile" />
+        <option value="layoutResourceFile" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="EXPORT_PRIVATE_KEY" value="false" />
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../keystore/new_key.jks" />
+    <option name="KEY_ALIAS" value="chaolee1959" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="OPTIONS">
+      <set>
+        <option value="REBASE" />
+      </set>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/extensions/av1/src/main/jni/cpu_features" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2DY8TBZPaNYucyCfv9nMXdm2rd2" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "BundleExportedModule": "KaraokePlayer.app",
+    "ExportBundle.BundlePathForKaraokePlayer.app": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/KaraokePlayer",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+  },
+  "keyToStringList": {
+    "ExportApk.BuildVariants": [
+      "exoplayerRelease"
+    ],
+    "kotlin-gradle-user-dirs": [
+      "/home/chaolee/.gradle"
+    ]
+  }
+}]]></component>
+  <component name="PsdUISettings">
+    <option name="LAST_EDITED_BUILD_TYPE" value="release" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks" />
+      <recent name="$PROJECT_DIR$/app/src/exoplayer/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/exoplayerDebug/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/main/res/layout-release" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/debug/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/videoplayer/res/layout" />
+    </key>
+    <key name="android.template.-1626668842">
+      <recent name="com.smile.karaokeplayer" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.smile.karaokeplayer.adapters" />
+      <recent name="com.smile.karaokeplayer.models" />
+      <recent name="com.smile.karaokeplayer" />
+      <recent name="exoplayer" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="KaraokePlayer.app.main" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="" />
+      <created>1660864669463</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1660864669463</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Fixed bugs&#10;Removed the play button in favorite list">
+      <created>1663528790341</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1663528790341</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fixed bugs (removed addToBackStack()) that back key crashed the app&#10;Refined">
+      <created>1663573082572</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1663573082572</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Fixed the issue that BaseActivity.kt is killed because of low memory (out of memory)">
+      <created>1663593430284</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1663593430284</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Refined">
+      <created>1663692371515</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1663692371516</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Pause playing when editing favorites">
+      <created>1663703237445</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1663703237446</updated>
+    </task>
+    <task id="LOCAL-00027" summary="refined">
+      <created>1663708044508</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1663708044508</updated>
+    </task>
+    <task id="LOCAL-00028" summary="refined">
+      <created>1663783238923</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1663783238923</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Refined and Removed playViewPager2">
+      <created>1664005218043</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1664005218044</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Refined and Removed pauseWhenEditFavorites() and playWhenAfterEditFavorites()">
+      <created>1664127193782</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1664127193782</updated>
+    </task>
+    <task id="LOCAL-00031" summary="override fun isAutoMeasureEnabled()">
+      <created>1664212281972</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1664212281973</updated>
+    </task>
+    <task id="LOCAL-00032" summary="1. Made BaseActivity has only one instance all the time without having launchMode in AndroidManifest.xml&#10;2. Added playSongButton back in BaseFavoriteListActivity.java">
+      <created>1664389202932</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1664389202932</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Fixed VLCPlayer bugs">
+      <created>1664421688996</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1664421688996</updated>
+    </task>
+    <task id="LOCAL-00034" summary="re-play the song after resume to make sure the size of video is right">
+      <created>1664442874549</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1664442874549</updated>
+    </task>
+    <task id="LOCAL-00035" summary="1. Removed interstitial ads when exit&#10;2. Removed presenter.detachPlayerViews() because no needs">
+      <created>1664444453871</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1664444453871</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Change version number">
+      <created>1664445662045</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1664445662045</updated>
+    </task>
+    <task id="LOCAL-00037" summary="1. Set fileList&lt;FileDescription&gt; to singleTon -&gt; FileDesList.kt&#10;2. Set OpenFilesRecyclerViewAdapter.kt to singleTon">
+      <created>1664495672519</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1664495672519</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Changed version number to 4.85">
+      <created>1664497025352</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1664497025352</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Put the same volume to single song volume when starts playing single song">
+      <created>1664567563729</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1664567563729</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Removed R.id.open from main menu">
+      <created>1664568363084</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1664568363084</updated>
+    </task>
+    <task id="LOCAL-00041" summary="removed some redundant codes because of removing R.id.open">
+      <created>1664568673618</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1664568673618</updated>
+    </task>
+    <task id="LOCAL-00042" summary="1. Added message to pressing heartImageButton&#10;2. Added addToFavoriteButton to OpenFileFragment">
+      <created>1664584891960</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1664584891960</updated>
+    </task>
+    <task id="LOCAL-00043" summary="1. Removed My Favorite from main mene&#10;2. Removed OpenFileActivity.kt&#10;3. Change version number to 4.90">
+      <created>1664591980133</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1664591980133</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Fixed bugs in ManifestAndroid.xml">
+      <created>1664593952414</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1664593952414</updated>
+    </task>
+    <task id="LOCAL-00045" summary="1. Upgraded dependencies&#10;2. Reduced interstitial ads&#10;3. Banner ads to AdaptiveBanner">
+      <created>1664662677212</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1664662677212</updated>
+    </task>
+    <task id="LOCAL-00046" summary="1. Reduced interstitial ads&#10;2. Hided repeatImageButton if isPlaySingleSong is true&#10;3. Seems to still have bugs. Has not been found yet">
+      <created>1664684098325</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1664684098325</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Moved fixing orientation to BaseActivity.kt and keep the one in PlayerBaseViewFragment.kt">
+      <created>1664719875254</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1664719875254</updated>
+    </task>
+    <task id="LOCAL-00048" summary="1. Removed orientation status of PlayingParameters.kt&#10;2. Upgraded Gradle version">
+      <created>1664726331916</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1664726331916</updated>
+    </task>
+    <task id="LOCAL-00049" summary="1. Rollback Gradle version because the latest version of Gradle cannot generate release app&#10;2. Changed favorite list and FavoriteRecyclerViewAdapter.kt to singleton object">
+      <created>1664741509861</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1664741509861</updated>
+    </task>
+    <task id="LOCAL-00050" summary="1. Refined&#10;2. Changed ListView of BaseFavoriteListActivity.java to RecyclerView and added SelectedFavoriteAdapter.kt">
+      <created>1664850727889</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1664850727889</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Changed Version number to 4.95">
+      <created>1664850809572</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1664850809572</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Added PositionEditState in onSaveInstanceState()">
+      <created>1664851101246</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1664851101246</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Fixed the issue of rotating orientation in BaseFavoriteListActivity.java">
+      <created>1664867932092</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1664867932093</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Upgraded smilelibraries-release.aar">
+      <created>1664908086615</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1664908086616</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Upgraded smilelibraries-release.aar&#10;All worked for VLCPlayer">
+      <created>1664984065545</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1664984065546</updated>
+    </task>
+    <task id="LOCAL-00056" summary="All worked for ExoPlayer">
+      <created>1664996952147</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1664996952148</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Changed version number to 4.99">
+      <created>1665083634898</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1665083634899</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Refined and changed version number to 5.00">
+      <created>1665503901560</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1665503901561</updated>
+    </task>
+    <task id="LOCAL-00059" summary="removed redundant">
+      <created>1665507155682</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1665507155683</updated>
+    </task>
+    <task id="LOCAL-00060" summary="1. Renamed some variables' names&#10;2. Set orderedSongs to Singleton in MyFavoritesFragment.kt, OpenFileFragment.kt, BasePlayerPresenter, and PlayerBaseViewFragment.kt">
+      <created>1665517817143</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1665517817144</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Refined">
+      <created>1665524579892</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1665524579893</updated>
+    </task>
+    <task id="LOCAL-00062" summary="refined the confusing codes">
+      <created>1665693600683</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1665693600684</updated>
+    </task>
+    <task id="LOCAL-00063" summary="1. Fixed bugs by changing variable type to null safe type&#10;2. Changed version number to 5.02">
+      <created>1665749097201</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1665749097202</updated>
+    </task>
+    <task id="LOCAL-00064" summary="1. No MediaRouteButton in layout when it is release version&#10;2. Facebook ads first&#10;3. implementation 'androidx.work:work-runtime:2.7.1'">
+      <created>1666375254641</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1666375254641</updated>
+    </task>
+    <task id="LOCAL-00065" summary="1. Upgraded Gradle&#10;2. Changed to AdMob first">
+      <created>1667054223343</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1667054223343</updated>
+    </task>
+    <task id="LOCAL-00066" summary="1. Upgraded Exoplayer to 2.8.2&#10;2. Version code to 5.20&#10;3. Removed f.canRead() and f.canWrite()&#10;4. Removed the limitation of maximum number of files">
+      <created>1669753751909</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1669753751910</updated>
+    </task>
+    <task id="LOCAL-00067" summary="1. Added thread to avoid ANR&#10;2. Version code to 5.30">
+      <created>1669927087211</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1669927087212</updated>
+    </task>
+    <task id="LOCAL-00068" summary="1. Version code to 5.40&#10;2. Fixed bugs in onDestroy()">
+      <created>1670602367914</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1670602367915</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Refined but no logic changed">
+      <created>1674049294603</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1674049294604</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Fixed permission issues for targeting Android 13">
+      <created>1681261598227</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1681261598227</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="9f7f9883-7c76-4915-8a15-e79a878f7842" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="4af29c63-1a99-4385-a12e-41387d459c97">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/videoplayer/java/videoplayer" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+            </State>
+          </value>
+        </entry>
+        <entry key="9f7f9883-7c76-4915-8a15-e79a878f7842">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:/home/chaolee/AndroidStudioProjects/KaraokePlayer/app" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+            </State>
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="bf18f3a8-73f2-47b9-a493-8f1f32acc0b2">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/main/java/com/smile/karaokeplayer" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/extensions/av1/src/main/jni/cpu_features" />
+      <path value="$PROJECT_DIR$/extensions/av1/src/main/jni/libgav1" />
+      <path value="$PROJECT_DIR$/extensions/av1/src/main/jni/libgav1/third_party/abseil-cpp" />
+      <path value="$PROJECT_DIR$/extensions/ffmpeg/src/main/jni/ffmpeg" />
+      <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
+      <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
+    </ignored-roots>
+    <MESSAGE value="Changed version number to 4.99" />
+    <MESSAGE value="Refined and changed version number to 5.00" />
+    <MESSAGE value="removed redundant" />
+    <MESSAGE value="1. Renamed some variables' names&#10;2. Set orderedSongs to Singleton in MyFavoritesFragment.kt, OpenFileFragment.kt, BasePlayerPresenter, and PlayerBaseViewFragment.kt" />
+    <MESSAGE value="refined the confusing codes" />
+    <MESSAGE value="changed mainMenu and other submenus" />
+    <MESSAGE value="1. Fixed bugs by changing variable type to null safe type&#10;2. Changed version number to 5.02" />
+    <MESSAGE value="1. No MediaRouteButton in layout when it is release version&#10;2. Facebook ads first&#10;3. implementation 'androidx.work:work-runtime:2.7.1'" />
+    <MESSAGE value="1. Upgraded Gradle&#10;2. Changed to AdMob first" />
+    <MESSAGE value="1. Upgraded Exoplayer to 2.8.2&#10;2. Version code to 5.20&#10;3. Removed f.canRead() and f.canWrite()&#10;4. Removed the limitation of maximum number of files" />
+    <MESSAGE value="1. Added thread to avoid ANR&#10;2. Version code to 5.30" />
+    <MESSAGE value="1. Version code to 5.40&#10;2. Fixed bugs in onDestroy()" />
+    <MESSAGE value="Refined but no logic changed" />
+    <MESSAGE value="Fixed permission issues for targeting Android 13" />
+    <MESSAGE value="targeting Android 14 (API 34)" />
+    <MESSAGE value="Migrated BuildConfig to Gradle build files" />
+    <MESSAGE value="minSdk to 23" />
+    <MESSAGE value="1. Gradle Plugin 7.3.1 (Gradle 7.4)&#10;2. JDK 11&#10;&#10;Works for Signed build" />
+    <MESSAGE value="Videoplayer worked" />
+    <MESSAGE value="Update aar files" />
+    <MESSAGE value="Videoplayer does not compile ffmpeg" />
+    <MESSAGE value="Hide the Banner Ad when orientation is LANDSCAPE" />
+    <MESSAGE value="implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0' for solving missing-class-com-facebook-infer-annotation-nullsafemode-referenced-from-com" />
+    <MESSAGE value="1. upgraded to Exoplayer 2.19.1&#10;2. Removed MediaSessionConnector from Exoplayer&#10;3. Used MediaSessionCallback instead for Exoplayer&#10;4. No more ExoPlaybackPreparer.java for Exoplayer&#10;5. Refined" />
+    <MESSAGE value="Refined" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refined" />
+  </component>
+</project>

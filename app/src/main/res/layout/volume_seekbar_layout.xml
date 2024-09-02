@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smile.karaokeplayer.models.VerticalSeekBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/volumeSeekBar"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/volume_seekbar_height"
+    android:thumbOffset="0dp"
+    android:indeterminate="false"
+    android:indeterminateOnly="false"
+    android:thumb="@drawable/volume_seekbar_thumb"
+    android:progressDrawable="@drawable/volume_seekbar_progressdrawable"
+    android:background="@color/transparentDark"
+    android:maxWidth="1000dp"
+    android:maxHeight="1000dp"
+    android:layout_margin="0dp"
+    android:padding="0dp"
+    android:layout_centerHorizontal="true"
+    android:layout_centerInParent="true">
+</com.smile.karaokeplayer.models.VerticalSeekBar>

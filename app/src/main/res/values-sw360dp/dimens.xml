@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- for Nexus 5 API 23 -->
+    <dimen name="textFontSize">24dp</dimen>
+    <dimen name="actionButtonTextSize">20dp</dimen>
+    <dimen name="volume_seekbar_thumb_size">24dp</dimen>
+    <dimen name="volume_pressed_seekbar_thumb_size">19dp</dimen>
+    <dimen name="volume_seekbar_height">160dp</dimen>
+    <dimen name="volume_progress_background_width">5dp</dimen>
+    <dimen name="duration_seekbar_thumb_size">16dp</dimen>
+    <dimen name="duration_pressed_seekbar_thumb_size">16dp</dimen>
+    <dimen name="duration_progress_background_width">3dp</dimen>
+    <dimen name="MediaRouterThemeTextSize">24dp</dimen>
+</resources>

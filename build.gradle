@@ -1,0 +1,48 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+ext {
+    sdk_version = [
+            compile : 34,
+            target : 34,
+            min : 23
+    ]
+    annotation_version ="1.8.2"
+    exoplayer_version = "2.19.1"
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.0'
+        classpath 'com.google.gms:google-services:4.4.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10'
+        
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://maven.google.com"
+        }
+        // the following maven is for libvlc version 3.1.12
+        // maven {
+        //     url "https://dl.bintray.com/videolan/Android"
+        // }
+        // flatDir {
+        //     dirs 'libs'
+        // }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

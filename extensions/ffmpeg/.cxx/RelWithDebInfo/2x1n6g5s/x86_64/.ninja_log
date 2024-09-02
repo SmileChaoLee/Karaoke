@@ -1,0 +1,23 @@
+# ninja log v5
+0	450	1663522093	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	745edaa8f8d0adfc
+451	578	1663522093	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40
+0	7	0	clean	b516a0fffcce5ef6
+0	4	0	clean	b516a0fffcce5ef6
+0	5	0	clean	b516a0fffcce5ef6
+5	501	1663522754	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	745edaa8f8d0adfc
+501	775	1663522754	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40
+2	231	1663523589	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40
+0	12	0	clean	b516a0fffcce5ef6
+1	21	0	clean	b516a0fffcce5ef6
+0	3	0	clean	b516a0fffcce5ef6
+0	3	0	clean	b516a0fffcce5ef6
+0	4	0	clean	b516a0fffcce5ef6
+0	6	0	clean	b516a0fffcce5ef6
+5	377	1664726374	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	745edaa8f8d0adfc
+377	568	1664726374	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40
+0	3	0	clean	b516a0fffcce5ef6
+1	346	1664727529	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	745edaa8f8d0adfc
+347	536	1664727529	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40
+0	4	0	clean	b516a0fffcce5ef6
+2	318	1665695535	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	745edaa8f8d0adfc
+318	632	1665695535	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86_64/libffmpegJNI.so	f0872415407b3f40

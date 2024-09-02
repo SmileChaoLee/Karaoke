@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/favoriteListLinearLayout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_bright"
+    android:weightSum="100"
+    tools:context=".BaseFavoriteListActivity">
+
+    <LinearLayout
+        android:id="@+id/favoritesTitleLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center|top"
+        android:layout_weight="10"
+        app:divider="@drawable/layout_horizontal_divider"
+        app:showDividers="end" >
+        <TextView
+            android:id="@+id/myFavoritesTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textScaleX="1.0"
+            android:textColor="@android:color/background_dark"
+            android:gravity="center"
+            android:text="@string/my_favorites" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/selectedFavoriteRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:divider="@color/darkerGray"
+        android:dividerHeight="1dp"
+        android:layout_gravity="center"
+        android:layout_weight="80">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/favoritesExitButtonLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        style="?android:attr/buttonBarStyle"
+        android:baselineAligned="false"
+        android:gravity="center|bottom"
+        android:layout_weight="10">
+        <Button
+            android:id="@+id/exitFavoriteListButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/exitString"
+            app:textAllCaps="false"
+            android:textStyle="normal"
+            android:textColor="@android:color/holo_red_dark"
+            android:background="@android:drawable/btn_default">
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>

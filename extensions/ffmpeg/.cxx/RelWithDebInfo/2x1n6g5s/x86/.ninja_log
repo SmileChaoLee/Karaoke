@@ -1,0 +1,26 @@
+# ninja log v5
+0	4	0	clean	b516a0fffcce5ef6
+1	439	1663522092	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+440	526	1663522092	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+0	19	0	clean	b516a0fffcce5ef6
+0	4	0	clean	b516a0fffcce5ef6
+0	7	0	clean	b516a0fffcce5ef6
+9	499	1663522753	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+499	712	1663522753	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+6	273	1663523589	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+0	9	0	clean	b516a0fffcce5ef6
+2	9	0	clean	b516a0fffcce5ef6
+42	771	1664721056	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+772	1158	1664721057	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+0	3	0	clean	b516a0fffcce5ef6
+0	2	0	clean	b516a0fffcce5ef6
+0	5	0	clean	b516a0fffcce5ef6
+0	7	0	clean	b516a0fffcce5ef6
+2	444	1664726373	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+444	587	1664726373	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+0	4	0	clean	b516a0fffcce5ef6
+3	462	1664727528	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+462	590	1664727528	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47
+0	10	0	clean	b516a0fffcce5ef6
+2	338	1665695534	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	b2e353bde0b8f10f
+338	1068	1665695535	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/x86/libffmpegJNI.so	4cf8ffe9aa174c47

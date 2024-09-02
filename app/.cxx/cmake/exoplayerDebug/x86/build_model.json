@@ -1,0 +1,214 @@
+{
+  "abi": "X86",
+  "info": {
+    "abi": "X86",
+    "bitness": 32,
+    "deprecated": false,
+    "default": true
+  },
+  "originalCxxBuildFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/x86",
+  "cxxBuildFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/x86",
+  "abiPlatformVersion": 17,
+  "cmake": {
+    "cmakeWrappingBaseFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cxx/exoplayerDebug/x86",
+    "cmakeArtifactsBaseFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/x86",
+    "effectiveConfiguration": {
+      "name": "traditional-android-studio-cmake-environment",
+      "description": "Composite reified CMakeSettings configuration",
+      "generator": "Ninja",
+      "inheritEnvironments": [
+        "ndk"
+      ],
+      "buildRoot": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/x86",
+      "cmakeToolchain": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake",
+      "cmakeExecutable": "/home/chaolee/Android/Sdk/cmake/3.10.2.4988404/bin/cmake",
+      "variables": [
+        {
+          "name": "CMAKE_FIND_ROOT_PATH",
+          "value": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/prefab/x86/prefab"
+        },
+        {
+          "name": "CMAKE_BUILD_TYPE",
+          "value": "Debug"
+        },
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake"
+        },
+        {
+          "name": "ANDROID_ABI",
+          "value": "x86"
+        },
+        {
+          "name": "ANDROID_NDK",
+          "value": "/home/chaolee/Android/Sdk/ndk/21.4.7075529"
+        },
+        {
+          "name": "ANDROID_PLATFORM",
+          "value": "android-17"
+        },
+        {
+          "name": "CMAKE_ANDROID_ARCH_ABI",
+          "value": "x86"
+        },
+        {
+          "name": "CMAKE_ANDROID_NDK",
+          "value": "/home/chaolee/Android/Sdk/ndk/21.4.7075529"
+        },
+        {
+          "name": "CMAKE_EXPORT_COMPILE_COMMANDS",
+          "value": "ON"
+        },
+        {
+          "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
+          "value": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build/intermediates/cmake/exoplayerDebug/obj/x86"
+        },
+        {
+          "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
+          "value": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build/intermediates/cmake/exoplayerDebug/obj/x86"
+        },
+        {
+          "name": "CMAKE_MAKE_PROGRAM",
+          "value": "/home/chaolee/Android/Sdk/cmake/3.10.2.4988404/bin/ninja"
+        },
+        {
+          "name": "CMAKE_SYSTEM_NAME",
+          "value": "Android"
+        },
+        {
+          "name": "CMAKE_SYSTEM_VERSION",
+          "value": "17"
+        }
+      ]
+    },
+    "cmakeServerLogFile": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/x86/cmake_server_log.txt"
+  },
+  "variant": {
+    "buildSystemArgumentList": [],
+    "cFlagsList": [],
+    "cppFlagsList": [],
+    "variantName": "exoplayerDebug",
+    "objFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build/intermediates/cmake/exoplayerDebug/obj",
+    "soFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build/intermediates/cmake/exoplayerDebug/lib",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
+    "module": {
+      "cxxFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx",
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build/intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app",
+      "moduleBuildFile": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/build.gradle",
+      "makeFile": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/src/main/jni/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "ndkFolder": "/home/chaolee/Android/Sdk/ndk/21.4.7075529",
+      "ndkVersion": "21.4.7075529",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultStl": "LIBCXX_STATIC",
+      "ndkMetaPlatforms": {
+        "min": 16,
+        "max": 30,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29,
+          "R": 30
+        }
+      },
+      "ndkMetaAbiList": [
+        {
+          "abi": "ARMEABI_V7A",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "ARM64_V8A",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86_64",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        }
+      ],
+      "originalCmakeToolchainFile": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake",
+      "cmakeToolchainFile": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake",
+      "cmake": {
+        "isValidCmakeAvailable": true,
+        "cmakeExe": "/home/chaolee/Android/Sdk/cmake/3.10.2.4988404/bin/cmake",
+        "minimumCmakeVersion": "3.10.2",
+        "ninjaExe": "/home/chaolee/Android/Sdk/cmake/3.10.2.4988404/bin/ninja",
+        "isPreferCmakeFileApiEnabled": true
+      },
+      "stlSharedObjectMap": {
+        "LIBCXX_SHARED": {
+          "ARMEABI_V7A": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
+          "ARM64_V8A": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+          "X86": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
+          "X86_64": "/home/chaolee/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
+        },
+        "LIBCXX_STATIC": {},
+        "NONE": {},
+        "SYSTEM": {}
+      },
+      "project": {
+        "rootBuildGradleFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer",
+        "cxxFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/.cxx",
+        "compilerSettingsCacheFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/.cxx",
+        "sdkFolder": "/home/chaolee/Android/Sdk",
+        "isNativeCompilerSettingsCacheEnabled": false,
+        "isBuildOnlyTargetAbiEnabled": true,
+        "isCmakeBuildCohabitationEnabled": false,
+        "isPrefabEnabled": false,
+        "isV2NativeModelEnabled": true
+      },
+      "nativeBuildOutputLevel": "QUIET"
+    },
+    "prefabDirectory": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/prefab"
+  },
+  "buildSettings": {
+    "environmentVariables": []
+  },
+  "prefabFolder": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/.cxx/cmake/exoplayerDebug/prefab/x86"
+}

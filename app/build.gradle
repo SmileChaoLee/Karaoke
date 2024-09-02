@@ -1,0 +1,173 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: "kotlin-parcelize"
+
+android {
+
+    signingConfigs {
+        release {
+            storeFile file('/home/chaolee/AndroidStudioProjects/keystore/new_key.jks')
+            storePassword '86637971'
+            keyAlias = 'chaolee1959'
+            keyPassword '86637971'
+        }
+    }
+
+    compileSdk sdk_version.compile
+
+    defaultConfig {
+
+        targetSdk sdk_version.target
+        minSdk sdk_version.min
+
+        applicationId = "com.smile.karaokeplayer"
+        multiDexEnabled true
+        versionCode 620
+        versionName "6.20"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
+    }
+
+    flavorDimensions = ["player"]
+    productFlavors {
+        exoplayer {
+            dimension("player")
+            applicationId = "com.smile.karaokeplayer"
+            manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
+            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
+        }
+        videoplayer {
+            dimension("player")
+            applicationId = "com.smile.videoplayer"
+            manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
+            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDir("src/main/java")
+            resources.srcDir("src/main/rec")
+            manifest {
+                srcFile "src/main/AndroidManifest.xml"
+            }
+        }
+        exoplayer {
+            java {
+                srcDirs += "src/exoplayer/java"
+                exclude "**/ExoPlaybackPreparer.java"
+            }
+            res.srcDirs += "src/exoplayer/res"
+            manifest {
+                srcFile "src/exoplayer/AndroidManifest.xml"
+            }
+        }
+
+        videoplayer {
+            java.srcDirs += "src/videoplayer/java"
+            res.srcDirs += "src/videoplayer/res"
+            manifest {
+                srcFile "src/videoplayer/AndroidManifest.xml"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    /*
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    */
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+    namespace 'com.smile.karaokeplayer'
+    testNamespace 'com.smile.karaokeplayer.androidTest'
+}
+
+allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.media:media:1.7.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.annotation:annotation:$annotation_version"
+
+    implementation 'com.facebook.android:audience-network-sdk:6.16.0'
+    implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
+    implementation 'com.google.firebase:firebase-ads:23.3.0'
+
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+
+    implementation 'androidx.core:core-ktx:1.13.1'
+
+    implementation files('libs/smilelibraries-release.aar')
+    implementation files('libs/NativeTemplatesModels-release.aar')
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.ext:truth:1.6.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+
+    exoplayerImplementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
+    exoplayerImplementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
+    exoplayerImplementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
+    exoplayerImplementation project(':extension-ffmpeg')
+    exoplayerImplementation project(':extension-flac')
+    exoplayerImplementation project(':extension-opus')
+    exoplayerImplementation project(':extension-vp9')
+    exoplayerImplementation project(':extension-av1')
+
+    videoplayerImplementation 'org.videolan.android:libvlc-all:3.6.0-eap12'
+
+    /*
+    gradle.startParameter.getTaskNames().each { task ->
+        if (task.containsIgnoreCase("exoplayer")) {
+            implementation 'com.google.android.exoplayer:exoplayer:2.18.2'
+            implementation 'com.google.android.exoplayer:extension-mediasession:2.18.2'
+            implementation 'com.google.android.exoplayer:extension-cast:2.18.2'
+            implementation project(':extension-ffmpeg')
+            implementation project(':extension-flac')
+            implementation project(':extension-opus')
+            implementation project(':extension-vp9')
+            implementation project(':extension-av1')
+        } else if (task.containsIgnoreCase("videoplayer")) {
+            implementation 'org.videolan.android:libvlc-all:3.6.0-eap12'
+        }
+    }
+    */
+}
+
+apply plugin: 'com.google.gms.google-services'

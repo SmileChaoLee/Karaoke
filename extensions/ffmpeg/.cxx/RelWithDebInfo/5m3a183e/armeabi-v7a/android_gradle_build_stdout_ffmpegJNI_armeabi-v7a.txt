@@ -1,0 +1,2 @@
+ninja: Entering directory `/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/5m3a183e/armeabi-v7a'
+ninja: no work to do.

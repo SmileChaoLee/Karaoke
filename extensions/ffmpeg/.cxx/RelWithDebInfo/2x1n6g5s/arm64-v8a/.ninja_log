@@ -1,0 +1,25 @@
+# ninja log v5
+0	771	1663522091	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+771	884	1663522091	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+0	5	0	clean	b516a0fffcce5ef6
+0	5	0	clean	b516a0fffcce5ef6
+0	7	0	clean	b516a0fffcce5ef6
+28	1306	1663522750	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+1306	1711	1663522750	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+14	939	1663523587	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+0	9	0	clean	b516a0fffcce5ef6
+0	16	0	clean	b516a0fffcce5ef6
+114	1992	1664721052	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+1998	2706	1664721053	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+0	3	0	clean	b516a0fffcce5ef6
+0	3	0	clean	b516a0fffcce5ef6
+0	3	0	clean	b516a0fffcce5ef6
+0	9	0	clean	b516a0fffcce5ef6
+22	609	1664726371	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+609	865	1664726372	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+0	3	0	clean	b516a0fffcce5ef6
+1	752	1664727526	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+752	1034	1664727526	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
+0	12	0	clean	b516a0fffcce5ef6
+245	1424	1665695531	CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o	bc3bcfa58e1abaf
+1467	2489	1665695532	/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/RelWithDebInfo/2x1n6g5s/obj/arm64-v8a/libffmpegJNI.so	23b68f7a3b9e4a3
