@@ -1,9 +1,7 @@
 package exoplayer.listeners;
 
-import android.app.Activity;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.exoplayer2.PlaybackException;
@@ -32,42 +30,50 @@ public class ExoPlayerListener implements Player.Listener {
             // Start playing
             if (isPlaying) {
                 Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PLAYING");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             }
         } else {
             // Paused
             if (!isPlaying) {
                 Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PAUSED");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
             }
         }
     }
 
     @Override
     public synchronized void onPlaybackStateChanged(int state) {
-        Log.d(TAG, "onPlaybackStateChanged().state = " + state);
-        Log.d(TAG, "onPlaybackStateChanged().playWhenReady = " +
-                mPresenter.getExoPlayer().getPlayWhenReady() );
+        Log.d(TAG, "onPlaybackStateChanged.state = " + state);
+        boolean playWhenReady = mPresenter.getExoPlayer().getPlayWhenReady();
+        Log.d(TAG, "onPlaybackStateChanged.playWhenReady = " + playWhenReady);
         switch (state) {
             case Player.STATE_BUFFERING:
-                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_BUFFERING");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING);
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_BUFFERING");
+                mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING);
                 break;
             case Player.STATE_READY:
-                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_READY");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_READY");
+                if (playWhenReady) {
+                    Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_PLAYING");
+                    mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                } else {
+                    Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_PAUSED");
+                    mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                }
                 break;
             case Player.STATE_ENDED:
                 // playing is finished and send PlaybackStateCompat.STATE_STOPPED
                 // to MediaControllerCallback
-                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_ENDED");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_ENDED");
+                Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_STOPPED");
+                mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 break;
             case Player.STATE_IDLE:
                 // user stops the playing and send PlaybackStateCompat.STATE_NONE
                 // to MediaControllerCallback
                 Log.d(TAG, "onPlaybackStateChanged().Player.STATE_IDLE");
-                mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
+                Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_NONE");
+                mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 break;
             default:
                 Log.d(TAG, "onPlaybackStateChanged().Playback state (Default)");
@@ -83,12 +89,12 @@ public class ExoPlayerListener implements Player.Listener {
     @Override
     public void onPlayerErrorChanged(@Nullable PlaybackException error) {
         Log.d(TAG,"onPlayerErrorChanged().error = " + error);
-        mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+        mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
     }
 
     @Override
     public synchronized void onPlayerError(@NonNull PlaybackException error) {
         Log.d(TAG,"onPlayerError().error = " + error);
-        mPresenter.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+        mPresenter.getPlayService().setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
     }
 }

@@ -4,10 +4,14 @@ import static com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RE
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
@@ -26,7 +30,6 @@ import com.google.android.exoplayer2.ext.cast.CastPlayer;
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener;
 import com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary;
 import com.google.android.exoplayer2.ext.flac.FlacLibrary;
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ext.opus.OpusLibrary;
 import com.google.android.exoplayer2.ext.vp9.VpxLibrary;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -49,13 +52,14 @@ import com.smile.karaokeplayer.presenters.BasePlayerPresenter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import exoplayer.audioProcessors.StereoVolumeAudioProcessor;
 import exoplayer.callbacks.ExoMediaControllerCallback;
 import exoplayer.callbacks.ExoMediaSessionCallback;
 import exoplayer.exoRenderersFactory.MyRenderersFactory;
 import exoplayer.listeners.ExoPlayerCastStateListener;
 import exoplayer.listeners.ExoPlayerListener;
+import exoplayer.services.ExoPlayService;
+import exoplayer.services.ExoPlayService.LocalBinder;
 
 public class ExoPlayerPresenter extends BasePlayerPresenter {
 
@@ -63,11 +67,9 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
 
     private final Fragment mFragment;
     private final Activity mActivity;
-    private final ExoPlayerPresentView presentView;
+    private final ExoPlayerPresentView mPresentView;
     private CastContext castContext;
     private ExoPlayerCastStateListener exoPlayerCastStateListener;
-    private ExoMediaControllerCallback mediaControllerCallback;
-    private MediaSessionConnector mediaSessionConnector;
     private StereoVolumeAudioProcessor stereoVolumeAudioProcessor;
     private TrackSelectionParameters trackSelectorParameters;
     private ExoPlayer exoPlayer;
@@ -77,6 +79,8 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     private SessionAvailabilityListener mSessionAvailabilityListener;
     private ExoPlayerListener mExoPlayerListener;
     private Player currentPlayer;
+    private ExoMediaSessionCallback mediaSessionCallback;
+    private ExoMediaControllerCallback controllerCallback;
     private int currentItemIndex = -1;
     // instances of the following members have to be saved when configuration changed
     private ArrayList<Integer[]> audioTrackIndicesList = new ArrayList<>();
@@ -88,7 +92,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
             if (exoPlayer != null) {
                 int playbackState = exoPlayer.getPlaybackState();
                 if (exoPlayer.getPlayWhenReady() && playbackState!=Player.STATE_IDLE && playbackState!=Player.STATE_ENDED) {
-                    presentView.update_Player_duration_seekbar_progress((int)exoPlayer.getCurrentPosition());
+                    mPresentView.update_Player_duration_seekbar_progress((int)exoPlayer.getCurrentPosition());
                 }
             }
             durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 500);
@@ -99,40 +103,49 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         void setCurrentPlayerToPlayerView();
     }
 
+    private ExoPlayService mPlayService;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected().mActivity = " + mActivity);
+            if (service != null) {
+                LocalBinder binder = (LocalBinder) service;
+                mPlayService = binder.getService();
+                setBasePlayService(mPlayService); // set mPlayService to BasePlayerPresenter
+                if (mPlayService != null) {
+                    mPlayService.setPresenter(ExoPlayerPresenter.this);
+                    mPlayService.initMediaControllerCompat(mActivity);
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected()");
+        }
+    };
+
+    public void unbindService() {
+        mActivity.unbindService(connection);
+        connection = null;
+        mPlayService = null;
+    }
+
     public ExoPlayerPresenter(Fragment fragment, ExoPlayerPresentView presentView) {
         super(fragment, presentView);
         mFragment = fragment;
         mActivity = fragment.getActivity();
-        this.presentView = presentView;
-
-        castContext = null;
-        currentCastState = CastState.NO_DEVICES_AVAILABLE;
-        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG");
-            try {
-                castContext = CastContext.getSharedInstance(mActivity);
-            } catch (RuntimeException e) {
-                castContext = null;
-                Throwable cause = e.getCause();
-                while (cause != null) {
-                    if (cause instanceof DynamiteModule.LoadingException) {
-                        Log.d(TAG, "Failed to get CastContext. Try updating Google Play Services and restart the app.");
-                    }
-                    cause = cause.getCause();
-                }
-                // Unknown error. We propagate it.
-                Log.d(TAG, "Failed to get CastContext. Unknown error.");
-            }
-            if (castContext != null) {
-                Log.d(TAG, "castContext is " + castContext);
-                exoPlayerCastStateListener = new ExoPlayerCastStateListener(mFragment, this);
-                currentCastState = castContext.getCastState();
-            }
-        }
+        mPresentView = presentView;
+        // Bind ExoPlayService
+        Log.d(TAG, "ExoPlayerPresenter.bind ExoPlayService");
+        Intent intent = new Intent(mActivity, ExoPlayService.class);
+        mActivity.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        //
     }
 
-    public void initExoPlayerAndCastPlayer() {
+    public void initExoPlayer() {
         DefaultTrackSelector trackSelector = new DefaultTrackSelector(mActivity, new AdaptiveTrackSelection.Factory());
+        Log.d(TAG, "initExoPlayerAndCastPlayer.trackSelector = " + trackSelector);
         trackSelector.setParameters(trackSelectorParameters);
 
         // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
@@ -149,40 +162,6 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
 
         mExoPlayerListener = new ExoPlayerListener(this);
         exoPlayer.addListener(mExoPlayerListener);
-
-        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            if (castContext != null) {
-                castPlayer = new CastPlayer(castContext);
-                // castPlayer.addListener(mExoPlayerEventListener); // add different listener later
-                mSessionAvailabilityListener = new SessionAvailabilityListener() {
-                    @Override
-                    public synchronized void onCastSessionAvailable() {
-                        Log.d(TAG, "onCastSessionAvailable");
-                        Log.d(TAG, "onCastSessionAvailable.mediaUri = " + mediaUri);
-                        if (mediaUri == null || !isOnInternet) {
-                            Log.d(TAG, "onCastSessionAvailable.Stopped casting because mediaUri is null or not online");
-                            Log.d(TAG, "onCastSessionAvailable.Set current player back to exoPlayer");
-                            MediaRouter mRouter = MediaRouter.getInstance(mActivity);  // singleton
-                            mRouter.unselect(MediaRouter.UNSELECT_REASON_STOPPED);  // stop casting
-                            return;
-                        }
-                        setCurrentPlayer(castPlayer);
-                        Log.d(TAG, "Set current player to castPlayer");
-                    }
-
-                    @Override
-                    public void onCastSessionUnavailable() {
-                        Log.d(TAG, "onCastSessionUnavailable() is called.");
-                        setCurrentPlayer(exoPlayer);
-                        Log.d(TAG, "Set current player to exoPlayer");
-                    }
-                };
-
-                // moved to setSessionAvailabilityListener() method
-                // castPlayer.setSessionAvailabilityListener(mSessionAvailabilityListener);
-            }
-        }
-
         currentPlayer = exoPlayer; // default is playing video on Android device
 
         Log.d(TAG, "FfmpegLibrary.isAvailable() = " + FfmpegLibrary.isAvailable());
@@ -192,18 +171,82 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         Log.d(TAG, "Gav1Library.isAvailable() = " + Gav1Library.isAvailable());
     }
 
-    public void releaseExoPlayerAndCastPlayer() {
+    private void releaseExoPlayer() {
+        Log.d(TAG, "releaseExoPlayer");
         if (exoPlayer != null) {
             exoPlayer.removeListener(mExoPlayerListener);
             exoPlayer.stop();
             exoPlayer.release();
             exoPlayer = null;
         }
+    }
+
+    public void initCastPlayer() {
+        castContext = null;
+        currentCastState = CastState.NO_DEVICES_AVAILABLE;
+        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            Log.d(TAG, "initCastPlayer.com.smile.karaokeplayer.BuildConfig.DEBUG");
+            try {
+                castContext = CastContext.getSharedInstance(mActivity);
+                exoPlayerCastStateListener = new ExoPlayerCastStateListener(mFragment, this);
+                currentCastState = castContext.getCastState();
+                Log.d(TAG, "initCastPlayer.currentCastState = " + currentCastState);
+                boolean deviceAvailable = currentCastState != CastState.NO_DEVICES_AVAILABLE;
+                Log.d(TAG, "initCastPlayer.deviceAvailable = " + deviceAvailable);
+                castPlayer = new CastPlayer(castContext);
+                // castPlayer.addListener(mExoPlayerEventListener); // add different listener later
+                mSessionAvailabilityListener = new SessionAvailabilityListener() {
+                    @Override
+                    public synchronized void onCastSessionAvailable() {
+                        Log.d(TAG, "initCastPlayer.onCastSessionAvailable");
+                        Log.d(TAG, "initCastPlayer.onCastSessionAvailable.mediaUri = " +
+                                mediaUri);
+                        Log.d(TAG, "initCastPlayer.onCastSessionAvailable.isOnInternet = " +
+                                isOnInternet);
+                        if (mediaUri == null || !isOnInternet) {
+                            MediaRouter mRouter = MediaRouter.getInstance(mActivity);  // singleton
+                            mRouter.unselect(MediaRouter.UNSELECT_REASON_STOPPED);  // stop casting
+                            return;
+                        }
+                        Log.d(TAG, "initCastPlayer.onCastSessionAvailable." +
+                                "Set current player to castPlayer");
+                        setCurrentPlayer(castPlayer);
+                    }
+
+                    @Override
+                    public void onCastSessionUnavailable() {
+                        Log.d(TAG, "initCastPlayer.onCastSessionUnavailable.setCurrentPlayer()");
+                        setCurrentPlayer(exoPlayer);
+                    }
+                };
+            } catch (RuntimeException e) {
+                castContext = null;
+                Throwable cause = e.getCause();
+                while (cause != null) {
+                    if (cause instanceof DynamiteModule.LoadingException) {
+                        Log.d(TAG, "ExoPlayerPresenter.Failed to get CastContext." +
+                                " Try updating Google Play Services and restart the app.");
+                    }
+                    cause = cause.getCause();
+                }
+                // Unknown error. We propagate it.
+                Log.d(TAG, "initCastPlayer.Failed to get CastContext. Unknown error.");
+            }
+        }
+    }
+
+    private void releaseCastPlayer() {
+        Log.d(TAG, "releaseCastPlayer");
         if (castPlayer != null) {
             castPlayer.setSessionAvailabilityListener(null);
             castPlayer.release();
             castPlayer = null;
         }
+    }
+
+    public void releaseExoPlayerAndCastPlayer() {
+        releaseExoPlayer();
+        releaseCastPlayer();
     }
 
     public ExoPlayer getExoPlayer() {
@@ -220,6 +263,36 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     public void setCurrentCastState(int currentCastState) {
         this.currentCastState = currentCastState;
     }
+    public ExoPlayService getPlayService() {
+        return mPlayService;
+    }
+
+    // called by ExoPlayService
+    public void specificPlayerReplayMedia(long currentAudioPosition) {
+        // song is playing, paused, or finished playing
+        // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
+        // because it will send Play.STATE_ENDED event after the playing has finished
+        // but the playing was stopped in the middle of playing then won't send
+        // Play.STATE_ENDED event
+        // exoPlayer.setPlayWhenReady(false);
+        exoPlayer.seekTo(currentAudioPosition);
+        // switchAudioToVocal();    // removed on 2022-01-03
+        exoPlayer.prepare();    // replace exoPlayer.retry();
+        //
+        exoPlayer.setPlayWhenReady(true);
+        Log.d(TAG, "specificPlayerReplayMedia.exoPlayer.seekTo(currentAudioPosition).");
+    }
+
+    // called by ExoPlayService
+    public void initMediaCallback(ExoPlayService playService) {
+        Log.d(TAG, "initMediaCallback().playService = " + playService);
+        mediaSessionCallback = new ExoMediaSessionCallback(mActivity,this);
+        playService.getMediaSessionCompat().setCallback(mediaSessionCallback);
+        controllerCallback = new ExoMediaControllerCallback(this);
+        Log.d(TAG, "initMediaCallback().controllerCallback = " + controllerCallback);
+        playService.getMediaControllerCompat().registerCallback(controllerCallback);
+    }
+    //
 
     private void selectAudioTrack(Integer[] trackIndicesCombination) {
         Log.d(TAG, "selectAudioTrack");
@@ -251,6 +324,167 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         TrackSelectionOverride override = new TrackSelectionOverride(trackGroup, audioTrackIndex);
         trackSelectorParameters = parametersBuilder.setOverrideForType(override).build();
         exoPlayer.setTrackSelectionParameters(trackSelectorParameters);
+    }
+
+    // Begin of override abstract method
+    @SuppressWarnings("unchecked")
+    @Override
+    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent) {
+        Log.d(TAG, "initializeVariables()");
+        initializeVariablesBase(savedInstanceState, callingIntent);
+        if (savedInstanceState == null) {
+            audioTrackIndicesList = new ArrayList<>();
+            trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
+            } else audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState);
+            if (audioTrackIndicesList == null) audioTrackIndicesList = new ArrayList<>();
+            Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectorParametersState);
+            if (parameter != null) trackSelectorParameters = TrackSelectionParameters.fromBundle(parameter);
+            else trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
+        }
+    }
+
+    @Override
+    public void releaseMediaCallback() {
+        Log.d(TAG, "releaseMediaCallback()");
+        mediaSessionCallback = null;
+        if (mPlayService != null && controllerCallback != null) {
+            mPlayService.getMediaControllerCompat().unregisterCallback(controllerCallback);
+            controllerCallback = null;
+        }
+    }
+
+    @Override
+    public void setPlayerTime(int progress) {
+        exoPlayer.seekTo(progress);
+    }
+
+    @Override
+    public void setAudioVolume(float volume) {
+        // get current channel
+        int currentChannelPlayed = playingParam.getCurrentChannelPlayed();
+        //
+        boolean useAudioProcessor = false;
+        if (stereoVolumeAudioProcessor != null) {
+            int channelCount = stereoVolumeAudioProcessor.getOutputChannelCount();
+            if (channelCount >= 0) {
+                useAudioProcessor = true;
+                float[] volumeInput = new float[stereoVolumeAudioProcessor.getOutputChannelCount()];
+                if (channelCount == 2) {
+                    if (currentChannelPlayed == CommonConstants.LeftChannel) {
+                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = volume;
+                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = 0.0f;
+                    } else if (currentChannelPlayed == CommonConstants.RightChannel) {
+                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = 0.0f;
+                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = volume;
+                    } else {
+                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = volume;
+                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = volume;
+                    }
+                } else {
+                    Arrays.fill(volumeInput, volume);
+                }
+                stereoVolumeAudioProcessor.setVolume(volumeInput);
+            }
+        }
+        if (!useAudioProcessor) {
+            exoPlayer.setVolume(volume);
+        }
+        playingParam.setCurrentVolume(volume);
+    }
+
+    @Override
+    public void setAudioVolumeInsideVolumeSeekBar(int i) {
+        // needed to put inside the presenter
+        float currentVolume = 1.0f;
+        if (i < PlayerConstants.MaxProgress) {
+            currentVolume = (float)(1.0f - (Math.log(PlayerConstants.MaxProgress - i) / Math.log(PlayerConstants.MaxProgress)));
+        }
+        setAudioVolume(currentVolume);
+        //
+    }
+
+    @Override
+    public int getCurrentProgressForVolumeSeekBar() {
+        int currentProgress;
+        float currentVolume = playingParam.getCurrentVolume();
+        if ( currentVolume >= 1.0f) {
+            currentProgress = PlayerConstants.MaxProgress;
+        } else {
+            currentProgress = PlayerConstants.MaxProgress - (int)Math.pow(PlayerConstants.MaxProgress, (1-currentVolume));
+            currentProgress = Math.max(0, currentProgress);
+        }
+
+        return currentProgress;
+    }
+
+    @Override
+    public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
+        Log.d(TAG, "setAudioTrackAndChannel().numberOfAudioTracks = " + numberOfAudioTracks);
+        if (numberOfAudioTracks > 0) {
+            // select audio track
+            Log.d(TAG, "setAudioTrackAndChannel().audioTrackIndex = " + audioTrackIndex);
+            if (audioTrackIndex<=0) {
+                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
+                return;
+            }
+            if (audioTrackIndex>numberOfAudioTracks) {
+                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
+                // set to first track
+                audioTrackIndex = 1;
+            }
+            int indexInArrayList = audioTrackIndex - 1;
+
+            Integer[] trackIndicesCombination = audioTrackIndicesList.get(indexInArrayList);
+            selectAudioTrack(trackIndicesCombination);
+
+            // set audio track
+            Log.d(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex);
+            playingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+            // set audio channel
+            Log.d(TAG, "setAudioTrackAndChannel.audioChannel = " + audioChannel);
+            playingParam.setCurrentChannelPlayed(audioChannel);
+            setAudioVolume(playingParam.getCurrentVolume());
+        }
+    }
+
+    @Override
+    public void switchAudioToMusic() {
+        if (!playingParam.isInSongList()) {
+            // not in the database and show message
+            mPresentView.showMusicAndVocalIsNotSet();
+        }
+        int audioTrack = playingParam.getMusicAudioTrackIndex();
+        int audioChannel = playingParam.getMusicAudioChannel();
+        setAudioTrackAndChannel(audioTrack, audioChannel);
+    }
+
+    @Override
+    public void switchAudioToVocal() {
+        Log.d(TAG, "switchAudioToVocal() is called.");
+        if (!playingParam.isInSongList()) {
+            // not in the database and show message
+            mPresentView.showMusicAndVocalIsNotSet();
+        }
+        setAudioTrackAndChannel(playingParam.getVocalAudioTrackIndex(), playingParam.getVocalAudioChannel());
+    }
+
+    @Override
+    public synchronized void startDurationSeekBarHandler() {
+        // start monitor player_duration_seekbar
+        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 200); // delay 200ms
+    }
+
+    @Override
+    public long getMediaDuration() {
+        return exoPlayer.getDuration();
+    }
+
+    @Override
+    public void removeCallbacksAndMessages() {
+        durationSeekBarHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -407,174 +641,17 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         }
 
         // build R.id.audioTrack submenu
-        presentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
+        mPresentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
 
         // update the duration on controller UI
-        presentView.update_Player_duration_seekbar(exoPlayer.getDuration());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent) {
-        Log.d(TAG, "ExoPlayerPresenter --> initializeVariables()");
-        super.initializeVariables(savedInstanceState, callingIntent);
-        if (savedInstanceState == null) {
-            audioTrackIndicesList = new ArrayList<>();
-            trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
-            } else audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState);
-            if (audioTrackIndicesList == null) audioTrackIndicesList = new ArrayList<>();
-            Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectorParametersState);
-            if (parameter != null) trackSelectorParameters = TrackSelectionParameters.fromBundle(parameter);
-            else trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
-        }
+        mPresentView.update_Player_duration_seekbar(exoPlayer.getDuration());
     }
 
     @Override
     public boolean isSeekable() {
         return exoPlayer.isCurrentMediaItemSeekable();
     }
-
-    @Override
-    public void setPlayerTime(int progress) {
-        exoPlayer.seekTo(progress);
-    }
-
-    @Override
-    public void setAudioVolume(float volume) {
-        // get current channel
-        int currentChannelPlayed = playingParam.getCurrentChannelPlayed();
-        //
-        boolean useAudioProcessor = false;
-        if (stereoVolumeAudioProcessor != null) {
-            int channelCount = stereoVolumeAudioProcessor.getOutputChannelCount();
-            if (channelCount >= 0) {
-                useAudioProcessor = true;
-                float[] volumeInput = new float[stereoVolumeAudioProcessor.getOutputChannelCount()];
-                if (channelCount == 2) {
-                    if (currentChannelPlayed == CommonConstants.LeftChannel) {
-                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = volume;
-                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = 0.0f;
-                    } else if (currentChannelPlayed == CommonConstants.RightChannel) {
-                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = 0.0f;
-                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = volume;
-                    } else {
-                        volumeInput[StereoVolumeAudioProcessor.LEFT_SPEAKER] = volume;
-                        volumeInput[StereoVolumeAudioProcessor.RIGHT_SPEAKER] = volume;
-                    }
-                } else {
-                    Arrays.fill(volumeInput, volume);
-                }
-                stereoVolumeAudioProcessor.setVolume(volumeInput);
-            }
-        }
-        if (!useAudioProcessor) {
-            exoPlayer.setVolume(volume);
-        }
-        playingParam.setCurrentVolume(volume);
-    }
-
-    @Override
-    public void setAudioVolumeInsideVolumeSeekBar(int i) {
-        // needed to put inside the presenter
-        float currentVolume = 1.0f;
-        if (i < PlayerConstants.MaxProgress) {
-            currentVolume = (float)(1.0f - (Math.log(PlayerConstants.MaxProgress - i) / Math.log(PlayerConstants.MaxProgress)));
-        }
-        setAudioVolume(currentVolume);
-        //
-    }
-
-    @Override
-    public int getCurrentProgressForVolumeSeekBar() {
-        int currentProgress;
-        float currentVolume = playingParam.getCurrentVolume();
-        if ( currentVolume >= 1.0f) {
-            currentProgress = PlayerConstants.MaxProgress;
-        } else {
-            currentProgress = PlayerConstants.MaxProgress - (int)Math.pow(PlayerConstants.MaxProgress, (1-currentVolume));
-            currentProgress = Math.max(0, currentProgress);
-        }
-
-        return currentProgress;
-    }
-
-    @Override
-    public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
-        Log.d(TAG, "setAudioTrackAndChannel().numberOfAudioTracks = " + numberOfAudioTracks);
-        if (numberOfAudioTracks > 0) {
-            // select audio track
-            Log.d(TAG, "setAudioTrackAndChannel().audioTrackIndex = " + audioTrackIndex);
-            if (audioTrackIndex<=0) {
-                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
-                return;
-            }
-            if (audioTrackIndex>numberOfAudioTracks) {
-                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
-                // set to first track
-                audioTrackIndex = 1;
-            }
-            int indexInArrayList = audioTrackIndex - 1;
-
-            Integer[] trackIndicesCombination = audioTrackIndicesList.get(indexInArrayList);
-            selectAudioTrack(trackIndicesCombination);
-
-            // set audio track
-            Log.d(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex);
-            playingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
-            // set audio channel
-            Log.d(TAG, "setAudioTrackAndChannel.audioChannel = " + audioChannel);
-            playingParam.setCurrentChannelPlayed(audioChannel);
-            setAudioVolume(playingParam.getCurrentVolume());
-        }
-    }
-
-    @Override
-    public void specificPlayerReplayMedia(long currentAudioPosition) {
-        // song is playing, paused, or finished playing
-        // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
-        // because it will send Play.STATE_ENDED event after the playing has finished
-        // but the playing was stopped in the middle of playing then won't send
-        // Play.STATE_ENDED event
-        // exoPlayer.setPlayWhenReady(false);
-        exoPlayer.seekTo(currentAudioPosition);
-        // switchAudioToVocal();    // removed on 2022-01-03
-        exoPlayer.prepare();    // replace exoPlayer.retry();
-        //
-        exoPlayer.setPlayWhenReady(true);
-        Log.d(TAG, "specificPlayerReplayMedia.exoPlayer.seekTo(currentAudioPosition).");
-    }
-
-    @Override
-    public void initMediaSessionCompat() {
-        Log.d(TAG, "ExoPlayerPresenter.initMediaSessionCompat().");
-        super.initMediaSessionCompat();
-        ExoMediaSessionCallback mediaSessionCallback = new ExoMediaSessionCallback(mActivity, this);
-        mediaSessionCompat.setCallback(mediaSessionCallback);
-        mediaControllerCallback = new ExoMediaControllerCallback(this);
-        mediaControllerCompat.registerCallback(mediaControllerCallback);
-
-        // no need to create MediaSessionCallback(). It will be overridden by PlaybackPreparer
-        // MediaSessionConnector will automatically update playback status to MediaControllerCallback
-        // mediaSessionConnector = new MediaSessionConnector(mediaSessionCompat);
-        // mediaSessionConnector.setPlayer(exoPlayer);
-        // mediaSessionConnector.setPlaybackPreparer(new ExoPlaybackPreparer(mActivity, this));
-    }
-
-    @Override
-    public void releaseMediaSessionCompat() {
-        Log.d(TAG, "ExoPlayerPresenter.releaseMediaSessionCompat() is called.");
-        super.releaseMediaSessionCompat();
-
-        if (mediaControllerCallback != null) {
-            mediaControllerCompat.unregisterCallback(mediaControllerCallback);
-            mediaControllerCallback = null;
-        }
-        mediaControllerCompat = null;
-        mediaSessionConnector = null;
-    }
+    // End of override abstract method
 
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
@@ -588,42 +665,6 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         outState.putSerializable(PlayerConstants.AudioTrackIndicesListState, audioTrackIndicesList);
         outState.putBundle(PlayerConstants.TrackSelectorParametersState, trackSelectorParameters.toBundle());
         super.saveInstanceState(outState);
-    }
-    @Override
-    public void switchAudioToMusic() {
-        if (!playingParam.isInSongList()) {
-            // not in the database and show message
-            presentView.showMusicAndVocalIsNotSet();
-        }
-        int audioTrack = playingParam.getMusicAudioTrackIndex();
-        int audioChannel = playingParam.getMusicAudioChannel();
-        setAudioTrackAndChannel(audioTrack, audioChannel);
-    }
-
-    @Override
-    public void switchAudioToVocal() {
-        Log.d(TAG, "switchAudioToVocal() is called.");
-        if (!playingParam.isInSongList()) {
-            // not in the database and show message
-            presentView.showMusicAndVocalIsNotSet();
-        }
-        setAudioTrackAndChannel(playingParam.getVocalAudioTrackIndex(), playingParam.getVocalAudioChannel());
-    }
-
-    @Override
-    public synchronized void startDurationSeekBarHandler() {
-        // start monitor player_duration_seekbar
-        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 200); // delay 200ms
-    }
-
-    @Override
-    public long getMediaDuration() {
-        return exoPlayer.getDuration();
-    }
-
-    @Override
-    public void removeCallbacksAndMessages() {
-        durationSeekBarHandler.removeCallbacksAndMessages(null);
     }
 
     // methods related to ChromeCast
@@ -643,7 +684,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
             return;
         }
         // Player View management.
-        presentView.setCurrentPlayerToPlayerView();
+        mPresentView.setCurrentPlayerToPlayerView();
         // Player state management.
         long playbackPositionMs = C.TIME_UNSET;
         int windowIndex = C.INDEX_UNSET;

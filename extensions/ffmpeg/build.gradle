@@ -22,6 +22,7 @@ android {
 
     defaultConfig {
         targetSdk sdk_version.target
+        minSdk sdk_version.min
         consumerProguardFiles 'proguard-rules.txt'
      	testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {

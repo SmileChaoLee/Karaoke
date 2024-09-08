@@ -2,7 +2,6 @@ package com.smile.karaokeplayer.fragments
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -156,10 +155,10 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     abstract fun setSwitchToVocalImageButtonVisibility()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called")
+        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
-            Log.d(TAG, "arguments is not null")
+            Log.d(TAG, "onCreate.arguments is not null")
         }
         // keep the screen on all the time, added on 2021-02-18
         activity?.window?.apply {
@@ -175,7 +174,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
         val presenter = getPlayerPresenter()
         if (presenter == null) {
-            Log.d(TAG, "presenter is null so exit activity.")
+            Log.d(TAG, "onCreate.presenter is null so exit activity.")
             playBaseFragmentFunc?.returnToPrevious(false)
             return
         }
@@ -189,11 +188,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         textFontSize = mPresenter.textFontSize
         fontScale = mPresenter.fontScale
         toastTextSize = mPresenter.toastTextSize
+        /* moved to ExoplayerFragment.kt and VLCPlayerFragment.kt
         val callingIntent: Intent? = activity?.intent
-        Log.d(TAG, "callingIntent = $callingIntent")
+        Log.d(TAG, "onCreate.callingIntent = $callingIntent")
         mPresenter.initializeVariables(savedInstanceState, callingIntent)
-
-        Log.d(TAG, "onCreate() is finished")
+        */
     }
 
     override fun onCreateView(

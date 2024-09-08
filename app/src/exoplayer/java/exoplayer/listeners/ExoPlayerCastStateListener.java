@@ -3,14 +3,11 @@ package exoplayer.listeners;
 import android.annotation.SuppressLint;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
 import com.google.android.gms.cast.framework.CastState;
 import com.smile.karaokeplayer.R;
 import com.smile.smilelibraries.utilities.ScreenUtil;
-
 import exoplayer.fragments.ExoPlayerFragment;
 import exoplayer.presenters.ExoPlayerPresenter;
 

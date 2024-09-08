@@ -1,5 +1,6 @@
 package exoplayer.fragments
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -31,22 +32,47 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     private var mediaRouteButton: MediaRouteButton? = null
     private var castPlayer: CastPlayer? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called")
-        presenter = ExoPlayerPresenter(this, this)
+    /*
+    private val connection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            Log.d(TAG, "onServiceConnected()")
+            if (service != null) {
+                (service as LocalBinder)?.let {
+                    val playService: ExoPlayService = it.getService()
+                    presenter.setPlayService(playService)
+                    playService?.initMediaControllerCompat(activity)
+                }
+            }
+        }
 
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d(TAG, "onServiceDisconnected()")
+        }
+    }
+    */
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
+        presenter = ExoPlayerPresenter(this, this)
         super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
         arguments?.let {
         }
-
         // must be after super.onCreate(savedInstanceState)
-        /* moved to onViewCreated() on 2022-09-25
-        presenter.initExoPlayerAndCastPlayer() // must be before volumeSeekBar settings
-        presenter.initMediaSessionCompat()
-        exoPlayer = presenter.exoPlayer
-        castPlayer = presenter.castPlayer
+        val callingIntent: Intent? = activity?.intent
+        Log.d(TAG, "onCreate.callingIntent = $callingIntent")
+        mPresenter.initializeVariables(savedInstanceState, callingIntent)
+        presenter.initCastPlayer()
+        presenter.initExoPlayer()
+
+        /*
+        // Bind ExoPlayService
+        Log.d(TAG, "onCreate.bind ExoPlayService")
+        activity?.let {
+            Intent(it, ExoPlayService::class.java)?.apply {
+                it.bindService(this, connection, Context.BIND_AUTO_CREATE)
+            }
+        }
         */
-        Log.d(TAG, "onCreate() is finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,11 +129,13 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         super.onDestroy()
         Log.d(TAG, "onDestroy()")
         releaseExoPlayerAndCastPlayer()
+        presenter.releaseMediaCallback()
+        presenter.unbindService()
     }
 
     private fun setExoPlayerAndCastPlayer() {
-        presenter.initExoPlayerAndCastPlayer() // must be before volumeSeekBar settings
-        presenter.initMediaSessionCompat()
+        // presenter.initExoPlayer() // must be before volumeSeekBar settings
+        // presenter.initMediaSessionCompat()
         exoPlayer = presenter.exoPlayer
         castPlayer = presenter.castPlayer
         playerView.player = exoPlayer
@@ -116,7 +144,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
 
     private fun releaseExoPlayerAndCastPlayer() {
         Log.d(TAG, "releaseExoPlayerAndCastPlayer()")
-        presenter.releaseMediaSessionCompat()
+        // presenter.releaseMediaSessionCompat()
         presenter.releaseExoPlayerAndCastPlayer()
         playerView.player = null
     }
@@ -139,13 +167,17 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
 
     override fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
         // MediaRouteButton View
-        Log.d(TAG, "setMediaRouteButtonView()")
+        Log.d(TAG, "setMediaRouteButtonView")
         if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
             return
         }
+        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
         try {
             mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
-            setMediaRouteButtonVisible(presenter.currentCastState != CastState.NO_DEVICES_AVAILABLE)
+            Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
+            val deviceAvailable = presenter.currentCastState != CastState.NO_DEVICES_AVAILABLE
+            Log.d(TAG, "setMediaRouteButtonView.deviceAvailable = $deviceAvailable")
+            setMediaRouteButtonVisible(deviceAvailable)
             mediaRouteButton?.let {
                 activity?.applicationContext?.let { ctxIt ->
                     CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
@@ -166,7 +198,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
             )
             mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
         } catch (ex: Exception) {
-            Log.d(TAG, "setMediaRouteButtonView().Exception")
+            Log.d(TAG, "setMediaRouteButtonView.Exception")
             ex.printStackTrace()
         }
     }

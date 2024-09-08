@@ -53,6 +53,10 @@
             android:name=".BaseSongDataActivity"
             android:exported="true">
         </activity>
+        <service
+            android:name=".services.BasePlayService"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

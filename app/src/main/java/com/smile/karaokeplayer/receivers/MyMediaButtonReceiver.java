@@ -11,6 +11,7 @@ public class MyMediaButtonReceiver extends MediaButtonReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
+            Log.d(this.getClass().getName(), "MyMediaButtonReceiver.onReceive()");
             super.onReceive(context, intent);
         // } catch (IllegalStateException e) {
         } catch (Exception e) {
