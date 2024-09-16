@@ -21,8 +21,21 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Removed some redundant codes">
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Changed versionCode and versionName">
+      <change afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/exoplayer/release/app-exoplayer-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/app/exoplayer/release/app-exoplayer-release.aab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/PlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/arm64-v8a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/arm64-v8a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +82,6 @@
     </option>
   </component>
   <component name="GenerateSignedApkSettings">
-    <option name="EXPORT_PRIVATE_KEY" value="false" />
     <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../keystore/new_key.jks" />
     <option name="KEY_ALIAS" value="chaolee1959" />
     <option name="REMEMBER_PASSWORDS" value="true" />
@@ -578,7 +590,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="85" />
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -661,7 +673,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="1. Renamed some variables' names&#10;2. Set orderedSongs to Singleton in MyFavoritesFragment.kt, OpenFileFragment.kt, BasePlayerPresenter, and PlayerBaseViewFragment.kt" />
     <MESSAGE value="refined the confusing codes" />
     <MESSAGE value="changed mainMenu and other submenus" />
     <MESSAGE value="1. Fixed bugs by changing variable type to null safe type&#10;2. Changed version number to 5.02" />
@@ -686,6 +697,7 @@
     <MESSAGE value="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging" />
     <MESSAGE value="Create a PlayService to process video playing, pausing, stopping, replaying, etc." />
     <MESSAGE value="Removed some redundant codes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed some redundant codes" />
+    <MESSAGE value="Changed versionCode and versionName" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed versionCode and versionName" />
   </component>
 </project>

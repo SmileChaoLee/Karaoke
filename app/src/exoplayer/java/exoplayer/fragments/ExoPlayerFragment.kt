@@ -32,25 +32,6 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     private var mediaRouteButton: MediaRouteButton? = null
     private var castPlayer: CastPlayer? = null
 
-    /*
-    private val connection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            Log.d(TAG, "onServiceConnected()")
-            if (service != null) {
-                (service as LocalBinder)?.let {
-                    val playService: ExoPlayService = it.getService()
-                    presenter.setPlayService(playService)
-                    playService?.initMediaControllerCompat(activity)
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Log.d(TAG, "onServiceDisconnected()")
-        }
-    }
-    */
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this, this)
@@ -63,16 +44,6 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         mPresenter.initializeVariables(savedInstanceState, callingIntent)
         presenter.initCastPlayer()
         presenter.initExoPlayer()
-
-        /*
-        // Bind ExoPlayService
-        Log.d(TAG, "onCreate.bind ExoPlayService")
-        activity?.let {
-            Intent(it, ExoPlayService::class.java)?.apply {
-                it.bindService(this, connection, Context.BIND_AUTO_CREATE)
-            }
-        }
-        */
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -122,7 +93,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause")
-        presenter.onPause();
+        presenter.onPause()
         presenter.releaseSessionAvailabilityListener()
         presenter.removeBaseCastStateListener()
     }
@@ -130,8 +101,9 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy()")
+        releaseExoPlayerAndCastPlayer()
+        presenter.releaseMediaCallback()
         presenter.onDestroy()
-        playerView.player = null
     }
 
     private fun setExoPlayerAndCastPlayer() {
@@ -141,6 +113,13 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         castPlayer = presenter.castPlayer
         playerView.player = exoPlayer
         playerView.requestFocus()
+    }
+
+    private fun releaseExoPlayerAndCastPlayer() {
+        Log.d(TAG, "releaseExoPlayerAndCastPlayer()")
+        // presenter.releaseMediaSessionCompat()
+        presenter.releaseExoPlayerAndCastPlayer()
+        playerView.player = null
     }
 
     // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView

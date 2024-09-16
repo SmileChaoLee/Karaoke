@@ -1,14 +1,10 @@
 package com.smile.karaokeplayer.presenters;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,7 +18,7 @@ import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import com.smile.karaokeplayer.models.SongInfo;
 import com.smile.karaokeplayer.R;
-import com.smile.karaokeplayer.services.PlayService;
+import com.smile.karaokeplayer.services.BasePlayService;
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil;
 import com.smile.smilelibraries.utilities.ScreenUtil;
 import java.util.ArrayList;
@@ -41,9 +37,8 @@ public abstract class BasePlayerPresenter {
     protected int numberOfAudioTracks;
     protected PlayingParameters playingParam;
     protected SongInfo singleSongInfo;    // when playing single song in songs list
-    protected PlayService mPlayService;
-    private boolean isServiceBound = false;
-    private boolean isServiceDestroyed = true;
+    protected boolean isServiceBound = false;
+    protected boolean isServiceDestroyed = true;
     private boolean mCanShowNotSupportedFormat;
     private int stopNumByUser = 0;
 
@@ -81,28 +76,7 @@ public abstract class BasePlayerPresenter {
     public abstract boolean isSeekable();
     public abstract void initMediaCallback();
     public abstract void specificPlayerReplayMedia(long currentAudioPosition);
-
-    private final ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "onServiceConnected().mActivity = " + mActivity);
-            if (service != null) {
-                PlayService.LocalBinder binder = (PlayService.LocalBinder) service;
-                mPlayService = binder.getService();
-                mPlayService.initMediaControllerCompat(BasePlayerPresenter.this);
-            }
-            isServiceBound = true;
-            isServiceDestroyed = false;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected()");
-            isServiceBound = false;
-            isServiceDestroyed = true;
-            startAndBindPlayService();
-        }
-    };
+    public abstract BasePlayService getPlayService();
 
     public BasePlayerPresenter(Fragment fragment, BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
@@ -116,61 +90,8 @@ public abstract class BasePlayerPresenter {
         toastTextSize = 0.7f * textFontSize;
     }
 
-    protected void startAndBindPlayService() {
-        Intent intent = new Intent(mActivity, PlayService.class);
-        if (isServiceDestroyed) {
-            Log.d(TAG, "startAndBindPlayService.startService()");
-            mActivity.startService(intent);
-            isServiceDestroyed = false;
-        } else {
-            Log.d(TAG, "startAndBindPlayService.PlayService already started");
-        }
-        if (!isServiceBound) {
-            boolean result =  mActivity.bindService(intent, connection, Context.BIND_IMPORTANT);
-            Log.d(TAG, "startAndBindPlayService.isBound = " + result);
-        } else {
-            Log.d(TAG, "startAndBindPlayService.PlayService already bound");
-        }
-    }
-
-    protected void unbindAndStopPlayService() {
-        if (isServiceBound) {
-            Log.d(TAG, "unbindAndStopPlayService.unbindService()");
-            mActivity.unbindService(connection);
-            // mPlayService = null;
-            isServiceBound = false;
-        } else {
-            Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound");
-        }
-        if (!isServiceDestroyed) {
-            Log.d(TAG, "unbindAndStopPlayService.stopService()");
-            Intent intent = new Intent(mActivity, PlayService.class);
-            mActivity.stopService(intent);
-            isServiceDestroyed = true;
-        } else {
-            Log.d(TAG, "unbindAndStopPlayService.PlayService is destroyed or not started");
-        }
-    }
-
-    // For being used by Fragment or Activity
-    public void onResume() {
-        Log.d(TAG, "onResume");
-        startAndBindPlayService();
-    }
-    public void onPause() {
-        // Empty for now. Can be used for testing
-    }
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        unbindAndStopPlayService();
-    }
-    //
-
     public Activity getActivity() {
         return mActivity;
-    }
-    public PlayService getPlayService() {
-        return mPlayService;
     }
 
     public float getTextFontSize() {
@@ -329,9 +250,10 @@ public abstract class BasePlayerPresenter {
             // activity is being destroyed
             return;
         }
-        if (mPlayService != null) {
-            Log.d(TAG, "startAutoPlay.mPlayService.startAutoPlay()");
-            boolean stillPlayNext = mPlayService.startAutoPlay(this, isSelfFinished);
+        BasePlayService playService = getPlayService();
+        if (playService != null) {
+            Log.d(TAG, "startAutoPlay.playService.startAutoPlay()");
+            boolean stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
             if (!stillPlayNext) {    // still play the next song
                 mPresentView.showNativeAndBannerAd();
@@ -461,9 +383,10 @@ public abstract class BasePlayerPresenter {
             int playbackState = playingParam.getCurrentPlaybackState();
             Log.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = " + playbackState);
             if (playbackState != PlaybackStateCompat.STATE_NONE) {
-                if (mPlayService != null) {
-                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.mPlayService.playMediaFromUri()");
-                    mPlayService.playMediaFromUri(mediaUri, playingParam);
+                BasePlayService playService = getPlayService();
+                if (playService != null) {
+                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.playService.playMediaFromUri()");
+                    playService.playMediaFromUri(mediaUri, playingParam);
                 }
             }
         }
@@ -505,33 +428,37 @@ public abstract class BasePlayerPresenter {
             autoPlaySongList();
             return;
         }
-        if (mPlayService != null) {
-            Log.d(TAG, "startPlay.mPlayService.startPlay() ");
-            mPlayService.startPlay(this);
+        BasePlayService playService = getPlayService();
+        if (playService != null) {
+            Log.d(TAG, "startPlay.playService.startPlay() ");
+            playService.startPlay(this);
         }
     }
 
     public void pausePlay() {
         Log.d(TAG, "pausePlay");
-        if (mPlayService != null) {
-            Log.d(TAG, "pausePlay.mPlayService.pausePlay() ");
-            mPlayService.pausePlay(this);
+        BasePlayService playService = getPlayService();
+        if (playService != null) {
+            Log.d(TAG, "pausePlay.playService.pausePlay() ");
+            playService.pausePlay(this);
         }
     }
 
     public void stopPlay() {
         Log.d(TAG, "stopPlay");
-        if (mPlayService != null) {
-            Log.d(TAG, "stopPlay.mPlayService.stopPlay() ");
-            mPlayService.stopPlay(this);
+        BasePlayService playService = getPlayService();
+        if (playService != null) {
+            Log.d(TAG, "stopPlay.playService.stopPlay() ");
+            playService.stopPlay(this);
         }
     }
 
     public void replayMedia() {
         Log.d(TAG, "replayMedia");
-        if (mPlayService != null) {
-            Log.d(TAG, "replayMedia.mPlayService.replayMedia() ");
-            mPlayService.replayMedia(this);
+        BasePlayService playService = getPlayService();
+        if (playService != null) {
+            Log.d(TAG, "replayMedia.playService.replayMedia() ");
+            playService.replayMedia(this);
         }
     }
 

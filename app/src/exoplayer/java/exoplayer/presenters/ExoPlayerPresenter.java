@@ -4,10 +4,14 @@ import static com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RE
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
@@ -54,6 +58,8 @@ import exoplayer.callbacks.ExoMediaSessionCallback;
 import exoplayer.exoRenderersFactory.MyRenderersFactory;
 import exoplayer.listeners.ExoPlayerCastStateListener;
 import exoplayer.listeners.ExoPlayerListener;
+import exoplayer.services.ExoPlayService;
+import exoplayer.services.ExoPlayService.*;
 
 public class ExoPlayerPresenter extends BasePlayerPresenter {
 
@@ -97,12 +103,85 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         void setCurrentPlayerToPlayerView();
     }
 
+    private ExoPlayService mPlayService;
+    private final Intent mPlayServiceIntent;
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected().mActivity = " + mActivity);
+            if (service != null) {
+                LocalBinder binder = (LocalBinder) service;
+                mPlayService = binder.getService();
+                mPlayService.initMediaControllerCompat(ExoPlayerPresenter.this);
+            }
+            isServiceBound = true;
+            isServiceDestroyed = false;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected()");
+            isServiceBound = false;
+            isServiceDestroyed = true;
+            startAndBindPlayService();
+        }
+    };
+
+    private void startAndBindPlayService() {
+        if (isServiceDestroyed) {
+            Log.d(TAG, "startAndBindPlayService.startService()");
+            mActivity.startService(mPlayServiceIntent);
+            isServiceDestroyed = false;
+        } else {
+            Log.d(TAG, "startAndBindPlayService.PlayService already started");
+        }
+        if (!isServiceBound) {
+            boolean result =  mActivity.bindService(mPlayServiceIntent, connection, Context.BIND_IMPORTANT);
+            Log.d(TAG, "startAndBindPlayService.isBound = " + result);
+        } else {
+            Log.d(TAG, "startAndBindPlayService.PlayService already bound");
+        }
+    }
+
+    private void unbindAndStopPlayService() {
+        if (isServiceBound) {
+            Log.d(TAG, "unbindAndStopPlayService.unbindService()");
+            mActivity.unbindService(connection);
+            // mPlayService = null;
+            isServiceBound = false;
+        } else {
+            Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound");
+        }
+        if (!isServiceDestroyed) {
+            Log.d(TAG, "unbindAndStopPlayService.stopService()");
+            mActivity.stopService(mPlayServiceIntent);
+            isServiceDestroyed = true;
+        } else {
+            Log.d(TAG, "unbindAndStopPlayService.PlayService is destroyed or not started");
+        }
+    }
+
+    // For being used by Fragment or Activity
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        startAndBindPlayService();
+    }
+    public void onPause() {
+        // Empty for now. Can be used for testing
+    }
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        unbindAndStopPlayService();
+    }
+    //
+
     public ExoPlayerPresenter(Fragment fragment, ExoPlayerPresentView presentView) {
         super(fragment, presentView);
         Log.d(TAG, "Create ExoPlayerPresenter");
         mFragment = fragment;
         mActivity = fragment.getActivity();
         mPresentView = presentView;
+        mPlayServiceIntent = new Intent(mActivity, ExoPlayService.class);
     }
 
     public void initExoPlayer() {
@@ -206,25 +285,9 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         }
     }
 
-    private void releaseMediaCallback() {
-        Log.d(TAG, "releaseMediaCallback()");
-        mediaSessionCallback = null;
-        if (mPlayService != null && controllerCallback != null) {
-            mPlayService.getMediaControllerCompat().unregisterCallback(controllerCallback);
-            controllerCallback = null;
-        }
-    }
-
-    private void releaseExoPlayResource() {
+    public void releaseExoPlayerAndCastPlayer() {
         releaseExoPlayer();
         releaseCastPlayer();
-        releaseMediaCallback();
-    }
-
-    @Override
-    public void onDestroy() {
-        releaseExoPlayResource();
-        super.onDestroy();
     }
 
     public ExoPlayer getExoPlayer() {
@@ -291,6 +354,15 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
             Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectorParametersState);
             if (parameter != null) trackSelectorParameters = TrackSelectionParameters.fromBundle(parameter);
             else trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
+        }
+    }
+
+    public void releaseMediaCallback() {
+        Log.d(TAG, "releaseMediaCallback()");
+        mediaSessionCallback = null;
+        if (mPlayService != null && controllerCallback != null) {
+            mPlayService.getMediaControllerCompat().unregisterCallback(controllerCallback);
+            controllerCallback = null;
         }
     }
 
@@ -617,6 +689,11 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         exoPlayer.prepare();    // replace exoPlayer.retry();
         //
         exoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public ExoPlayService getPlayService() {
+        return mPlayService;
     }
     // End of override abstract method
 
