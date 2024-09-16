@@ -155,9 +155,6 @@ public abstract class BasePlayerPresenter {
     // For being used by Fragment or Activity
     public void onResume() {
         Log.d(TAG, "onResume");
-        if (isServiceDestroyed) {
-
-        }
         startAndBindPlayService();
     }
     public void onPause() {

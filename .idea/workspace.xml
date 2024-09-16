@@ -21,20 +21,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging">
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Create a PlayService to process video playing, pausing, stopping, replaying, etc.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/PlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/PlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/PlayService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +34,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R31D52ADGYZ)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=2C141FDH20088Y)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -590,7 +580,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -673,7 +663,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="Refined and changed version number to 5.00" />
     <MESSAGE value="removed redundant" />
     <MESSAGE value="1. Renamed some variables' names&#10;2. Set orderedSongs to Singleton in MyFavoritesFragment.kt, OpenFileFragment.kt, BasePlayerPresenter, and PlayerBaseViewFragment.kt" />
     <MESSAGE value="refined the confusing codes" />
@@ -698,6 +687,7 @@
     <MESSAGE value="1. upgraded to Exoplayer 2.19.1&#10;2. Removed MediaSessionConnector from Exoplayer&#10;3. Used MediaSessionCallback instead for Exoplayer&#10;4. No more ExoPlaybackPreparer.java for Exoplayer&#10;5. Refined" />
     <MESSAGE value="Refined" />
     <MESSAGE value="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging" />
+    <MESSAGE value="Create a PlayService to process video playing, pausing, stopping, replaying, etc." />
+    <option name="LAST_COMMIT_MESSAGE" value="Create a PlayService to process video playing, pausing, stopping, replaying, etc." />
   </component>
 </project>
