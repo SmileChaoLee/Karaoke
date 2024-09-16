@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.PersistableBundle
+import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
@@ -29,6 +30,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -74,7 +76,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
     abstract fun comeBackFromFavorite(playData : Bundle?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG,"onCreate()")
+        Log.d(TAG,"onCreate")
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
@@ -90,7 +92,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
 
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "BroadcastReceiver.onReceive")
+                Log.d(TAG, "onCreate.BroadcastReceiver.onReceive")
                 intent?.action?.let {
                     if (it == PlayerConstants.PlaySingleSongAction) {
                         Log.d(TAG, "onReceive.PlaySingleSongAction")
@@ -104,7 +106,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         }.also { baseReceiver = it }
 
         LocalBroadcastManager.getInstance(this).apply {
-            Log.d(TAG, "LocalBroadcastManager.registerReceiver")
+            Log.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
             registerReceiver(baseReceiver, IntentFilter().apply {
                 addAction(PlayerConstants.PlaySingleSongAction)
                 addAction(PlayerConstants.BackToBaseActivity)
@@ -133,11 +135,13 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
                 ScreenUtil.showToast(this, "Permission Denied", 60f,
                         ScreenUtil.FontSize_Pixel_Type,
                         Toast.LENGTH_LONG)
-                Log.d(TAG, "WRITE_EXTERNAL_STORAGE.Permission Denied.")
+                Log.d(TAG, "onCreate.WRITE_EXTERNAL_STORAGE.Permission Denied.")
                 returnToPrevious(false)
                 return
             }
         }
+
+        askIgnoreOptimizationsBattery()
 
         basePlayViewLayout = findViewById(R.id.basePlayViewLayout)
         baseTabLayout = findViewById(R.id.baseTabLayout)
@@ -244,6 +248,18 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private fun askIgnoreOptimizationsBattery() {
+        val pm = getSystemService(Context.POWER_SERVICE) as? PowerManager
+        if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
+            val intent = Intent()
+            val pName = packageName
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
+            intent.data = Uri.parse("package:$pName");
+            startActivity(intent)
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
@@ -252,6 +268,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         if (requestCode == PERMISSION_WRITE_EXTERNAL_CODE) {
             val rLen = grantResults.size
             permissionExternalStorage = rLen > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            Log.d(TAG, "onRequestPermissionsResult.permissionExternalStorage = $permissionExternalStorage")
         }
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)

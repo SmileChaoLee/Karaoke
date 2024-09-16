@@ -21,10 +21,6 @@
             android:name="exoplayer.SongDataActivity"
             android:exported="true">
         </activity>
-        <service
-            android:name="exoplayer.services.ExoPlayService"
-            android:exported="true">
-        </service>
     </application>
 
 </manifest>

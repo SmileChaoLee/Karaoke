@@ -1,11 +1,12 @@
 package com.smile.karaokeplayer.services
 
-import android.app.Activity
 import android.app.Service
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -16,52 +17,66 @@ import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter
 
-abstract class BasePlayService
+class PlayService
     : Service() {
 
     companion object {
-        private const val TAG = "BasePlayerService"
+        private const val TAG = "PlayerService"
     }
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
-    abstract fun specificPlayerReplayMedia(currentAudioPosition: Long)
-    abstract fun initMediaCallback()
+
+    // Binder given to clients.
+    private val binder = LocalBinder()
+    inner class LocalBinder : Binder() {
+        // Return this instance of LocalService so clients can call public methods.
+        fun getService(): PlayService = this@PlayService
+    }
 
     override fun onCreate() {
-        Log.d(TAG, "onCreate()")
+        Log.d(TAG, "onCreate")
         initMediaSessionCompat()
         super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand()")
-        return super.onStartCommand(intent, flags, startId)
+        Log.d(TAG, "onStartCommand")
+        // return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onLowMemory() {
-        Log.d(TAG, "onLowMemory()")
+        Log.d(TAG, "onLowMemory")
         super.onLowMemory()
-        stopSelf()
     }
 
     override fun onTrimMemory(level: Int) {
-        Log.d(TAG, "onTrimMemory()")
+        Log.d(TAG, "onTrimMemory")
         super.onTrimMemory(level)
-        stopSelf()
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d(TAG, "onUnbind().intent = $intent")
+        return super.onUnbind(intent)
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        Log.d(TAG, "onBind.intent = $intent")
+        return binder
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy()")
+        Log.d(TAG, "onDestroy")
         releaseMediaSessionCompat()
         super.onDestroy()
     }
 
     private fun initMediaSessionCompat() {
-        Log.d(TAG, "initMediaSessionCompat()")
+        Log.d(TAG, "initMediaSessionCompat")
         // Create a MediaSessionCompat
         mediaSessionCompat = MediaSessionCompat(this, PlayerConstants.LOG_TAG)
-        Log.d(TAG, "initMediaSessionCompat().mediaSessionCompat = $mediaSessionCompat")
+        Log.d(TAG, "initMediaSessionCompat.mediaSessionCompat = $mediaSessionCompat")
         mediaSessionCompat?.apply {
             setMediaButtonReceiver(null)
             setActive(true) // might need to find better place to put
@@ -69,7 +84,7 @@ abstract class BasePlayService
     }
 
     private fun releaseMediaSessionCompat() {
-        Log.d(TAG, "releaseMediaSessionCompat()")
+        Log.d(TAG, "releaseMediaSessionCompat")
         mediaSessionCompat?.apply {
             isActive = false
             release()
@@ -118,43 +133,42 @@ abstract class BasePlayService
         }
     }
 
-    fun initMediaControllerCompat(activity: Activity?) {
+    fun initMediaControllerCompat(presenter: BasePlayerPresenter) {
         // Create a MediaControllerCompat
-        activity?.let {
-            Log.d(TAG, "initMediaControllerCompat().activity not null")
+        presenter.activity?.let {
+            Log.d(TAG, "initMediaControllerCompat.activity not null")
             mediaSessionCompat?.apply {
                 mediaControllerCompat = MediaControllerCompat(it, this)
-                Log.d(
-                    TAG,
-                    "initMediaControllerCompat().mediaControllerCompat = $mediaControllerCompat"
-                )
+                Log.d(TAG,"initMediaControllerCompat.mediaControllerCompat = $mediaControllerCompat")
                 MediaControllerCompat.setMediaController(it, mediaControllerCompat)
-                initMediaCallback()
+                presenter.initMediaCallback()
             }
         }
     }
 
     fun setMediaPlaybackState(state: Int) {
-        Log.d(TAG, "setMediaPlaybackState() = $state")
+        Log.d(TAG, "setMediaPlaybackState = $state")
         val playbackStateBuilder = PlaybackStateCompat.Builder()
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PAUSE)
         } else {
             playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PLAY)
         }
+        Log.d(TAG, "setMediaPlaybackState.orderedSongs.size = ${orderedSongs.size}")
         playbackStateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0f)
+        Log.d(TAG, "setMediaPlaybackState.mediaSessionCompat = $mediaSessionCompat")
         mediaSessionCompat?.setPlaybackState(playbackStateBuilder.build())
     }
 
     fun playMediaFromUri(mediaUri: Uri?, playingParam: PlayingParameters) {
         Log.d(TAG, "playMediaFromUri.mediaUri = $mediaUri")
-        mediaUri?.let {
+        mediaUri?.let { mediaIt ->
             val playingParamOriginExtras = Bundle()
             playingParamOriginExtras.putParcelable(PlayerConstants.PlayingParamOrigin, playingParam)
             mediaSessionCompat?.let {
                 it.controller?.transportControls?.apply {
                     Log.d(TAG, "playMediaFromUri.mediaTransportControls is not null")
-                    prepareFromUri(mediaUri, playingParamOriginExtras)
+                    prepareFromUri(mediaIt, playingParamOriginExtras)
                 }
             }
         }
@@ -177,7 +191,6 @@ abstract class BasePlayService
                     if ((nextSongIndex >= orderedSongsSize) || (nextSongIndex < 0)) {
                         stillPlayNext = false // no more songs
                     }
-
                 PlayerConstants.RepeatOneSong -> {
                     // repeat one song
                     Log.d(TAG, "startAutoPlay.RepeatOneSong")
@@ -186,7 +199,6 @@ abstract class BasePlayService
                         Log.d(TAG, "startAutoPlay.RepeatOneSong.nextSongIndex = $nextSongIndex")
                     }
                 }
-
                 PlayerConstants.RepeatAllSongs ->                     // repeat all songs
                     if (nextSongIndex >= orderedSongsSize) {
                         nextSongIndex = 0
@@ -194,7 +206,8 @@ abstract class BasePlayService
             }
         }
 
-        if (stillPlayNext) {    // still play the next song
+        if (stillPlayNext) {
+            // still play the next song
             playSingleSong(presenter, orderedSongs[nextSongIndex])
             playingParam.currentSongIndex = nextSongIndex // set nextSongIndex to currentSongIndex
             Log.d(TAG, "startAutoPlay.stillPlayNext.setCurrentSongIndex() = $nextSongIndex")
@@ -203,22 +216,25 @@ abstract class BasePlayService
         return stillPlayNext
     }
 
-    fun replayMedia(mediaUri: Uri?, playingParam: PlayingParameters, numberOfAudioTracks: Int) {
+    fun replayMedia(presenter: BasePlayerPresenter) {
         Log.d(TAG, "replayMedia")
+        val mediaUri = presenter.mediaUri
+        val playingParam = presenter.playingParam
+        val numberOfAudioTracks = presenter.numberOfAudioTracks
         if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
             return
         }
-        val currentAudioPosition: Long = 0
-        playingParam.currentAudioPosition = currentAudioPosition
         if (playingParam.isMediaPrepared) {
-            Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
             // song is playing, paused, or finished playing
             // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
             // because it will send Play.STATE_ENDED event after the playing has finished
             // but the playing was stopped in the middle of playing then won't send
             // Play.STATE_ENDED event
             // exoPlayer.setPlayWhenReady(false);
-            specificPlayerReplayMedia(currentAudioPosition)
+            val currentAudioPosition: Long = 0
+            playingParam.currentAudioPosition = currentAudioPosition
+            Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
+            presenter.specificPlayerReplayMedia(currentAudioPosition)
         } else {
             Log.d(TAG, "replayMedia.playMediaFromUri()")
             // song was stopped by user
@@ -227,9 +243,12 @@ abstract class BasePlayService
         }
     }
 
-    fun startPlay(mediaUri: Uri?, playingParam: PlayingParameters, numberOfAudioTracks: Int) {
+    fun startPlay(presenter: BasePlayerPresenter) {
+        val mediaUri = presenter.mediaUri
+        val playingParam = presenter.playingParam
         val playbackState = playingParam.currentPlaybackState
-        if ((mediaUri != null && Uri.EMPTY != mediaUri) && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
+        if ((mediaUri != null && Uri.EMPTY != mediaUri)
+            && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
             // no media file opened or playing has been stopped
             if ((playbackState == PlaybackStateCompat.STATE_PAUSED)
                 || (playbackState == PlaybackStateCompat.STATE_REWINDING)
@@ -244,13 +263,16 @@ abstract class BasePlayService
             // (playbackState == PlaybackStateCompat.STATE_STOPPED) or
             // (playbackState == PlaybackStateCompat.STATE_NONE)
             Log.d(TAG, "startPlay.replayMedia()")
-            replayMedia(mediaUri, playingParam, numberOfAudioTracks)
+            replayMedia(presenter)
         }
     }
 
-    fun pausePlay(mediaUri : Uri?, playingParam : PlayingParameters) {
+    fun pausePlay(presenter: BasePlayerPresenter) {
         Log.d(TAG, "pausePlay()")
-        if ((mediaUri != null && Uri.EMPTY != mediaUri) && (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PAUSED)) {
+        val mediaUri = presenter.mediaUri
+        val playingParam = presenter.playingParam
+        if ((mediaUri != null && Uri.EMPTY != mediaUri)
+            && (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PAUSED)) {
             mediaSessionCompat?.controller?.transportControls?.let {
                 Log.d(TAG, "pausePlay().mediaTransportControls.pause().")
                 it.pause()
@@ -258,9 +280,12 @@ abstract class BasePlayService
         }
     }
 
-    fun stopPlay(mediaUri : Uri?, playingParam : PlayingParameters) {
+    fun stopPlay(presenter: BasePlayerPresenter) {
         Log.d(TAG, "stopPlay()")
-        if ((mediaUri != null && Uri.EMPTY != mediaUri) && (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_NONE)) {
+        val mediaUri = presenter.mediaUri
+        val playingParam = presenter.playingParam
+        if ((mediaUri != null && Uri.EMPTY != mediaUri)
+            && (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_NONE)) {
             mediaSessionCompat?.controller?.transportControls?.let {
                 Log.d(TAG, "stopPlay().mediaTransportControls.stop().")
                 it.stop()

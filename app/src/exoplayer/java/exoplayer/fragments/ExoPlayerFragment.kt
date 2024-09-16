@@ -112,15 +112,17 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume() is called.")
         super.onResume()
+        Log.d(TAG, "onResume")
+        presenter.onResume()
         presenter.setSessionAvailabilityListener()
         presenter.addBaseCastStateListener()
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause() is called.")
+        Log.d(TAG, "onPause")
+        presenter.onPause();
         presenter.releaseSessionAvailabilityListener()
         presenter.removeBaseCastStateListener()
     }
@@ -128,9 +130,8 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy()")
-        releaseExoPlayerAndCastPlayer()
-        presenter.releaseMediaCallback()
-        presenter.unbindService()
+        presenter.onDestroy()
+        playerView.player = null
     }
 
     private fun setExoPlayerAndCastPlayer() {
@@ -140,13 +141,6 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         castPlayer = presenter.castPlayer
         playerView.player = exoPlayer
         playerView.requestFocus()
-    }
-
-    private fun releaseExoPlayerAndCastPlayer() {
-        Log.d(TAG, "releaseExoPlayerAndCastPlayer()")
-        // presenter.releaseMediaSessionCompat()
-        presenter.releaseExoPlayerAndCastPlayer()
-        playerView.player = null
     }
 
     // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView

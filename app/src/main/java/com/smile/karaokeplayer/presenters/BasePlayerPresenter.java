@@ -1,10 +1,14 @@
 package com.smile.karaokeplayer.presenters;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,10 +22,9 @@ import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import com.smile.karaokeplayer.models.SongInfo;
 import com.smile.karaokeplayer.R;
-import com.smile.karaokeplayer.services.BasePlayService;
+import com.smile.karaokeplayer.services.PlayService;
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil;
 import com.smile.smilelibraries.utilities.ScreenUtil;
-
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -33,16 +36,16 @@ public abstract class BasePlayerPresenter {
     protected final float textFontSize;
     protected final float fontScale;
     protected final float toastTextSize;
-    // protected MediaControllerCompat.TransportControls mediaTransportControls;
-    // instances of the following members have to be saved when configuration changed
     protected Uri mediaUri;
     protected int numberOfVideoTracks;
     protected int numberOfAudioTracks;
     protected PlayingParameters playingParam;
-    private boolean mCanShowNotSupportedFormat;
     protected SongInfo singleSongInfo;    // when playing single song in songs list
+    protected PlayService mPlayService;
+    private boolean isServiceBound = false;
+    private boolean isServiceDestroyed = true;
+    private boolean mCanShowNotSupportedFormat;
     private int stopNumByUser = 0;
-    public BasePlayService mBasePlayService;
 
     public interface BasePresentView {
         void setImageButtonStatus();
@@ -64,7 +67,6 @@ public abstract class BasePlayerPresenter {
         void showPlayerView();
     }
     public abstract void initializeVariables(Bundle savedInstanceState, Intent callingIntent);
-    public abstract void releaseMediaCallback();
     public abstract void setPlayerTime(int progress);
     public abstract void setAudioVolume(float volume);
     public abstract void setAudioVolumeInsideVolumeSeekBar(int i);
@@ -77,23 +79,101 @@ public abstract class BasePlayerPresenter {
     public abstract void removeCallbacksAndMessages();
     public abstract void getPlayingMediaInfoAndSetAudioActionSubMenu();
     public abstract boolean isSeekable();
+    public abstract void initMediaCallback();
+    public abstract void specificPlayerReplayMedia(long currentAudioPosition);
+
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected().mActivity = " + mActivity);
+            if (service != null) {
+                PlayService.LocalBinder binder = (PlayService.LocalBinder) service;
+                mPlayService = binder.getService();
+                mPlayService.initMediaControllerCompat(BasePlayerPresenter.this);
+            }
+            isServiceBound = true;
+            isServiceDestroyed = false;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected()");
+            isServiceBound = false;
+            isServiceDestroyed = true;
+            startAndBindPlayService();
+        }
+    };
 
     public BasePlayerPresenter(Fragment fragment, BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
         mActivity = fragment.getActivity();
         mPresentView = presentView;
-        float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(mActivity, ScreenUtil.FontSize_Pixel_Type, null);
-        textFontSize = ScreenUtil.suitableFontSize(mActivity, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
+        float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(mActivity,
+                ScreenUtil.FontSize_Pixel_Type, null);
+        textFontSize = ScreenUtil.suitableFontSize(mActivity, defaultTextFontSize,
+                ScreenUtil.FontSize_Pixel_Type, 0.0f);
         fontScale = ScreenUtil.suitableFontScale(mActivity, ScreenUtil.FontSize_Pixel_Type, 0.0f);
         toastTextSize = 0.7f * textFontSize;
     }
 
+    protected void startAndBindPlayService() {
+        Intent intent = new Intent(mActivity, PlayService.class);
+        if (isServiceDestroyed) {
+            Log.d(TAG, "startAndBindPlayService.startService()");
+            mActivity.startService(intent);
+            isServiceDestroyed = false;
+        } else {
+            Log.d(TAG, "startAndBindPlayService.PlayService already started");
+        }
+        if (!isServiceBound) {
+            boolean result =  mActivity.bindService(intent, connection, Context.BIND_IMPORTANT);
+            Log.d(TAG, "startAndBindPlayService.isBound = " + result);
+        } else {
+            Log.d(TAG, "startAndBindPlayService.PlayService already bound");
+        }
+    }
+
+    protected void unbindAndStopPlayService() {
+        if (isServiceBound) {
+            Log.d(TAG, "unbindAndStopPlayService.unbindService()");
+            mActivity.unbindService(connection);
+            // mPlayService = null;
+            isServiceBound = false;
+        } else {
+            Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound");
+        }
+        if (!isServiceDestroyed) {
+            Log.d(TAG, "unbindAndStopPlayService.stopService()");
+            Intent intent = new Intent(mActivity, PlayService.class);
+            mActivity.stopService(intent);
+            isServiceDestroyed = true;
+        } else {
+            Log.d(TAG, "unbindAndStopPlayService.PlayService is destroyed or not started");
+        }
+    }
+
+    // For being used by Fragment or Activity
+    public void onResume() {
+        Log.d(TAG, "onResume");
+        if (isServiceDestroyed) {
+
+        }
+        startAndBindPlayService();
+    }
+    public void onPause() {
+        // Empty for now. Can be used for testing
+    }
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        unbindAndStopPlayService();
+    }
+    //
+
     public Activity getActivity() {
         return mActivity;
     }
-
-    protected void setBasePlayService(BasePlayService playService) {
-        mBasePlayService = playService;
+    public PlayService getPlayService() {
+        return mPlayService;
     }
 
     public float getTextFontSize() {
@@ -151,6 +231,7 @@ public abstract class BasePlayerPresenter {
     }
 
     private void initializePlayingParam() {
+        Log.d(TAG, "initializePlayingParam");
         playingParam = new PlayingParameters();
     }
 
@@ -212,6 +293,7 @@ public abstract class BasePlayerPresenter {
     }
 
     public void onDurationSeekBarProgressChanged(int progress, boolean fromUser) {
+        Log.d(TAG, "onDurationSeekBarProgressChanged");
         if (!isSeekable()) {
             return;
         }
@@ -227,13 +309,13 @@ public abstract class BasePlayerPresenter {
     }
 
     public void playLeftChannel() {
-        Log.d(TAG, "playLeftChannel() --> CommonConstants.LeftChannel = " + CommonConstants.LeftChannel);
+        Log.d(TAG, "playLeftChannel.CommonConstants.LeftChannel = " + CommonConstants.LeftChannel);
         playingParam.setCurrentChannelPlayed(CommonConstants.LeftChannel);
         setAudioVolume(playingParam.getCurrentVolume());
     }
 
     public void playRightChannel() {
-        Log.d(TAG, "playRightChannel() --> CommonConstants.RightChannel = " + CommonConstants.RightChannel);
+        Log.d(TAG, "playRightChannel.CommonConstants.RightChannel = " + CommonConstants.RightChannel);
         playingParam.setCurrentChannelPlayed(CommonConstants.RightChannel);
         setAudioVolume(playingParam.getCurrentVolume());
     }
@@ -250,13 +332,14 @@ public abstract class BasePlayerPresenter {
             // activity is being destroyed
             return;
         }
-        if (mBasePlayService != null) {
-            Log.d(TAG, "startAutoPlay.mBasePlayService.startAutoPlay()");
-            boolean stillPlayNext = mBasePlayService.startAutoPlay(this, isSelfFinished);
+        if (mPlayService != null) {
+            Log.d(TAG, "startAutoPlay.mPlayService.startAutoPlay()");
+            boolean stillPlayNext = mPlayService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
             if (!stillPlayNext) {    // still play the next song
                 mPresentView.showNativeAndBannerAd();
-                if ((MySingleTon.INSTANCE.getOrderedSongs().size() > 0) && (!playingParam.isPlaySingleSong())) {
+                if ((MySingleTon.INSTANCE.getOrderedSongs().size() > 0)
+                        && (!playingParam.isPlaySingleSong())) {
                     // finish playing and not playing single song
                     mPresentView.showInterstitialAd();
                 }
@@ -267,6 +350,7 @@ public abstract class BasePlayerPresenter {
     }
 
     public void setAutoPlayStatusAndAction() {
+        Log.d(TAG, "setAutoPlayStatusAndAction");
         boolean isAutoPlay = playingParam.isAutoPlay();
         if (!isAutoPlay) {
             // previous is not auto play
@@ -293,6 +377,7 @@ public abstract class BasePlayerPresenter {
     }
 
     public void playPreviousSong() {
+        Log.d(TAG, "playPreviousSong");
         int orderedSongsSize = MySingleTon.INSTANCE.getOrderedSongs().size();
         if (orderedSongsSize <= 1 ) {
             // only one file in the play list
@@ -331,6 +416,7 @@ public abstract class BasePlayerPresenter {
     }
 
     public void playNextSong() {
+        Log.d(TAG, "playNextSong");
         int orderedSongsSize = MySingleTon.INSTANCE.getOrderedSongs().size();
         int currentIndex = playingParam.getCurrentSongIndex();
         int repeatStatus = playingParam.getRepeatStatus();
@@ -378,9 +464,9 @@ public abstract class BasePlayerPresenter {
             int playbackState = playingParam.getCurrentPlaybackState();
             Log.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = " + playbackState);
             if (playbackState != PlaybackStateCompat.STATE_NONE) {
-                if (mBasePlayService != null) {
-                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.mBasePlayService.playMediaFromUri()");
-                    mBasePlayService.playMediaFromUri(mediaUri, playingParam);
+                if (mPlayService != null) {
+                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.mPlayService.playMediaFromUri()");
+                    mPlayService.playMediaFromUri(mediaUri, playingParam);
                 }
             }
         }
@@ -393,6 +479,7 @@ public abstract class BasePlayerPresenter {
     }
 
     public void setRepeatSongStatus() {
+        Log.d(TAG, "setRepeatSongStatus");
         int repeatStatus = playingParam.getRepeatStatus();
         switch (repeatStatus) {
             case PlayerConstants.NoRepeatPlaying:
@@ -421,31 +508,33 @@ public abstract class BasePlayerPresenter {
             autoPlaySongList();
             return;
         }
-
-        if (mBasePlayService != null) {
-            Log.d(TAG, "startPlay.mBasePlayService.startPlay() ");
-            mBasePlayService.startPlay(mediaUri, playingParam, numberOfAudioTracks);
+        if (mPlayService != null) {
+            Log.d(TAG, "startPlay.mPlayService.startPlay() ");
+            mPlayService.startPlay(this);
         }
     }
 
     public void pausePlay() {
-        if (mBasePlayService != null) {
-            Log.d(TAG, "pausePlay.mBasePlayService.pausePlay() ");
-            mBasePlayService.pausePlay(mediaUri, playingParam);
+        Log.d(TAG, "pausePlay");
+        if (mPlayService != null) {
+            Log.d(TAG, "pausePlay.mPlayService.pausePlay() ");
+            mPlayService.pausePlay(this);
         }
     }
 
     public void stopPlay() {
-        if (mBasePlayService != null) {
-            Log.d(TAG, "stopPlay.mBasePlayService.stopPlay() ");
-            mBasePlayService.stopPlay(mediaUri, playingParam);
+        Log.d(TAG, "stopPlay");
+        if (mPlayService != null) {
+            Log.d(TAG, "stopPlay.mPlayService.stopPlay() ");
+            mPlayService.stopPlay(this);
         }
     }
 
     public void replayMedia() {
-        if (mBasePlayService != null) {
-            Log.d(TAG, "replayMedia.mBasePlayService.replayMedia() ");
-            mBasePlayService.replayMedia(mediaUri, playingParam, numberOfAudioTracks);
+        Log.d(TAG, "replayMedia");
+        if (mPlayService != null) {
+            Log.d(TAG, "replayMedia.mPlayService.replayMedia() ");
+            mPlayService.replayMedia(this);
         }
     }
 
@@ -520,7 +609,8 @@ public abstract class BasePlayerPresenter {
                 if (mCanShowNotSupportedFormat) {
                     // only show once
                     mCanShowNotSupportedFormat = false;
-                    ScreenUtil.showToast(mActivity, formatNotSupportedString, toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+                    ScreenUtil.showToast(mActivity, formatNotSupportedString,
+                            toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
                 }
                 setMediaUri(null);
                 // remove the song that is unable to be played
@@ -546,7 +636,8 @@ public abstract class BasePlayerPresenter {
     }
 
     protected void onlyMusicShowNativeAndBannerAd() {
-        Log.d(TAG, "musicShowNativeAndBannerAd.getNumberOfVideoTracks() = " + getNumberOfVideoTracks());
+        Log.d(TAG, "musicShowNativeAndBannerAd.getNumberOfVideoTracks() = "
+                + getNumberOfVideoTracks());
         if (getNumberOfVideoTracks() == 0) {
             // no video is being played, show native ads
             mPresentView.showNativeAndBannerAd();

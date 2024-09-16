@@ -4,14 +4,10 @@ import static com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RE
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
@@ -58,8 +54,6 @@ import exoplayer.callbacks.ExoMediaSessionCallback;
 import exoplayer.exoRenderersFactory.MyRenderersFactory;
 import exoplayer.listeners.ExoPlayerCastStateListener;
 import exoplayer.listeners.ExoPlayerListener;
-import exoplayer.services.ExoPlayService;
-import exoplayer.services.ExoPlayService.LocalBinder;
 
 public class ExoPlayerPresenter extends BasePlayerPresenter {
 
@@ -103,44 +97,12 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         void setCurrentPlayerToPlayerView();
     }
 
-    private ExoPlayService mPlayService;
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "onServiceConnected().mActivity = " + mActivity);
-            if (service != null) {
-                LocalBinder binder = (LocalBinder) service;
-                mPlayService = binder.getService();
-                setBasePlayService(mPlayService); // set mPlayService to BasePlayerPresenter
-                if (mPlayService != null) {
-                    mPlayService.setPresenter(ExoPlayerPresenter.this);
-                    mPlayService.initMediaControllerCompat(mActivity);
-                }
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "onServiceDisconnected()");
-        }
-    };
-
-    public void unbindService() {
-        mActivity.unbindService(connection);
-        connection = null;
-        mPlayService = null;
-    }
-
     public ExoPlayerPresenter(Fragment fragment, ExoPlayerPresentView presentView) {
         super(fragment, presentView);
+        Log.d(TAG, "Create ExoPlayerPresenter");
         mFragment = fragment;
         mActivity = fragment.getActivity();
         mPresentView = presentView;
-        // Bind ExoPlayService
-        Log.d(TAG, "ExoPlayerPresenter.bind ExoPlayService");
-        Intent intent = new Intent(mActivity, ExoPlayService.class);
-        mActivity.bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        //
     }
 
     public void initExoPlayer() {
@@ -244,9 +206,25 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         }
     }
 
-    public void releaseExoPlayerAndCastPlayer() {
+    private void releaseMediaCallback() {
+        Log.d(TAG, "releaseMediaCallback()");
+        mediaSessionCallback = null;
+        if (mPlayService != null && controllerCallback != null) {
+            mPlayService.getMediaControllerCompat().unregisterCallback(controllerCallback);
+            controllerCallback = null;
+        }
+    }
+
+    private void releaseExoPlayResource() {
         releaseExoPlayer();
         releaseCastPlayer();
+        releaseMediaCallback();
+    }
+
+    @Override
+    public void onDestroy() {
+        releaseExoPlayResource();
+        super.onDestroy();
     }
 
     public ExoPlayer getExoPlayer() {
@@ -263,36 +241,6 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     public void setCurrentCastState(int currentCastState) {
         this.currentCastState = currentCastState;
     }
-    public ExoPlayService getPlayService() {
-        return mPlayService;
-    }
-
-    // called by ExoPlayService
-    public void specificPlayerReplayMedia(long currentAudioPosition) {
-        // song is playing, paused, or finished playing
-        // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
-        // because it will send Play.STATE_ENDED event after the playing has finished
-        // but the playing was stopped in the middle of playing then won't send
-        // Play.STATE_ENDED event
-        // exoPlayer.setPlayWhenReady(false);
-        exoPlayer.seekTo(currentAudioPosition);
-        // switchAudioToVocal();    // removed on 2022-01-03
-        exoPlayer.prepare();    // replace exoPlayer.retry();
-        //
-        exoPlayer.setPlayWhenReady(true);
-        Log.d(TAG, "specificPlayerReplayMedia.exoPlayer.seekTo(currentAudioPosition).");
-    }
-
-    // called by ExoPlayService
-    public void initMediaCallback(ExoPlayService playService) {
-        Log.d(TAG, "initMediaCallback().playService = " + playService);
-        mediaSessionCallback = new ExoMediaSessionCallback(mActivity,this);
-        playService.getMediaSessionCompat().setCallback(mediaSessionCallback);
-        controllerCallback = new ExoMediaControllerCallback(this);
-        Log.d(TAG, "initMediaCallback().controllerCallback = " + controllerCallback);
-        playService.getMediaControllerCompat().registerCallback(controllerCallback);
-    }
-    //
 
     private void selectAudioTrack(Integer[] trackIndicesCombination) {
         Log.d(TAG, "selectAudioTrack");
@@ -343,16 +291,6 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
             Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectorParametersState);
             if (parameter != null) trackSelectorParameters = TrackSelectionParameters.fromBundle(parameter);
             else trackSelectorParameters = new TrackSelectionParameters.Builder(mActivity).build();
-        }
-    }
-
-    @Override
-    public void releaseMediaCallback() {
-        Log.d(TAG, "releaseMediaCallback()");
-        mediaSessionCallback = null;
-        if (mPlayService != null && controllerCallback != null) {
-            mPlayService.getMediaControllerCompat().unregisterCallback(controllerCallback);
-            controllerCallback = null;
         }
     }
 
@@ -650,6 +588,35 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     @Override
     public boolean isSeekable() {
         return exoPlayer.isCurrentMediaItemSeekable();
+    }
+
+    @Override
+    public void initMediaCallback() {
+        Log.d(TAG, "initMediaCallback().mPlayService = " + mPlayService);
+        mediaSessionCallback = new ExoMediaSessionCallback(mActivity,this);
+        controllerCallback = new ExoMediaControllerCallback(this);
+        if (mPlayService != null) {
+            Log.d(TAG, "initMediaCallback().mediaSessionCallback = " + mediaSessionCallback);
+            Log.d(TAG, "initMediaCallback().controllerCallback = " + controllerCallback);
+            mPlayService.getMediaSessionCompat().setCallback(mediaSessionCallback);
+            mPlayService.getMediaControllerCompat().registerCallback(controllerCallback);
+        }
+    }
+
+    @Override
+    public void specificPlayerReplayMedia(long currentAudioPosition) {
+        // song is playing, paused, or finished playing
+        // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
+        // because it will send Play.STATE_ENDED event after the playing has finished
+        // but the playing was stopped in the middle of playing then won't send
+        // Play.STATE_ENDED event
+        // exoPlayer.setPlayWhenReady(false);
+        Log.d(TAG, "specificPlayerReplayMedia.exoPlayer.seekTo(currentAudioPosition).");
+        exoPlayer.seekTo(currentAudioPosition);
+        // switchAudioToVocal();    // removed on 2022-01-03
+        exoPlayer.prepare();    // replace exoPlayer.retry();
+        //
+        exoPlayer.setPlayWhenReady(true);
     }
     // End of override abstract method
 

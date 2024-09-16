@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.PlayingParameters
@@ -117,12 +118,24 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
     override fun onPlay() {
         super.onPlay()
         Log.d(TAG, "onPlay()")
+        /*
+        Log.d(TAG, "onPlay().mPresenter.playService = ${mPresenter.playService}")
         val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
+        Log.d(TAG, "onPlay().controller = $controller")
+        Log.d(TAG, "onPlay().controller.playbackState = ${controller?.playbackState}")
         controller?.playbackState?.let {
             Log.d(TAG, "onPlay().controller.playbackState.state = ${it.state}")
             if (it.state != PlaybackStateCompat.STATE_PLAYING) {
                 Log.d(TAG, "onPlay().mPresenter.exoPlayer.play()")
                 mPresenter.exoPlayer?.play()
+            }
+        }
+        */
+        mPresenter.exoPlayer?.apply {
+            Log.d(TAG, "onPlay().mPresenter.exoPlayer not null")
+            if (playbackState == Player.STATE_READY && !isPlaying) {
+                Log.d(TAG, "onPlay().mPresenter.exoPlayer is not playing, so play()")
+                play()
             }
         }
     }
@@ -131,12 +144,24 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause()")
+        /*
+        Log.d(TAG, "onPause().mPresenter.playService = ${mPresenter.playService}")
         val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
+        Log.d(TAG, "onPause().controller = $controller")
+        Log.d(TAG, "onPause().controller.playbackState = ${controller?.playbackState}")
         controller?.playbackState?.let {
             Log.d(TAG, "onPause().controller.playbackState.state = ${it.state}")
             if (it.state != PlaybackStateCompat.STATE_PAUSED) {
                 Log.d(TAG, "onPause().mPresenter.exoPlayer.pause()")
                 mPresenter.exoPlayer?.pause()
+            }
+        }
+        */
+        mPresenter.exoPlayer?.apply {
+            Log.d(TAG, "onPause().mPresenter.exoPlayer not null")
+            if (playbackState == Player.STATE_READY && isPlaying) {
+                Log.d(TAG, "onPause().mPresenter.exoPlayer is playing, so pause()")
+                pause()
             }
         }
     }
@@ -145,12 +170,22 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop()")
+        /*
         val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
         controller?.playbackState?.let {
             Log.d(TAG, "onStop().controller.playbackState.state = ${it.state}")
             if (it.state != PlaybackStateCompat.STATE_STOPPED) {
                 Log.d(TAG, "onStop().mPresenter.exoPlayer.stop()")
                 mPresenter.exoPlayer?.stop()
+            }
+        }
+        */
+        mPresenter.exoPlayer?.apply {
+            Log.d(TAG, "onPause().mPresenter.exoPlayer not null")
+            if (playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING) {
+                Log.d(TAG, "onPlay().mPresenter.exoPlayer is Player.STATE_READY or " +
+                        "Player.STATE_BUFFERING , so stop()")
+                stop()
             }
         }
     }
