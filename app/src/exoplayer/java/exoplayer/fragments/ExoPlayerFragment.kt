@@ -1,11 +1,13 @@
 package exoplayer.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -13,8 +15,6 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.mediarouter.app.MediaRouteButton
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
@@ -22,39 +22,111 @@ import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import exoplayer.presenters.ExoPlayerPresenter
 import exoplayer.presenters.ExoPlayerPresenter.ExoPlayerPresentView
+import exoplayer.services.ExoPlayService
+import exoplayer.services.ExoPlayService.LocalBinder
 
 private const val TAG: String = "ExoPlayerFragment"
 
 class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     private lateinit var presenter: ExoPlayerPresenter
-    private lateinit var exoPlayer: ExoPlayer
-    private lateinit var playerView: StyledPlayerView
+    private var playerView: StyledPlayerView? = null
     private var mediaRouteButton: MediaRouteButton? = null
-    private var castPlayer: CastPlayer? = null
+
+    private var playService: ExoPlayService? = null
+    override fun getPlayService() : ExoPlayService? {
+        return playService
+    }
+
+    private var mPlayServiceIntent: Intent? = null
+    override fun onPlayServiceConnected(service: IBinder) {
+        Log.d(TAG, "onPlayServiceConnected")
+        val binder = service as LocalBinder
+        playService = binder.getService()
+        // Test code here for ExoPlayService
+        playService?.setPresenter(presenter)
+        playService?.initMediaControllerCompat(presenter)
+        playService?.initExoPlayer()
+        // presenter.initExoPlayer()   // the original one
+        Log.d(TAG, "onPlayServiceConnected.Video player view")
+        // Video player view
+        setVideoPlayerView()
+        Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
+        presenter.playSongPlayedBeforeActivityCreated()
+        presenter.castPlayer?.let {
+            Log.d(TAG, "onPlayServiceConnected.castPlayer != null && exoPlayer != null")
+            playService?.currentPlayer =
+                if (it.isCastSessionAvailable) presenter.castPlayer else playService?.exoPlayer
+        }
+    }
+
+    override fun onPlayServiceDisconnected() {
+        Log.d(TAG, "onPlayServiceDisconnected")
+        startAndBindPlayService()
+    }
+
+    override fun startAndBindPlayService() {
+        activity?.let {
+            if (isServiceDestroyed) {
+                Log.d(TAG, "startAndBindPlayService.startService()")
+                it.startService(mPlayServiceIntent)
+                isServiceDestroyed = false
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already started")
+            }
+            if (!isServiceBound) {
+                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
+                Log.d(TAG, "startAndBindPlayService.isBound = $result")
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already bound")
+            }
+        }
+    }
+
+    override fun unbindAndStopPlayService() {
+        activity?.let {
+            if (isServiceBound) {
+                Log.d(TAG, "unbindAndStopPlayService.unbindService()")
+                it.unbindService(connection)
+                // playService = null;
+                isServiceBound = false
+            } else {
+                Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
+            }
+            if (!isServiceDestroyed) {
+                Log.d(TAG, "unbindAndStopPlayService.stopService()")
+                it.stopService(mPlayServiceIntent)
+                isServiceDestroyed = true
+            } else {
+                Log.d(TAG,"unbindAndStopPlayService.PlayService is destroyed or not started")
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this, this)
         super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
-        arguments?.let {
-        }
+        arguments?.let {}
         // must be after super.onCreate(savedInstanceState)
-        val callingIntent: Intent? = activity?.intent
-        Log.d(TAG, "onCreate.callingIntent = $callingIntent")
-        mPresenter.initializeVariables(savedInstanceState, callingIntent)
-        presenter.initCastPlayer()
-        presenter.initExoPlayer()
+        activity?.let {
+            mPlayServiceIntent = Intent(it, ExoPlayService::class.java)
+            val callingIntent: Intent? = it.intent
+            Log.d(TAG, "onCreate.callingIntent = $callingIntent")
+            mPresenter.initializeVariables(savedInstanceState, callingIntent)
+            presenter.initCastPlayer()
+            // presenter.initExoPlayer() commented out for testing
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated() is called.")
+        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
+        /* commented out for testing
         // Video player view
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        )
+            FrameLayout.LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
         activity?.let {
             playerView = StyledPlayerView(it.applicationContext)
@@ -69,66 +141,79 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
             // must be after super.onCreate(savedInstanceState)
             setExoPlayerAndCastPlayer()
         }
-
+        */
+        /*  commented out for testing
+        Log.d(TAG, "presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
 
-        // presenter.addBaseCastStateListener();   // moved to onResume() on 2021-03-26
-        castPlayer?.let {
+        presenter.castPlayer?.let {
             Log.d(TAG, "castPlayer != null && exoPlayer != null")
             presenter.currentPlayer =
-                if (it.isCastSessionAvailable) castPlayer else exoPlayer
+                if (it.isCastSessionAvailable) presenter.castPlayer else presenter.exoPlayer
         }
+        */
 
         Log.d(TAG, "onViewCreated() is finished.")
     }
 
     override fun onResume() {
-        super.onResume()
         Log.d(TAG, "onResume")
-        presenter.onResume()
         presenter.setSessionAvailabilityListener()
         presenter.addBaseCastStateListener()
+        super.onResume()
     }
 
     override fun onPause() {
-        super.onPause()
         Log.d(TAG, "onPause")
-        presenter.onPause()
         presenter.releaseSessionAvailabilityListener()
         presenter.removeBaseCastStateListener()
+        super.onPause()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Log.d(TAG, "onDestroy()")
         releaseExoPlayerAndCastPlayer()
-        presenter.releaseMediaCallback()
-        presenter.onDestroy()
+        // presenter.releaseMediaCallback() commented out for testing
+        super.onDestroy()
     }
 
-    private fun setExoPlayerAndCastPlayer() {
-        // presenter.initExoPlayer() // must be before volumeSeekBar settings
-        // presenter.initMediaSessionCompat()
-        exoPlayer = presenter.exoPlayer
-        castPlayer = presenter.castPlayer
-        playerView.player = exoPlayer
-        playerView.requestFocus()
+    private fun setVideoPlayerView() {
+        Log.d(TAG, "setVideoPlayerView")
+        val layParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT)
+        layParams.gravity = Gravity.CENTER
+        activity?.let {
+            playerView = StyledPlayerView(it.applicationContext)
+            playerView?.apply {
+                layoutParams = layParams
+                setBackgroundColor(ContextCompat.getColor(it.applicationContext, android.R.color.black))
+                playerViewLinearLayout?.addView(this)
+                visibility = View.VISIBLE
+                useArtwork = true
+                useController = false
+                // must be after super.onCreate(savedInstanceState)
+                // player = presenter.exoPlayer
+                player = playService?.exoPlayer
+                requestFocus()
+            }
+        }
     }
 
     private fun releaseExoPlayerAndCastPlayer() {
-        Log.d(TAG, "releaseExoPlayerAndCastPlayer()")
+        Log.d(TAG, "releaseExoPlayerAndCastPlayer")
         // presenter.releaseMediaSessionCompat()
         presenter.releaseExoPlayerAndCastPlayer()
-        playerView.player = null
+        playerView?.player = null
     }
 
     // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
     override fun setCurrentPlayerToPlayerView() {
+        Log.d(TAG, "setCurrentPlayerToPlayerView")
         val currentPlayer = presenter.currentPlayer ?: return
-        if (currentPlayer === exoPlayer) {
-            Log.d(TAG, "Current player is exoPlayer.")
+        if (currentPlayer === presenter.exoPlayer) {
+            Log.d(TAG, "setCurrentPlayerToPlayerView.Current player is exoPlayer.")
         } else  /* currentPlayer == castPlayer */ {
-            Log.d(TAG, "Current player is castPlayer.")
+            Log.d(TAG, "setCurrentPlayerToPlayerView.Current player is castPlayer.")
         }
     }
     // end of implementing methods of ExoPlayerPresenter.ExoPlayerPresentView

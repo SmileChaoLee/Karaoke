@@ -1,0 +1,103 @@
+package exoplayer.listeners;
+
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.Player;
+
+import exoplayer.services.ExoPlayService;
+
+public class ExoPlayerListenerNew implements Player.Listener {
+
+    private static final String TAG = "ExoPlayerListenerNew";
+    private final ExoPlayService mService;
+
+    public ExoPlayerListenerNew(ExoPlayService service) {
+        mService = service;
+        Log.d(TAG, "ExoPlayerListenerNew is created.");
+    }
+
+    @Override
+    public synchronized void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+        Log.d(TAG, "onPlayWhenReadyChanged().playWhenReady = " + playWhenReady
+                        + ", reason = " + reason);
+        int state = mService.getExoPlayer().getPlaybackState();
+        Log.d(TAG, "onPlayWhenReadyChanged().state = " + state);
+        boolean isPlaying = mService.getExoPlayer().isPlaying();
+        Log.d(TAG, "onPlayWhenReadyChanged().isPlaying = " + isPlaying);
+        if (playWhenReady) {
+            // Start playing
+            if (isPlaying) {
+                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PLAYING");
+                mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            }
+        } else {
+            // Paused
+            if (!isPlaying) {
+                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PAUSED");
+                mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+            }
+        }
+    }
+
+    @Override
+    public synchronized void onPlaybackStateChanged(int state) {
+        Log.d(TAG, "onPlaybackStateChanged.state = " + state);
+        boolean playWhenReady = mService.getExoPlayer().getPlayWhenReady();
+        Log.d(TAG, "onPlaybackStateChanged.playWhenReady = " + playWhenReady);
+        switch (state) {
+            case Player.STATE_BUFFERING:
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_BUFFERING");
+                mService.setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING);
+                break;
+            case Player.STATE_READY:
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_READY");
+                if (playWhenReady) {
+                    Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_PLAYING");
+                    mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                } else {
+                    Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_PAUSED");
+                    mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                }
+                break;
+            case Player.STATE_ENDED:
+                // playing is finished and send PlaybackStateCompat.STATE_STOPPED
+                // to MediaControllerCallback
+                Log.d(TAG, "onPlaybackStateChanged.Player.STATE_ENDED");
+                Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_STOPPED");
+                mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+                break;
+            case Player.STATE_IDLE:
+                // user stops the playing and send PlaybackStateCompat.STATE_NONE
+                // to MediaControllerCallback
+                Log.d(TAG, "onPlaybackStateChanged().Player.STATE_IDLE");
+                Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_NONE");
+                mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
+                break;
+            default:
+                Log.d(TAG, "onPlaybackStateChanged().Playback state (Default)");
+                break;
+        }
+    }
+
+    @Override
+    public synchronized void onIsPlayingChanged(boolean isPlaying) {
+        Log.d(TAG,"onIsPlayingChanged().isPlaying = " + isPlaying);
+    }
+
+    @Override
+    public void onPlayerErrorChanged(@Nullable PlaybackException error) {
+        Log.d(TAG,"onPlayerErrorChanged().error = " + error);
+        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+    }
+
+    @Override
+    public synchronized void onPlayerError(@NonNull PlaybackException error) {
+        Log.d(TAG,"onPlayerError().error = " + error);
+        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+    }
+}

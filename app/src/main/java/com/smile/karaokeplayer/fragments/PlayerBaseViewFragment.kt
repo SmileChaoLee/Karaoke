@@ -1,7 +1,9 @@
 package com.smile.karaokeplayer.fragments
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
+import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -11,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -114,7 +117,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var nativeAdsFrameLayout: FrameLayout? = null
     private var nativeAdViewVisibility = 0
     private var nativeAdTemplateView: TemplateView? = null
-
     protected var mainMenu: Menu? = null
 
     // submenu of file
@@ -153,6 +155,28 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     abstract fun setMediaRouteButtonVisible(isVisible: Boolean)
     abstract fun setMenuItemsVisibility()
     abstract fun setSwitchToVocalImageButtonVisibility()
+    abstract fun onPlayServiceConnected(service: IBinder)
+    abstract fun onPlayServiceDisconnected()
+    abstract fun startAndBindPlayService()
+    abstract fun unbindAndStopPlayService()
+
+    protected var isServiceBound: Boolean = false
+    protected var isServiceDestroyed: Boolean = true
+    protected val connection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            Log.d(TAG, "onServiceConnected")
+            onPlayServiceConnected(service)
+            isServiceBound = true
+            isServiceDestroyed = false
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d(TAG, "onServiceDisconnected")
+            isServiceBound = false
+            isServiceDestroyed = true
+            onPlayServiceDisconnected()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -455,6 +479,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         super.onResume()
         myBannerAdView?.resume()
         MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout)
+        startAndBindPlayService()
     }
 
     override fun onPause() {
@@ -497,6 +522,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         activity?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        unbindAndStopPlayService()
         super.onDestroy()
     }
 

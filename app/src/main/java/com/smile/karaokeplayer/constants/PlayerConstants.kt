@@ -4,7 +4,7 @@ object PlayerConstants {
     const val LOG_TAG = "MediaSessionCompatTag"
     const val PlayingParamOrigin = "PlayingParamOrigin"
     const val PlayingParamState = "PlayingParam"
-    const val TrackSelectorParametersState = "TrackSelectorParameters"
+    const val TrackSelectionParametersState = "TrackSelectorParameters"
     const val NumberOfVideoTracksState = "NumberOfVideoTracks"
     const val NumberOfAudioTracksState = "NumberOfAudioTracks"
     const val OrderedSongsState = "OrderedSongList"

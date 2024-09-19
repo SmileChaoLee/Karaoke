@@ -15,12 +15,20 @@ import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter
 
-abstract class BasePlayService
-    : Service() {
+abstract class BasePlayService : Service() {
 
     companion object {
         private const val TAG = "BasePlayService"
     }
+
+    abstract fun initMediaCallback()
+    abstract fun setPlayerTime(progress: Long)
+    abstract fun isSeekable(): Boolean
+    abstract fun setPlayerAudioVolume(volumeTmp: Float)
+    abstract fun getMediaDuration(): Long
+    abstract fun specificPlayerReplayMedia(currentAudioPosition: Long)
+    // abstract fun setAudioVolumeInsideVolumeSeekBar(i: Int)
+    // abstract fun getCurrentProgressForVolumeSeekBar(): Int
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
@@ -116,13 +124,14 @@ abstract class BasePlayService
 
     fun initMediaControllerCompat(presenter: BasePlayerPresenter) {
         // Create a MediaControllerCompat
+        Log.d(TAG, "initMediaControllerCompat")
         presenter.activity?.let {
             Log.d(TAG, "initMediaControllerCompat.activity not null")
             mediaSessionCompat?.apply {
                 mediaControllerCompat = MediaControllerCompat(it, this)
                 Log.d(TAG,"initMediaControllerCompat.mediaControllerCompat = $mediaControllerCompat")
                 MediaControllerCompat.setMediaController(it, mediaControllerCompat)
-                presenter.initMediaCallback()
+                initMediaCallback()
             }
         }
     }
@@ -215,7 +224,7 @@ abstract class BasePlayService
             val currentAudioPosition: Long = 0
             playingParam.currentAudioPosition = currentAudioPosition
             Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
-            presenter.specificPlayerReplayMedia(currentAudioPosition)
+            specificPlayerReplayMedia(currentAudioPosition)
         } else {
             Log.d(TAG, "replayMedia.playMediaFromUri()")
             // song was stopped by user
