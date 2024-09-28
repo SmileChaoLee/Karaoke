@@ -298,7 +298,7 @@ public class VLCPlayerPresenter extends BasePlayerPresenter {
     }
 
     @Override
-    public void getPlayingMediaInfoAndSetAudioActionSubMenu() {
+    public void setAudioActionSubMenu() {
         final Handler handler = new Handler(Looper.getMainLooper());
         final Runnable runnable = () -> {
             Log.d(TAG, "getPlayingMediaInfoAndSetAudioActionSubMenu.run()");

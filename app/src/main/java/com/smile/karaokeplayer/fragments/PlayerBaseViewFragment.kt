@@ -41,7 +41,9 @@ import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.cast.framework.CastButtonFactory
 import com.smile.karaokeplayer.BaseApplication
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.CommonConstants
@@ -73,7 +75,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     lateinit var mPresenter: BasePlayerPresenter
 
     private var playBaseFragmentFunc: PlayBaseFragmentFunc? = null
-    protected var fragmentView: View? = null
+    private var fragmentView: View? = null
     protected var textFontSize = 0f
     private var fontScale = 0f
     private var toastTextSize = 0f
@@ -104,6 +106,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
+    protected var mediaRouteButton: MediaRouteButton? = null
 
     private var volumeSeekBarHeightForLandscape = 0
 
@@ -151,8 +154,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var interstitialAd: ShowInterstitial? = null
 
     abstract fun getPlayerPresenter(): BasePlayerPresenter?
-    abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
-    abstract fun setMediaRouteButtonVisible(isVisible: Boolean)
+    // abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
+    abstract fun setMediaRouteButtonVisible()
     abstract fun setMenuItemsVisibility()
     abstract fun setSwitchToVocalImageButtonVisibility()
     abstract fun onPlayServiceConnected(service: IBinder)
@@ -212,11 +215,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         textFontSize = mPresenter.textFontSize
         fontScale = mPresenter.fontScale
         toastTextSize = mPresenter.toastTextSize
-        /* moved to ExoplayerFragment.kt and VLCPlayerFragment.kt
-        val callingIntent: Intent? = activity?.intent
-        Log.d(TAG, "onCreate.callingIntent = $callingIntent")
-        mPresenter.initializeVariables(savedInstanceState, callingIntent)
-        */
     }
 
     override fun onCreateView(
@@ -724,6 +722,41 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private fun closeFragment() {
         Log.d(TAG, "closeFragment.isPlaySingleSong = " + mPresenter.playingParam.isPlaySingleSong)
         playBaseFragmentFunc?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
+    }
+
+    private fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
+        // MediaRouteButton View
+        Log.d(TAG, "setMediaRouteButtonView")
+        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            return
+        }
+        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
+        try {
+            mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
+            setMediaRouteButtonVisible()
+            mediaRouteButton?.let {
+                activity?.applicationContext?.let { ctxIt ->
+                    CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
+                }
+            }
+
+            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
+            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+            val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
+            val mediaRouteButtonDrawable: Drawable = BitmapDrawable(
+                resources,
+                Bitmap.createScaledBitmap(
+                    mediaRouteButtonBitmap,
+                    imageButtonHeight,
+                    imageButtonHeight,
+                    true
+                )
+            )
+            mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
+        } catch (ex: Exception) {
+            Log.d(TAG, "setMediaRouteButtonView.Exception")
+            ex.printStackTrace()
+        }
     }
 
     fun showSupportToolbarAndAudioController() {

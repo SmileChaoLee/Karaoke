@@ -1,11 +1,9 @@
 package exoplayer.callbacks
 
-import android.app.Activity
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.ResultReceiver
-import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
@@ -15,8 +13,10 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.PlayingParameters
 import exoplayer.presenters.ExoPlayerPresenter
+import exoplayer.services.ExoPlayService
 
-class ExoMediaSessionCallback(private val mActivity : Activity, private val mPresenter : ExoPlayerPresenter)
+class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
+                              private val service: ExoPlayService)
     : MediaSessionCompat.Callback() {
 
     companion object {
@@ -44,16 +44,16 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")
-        val playingParam: PlayingParameters? = mPresenter.playingParam
+        val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.isMediaPrepared = false
         val mediaItem = MediaItem.fromUri(uri)
-        Log.d(TAG,"onPrepareFromUri().mPresenter.exoPlayer.getMediaItemCount() = " +
-                mPresenter.exoPlayer?.mediaItemCount)
-        val trackParameters = TrackSelectionParameters.Builder(mActivity).build()
-        mPresenter.exoPlayer?.trackSelectionParameters = trackParameters
-        mPresenter.exoPlayer?.setMediaItem(mediaItem)
-        Log.d(TAG, "onPrepareFromUri().mPresenter.exoPlayer.prepare()")
-        mPresenter.exoPlayer?.prepare()
+        Log.d(TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
+                service.getMediaItemCount())
+        val trackParameters = TrackSelectionParameters.Builder(service.applicationContext).build()
+        service.setTrackSelectionParameters(trackParameters)
+        service.setMediaItem(mediaItem)
+        Log.d(TAG, "onPrepareFromUri().service.exoPlayer.prepare()")
+        service.prepare()
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition
         var currentPlaybackState = playingParam?.currentPlaybackState
@@ -78,26 +78,26 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
             }
         }
         currentAudioPosition?.let {
-            mPresenter.exoPlayer?.seekTo(it)
+            service.setPlayerTime(it)
         }
 
         when (currentPlaybackState) {
             PlaybackStateCompat.STATE_PAUSED -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
-                mPresenter.exoPlayer?.playWhenReady = false
+                service.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_STOPPED -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
-                mPresenter.exoPlayer?.playWhenReady = false
+                service.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_PLAYING -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
-                mPresenter.exoPlayer?.playWhenReady = true // start playing when ready
+                service.setPlayWhenReady(true)  // start playing when ready
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
                 Log.d(TAG,"onPrepareFromUr().iPlaybackStateCompat.STATE_NONE or default")
-                mPresenter.exoPlayer?.playWhenReady = true // start playing when ready
+                service.setPlayWhenReady(true)  // start playing when ready
             }
         }
     }
@@ -118,76 +118,21 @@ class ExoMediaSessionCallback(private val mActivity : Activity, private val mPre
     override fun onPlay() {
         super.onPlay()
         Log.d(TAG, "onPlay()")
-        /*
-        Log.d(TAG, "onPlay().mPresenter.playService = ${mPresenter.playService}")
-        val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
-        Log.d(TAG, "onPlay().controller = $controller")
-        Log.d(TAG, "onPlay().controller.playbackState = ${controller?.playbackState}")
-        controller?.playbackState?.let {
-            Log.d(TAG, "onPlay().controller.playbackState.state = ${it.state}")
-            if (it.state != PlaybackStateCompat.STATE_PLAYING) {
-                Log.d(TAG, "onPlay().mPresenter.exoPlayer.play()")
-                mPresenter.exoPlayer?.play()
-            }
-        }
-        */
-        mPresenter.exoPlayer?.apply {
-            Log.d(TAG, "onPlay().mPresenter.exoPlayer not null")
-            if (playbackState == Player.STATE_READY && !isPlaying) {
-                Log.d(TAG, "onPlay().mPresenter.exoPlayer is not playing, so play()")
-                play()
-            }
-        }
+        service.onPlay()
     }
 
     @Synchronized
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause()")
-        /*
-        Log.d(TAG, "onPause().mPresenter.playService = ${mPresenter.playService}")
-        val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
-        Log.d(TAG, "onPause().controller = $controller")
-        Log.d(TAG, "onPause().controller.playbackState = ${controller?.playbackState}")
-        controller?.playbackState?.let {
-            Log.d(TAG, "onPause().controller.playbackState.state = ${it.state}")
-            if (it.state != PlaybackStateCompat.STATE_PAUSED) {
-                Log.d(TAG, "onPause().mPresenter.exoPlayer.pause()")
-                mPresenter.exoPlayer?.pause()
-            }
-        }
-        */
-        mPresenter.exoPlayer?.apply {
-            Log.d(TAG, "onPause().mPresenter.exoPlayer not null")
-            if (playbackState == Player.STATE_READY && isPlaying) {
-                Log.d(TAG, "onPause().mPresenter.exoPlayer is playing, so pause()")
-                pause()
-            }
-        }
+        service.onPause()
     }
 
     @Synchronized
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop()")
-        /*
-        val controller: MediaControllerCompat? = mPresenter.playService?.mediaControllerCompat
-        controller?.playbackState?.let {
-            Log.d(TAG, "onStop().controller.playbackState.state = ${it.state}")
-            if (it.state != PlaybackStateCompat.STATE_STOPPED) {
-                Log.d(TAG, "onStop().mPresenter.exoPlayer.stop()")
-                mPresenter.exoPlayer?.stop()
-            }
-        }
-        */
-        mPresenter.exoPlayer?.apply {
-            Log.d(TAG, "onPause().mPresenter.exoPlayer not null")
-            if (playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING) {
-                Log.d(TAG, "onPlay().mPresenter.exoPlayer is Player.STATE_READY or " +
-                        "Player.STATE_BUFFERING , so stop()")
-                stop()
-            }
-        }
+        service.onStop()
     }
 
     @Synchronized

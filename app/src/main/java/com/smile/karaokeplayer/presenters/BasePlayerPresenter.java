@@ -8,12 +8,11 @@ import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
+import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment;
 import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import com.smile.karaokeplayer.models.SongInfo;
@@ -27,8 +26,8 @@ import java.util.Locale;
 public abstract class BasePlayerPresenter {
 
     private static final String TAG = "BasePlayerPresenter";
-    private final Activity mActivity;
     private final BasePresentView mPresentView;
+    protected Activity mActivity;
     protected final float mTextFontSize;
     protected final float mFontScale;
     protected final float mToastTextSize;
@@ -58,11 +57,12 @@ public abstract class BasePlayerPresenter {
         void showInterstitialAd();
         void hidePlayerView();
         void showPlayerView();
+        void setCurrentPlayerToPlayerView();
         BasePlayService getPlayService();
     }
     public abstract void initializeVariables(Bundle savedInstanceState, Intent callingIntent);
     // public abstract void setPlayerTime(int progress); commented out for testing
-    public abstract void setAudioVolume(float volume);
+    // public abstract void setAudioVolume(float volume);
     public abstract void setAudioVolumeInsideVolumeSeekBar(int i);
     public abstract int getCurrentProgressForVolumeSeekBar();
     public abstract void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel);
@@ -71,12 +71,13 @@ public abstract class BasePlayerPresenter {
     public abstract void startDurationSeekBarHandler();
     // public abstract long getMediaDuration(); commented out for testing
     public abstract void removeCallbacksAndMessages();
-    public abstract void getPlayingMediaInfoAndSetAudioActionSubMenu();
+    // public abstract void getPlayingMediaInfoAndSetAudioActionSubMenu();
+    public abstract void setAudioActionSubMenu();
     // public abstract boolean isSeekable();    commented out for testing
     // public abstract void initMediaCallback();    commented out for testing
     // public abstract void specificPlayerReplayMedia(long currentAudioPosition); commented out for testing
 
-    public BasePlayerPresenter(Fragment fragment, BasePresentView presentView) {
+    public BasePlayerPresenter(PlayerBaseViewFragment fragment, BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
         mActivity = fragment.getActivity();
         mPresentView = presentView;
@@ -233,7 +234,7 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             Log.d(TAG, "playLeftChannel.CommonConstants.LeftChannel = " + CommonConstants.LeftChannel);
             mPlayingParam.setCurrentChannelPlayed(CommonConstants.LeftChannel);
-            playService.setPlayerAudioVolume(mPlayingParam.getCurrentVolume());
+            playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
 
@@ -243,7 +244,7 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             Log.d(TAG, "playRightChannel.CommonConstants.RightChannel = " + CommonConstants.RightChannel);
             mPlayingParam.setCurrentChannelPlayed(CommonConstants.RightChannel);
-            playService.setPlayerAudioVolume(mPlayingParam.getCurrentVolume());
+            playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
 
@@ -253,7 +254,7 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             Log.d(TAG, "playStereoChannel.CommonConstants.StereoChannel = " + CommonConstants.StereoChannel);
             mPlayingParam.setCurrentChannelPlayed(CommonConstants.StereoChannel);
-            playService.setPlayerAudioVolume(mPlayingParam.getCurrentVolume());
+            playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
 
@@ -514,7 +515,8 @@ public abstract class BasePlayerPresenter {
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
                 if (!mPlayingParam.isMediaPrepared()) {
                     // the first time of Player.STATE_READY means prepared
-                    getPlayingMediaInfoAndSetAudioActionSubMenu();
+                    // getPlayingMediaInfoAndSetAudioActionSubMenu();
+                    setAudioActionSubMenu();
                 }
                 mPlayingParam.setMediaPrepared(true);  // has been prepared
                 startDurationSeekBarHandler();   // start updating duration seekbar

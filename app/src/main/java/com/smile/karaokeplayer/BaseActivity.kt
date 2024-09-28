@@ -30,7 +30,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -54,10 +53,9 @@ private const val CallingComponentState = "CallingComponentName"
 abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmentFunc,
         PlaySongs, PlayMyFavorites {
 
+    private var playerFragment: PlayerBaseViewFragment? = null
     private var permissionExternalStorage = false
     private var permissionManageExternalStorage = false
-
-    private var playerFragment: PlayerBaseViewFragment? = null
     private lateinit var basePlayViewLayout : LinearLayout
     private var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
@@ -116,7 +114,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         permissionExternalStorage =
                 (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!permissionExternalStorage) {
                 val permissions : Array<String> =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -130,16 +128,16 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
             }
             // MANAGE_EXTERNAL_STORAGE
             // requestManageExternalStoragePermission()
-        } else {
-            if (!permissionExternalStorage) {
-                ScreenUtil.showToast(this, "Permission Denied", 60f,
-                        ScreenUtil.FontSize_Pixel_Type,
-                        Toast.LENGTH_LONG)
-                Log.d(TAG, "onCreate.WRITE_EXTERNAL_STORAGE.Permission Denied.")
-                returnToPrevious(false)
-                return
-            }
-        }
+        // } else {
+        //     if (!permissionExternalStorage) {
+        //         ScreenUtil.showToast(this, "Permission Denied", 60f,
+        //                 ScreenUtil.FontSize_Pixel_Type,
+        //                 Toast.LENGTH_LONG)
+        //         Log.d(TAG, "onCreate.WRITE_EXTERNAL_STORAGE.Permission Denied.")
+        //         returnToPrevious(false)
+        //         return
+        //     }
+        // }
 
         askIgnoreOptimizationsBattery()
 
@@ -248,14 +246,14 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    // @RequiresApi(api = Build.VERSION_CODES.M)
     private fun askIgnoreOptimizationsBattery() {
         val pm = getSystemService(Context.POWER_SERVICE) as? PowerManager
         if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
             val intent = Intent()
             val pName = packageName
-            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
-            intent.data = Uri.parse("package:$pName");
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.parse("package:$pName")
             startActivity(intent)
         }
     }
@@ -358,8 +356,9 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
         // exit application
         // finish()
         Log.d(TAG, "returnToPrevious().finish()")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask()
-        else finishAffinity()
+        finishAndRemoveTask()
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask()
+        // else finishAffinity()
 
         Log.d(TAG, "returnToPrevious().onDestroy()")
         onDestroy()

@@ -24,11 +24,11 @@ abstract class BasePlayService : Service() {
     abstract fun initMediaCallback()
     abstract fun setPlayerTime(progress: Long)
     abstract fun isSeekable(): Boolean
-    abstract fun setPlayerAudioVolume(volumeTmp: Float)
+    abstract fun setAudioVolume(volumeTmp: Float)
     abstract fun getMediaDuration(): Long
+    abstract fun getCurrentPosition(): Long
+    abstract fun getPlaybackState(): Int
     abstract fun specificPlayerReplayMedia(currentAudioPosition: Long)
-    // abstract fun setAudioVolumeInsideVolumeSeekBar(i: Int)
-    // abstract fun getCurrentProgressForVolumeSeekBar(): Int
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
