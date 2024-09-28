@@ -237,6 +237,8 @@ abstract class BasePlayService : Service() {
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         val playbackState = playingParam.currentPlaybackState
+        Log.d(TAG, "startPlay.mediaUri = $mediaUri")
+        Log.d(TAG, "startPlay.playbackState = $playbackState")
         if ((mediaUri != null && Uri.EMPTY != mediaUri)
             && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
             // no media file opened or playing has been stopped

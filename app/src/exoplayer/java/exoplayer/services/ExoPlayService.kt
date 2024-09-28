@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.exoplayer2.C
@@ -67,33 +68,41 @@ class ExoPlayService : BasePlayService() {
                 // Save state from the previous player.
                 val playbackState = it.playbackState
                 if (playbackState != Player.STATE_ENDED) {
-                    playbackPositionMs = it.currentPosition
+                    Log.d(TAG, "currentPlayer.playbackState != Player.STATE_ENDED")
                     playWhenReady = it.playWhenReady
                     windowIndex = it.currentMediaItemIndex
                     if (windowIndex != presenter?.currentItemIndex) {
-                        playbackPositionMs = C.TIME_UNSET
+                        Log.d(TAG, "currentPlayer.windowIndex != presenter?.currentItemIndex")
+                        // playbackPositionMs = C.TIME_UNSET
                         // windowIndex = currentItemIndex;
                         presenter?.currentItemIndex = windowIndex
                     }
                 }
-                presenter?.stopPlay() // or pausePlay();
+                // presenter?.stopPlay() // or pausePlay();
+                presenter?.pausePlay()  // or stopPlay
+                // for temporarily setting, it should be it.currentPosition
+                playbackPositionMs = exoPlayer?.currentPosition!!
+                Log.d(TAG, "currentPlayer.playbackPositionMs = $playbackPositionMs")
+                presenter?.playingParam?.currentAudioPosition = playbackPositionMs
+                presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_PAUSED
             }
             field = value
+            Log.d(TAG, "currentPlayer.set(value).field = $field")
             if (field === castPlayer) {
-                Log.d(TAG, "exoPlayer startPlay()")
-                presenter?.startPlay()
+                Log.d(TAG, "currentPlayer.castPlayer startPlay()")
+                // presenter?.startPlay()
             } else {
                 // Playback transition.
                 castPlayer?.let {
-                    if (it.currentTimeline.isEmpty) {
+                    if (it.currentTimeline.isEmpty && presenter?.mediaUri != null) {
                         // has not play yet
-                        Log.d(TAG, "currentTimeline is Empty")
+                        Log.d(TAG, "currentPlayer.currentTimeline is Empty")
                         val mediaItem: MediaItem = MediaItem.Builder()
                             .setUri(presenter?.mediaUri)
                             .setMediaMetadata(MediaMetadata.Builder().setTitle("Video Casted").build())
                             .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
                             .build()
-                        Log.d(TAG, "windowIndex = $windowIndex")
+                        Log.d(TAG, "currentPlayer.windowIndex = $windowIndex")
                         val mediaItems: MutableList<MediaItem> = ArrayList()
                         mediaItems.add(mediaItem)
                         it.setMediaItems(mediaItems, windowIndex, C.TIME_UNSET)
@@ -101,18 +110,22 @@ class ExoPlayService : BasePlayService() {
                         it.setPlayWhenReady(playWhenReady)
                     } else {
                         // already played before
-                        Log.d(TAG, "currentTimeline is not Empty")
+                        Log.d(TAG, "currentPlayer.currentTimeline is not Empty or presenter?.mediaUri is null")
                     }
+                    Log.d(TAG, "currentPlayer.exoPlayer startPlay()")
+                    // presenter?.startPlay()
                 }
             }
             // Playback transition.
             if (windowIndex != C.INDEX_UNSET) {
-                Log.d(TAG, "windowIndex != C.INDEX_UNSET")
+                Log.d(TAG, "currentPlayer.windowIndex != C.INDEX_UNSET")
                 field?.apply {
+                    Log.d(TAG, "currentPlayer.playbackPositionMs = $playbackPositionMs")
                     seekTo(playbackPositionMs)
                     playWhenReady = playWhenReady
                 }
             }
+            presenter?.startPlay()
             // Player View management.
             presenter?.setCurrentPlayerToPlayerView()
         }
@@ -251,7 +264,8 @@ class ExoPlayService : BasePlayService() {
                         presenter?.let {
                             Log.d(TAG,"initCastPlayer.onCastSessionAvailable.mediaUri = ${it.mediaUri}")
                             Log.d(TAG,"initCastPlayer.onCastSessionAvailable.isOnInternet = $isOnInternet")
-                            if (it.mediaUri == null || !isOnInternet) {
+                            // if (it.mediaUri == null || !isOnInternet) {
+                            if (it.mediaUri == null) {
                                 val mRouter = MediaRouter.getInstance(applicationContext) // singleton
                                 mRouter.unselect(MediaRouter.UNSELECT_REASON_STOPPED) // stop casting
                                 return

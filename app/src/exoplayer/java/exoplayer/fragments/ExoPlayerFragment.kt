@@ -151,7 +151,8 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     override fun setCurrentPlayerToPlayerView() {
         Log.d(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {
-            // player = playService?.currentPlayer
+            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
+            player = playService?.currentPlayer
             requestFocus()
         }
     }
