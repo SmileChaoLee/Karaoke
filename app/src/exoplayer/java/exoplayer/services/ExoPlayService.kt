@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.av1.Gav1Library
 import com.google.android.exoplayer2.ext.cast.CastPlayer
@@ -29,7 +28,6 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionOverride
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
-import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.services.BasePlayService
@@ -272,18 +270,22 @@ class ExoPlayService : BasePlayService() {
             // playbackPositionMs = exoPlayer?.currentPosition!!
             playbackPositionMs = it.currentPosition
             Log.d(TAG, "setPlayer.playbackPositionMs = $playbackPositionMs")
-            presenter?.playingParam?.currentAudioPosition = playbackPositionMs
-            presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_PAUSED
+            presenter?.let { preIt ->
+                preIt.playingParam?.currentAudioPosition = playbackPositionMs
+                preIt.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_PAUSED
+            }
         }
 
         currentPlayer = player
         presenter?.let {
-            Log.d(TAG, "setPlayer.playbackPositionMs = $playbackPositionMs")
-            presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_BUFFERING
+            it.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_BUFFERING
             mediaSessionCallback?.onPrepareFromUri(it.mediaUri, null)
-            currentPlayer?.playWhenReady = true
-            Log.d(TAG, "setPlayer.currentPlayer.play()")
-            currentPlayer?.play()
+            currentPlayer?.let { playIt ->
+                Log.d(TAG, "setPlayer.currentPosition = ${playIt.currentPosition}")
+                playIt.repeatMode = it.playingParam.repeatStatus
+                // playIt.seekTo(it.playingParam.currentAudioPosition)
+                playIt.playWhenReady = true
+            }
             it.setCurrentPlayerToPlayerView()
         }
 

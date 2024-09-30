@@ -55,9 +55,9 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
             .setMediaMetadata(MediaMetadata.Builder().setTitle("Opened Media").build())
             .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
             .build()
+        service.setMediaItem(mediaItem)
         Log.d(TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
                 service.getMediaItemCount())
-        service.setMediaItem(mediaItem)
         Log.d(TAG, "onPrepareFromUri().service.exoPlayer.prepare()")
         service.prepare()
         val currentVolume = playingParam?.currentVolume
