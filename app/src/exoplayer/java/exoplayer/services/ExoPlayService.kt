@@ -54,82 +54,6 @@ class ExoPlayService : BasePlayService() {
     private var controllerCallback: ExoMediaControllerCallback? = null
     private var exoPlayerListener: ExoPlayerListener? = null
     var currentPlayer: Player? = null
-        set(value) {
-            Log.d(TAG, "currentPlayer.set(value).value = $value")
-            Log.d(TAG, "currentPlayer.set(value).field = $field")
-            if (value == null || value === field) {
-                return
-            }
-            // Player state management.
-            var playbackPositionMs = C.TIME_UNSET
-            var windowIndex = C.INDEX_UNSET
-            var playWhenReady = false
-            field?.let {
-                // Save state from the previous player.
-                val playbackState = it.playbackState
-                if (playbackState != Player.STATE_ENDED) {
-                    Log.d(TAG, "currentPlayer.playbackState != Player.STATE_ENDED")
-                    playWhenReady = it.playWhenReady
-                    windowIndex = it.currentMediaItemIndex
-                    if (windowIndex != presenter?.currentItemIndex) {
-                        Log.d(TAG, "currentPlayer.windowIndex != presenter?.currentItemIndex")
-                        // playbackPositionMs = C.TIME_UNSET
-                        // windowIndex = currentItemIndex;
-                        presenter?.currentItemIndex = windowIndex
-                    }
-                }
-                // presenter?.stopPlay() // or pausePlay();
-                presenter?.pausePlay()  // or stopPlay
-                // for temporarily setting, it should be it.currentPosition
-                playbackPositionMs = exoPlayer?.currentPosition!!
-                Log.d(TAG, "currentPlayer.playbackPositionMs = $playbackPositionMs")
-                presenter?.playingParam?.currentAudioPosition = playbackPositionMs
-                presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_PAUSED
-            }
-            field = value
-            Log.d(TAG, "currentPlayer.set(value).field = $field")
-            if (field === castPlayer) {
-                Log.d(TAG, "currentPlayer.castPlayer startPlay()")
-                // presenter?.startPlay()
-            } else {
-                // Playback transition.
-                castPlayer?.let {
-                    if (it.currentTimeline.isEmpty && presenter?.mediaUri != null) {
-                        // has not play yet
-                        Log.d(TAG, "currentPlayer.currentTimeline is Empty")
-                        val mediaItem: MediaItem = MediaItem.Builder()
-                            .setUri(presenter?.mediaUri)
-                            .setMediaMetadata(MediaMetadata.Builder().setTitle("Video Casted").build())
-                            .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
-                            .build()
-                        Log.d(TAG, "currentPlayer.windowIndex = $windowIndex")
-                        val mediaItems: MutableList<MediaItem> = ArrayList()
-                        mediaItems.add(mediaItem)
-                        it.setMediaItems(mediaItems, windowIndex, C.TIME_UNSET)
-                        it.setRepeatMode(presenter?.playingParam?.repeatStatus!!)
-                        it.setPlayWhenReady(playWhenReady)
-                    } else {
-                        // already played before
-                        Log.d(TAG, "currentPlayer.currentTimeline is not Empty or presenter?.mediaUri is null")
-                    }
-                    Log.d(TAG, "currentPlayer.exoPlayer startPlay()")
-                    // presenter?.startPlay()
-                }
-            }
-            // Playback transition.
-            if (windowIndex != C.INDEX_UNSET) {
-                Log.d(TAG, "currentPlayer.windowIndex != C.INDEX_UNSET")
-                field?.apply {
-                    Log.d(TAG, "currentPlayer.playbackPositionMs = $playbackPositionMs")
-                    seekTo(playbackPositionMs)
-                    playWhenReady = playWhenReady
-                }
-            }
-            presenter?.startPlay()
-            // Player View management.
-            presenter?.setCurrentPlayerToPlayerView()
-        }
-
     private var exoPlayer: ExoPlayer? = null
     private var castPlayer: CastPlayer? = null
     private val isOnInternet = false
@@ -175,6 +99,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun initCastPlayerAndExoPlayer() {
+        initExoPlayerListener()
         initCastPlayer()
         initExoPlayer()
     }
@@ -182,6 +107,11 @@ class ExoPlayService : BasePlayService() {
     private fun releaseCastPlayerAndExoPlayer() {
         releaseExoPlayer()
         releaseCastPlayer()
+    }
+
+    private fun initExoPlayerListener() {
+        Log.d(TAG, "initExoPlayerListener")
+        exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
     }
 
     private fun initExoPlayer() {
@@ -206,8 +136,6 @@ class ExoPlayService : BasePlayService() {
                 .build()
             exoPlayer?.apply {
                 Log.d(TAG,"initExoPlayer.exoPlayer = $this")
-                exoPlayerListener =
-                    ExoPlayerListener(this@ExoPlayService)
                 addListener(exoPlayerListener!!)
                 Log.d(TAG,"initExoPlayer.this = $this")
                 currentPlayer = this // default is playing video on Android device
@@ -232,7 +160,8 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getPlayWhenReady(): Boolean {
-        exoPlayer?.apply {
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
             return playWhenReady
         }
         return false
@@ -257,6 +186,7 @@ class ExoPlayService : BasePlayService() {
                     castIt.addCastStateListener(this)
                 }
                 castPlayer = CastPlayer(castIt)
+                castPlayer?.addListener(exoPlayerListener!!)
                 sessionAvailabilityListener = object : SessionAvailabilityListener {
                     @Synchronized
                     override fun onCastSessionAvailable() {
@@ -273,12 +203,14 @@ class ExoPlayService : BasePlayService() {
                         }
                         Log.d(TAG, "initCastPlayer.onCastSessionAvailable." +
                                 "Set current player to castPlayer")
-                        currentPlayer = castPlayer
+                        // currentPlayer = castPlayer
+                        setPlayer(castPlayer)
                     }
                     override fun onCastSessionUnavailable() {
                         Log.d(TAG,"initCastPlayer.onCastSessionUnavailable." +
                                 "Set current player to exoPlayer")
-                        currentPlayer = exoPlayer
+                        // currentPlayer = exoPlayer
+                        setPlayer(exoPlayer)
                     }
                 }.also {
                     Log.d(TAG,"initCastPlayer.castPlayer.setSessionAvailabilityListener")
@@ -291,7 +223,9 @@ class ExoPlayService : BasePlayService() {
     private fun releaseCastPlayer() {
         Log.d(TAG, "releaseCastPlayer")
         castPlayer?.apply {
+            removeListener(exoPlayerListener!!)
             setSessionAvailabilityListener(null)
+            stop()
             release()
         }
         castPlayer = null
@@ -303,6 +237,92 @@ class ExoPlayService : BasePlayService() {
                 removeCastStateListener(it)
             }
         }
+    }
+
+    private fun setPlayer(player: Player?) {
+        Log.d(TAG, "setPlayer.player = $player")
+        Log.d(TAG, "setPlayer.currentPlayer = $currentPlayer")
+        if (player == null || player === currentPlayer) {
+            Log.d(TAG, "setPlayer.player === currentPlayer")
+            return
+        }
+        // Player state management.
+        var playbackPositionMs = C.TIME_UNSET
+        var windowIndex = C.INDEX_UNSET
+        var playWhenReady = false
+        // old currentPlayer
+        currentPlayer?.let {
+            // Save state from the previous player.
+            val playbackState = it.playbackState
+            if (playbackState != Player.STATE_ENDED) {
+                Log.d(TAG, "setPlayer.playbackState != Player.STATE_ENDED")
+                playWhenReady = it.playWhenReady
+                windowIndex = it.currentMediaItemIndex
+                if (windowIndex != presenter?.currentItemIndex) {
+                    Log.d(TAG, "setPlayer.windowIndex != presenter?.currentItemIndex")
+                    // playbackPositionMs = C.TIME_UNSET
+                    // windowIndex = currentItemIndex;
+                    presenter?.currentItemIndex = windowIndex
+                }
+            }
+            // presenter?.stopPlay() // or pausePlay(); // do not use presenter, timing issue
+            Log.d(TAG, "setPlayer.mediaSessionCallback.onStop()")
+            mediaSessionCallback?.onPause()
+            // for temporarily setting, it should be it.currentPosition
+            // playbackPositionMs = exoPlayer?.currentPosition!!
+            playbackPositionMs = it.currentPosition
+            Log.d(TAG, "setPlayer.playbackPositionMs = $playbackPositionMs")
+            presenter?.playingParam?.currentAudioPosition = playbackPositionMs
+            presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_PAUSED
+        }
+
+        currentPlayer = player
+        presenter?.let {
+            Log.d(TAG, "setPlayer.playbackPositionMs = $playbackPositionMs")
+            presenter?.playingParam?.currentPlaybackState = PlaybackStateCompat.STATE_BUFFERING
+            mediaSessionCallback?.onPrepareFromUri(it.mediaUri, null)
+            currentPlayer?.playWhenReady = true
+            Log.d(TAG, "setPlayer.currentPlayer.play()")
+            currentPlayer?.play()
+            it.setCurrentPlayerToPlayerView()
+        }
+
+        /*
+        // Playback transition.
+        currentPlayer?.let {
+            if (it.currentTimeline.isEmpty && presenter?.mediaUri != null) {
+                // has not play yet
+                Log.d(TAG, "setPlayer.currentTimeline is Empty")
+                val mediaItem: MediaItem = MediaItem.Builder()
+                    .setUri(presenter?.mediaUri)
+                    .setMediaMetadata(MediaMetadata.Builder().setTitle("Video Casted").build())
+                    .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
+                    .build()
+                Log.d(TAG, "setPlayer.windowIndex = $windowIndex")
+                val mediaItems: MutableList<MediaItem> = ArrayList()
+                mediaItems.add(mediaItem)
+                it.setMediaItems(mediaItems, windowIndex, C.TIME_UNSET)
+                it.repeatMode = presenter?.playingParam?.repeatStatus!!
+                it.playWhenReady = playWhenReady
+            } else {
+                // already played before
+                Log.d(TAG, "setPlayer.currentTimeline is not Empty or presenter?.mediaUri is null")
+            }
+            Log.d(TAG, "setPlayer.startPlay()")
+            if (windowIndex != C.INDEX_UNSET) {
+                Log.d(TAG, "setPlayer.windowIndex != C.INDEX_UNSET")
+                Log.d(TAG, "setPlayer.playbackPositionMs = $playbackPositionMs")
+                it.seekTo(playbackPositionMs)
+                it.playWhenReady = playWhenReady
+            }
+            // Playback transition.
+            // presenter?.startPlay()   // do not use this, timing issue
+            Log.d(TAG, "setPlayer.mediaSessionCallback.onPrepareFromUri()")
+            mediaSessionCallback?.onPrepareFromUri(presenter?.mediaUri!!, null)
+            // Player View management.
+            presenter?.setCurrentPlayerToPlayerView()
+        }
+        */
     }
 
     fun selectAudioTrack(trackIndicesCombination: Array<Int>?,
@@ -339,7 +359,8 @@ class ExoPlayService : BasePlayService() {
         val trackGroup = mappedTrackInfo.getTrackGroups(audioRendererIndex)[audioTrackGroupIndex]
         val override = TrackSelectionOverride(trackGroup, audioTrackIndex)
         val trackSelectionParam = parametersBuilder.setOverrideForType(override).build()
-        exoPlayer?.trackSelectionParameters = trackSelectionParam
+        // exoPlayer?.trackSelectionParameters = trackSelectionParam
+        currentPlayer?.trackSelectionParameters = trackSelectionParam
         return trackSelectionParam
     }
 
@@ -442,43 +463,51 @@ class ExoPlayService : BasePlayService() {
 
     // For ExoMediaSessionCallback.kt
     fun getMediaItemCount(): Int? {
-        return exoPlayer?.mediaItemCount
+        // return exoPlayer?.mediaItemCount
+        return currentPlayer?.mediaItemCount
     }
     fun setTrackSelectionParameters(trackSelParam: TrackSelectionParameters) {
-        exoPlayer?.trackSelectionParameters = trackSelParam
+        // exoPlayer?.trackSelectionParameters = trackSelParam
+        currentPlayer?.trackSelectionParameters = trackSelParam
     }
     fun setMediaItem(mediaItem: MediaItem) {
-        exoPlayer?.setMediaItem(mediaItem)
+        // exoPlayer?.setMediaItem(mediaItem)
+        currentPlayer?.setMediaItem(mediaItem)
     }
     fun prepare() {
-        exoPlayer?.prepare()
+        // exoPlayer?.prepare()
+        currentPlayer?.prepare()
     }
     fun setPlayWhenReady(whenReady: Boolean) {
-        exoPlayer?.playWhenReady = whenReady
+        // exoPlayer?.playWhenReady = whenReady
+        currentPlayer?.playWhenReady = whenReady
     }
     fun onPlay() {
-        exoPlayer?.apply {
-            Log.d(TAG, "onPlay().exoPlayer not null")
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
+            Log.d(TAG, "onPlay().currentPlayer = $currentPlayer")
             if (playbackState == Player.STATE_READY && !isPlaying) {
-                Log.d(TAG, "onPlay().exoPlayer is not playing, so play()")
+                Log.d(TAG, "onPlay().currentPlayer is not playing, so play()")
                 play()
             }
         }
     }
     fun onPause() {
-        exoPlayer?.apply {
-            Log.d(TAG, "onPause().exoPlayer not null")
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
+            Log.d(TAG, "onPause().currentPlayer = $currentPlayer")
             if (playbackState == Player.STATE_READY && isPlaying) {
-                Log.d(TAG, "onPause().exoPlayer is playing, so pause()")
+                Log.d(TAG, "onPause().currentPlayer is playing, so pause()")
                 pause()
             }
         }
     }
     fun onStop() {
-        exoPlayer?.apply {
-            Log.d(TAG, "onStop().exoPlayer not null")
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
+            Log.d(TAG, "onStop().currentPlayer = $currentPlayer")
             if (playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING) {
-                Log.d(TAG, "onStop().exoPlayer is Player.STATE_READY or " +
+                Log.d(TAG, "onStop().currentPlayer is Player.STATE_READY or " +
                         "Player.STATE_BUFFERING , so stop()")
                 stop()
             }
@@ -486,7 +515,8 @@ class ExoPlayService : BasePlayService() {
     }
     // For ExoPlayerListener.java
     fun isPlaying(): Boolean? {
-        return exoPlayer?.isPlaying
+        // return exoPlayer?.isPlaying
+        return currentPlayer?.isPlaying
     }
     //
 
@@ -504,12 +534,15 @@ class ExoPlayService : BasePlayService() {
 
     override fun setPlayerTime(progress: Long) {
         Log.d(TAG, "setPlayerTime")
-        exoPlayer?.seekTo(progress)
+        // exoPlayer?.seekTo(progress)
+        currentPlayer?.seekTo(progress)
     }
 
     override fun isSeekable(): Boolean {
         Log.d(TAG, "isSeekable")
-        exoPlayer?.apply {
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
+            Log.d(TAG, "isSeekable.isCurrentMediaItemSeekable")
             return isCurrentMediaItemSeekable
         }
         return false
@@ -548,7 +581,8 @@ class ExoPlayService : BasePlayService() {
                 }
             }
             if (!useAudioProcessor) {
-                exoPlayer?.volume = volumeTmp
+                // exoPlayer?.volume = volumeTmp
+                currentPlayer?.volume = volumeTmp
             }
             it.currentVolume = volumeTmp    // update presenter?.playingParam
             return
@@ -557,21 +591,24 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun getMediaDuration(): Long {
-        exoPlayer?.apply {
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
             return duration
         }
         return 0
     }
 
     override fun getCurrentPosition(): Long {
-        exoPlayer?.apply {
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
             return currentPosition
         }
         return 0
     }
 
     override fun getPlaybackState(): Int {
-        exoPlayer?.apply {
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
             return playbackState
         }
         return Player.STATE_IDLE
@@ -579,15 +616,16 @@ class ExoPlayService : BasePlayService() {
 
     override fun specificPlayerReplayMedia(currentAudioPosition: Long) {
         // song is playing, paused, or finished playing
-        // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
+        // cannot do the following statement (currentPlayer.setPlayWhenReady(false); )
         // because it will send Play.STATE_ENDED event after the playing has finished
         // but the playing was stopped in the middle of playing then won't send
         // Play.STATE_ENDED event
-        // exoPlayer.setPlayWhenReady(false);
-        Log.d(TAG,"specificPlayerReplayMedia.exoPlayer.seekTo(currentAudioPosition).")
-        exoPlayer?.apply {
+        // currentPlayer.setPlayWhenReady(false);
+        Log.d(TAG,"specificPlayerReplayMedia.currentPlayer.seekTo(currentAudioPosition).")
+        // exoPlayer?.apply {
+        currentPlayer?.apply {
             seekTo(currentAudioPosition)
-            prepare() // replace exoPlayer.retry()
+            prepare() // replace currentPlayer.retry()
             playWhenReady = true
         }
     }

@@ -40,9 +40,12 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
             Log.d(TAG, "durationSeekBarRunnable.run().getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
                 int playbackState = getPlayService().getPlaybackState();
+                Log.d(TAG, "durationSeekBarRunnable.run().getPlayWhenReady = "
+                        + getPlayService().getPlayWhenReady());
                 Log.d(TAG, "durationSeekBarRunnable.run().playbackState = " + playbackState);
                 if (getPlayService().getPlayWhenReady()
                         && playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+                    Log.d(TAG, "durationSeekBarRunnable.run().update_Player_duration_seekbar_progress");
                     mPresentView.update_Player_duration_seekbar_progress((int) getPlayService().getCurrentPosition());
                 }
             }

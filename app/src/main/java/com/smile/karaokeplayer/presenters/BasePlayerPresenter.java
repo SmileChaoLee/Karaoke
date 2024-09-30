@@ -211,10 +211,11 @@ public abstract class BasePlayerPresenter {
 
     public void onDurationSeekBarProgressChanged(int progress, boolean fromUser) {
         BasePlayService playService = mPresentView.getPlayService();
-        Log.d(TAG, "onDurationSeekBarProgressChanged.playService = " + playService);
         if (playService == null || !playService.isSeekable()) {
+            Log.d(TAG, "onDurationSeekBarProgressChanged.playService is null or not seekable");
             return;
         }
+        Log.d(TAG, "onDurationSeekBarProgressChanged.progress = " + progress);
         float positionTime = progress / 1000.0f;   // seconds
         int minutes = (int)(positionTime / 60.0f);    // minutes
         int seconds = (int)positionTime - (minutes * 60);

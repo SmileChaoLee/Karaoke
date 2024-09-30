@@ -8,8 +8,9 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
+import com.google.android.exoplayer2.util.MimeTypes
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.PlayingParameters
 import exoplayer.presenters.ExoPlayerPresenter
@@ -46,11 +47,16 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.isMediaPrepared = false
-        val mediaItem = MediaItem.fromUri(uri)
-        Log.d(TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
-                service.getMediaItemCount())
         val trackParameters = TrackSelectionParameters.Builder(service.applicationContext).build()
         service.setTrackSelectionParameters(trackParameters)
+        // val mediaItem = MediaItem.fromUri(uri)
+        val mediaItem = MediaItem.Builder()
+            .setUri(uri)
+            .setMediaMetadata(MediaMetadata.Builder().setTitle("Opened Media").build())
+            .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
+            .build()
+        Log.d(TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
+                service.getMediaItemCount())
         service.setMediaItem(mediaItem)
         Log.d(TAG, "onPrepareFromUri().service.exoPlayer.prepare()")
         service.prepare()
