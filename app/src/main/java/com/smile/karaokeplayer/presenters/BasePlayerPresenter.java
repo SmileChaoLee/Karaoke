@@ -37,7 +37,6 @@ public abstract class BasePlayerPresenter {
     protected PlayingParameters mPlayingParam;
     protected SongInfo mSingleSongInfo;    // when playing single song in songs list
     private boolean mCanShowNotSupportedFormat;
-    private int stopNumByUser = 0;
 
     public interface BasePresentView {
         void setImageButtonStatus();
@@ -47,8 +46,8 @@ public abstract class BasePlayerPresenter {
         void update_Player_duration_seekbar(float duration);
         void update_Player_duration_seekbar_progress(int progress);
         void updateVolumeSeekBarProgress();
-        void showNativeAndBannerAd();
-        void hideNativeAndBannerAd();
+        void showNativeAndHideBannerAd();
+        void hideNativeAd();
         void showBufferingMessage();
         void dismissBufferingMessage();
         void buildAudioTrackMenuItem(int audioTrackNumber);
@@ -271,12 +270,7 @@ public abstract class BasePlayerPresenter {
             boolean stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
             if (!stillPlayNext) {    // still play the next song
-                mPresentView.showNativeAndBannerAd();
-                if ((MySingleTon.INSTANCE.getOrderedSongs().size() > 0)
-                        && (!mPlayingParam.isPlaySingleSong())) {
-                    // finish playing and not playing single song
-                    mPresentView.showInterstitialAd();
-                }
+                mPresentView.showNativeAndHideBannerAd();
             }
         }
 
@@ -483,7 +477,7 @@ public abstract class BasePlayerPresenter {
         mPlayingParam.setCurrentPlaybackState(currentState);
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");
-            mPresentView.hideNativeAndBannerAd();
+            mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
             return;
         }
@@ -500,16 +494,7 @@ public abstract class BasePlayerPresenter {
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
                 mPlayingParam.setMediaPrepared(false);
-                mPresentView.showNativeAndBannerAd();
-                stopNumByUser++;
-                Log.d(TAG, "updateStatusAndUi.stopNumByUser = " + stopNumByUser +
-                        ", isPlaySingleSong = " + mPlayingParam.isPlaySingleSong());
-                if (stopNumByUser >= 3) {    // 3rd stop then show interstitial ad
-                    if (!mPlayingParam.isPlaySingleSong()) {
-                        mPresentView.showInterstitialAd();
-                    }
-                    stopNumByUser = 0;
-                }
+                mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
@@ -524,14 +509,13 @@ public abstract class BasePlayerPresenter {
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAndAudioController();
                 mPresentView.playButtonOffPauseButtonOn();
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING.hideNativeAndBannerAd()");
-                onlyMusicShowNativeAndBannerAd();
+                adsForOnlyMusic();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 // when playing is paused
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PAUSED");
                 mPresentView.playButtonOnPauseButtonOff();
-                mPresentView.showNativeAndBannerAd();
+                mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
                 // 1. exoPlayer finished playing
@@ -583,14 +567,14 @@ public abstract class BasePlayerPresenter {
         }
     }
 
-    protected void onlyMusicShowNativeAndBannerAd() {
-        Log.d(TAG, "musicShowNativeAndBannerAd.getNumberOfVideoTracks() = "
+    protected void adsForOnlyMusic() {
+        Log.d(TAG, "adsForOnlyMusic.getNumberOfVideoTracks() = "
                 + getNumberOfVideoTracks());
         if (getNumberOfVideoTracks() == 0) {
             // no video is being played, show native ads
-            mPresentView.showNativeAndBannerAd();
+            mPresentView.showNativeAndHideBannerAd();
         } else {
-            mPresentView.hideNativeAndBannerAd();
+            mPresentView.hideNativeAd();
         }
     }
 

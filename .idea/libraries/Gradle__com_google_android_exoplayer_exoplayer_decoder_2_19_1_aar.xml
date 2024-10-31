@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.exoplayer:exoplayer-decoder:2.19.1@aar" external-system-id="GRADLE">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b875d7ae849d8f08be88ab50bf99c345/transformed/exoplayer-decoder-2.19.1/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/a40efceb27aa01bb972fad4257f5a68b/transformed/exoplayer-decoder-2.19.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b875d7ae849d8f08be88ab50bf99c345/transformed/exoplayer-decoder-2.19.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b875d7ae849d8f08be88ab50bf99c345/transformed/exoplayer-decoder-2.19.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/a40efceb27aa01bb972fad4257f5a68b/transformed/exoplayer-decoder-2.19.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/a40efceb27aa01bb972fad4257f5a68b/transformed/exoplayer-decoder-2.19.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

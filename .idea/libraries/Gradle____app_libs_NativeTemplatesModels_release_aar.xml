@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: ./app/libs/NativeTemplatesModels-release.aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/06c03ace6eddc17437ab75bb0449f336/transformed/NativeTemplatesModels-release/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/06c03ace6eddc17437ab75bb0449f336/transformed/NativeTemplatesModels-release/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/06c03ace6eddc17437ab75bb0449f336/transformed/NativeTemplatesModels-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/e7e2b28de91767afc9bb3edd5e5a7b6b/transformed/NativeTemplatesModels-release/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/e7e2b28de91767afc9bb3edd5e5a7b6b/transformed/NativeTemplatesModels-release/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/e7e2b28de91767afc9bb3edd5e5a7b6b/transformed/NativeTemplatesModels-release/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

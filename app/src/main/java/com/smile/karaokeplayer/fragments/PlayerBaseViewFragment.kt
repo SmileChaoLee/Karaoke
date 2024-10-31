@@ -193,11 +193,13 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         setHasOptionsMenu(true) // must have because it has menu
 
+        /*
         activity?.let {
             interstitialAd = ShowInterstitial(it,
                     (it.application as BaseApplication).facebookInterstitial,
                     (it.application as BaseApplication).adMobInterstitial)
         }
+        */
 
         val presenter = getPlayerPresenter()
         if (presenter == null) {
@@ -335,7 +337,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         setImageButtonStatus() // must before setButtonsPositionAndSize()
         setButtonsPositionAndSize(resources.configuration)
         setOnClickEvents()
-        showNativeAndBannerAd()
+        showNativeAndHideBannerAd()
 
         Log.d(TAG, "onViewCreated() is finished.")
     }
@@ -553,7 +555,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     override fun hidePlayerView() {
         Log.d(TAG, "hidePlayerView() is called")
         playerViewLinearLayout?.visibility = View.INVISIBLE
-        hideNativeAndBannerAd()
+        hideNativeAd()
         setImageButtonStatus()
         // must be after statement of playerViewLinearLayout.visibility = View.INVISIBLE
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
@@ -567,7 +569,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             if ( (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) ||
                     (numberOfVideoTracks == 0) ) {
                 // not playing then show ads or only music is being played, show native ads
-                showNativeAndBannerAd()
+                showNativeAndHideBannerAd()
             }
         }
         setImageButtonStatus()
@@ -1011,23 +1013,30 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         volumeSeekBar?.setProgressAndThumb(mPresenter.currentProgressForVolumeSeekBar)
     }
 
-    override fun showNativeAndBannerAd() {
+    override fun showNativeAndHideBannerAd() {
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
-            Log.d(TAG, "showNativeAndBannerAd.View.VISIBLE")
-            nativeAdViewVisibility = View.VISIBLE
-            nativeTemplate?.showNativeAd()
+            Log.d(TAG, "showNativeAndHideBannerAd.View.VISIBLE")
+            mPresenter.playingParam.let {
+                if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) {
+                    Log.d(TAG, "showNativeAndHideBannerAd.Not PlaybackStateCompat.STATE_PLAYING")
+                    nativeAdViewVisibility = View.VISIBLE
+                    nativeTemplate?.showNativeAd()
+                    // hide the banner ad
+                    bannerLinearLayout?.visibility = View.GONE
+                } else {
+                    hideNativeAd()
+                }
+            }
         } else {
-            Log.d(TAG, "showNativeAndBannerAd.View.INVISIBLE")
+            Log.d(TAG, "showNativeAndHideBannerAd.View.INVISIBLE")
+            // show the banner ad if in the right place
         }
     }
 
-    override fun hideNativeAndBannerAd() {
-        Log.d(TAG, "hideNativeAndBannerAd() is called.")
-        // if (playerViewLinearLayout.visibility == View.VISIBLE) {
-            // Log.d(TAG, "hideNativeAndBannerAd.View.VISIBLE")
-            nativeAdViewVisibility = View.GONE
-            nativeTemplate?.hideNativeAd()
-        // }
+    override fun hideNativeAd() {
+        Log.d(TAG, "hideNativeAd")
+        nativeAdViewVisibility = View.GONE
+        nativeTemplate?.hideNativeAd()
     }
 
     override fun showBufferingMessage() {
