@@ -478,7 +478,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onResume() is called.")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout)
+        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout
+            , nativeAdViewVisibility)
         startAndBindPlayService()
     }
 
@@ -504,7 +505,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(newConfig.orientation, bannerLinearLayout)
+        MyBannerAdView.setVisible(newConfig.orientation, bannerLinearLayout
+            , nativeAdViewVisibility)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -777,7 +779,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout)
+            MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout
+                , nativeAdViewVisibility)
         }
     }
 

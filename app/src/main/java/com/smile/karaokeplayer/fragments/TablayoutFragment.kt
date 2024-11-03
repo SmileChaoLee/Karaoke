@@ -56,7 +56,7 @@ class TablayoutFragment : Fragment() {
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab)
+        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab, View.GONE)
 
         playTabLayout = view.findViewById(R.id.fragmentsTabLayout)
         val tabText = arrayOf(getString(R.string.open_files), getString(R.string.my_favorites))
@@ -122,14 +122,14 @@ class TablayoutFragment : Fragment() {
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(newConfig.orientation, bannerLayoutForTab)
+        MyBannerAdView.setVisible(newConfig.orientation, bannerLayoutForTab, View.GONE)
     }
 
     override fun onResume() {
         Log.d(TAG, "onResume()")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab)
+        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {
