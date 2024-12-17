@@ -77,7 +77,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        Log.d(TAG, "onBind.binder= $binder")
+        Log.d(TAG, "onBind.binder = $binder")
         return binder
     }
 
@@ -90,6 +90,11 @@ class ExoPlayService : BasePlayService() {
         Log.d(TAG, "onDestroy")
         super.onDestroy()
         releaseCastPlayerAndExoPlayer()
+        mediaControllerCompat?.apply {
+            controllerCallback?.let {
+                registerCallback(it)
+            }
+        }
     }
 
     fun setPresenter(presenter: ExoPlayerPresenter) {

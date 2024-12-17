@@ -17,7 +17,7 @@ import exoplayer.presenters.ExoPlayerPresenter
 import exoplayer.services.ExoPlayService
 
 class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
-                              private val service: ExoPlayService)
+                              private val playService: ExoPlayService)
     : MediaSessionCompat.Callback() {
 
     companion object {
@@ -47,19 +47,19 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.isMediaPrepared = false
-        val trackParameters = TrackSelectionParameters.Builder(service.applicationContext).build()
-        service.setTrackSelectionParameters(trackParameters)
+        val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build()
+        playService.setTrackSelectionParameters(trackParameters)
         // val mediaItem = MediaItem.fromUri(uri)
         val mediaItem = MediaItem.Builder()
             .setUri(uri)
             .setMediaMetadata(MediaMetadata.Builder().setTitle("Opened Media").build())
             .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
             .build()
-        service.setMediaItem(mediaItem)
+        playService.setMediaItem(mediaItem)
         Log.d(TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
-                service.getMediaItemCount())
+                playService.getMediaItemCount())
         Log.d(TAG, "onPrepareFromUri().service.exoPlayer.prepare()")
-        service.prepare()
+        playService.prepare()
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition
         var currentPlaybackState = playingParam?.currentPlaybackState
@@ -84,26 +84,26 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
             }
         }
         currentAudioPosition?.let {
-            service.setPlayerTime(it)
+            playService.setPlayerTime(it)
         }
 
         when (currentPlaybackState) {
             PlaybackStateCompat.STATE_PAUSED -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
-                service.setPlayWhenReady(false)
+                playService.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_STOPPED -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
-                service.setPlayWhenReady(false)
+                playService.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_PLAYING -> {
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
-                service.setPlayWhenReady(true)  // start playing when ready
+                playService.setPlayWhenReady(true)  // start playing when ready
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
                 Log.d(TAG,"onPrepareFromUr().iPlaybackStateCompat.STATE_NONE or default")
-                service.setPlayWhenReady(true)  // start playing when ready
+                playService.setPlayWhenReady(true)  // start playing when ready
             }
         }
     }
@@ -124,21 +124,21 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
     override fun onPlay() {
         super.onPlay()
         Log.d(TAG, "onPlay()")
-        service.onPlay()
+        playService.onPlay()
     }
 
     @Synchronized
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause()")
-        service.onPause()
+        playService.onPause()
     }
 
     @Synchronized
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop()")
-        service.onStop()
+        playService.onStop()
     }
 
     @Synchronized

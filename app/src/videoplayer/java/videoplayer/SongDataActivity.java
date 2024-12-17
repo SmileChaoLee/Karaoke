@@ -11,7 +11,7 @@ public class SongDataActivity extends BaseSongDataActivity {
     @Override
     public void setKaraokeSettingLayoutVisibility() {
         Log.d(TAG, "setKaraokeSettingLayoutVisibility()");
-        karaokeSettingLayout.setVisibility(View.GONE);
+        karaokeSettingLayout.setVisibility(View.VISIBLE);
     }
 
 }

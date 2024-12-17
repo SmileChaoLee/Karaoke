@@ -32,15 +32,19 @@ android {
     productFlavors {
         exoplayer {
             dimension("player")
-            applicationId = "com.smile.karaokeplayer"
+            // applicationId = "com.smile.karaokeplayer"
+            applicationId = "com.smile.videoplayer"
             manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
-            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
+            // manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
+            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
         }
         videoplayer {
             dimension("player")
-            applicationId = "com.smile.videoplayer"
+            // applicationId = "com.smile.videoplayer"
+            applicationId = "com.smile.karaokeplayer"
             manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
-            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
+            // manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
+            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
         }
     }
 
@@ -101,7 +105,7 @@ android {
         buildConfig true
     }
     namespace 'com.smile.karaokeplayer'
-    testNamespace 'com.smile.karaokeplayer.androidTest'
+    // testNamespace 'com.smile.karaokeplayer.androidTest'
 }
 
 allprojects {
@@ -124,7 +128,7 @@ dependencies {
     implementation 'com.facebook.android:audience-network-sdk:6.16.0'
     implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-ads:23.5.0'
+    implementation 'com.google.firebase:firebase-ads:23.6.0'
 
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'

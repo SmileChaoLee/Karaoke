@@ -20,6 +20,10 @@
         <activity
             android:name="videoplayer.SongDataActivity">
         </activity>
+        <service
+            android:name="videoplayer.services.VlcPlayService"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

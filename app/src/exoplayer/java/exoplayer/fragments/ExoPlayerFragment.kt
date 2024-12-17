@@ -2,16 +2,27 @@ package exoplayer.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
+import com.smile.karaokeplayer.R
+import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
 import exoplayer.presenters.ExoPlayerPresenter
 import exoplayer.presenters.ExoPlayerPresenter.ExoPlayerPresentView
 import exoplayer.services.ExoPlayService
@@ -23,69 +34,8 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     private lateinit var presenter: ExoPlayerPresenter
     private var playerView: StyledPlayerView? = null
     private var playService: ExoPlayService? = null
-    override fun getPlayService() : ExoPlayService? {
-        return playService
-    }
-
+    private var mediaRouteButton: MediaRouteButton? = null
     private var mPlayServiceIntent: Intent? = null
-    override fun onPlayServiceConnected(service: IBinder) {
-        Log.d(TAG, "onPlayServiceConnected")
-        val binder = service as LocalBinder
-        playService = binder.getService()
-        // Test code here for ExoPlayService
-        playService?.setPresenter(presenter)
-        playService?.initMediaControllerCompat(presenter)
-        playService?.initCastPlayerAndExoPlayer()
-        Log.d(TAG, "onPlayServiceConnected.Video player view")
-        // Video player view
-        setVideoPlayerView()
-        Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
-        presenter.playSongPlayedBeforeActivityCreated()
-        setMediaRouteButtonVisible()
-    }
-
-    override fun onPlayServiceDisconnected() {
-        Log.d(TAG, "onPlayServiceDisconnected")
-        startAndBindPlayService()
-    }
-
-    override fun startAndBindPlayService() {
-        activity?.let {
-            if (isServiceDestroyed) {
-                Log.d(TAG, "startAndBindPlayService.startService()")
-                it.startService(mPlayServiceIntent)
-                isServiceDestroyed = false
-            } else {
-                Log.d(TAG, "startAndBindPlayService.PlayService already started")
-            }
-            if (!isServiceBound) {
-                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
-                Log.d(TAG, "startAndBindPlayService.isBound = $result")
-            } else {
-                Log.d(TAG, "startAndBindPlayService.PlayService already bound")
-            }
-        }
-    }
-
-    override fun unbindAndStopPlayService() {
-        activity?.let {
-            if (isServiceBound) {
-                Log.d(TAG, "unbindAndStopPlayService.unbindService()")
-                it.unbindService(connection)
-                // playService = null;
-                isServiceBound = false
-            } else {
-                Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
-            }
-            if (!isServiceDestroyed) {
-                Log.d(TAG, "unbindAndStopPlayService.stopService()")
-                it.stopService(mPlayServiceIntent)
-                isServiceDestroyed = true
-            } else {
-                Log.d(TAG,"unbindAndStopPlayService.PlayService is destroyed or not started")
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -147,23 +97,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         }
     }
 
-    // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
-    override fun setCurrentPlayerToPlayerView() {
-        Log.d(TAG, "setCurrentPlayerToPlayerView")
-        playerView?.apply {
-            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
-            player = playService?.currentPlayer
-            requestFocus()
-        }
-    }
-    // end of implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
-
-    // implement abstract methods of super class
-    override fun getPlayerPresenter() : ExoPlayerPresenter {
-        return presenter
-    }
-
-    override fun setMediaRouteButtonVisible() {
+    fun setMediaRouteButtonVisible() {
         Log.d(TAG, "setMediaRouteButtonVisible")
         if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
             return
@@ -178,12 +112,158 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         Log.d(TAG, "setMediaRouteButtonVisible.mediaRouteButton?.isEnabled = ${mediaRouteButton?.isEnabled}")
     }
 
-    override fun setMenuItemsVisibility() {
-        // do nothing
+    // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
+    override fun setCurrentPlayerToPlayerView() {
+        Log.d(TAG, "setCurrentPlayerToPlayerView")
+        playerView?.apply {
+            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
+            player = playService?.currentPlayer
+            requestFocus()
+        }
     }
 
+    override fun getPlayService(): ExoPlayService? {
+        return playService
+    }
+    // end of implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
+
+    // implement abstract methods of super class
+    override fun getPlayerPresenter() : ExoPlayerPresenter {
+        return presenter
+    }
+
+    override fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
+        // MediaRouteButton View
+        Log.d(TAG, "setMediaRouteButtonView")
+        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            return
+        }
+        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
+        try {
+            mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
+            setMediaRouteButtonVisible()
+            mediaRouteButton?.let {
+                activity?.applicationContext?.let { ctxIt ->
+                    CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
+                }
+            }
+
+            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
+            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+            val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
+            val mediaRouteButtonDrawable: Drawable = BitmapDrawable(
+                resources,
+                Bitmap.createScaledBitmap(
+                    mediaRouteButtonBitmap,
+                    imageButtonHeight,
+                    imageButtonHeight,
+                    true
+                )
+            )
+            mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
+        } catch (ex: Exception) {
+            Log.d(TAG, "setMediaRouteButtonView.Exception")
+            ex.printStackTrace()
+        }
+    }
+
+    override fun setMenuItemsVisibility() {
+        val channelMenuItem = mainMenu?.findItem(R.id.channel)
+        channelMenuItem?.isVisible = true
+        channelMenuItem?.isEnabled = true
+    }
+
+    /*
     override fun setSwitchToVocalImageButtonVisibility() {
         // do nothing
+    }
+    */
+
+    override fun onPlayServiceConnected(service: IBinder) {
+        Log.d(TAG, "onPlayServiceConnected")
+        val binder = service as LocalBinder
+        playService = binder.getService()
+        // Test code here for ExoPlayService
+        playService?.setPresenter(presenter)
+        playService?.initMediaControllerCompat(presenter)
+        playService?.initCastPlayerAndExoPlayer()
+        Log.d(TAG, "onPlayServiceConnected.Video player view")
+        // Video player view
+        setVideoPlayerView()
+        Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
+        presenter.playSongPlayedBeforeActivityCreated()
+        setMediaRouteButtonVisible()
+    }
+
+    override fun onPlayServiceDisconnected() {
+        Log.d(TAG, "onPlayServiceDisconnected")
+        startAndBindPlayService()
+    }
+
+    override fun startAndBindPlayService() {
+        activity?.let {
+            if (isServiceDestroyed) {
+                Log.d(TAG, "startAndBindPlayService.startService()")
+                it.startService(mPlayServiceIntent)
+                isServiceDestroyed = false
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already started")
+            }
+            if (!isServiceBound) {
+                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
+                Log.d(TAG, "startAndBindPlayService.isBound = $result")
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already bound")
+            }
+        }
+    }
+
+    override fun unbindAndStopPlayService() {
+        activity?.let {
+            if (isServiceBound) {
+                Log.d(TAG, "unbindAndStopPlayService.unbindService()")
+                it.unbindService(connection)
+                // playService = null;
+                isServiceBound = false
+            } else {
+                Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
+            }
+            if (!isServiceDestroyed) {
+                Log.d(TAG, "unbindAndStopPlayService.stopService()")
+                it.stopService(mPlayServiceIntent)
+                isServiceDestroyed = true
+            } else {
+                Log.d(TAG,"unbindAndStopPlayService.PlayService is destroyed or not started")
+            }
+        }
+    }
+
+    override fun audioChannelButtonListener() {
+        mPresenter.playingParam.apply {
+            when (currentChannelPlayed) {
+                CommonConstants.LeftChannel -> {
+                    currentChannelPlayed = CommonConstants.RightChannel
+                }
+                CommonConstants.RightChannel -> {
+                    currentChannelPlayed = CommonConstants.StereoChannel
+                }
+                CommonConstants.StereoChannel -> {
+                    currentChannelPlayed = CommonConstants.LeftChannel
+                }
+            }
+            activity?.let{
+                val str =
+                    when (currentChannelPlayed) {
+                        CommonConstants.LeftChannel -> it.getString(R.string.leftChannelString)
+                        CommonConstants.RightChannel -> it.getString(R.string.rightChannelString)
+                        CommonConstants.StereoChannel -> it.getString(R.string.stereoChannelString)
+                        else -> it.getString(R.string.unknown)
+                    }
+                ScreenUtil.showToast(it, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                    Toast.LENGTH_SHORT)
+            }
+            mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
+        }
     }
     // end of implementing methods of super class
 }

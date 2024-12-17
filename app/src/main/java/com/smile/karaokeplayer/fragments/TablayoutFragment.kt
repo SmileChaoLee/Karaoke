@@ -21,8 +21,8 @@ private const val TAG : String = "TablayoutFragment"
 class TablayoutFragment : Fragment() {
 
     companion object {
-        const val OpenFragmentTag : String = "OPEN_FILES"
-        const val FavoriteFragmentTag : String = "MY_FAVORITES"
+        const val OPEN_FRAGMENT_TAG : String = "OPEN_FILES"
+        const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
     }
 
     // private lateinit var fragmentAdapter: FragmentAdapter
@@ -67,14 +67,14 @@ class TablayoutFragment : Fragment() {
                         0-> {
                             Log.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(R.id.tablayout_container, openFragment, OpenFragmentTag)
+                                replace(R.id.tablayout_container, openFragment, OPEN_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         1-> {
                             Log.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(R.id.tablayout_container, favoriteFragment, FavoriteFragmentTag)
+                                replace(R.id.tablayout_container, favoriteFragment, FAVORITE_FRAGMENT_TAG)
                                 commit()
                             }
                         }
@@ -96,8 +96,12 @@ class TablayoutFragment : Fragment() {
         })
 
         playTabLayout?.let {
-            it.addTab(it.newTab().setText(tabText[0]), true)
-            it.addTab(it.newTab().setText(tabText[1]))
+            var openTab: TabLayout.Tab = it.newTab()
+            openTab.text = tabText[0]
+            it.addTab(openTab, true)
+            var favoriteTab: TabLayout.Tab = it.newTab()
+            favoriteTab.text = tabText[1]
+            it.addTab(favoriteTab)
         }
         /*
         val playViewPager2: ViewPager2 = view.findViewById(R.id.fragmentsViewPager2)

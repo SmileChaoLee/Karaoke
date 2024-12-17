@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">微笑卡拉OK</string>
+    <string name="app_name">微笑視訊播放器</string>
     <string name="fileString">檔案</string>
     <string name="accessExternalStoragePermissionDeniedString">存取外部儲存裝置被拒絕</string>
     <string name="noReadableExternalStorageString">沒有外部存取裝置</string>
@@ -69,4 +69,5 @@
     <string name="unknown">不知道</string>
     <string name="add_to_favorites">加入我的最愛</string>
     <string name="excess_max">超過最大數</string>
+    <string name="notSupportedString">沒有支援</string>
 </resources>

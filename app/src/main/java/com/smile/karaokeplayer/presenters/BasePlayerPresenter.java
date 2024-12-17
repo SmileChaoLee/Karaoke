@@ -27,7 +27,7 @@ public abstract class BasePlayerPresenter {
 
     private static final String TAG = "BasePlayerPresenter";
     private final BasePresentView mPresentView;
-    protected Activity mActivity;
+    protected final Activity mActivity;
     protected final float mTextFontSize;
     protected final float mFontScale;
     protected final float mToastTextSize;
@@ -265,6 +265,7 @@ public abstract class BasePlayerPresenter {
             return;
         }
         BasePlayService playService = mPresentView.getPlayService();
+        Log.d(TAG, "startAutoPlay.playService = " + playService);
         if (playService != null) {
             Log.d(TAG, "startAutoPlay.playService.startAutoPlay()");
             boolean stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
