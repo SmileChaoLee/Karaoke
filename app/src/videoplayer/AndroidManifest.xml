@@ -6,7 +6,7 @@
         android:name="videoplayer.SmileApplication"
         android:icon="@mipmap/app_icon">
         <activity
-            android:name="videoplayer.VLCPlayerActivity"
+            android:name="videoplayer.VlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>

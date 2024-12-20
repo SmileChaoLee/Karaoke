@@ -192,7 +192,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                     getSongs(songListSQLite, "playSelectedButton").let { songsIt ->
                         if (songsIt.size == 0) {
                             ScreenUtil.showToast(
-                                    activity, getString(R.string.noFilesSelectedString), textFontSize,
+                                activityIt, getString(R.string.noFilesSelectedString), textFontSize,
                                     BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         } else {
                             MySingleTon.orderedSongs.clear()

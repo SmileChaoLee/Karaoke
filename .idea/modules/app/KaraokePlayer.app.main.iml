@@ -54,10 +54,10 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/videoplayerDebug/out" isTestSource="false" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/res/processVideoplayerDebugGoogleServices">
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/processVideoplayerDebugGoogleServices" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/processVideoplayerDebugGoogleServices" type="java-resource" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/videoplayer/debug">
-      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/videoplayer/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/videoplayer/debug" type="java-resource" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/videoplayer/debug">
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/videoplayer/debug" isTestSource="false" generated="true" />

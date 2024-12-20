@@ -27,7 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
             android:padding="0dp"
-            android:background="@color/transparentDark"
             android:weightSum="100">
             <TextView
                 android:id="@+id/playingTimeTextView"
@@ -51,7 +50,6 @@
                 android:indeterminateOnly="false"
                 android:thumb="@drawable/duration_seekbar_thumb"
                 android:progressDrawable="@drawable/duration_seekbar_progressdrawable"
-                android:background="@android:color/transparent"
                 android:maxWidth="1000dp"
                 android:maxHeight="1000dp">
             </androidx.appcompat.widget.AppCompatSeekBar>

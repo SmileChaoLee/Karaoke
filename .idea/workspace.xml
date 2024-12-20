@@ -10,12 +10,23 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout-land/activity_song_data.xml">
+        <config>
+          <state>Landscape</state>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_base.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_favorite_list.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_player_base.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
@@ -135,6 +146,31 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/player_view_toolbar_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/toolbar_audio_controller_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/volume_horizontal_seekbar_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/volume_vertical_seekbar_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/menu_main.xml">
         <config>
           <theme>@style/AppTheme</theme>
@@ -146,108 +182,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Changed versionCode to 670">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_concurrent_concurrent_futures_ktx_1_1_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_core_1_6_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_core_3_6_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_idling_resource_3_6_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_ext_junit_1_2_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_ext_truth_1_6_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_monitor_1_7_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_rules_1_6_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_runner_1_6_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_services_storage_1_5_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_uiautomator_uiautomator_2_3_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_tracing_tracing_1_2_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager2_viewpager2_1_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_23_6_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_base_23_6_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_lite_23_6_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_auto_value_auto_value_annotations_1_6_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_ads_23_6_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_j2objc_j2objc_annotations_1_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_truth_truth_1_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_googlecode_java_diff_utils_diffutils_1_3_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_checkerframework_checker_compat_qual_2_5_5.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_checkerframework_checker_qual_3_12_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_library_1_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_3_6_0_eap12_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.androidTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/exoplayer/res/mipmap/app_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-night/themes.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values/themes.xml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="1. Implemented service to videoPlayer&#10;2. Changed the package name of exoplayer to &quot;com.smile.videoplayer&quot;&#10;3. Changed the package name of videoplayer to &quot;com.smile.karaokeplayer&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_mediarouter_mediarouter_1_3_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_api_3_0_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_backend_cct_3_1_3_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_runtime_3_1_3_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_cast_2_19_1_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_mediasession_2_19_1_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_23_5_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_base_23_5_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_ads_lite_23_5_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_1_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_21_3_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_framework_21_3_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_flags_18_0_1_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_ads_23_5_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_17_0_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_json_18_0_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_proto_16_0_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/exoplayer/release/app-exoplayer-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/app/exoplayer/release/app-exoplayer-release.aab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/SmileApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/SmileApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/TablayoutFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/TablayoutFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tablayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_tablayout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap/app_icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rCN/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rHK/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rHK/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rMO/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rMO/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rSG/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rSG/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-zh-rTW/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/OpenFileFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/OpenFileFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/interfaces/PlaySongs.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/interfaces/PlaySongs.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_player_base.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/menu_control_buttons_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/menu_control_buttons_layout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/toolbar_audio_controller_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/toolbar_audio_controller_layout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/volume_seekbar_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/volume_vertical_seekbar_layout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/videoplayer/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VLCMediaControllerCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaControllerCallback.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VLCMediaSessionCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaSessionCallback.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VLCPlayerEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VLCPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/SmileApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/SmileApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/SongDataActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/SongDataActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/VLCPlayerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/VLCPlayerActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VLCPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/mipmap/app_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/mipmap/app_icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rCN/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rCN/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rHK/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rHK/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rMO/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rMO/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rSG/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rSG/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rTW/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values-zh-rTW/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/VLCPlayerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/VlcPlayerActivity.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -343,11 +291,11 @@
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/videoplayer/res",
+    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/main/res/layout",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   },
   "keyToStringList": {
     "ExportApk.BuildVariants": [
@@ -363,11 +311,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
       <recent name="$PROJECT_DIR$/app/src/videoplayer/res" />
       <recent name="$PROJECT_DIR$/app/src/videoplayer/res/values" />
       <recent name="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer" />
       <recent name="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks" />
-      <recent name="$PROJECT_DIR$/app/src/exoplayer/res/layout" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
@@ -811,7 +759,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="95" />
+    <option name="localTasksCounter" value="96" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -894,7 +842,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="Fixed permission issues for targeting Android 13" />
     <MESSAGE value="targeting Android 14 (API 34)" />
     <MESSAGE value="Migrated BuildConfig to Gradle build files" />
     <MESSAGE value="minSdk to 23" />
@@ -919,6 +866,7 @@
     <MESSAGE value="removed interstitial Ads and hide banner adds when native ad is showing" />
     <MESSAGE value="Hide Banner Ad when Native Ad is up" />
     <MESSAGE value="Changed versionCode to 670" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed versionCode to 670" />
+    <MESSAGE value="1. Implemented service to videoPlayer&#10;2. Changed the package name of exoplayer to &quot;com.smile.videoplayer&quot;&#10;3. Changed the package name of videoplayer to &quot;com.smile.karaokeplayer&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. Implemented service to videoPlayer&#10;2. Changed the package name of exoplayer to &quot;com.smile.videoplayer&quot;&#10;3. Changed the package name of videoplayer to &quot;com.smile.karaokeplayer&quot;" />
   </component>
 </project>

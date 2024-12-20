@@ -6,9 +6,9 @@ import android.util.Log
 import com.smile.karaokeplayer.BaseActivity
 import videoplayer.fragments.VlcPlayerFragment
 
-private const val TAG : String = "VLCPlayerActivity"
+private const val TAG : String = "VlcPlayerActivity"
 
-class VLCPlayerActivity : BaseActivity() {
+class VlcPlayerActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate() is called")
         super.onCreate(savedInstanceState)
