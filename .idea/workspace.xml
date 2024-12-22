@@ -182,16 +182,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Refined UI (buttons)">
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout_backup.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Refined UI (buttons) again">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/main_menuitem_background_color.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/main_menuitem_background_color.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/menu_control_buttons_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/menu_control_buttons_layout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/toolbar_audio_controller_layout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/toolbar_audio_controller_layout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -755,7 +751,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="98" />
+    <option name="localTasksCounter" value="99" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -838,7 +834,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="minSdk to 23" />
     <MESSAGE value="1. Gradle Plugin 7.3.1 (Gradle 7.4)&#10;2. JDK 11&#10;&#10;Works for Signed build" />
     <MESSAGE value="Videoplayer worked" />
     <MESSAGE value="Update aar files" />
@@ -863,6 +858,7 @@
     <MESSAGE value="1. Implemented service to videoPlayer&#10;2. Changed the package name of exoplayer to &quot;com.smile.videoplayer&quot;&#10;3. Changed the package name of videoplayer to &quot;com.smile.karaokeplayer&quot;" />
     <MESSAGE value="1. Refined&#10;2. Changed transparentDark to transparent for buttons" />
     <MESSAGE value="Refined UI (buttons)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refined UI (buttons)" />
+    <MESSAGE value="Refined UI (buttons) again" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refined UI (buttons) again" />
   </component>
 </project>

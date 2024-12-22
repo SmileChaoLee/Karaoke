@@ -333,25 +333,11 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
     }
 
     public void setVideoWindowSize() {
-        if (getPlayService() == null || getPlayService().getVlcPlayer() == null) {
-            Log.d(TAG, "setVideoWindowSize.getPlayService() = null or  getVlcPlayer()) = null");
+        Log.d(TAG, "setVideoWindowSize.getPlayService() = " + getPlayService());
+        if (getPlayService() == null) {
             return;
         }
-        MediaPlayer vlcPlayer = getPlayService().getVlcPlayer();
-        vlcPlayer.setScale(0f);
-        if (mActivity != null) {
-            if (mActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                Log.d(TAG, "setVideoWindowSize.ORIENTATION_LANDSCAPE");
-                vlcPlayer.setAspectRatio("16:9");
-            } else {
-                Log.d(TAG, "setVideoWindowSize.ORIENTATION_PORTRAIT");
-                vlcPlayer.setAspectRatio("4:3");
-            }
-            Point screenSize = ScreenUtil.getScreenSize(mActivity);
-            Log.d(TAG, "setVideoWindowSize.screenSize = " + screenSize.x + ", " + screenSize.y);
-            vlcPlayer.getVLCVout().setWindowSize(screenSize.x, screenSize.y);
-        }
-        // mVlcView.attachPlayerViews();    // attach video view after playing started
+        getPlayService().setVideoWindowSize();
         mPresentView.attachPlayerViews();    // attach video view after playing started
     }
 

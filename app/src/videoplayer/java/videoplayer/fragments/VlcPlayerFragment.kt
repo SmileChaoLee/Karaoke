@@ -136,7 +136,7 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         playService?.initMediaControllerCompat(presenter)
         Log.d(TAG, "onPlayServiceConnected.Video player view")
         // Video player view
-        attachPlayerViews()
+        // attachPlayerViews()
         Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
     }
@@ -203,7 +203,5 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         videoVLCPlayerView.requestFocus()
         playService?.attachPlayerViews(videoVLCPlayerView, null,
             enableSubtitles, useTextureView)
-        // presenter.attachPlayerViews(videoVLCPlayerView, null,
-        //     enableSubtitles, useTextureView)
     }
 }

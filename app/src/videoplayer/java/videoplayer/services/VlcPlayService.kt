@@ -1,6 +1,7 @@
 package videoplayer.services
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
@@ -8,6 +9,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.services.BasePlayService
+import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
@@ -93,12 +95,12 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout, dm: DisplayManager?,
-        enableSUBTITLES: Boolean, use_TEXTURE_VIEW: Boolean) {
+                          enableSubtitles: Boolean, useTextureView: Boolean) {
         Log.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
-            Log.d(TAG,"attachPlayerViews.areViewsAttached = " + vlcVout.areViewsAttached())
+            Log.d(TAG,"attachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
             if (!vlcVout.areViewsAttached()) {
-                attachViews(videoVLCPlayerView, dm, enableSUBTITLES, use_TEXTURE_VIEW)
+                attachViews(videoVLCPlayerView, dm, enableSubtitles, useTextureView)
             }
         }
     }
@@ -106,9 +108,30 @@ class VlcPlayService : BasePlayService() {
     fun detachPlayerViews() {
         Log.d(TAG,"detachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
-            Log.d(TAG,"detachPlayerViews.areViewsAttached = " + vlcVout.areViewsAttached())
+            Log.d(TAG,"detachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
             if (vlcVout.areViewsAttached()) {
                 detachViews()
+            }
+        }
+    }
+
+    fun setVideoWindowSize() {
+        Log.d(TAG,"setVideoWindowSize")
+        presenter?.let {
+            vlcPlayer?.scale = 0f
+            it.activity.let { actIt ->
+                Log.d(TAG,"setVideoWindowSize.aspectRatio = ${vlcPlayer?.aspectRatio}")
+                val screenSize = ScreenUtil.getScreenSize(actIt)
+                Log.d(TAG,"setVideoWindowSize.screenSize = ${screenSize.x}, ${screenSize.y}")
+                vlcPlayer?.vlcVout?.setWindowSize(screenSize.x, screenSize.y)
+                if (actIt.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    Log.d(TAG, "setVideoWindowSize.ORIENTATION_LANDSCAPE")
+                    vlcPlayer?.aspectRatio = "16:9"
+                } else {
+                    Log.d(TAG, "setVideoWindowSize.ORIENTATION_PORTRAIT")
+                    vlcPlayer?.aspectRatio = "4:3"
+                }
+                Log.d(TAG,"setVideoWindowSize.aspectRatio = ${vlcPlayer?.aspectRatio}")
             }
         }
     }
@@ -194,7 +217,7 @@ class VlcPlayService : BasePlayService() {
         vlcPlayer?.apply {
             return isSeekable
         }
-        return false;
+        return false
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
