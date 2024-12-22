@@ -48,7 +48,7 @@ import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongListSQLite
-import com.smile.karaokeplayer.models.VerticalSeekBar
+// import com.smile.karaokeplayer.models.VerticalSeekBar
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter.BasePresentView
 import com.smile.karaokeplayer.utilities.BannerAdUtil
@@ -82,8 +82,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             : androidx.appcompat.widget.Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
     private var audioControllerView: LinearLayout? = null
-    protected var volumeSeekBar: VerticalSeekBar? = null
-    private var volumeImageButton: ImageButton? = null
+    // protected var volumeSeekBar: VerticalSeekBar? = null
+    // private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
     private var playMediaImageButton: ImageButton? = null
     private var replayMediaImageButton: ImageButton? = null
@@ -105,7 +105,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
-    private var volumeSeekBarHeightForLandscape = 0
+    // private var volumeSeekBarHeightForLandscape = 0
 
     private var bannerLinearLayout: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
@@ -251,11 +251,13 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         actionMenuView = supportToolbar?.findViewById(R.id.actionMenuViewLayout) // main menu
         fragmentView?.apply {
             audioControllerView = findViewById(R.id.audioControllerView)
+            /*
             volumeSeekBar = findViewById(R.id.volumeSeekBar)
             volumeSeekBar?.layoutParams?.let {
                 volumeSeekBarHeightForLandscape = it.height
             }
             volumeImageButton = findViewById(R.id.volumeImageButton)
+            */
             previousMediaImageButton = findViewById(R.id.previousMediaImageButton)
             playMediaImageButton = findViewById(R.id.playMediaImageButton)
             pauseMediaImageButton = findViewById(R.id.pauseMediaImageButton)
@@ -589,7 +591,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 (buttonMarginLeft.toFloat() * (screenSize.x.toFloat() / screenSize.y.toFloat())).toInt()
             Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         }
-        val buttonNum = 8 // 8 buttons
+        val buttonNum = 7 // 7 buttons, no
         val imageButtonHeight = (textFontSize * 1.2f).toInt()
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
         if (maxWidth > screenSize.x) {
@@ -602,17 +604,20 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             // greater than the width of screen
             buttonMarginLeft2 = (screenSize.x - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
         }
+        /*
         var layoutParams: MarginLayoutParams = volumeSeekBar?.layoutParams as MarginLayoutParams
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(0, 0, 0, 0)
-        layoutParams = volumeImageButton?.layoutParams as MarginLayoutParams
+        layoutParams: MarginLayoutParams = volumeImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(0, 0, 0, 0)
-        layoutParams = previousMediaImageButton?.layoutParams as MarginLayoutParams
+        */
+        var layoutParams: MarginLayoutParams = previousMediaImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+        // layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+        layoutParams.setMargins(0, 0, 0, 0)
         val playPauseButtonFrameLayout: FrameLayout? =
             fragmentView?.findViewById(R.id.playPauseButtonFrameLayout)
         layoutParams = playPauseButtonFrameLayout?.layoutParams as MarginLayoutParams
@@ -682,6 +687,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
         // reset the heights of volumeBar and supportToolbar
         val timesOfVolumeBarForPortrait = 1.5f
+        /*
         if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // if orientation is portrait, then double the height of volumeBar
             volumeSeekBar?.layoutParams?.height =
@@ -689,7 +695,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         } else {
             volumeSeekBar?.layoutParams?.height = volumeSeekBarHeightForLandscape
         }
-        supportToolbar?.layoutParams?.height = volumeImageButton?.layoutParams?.height
+        */
+        // supportToolbar?.layoutParams?.height = volumeImageButton?.layoutParams?.height
+        supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height
         val bannerAdsLayout: LinearLayout? = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
         val nativeAdLayout: FrameLayout? = fragmentView?.findViewById(R.id.nativeAdLayout)
@@ -748,6 +756,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     private fun setOnClickEvents() {
+        /*
         volumeSeekBar?.visibility = View.INVISIBLE // default is not showing
         volumeSeekBar?.max = PlayerConstants.MaxProgress
         volumeSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -759,6 +768,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
+        */
+        /*
         volumeImageButton?.setOnClickListener {
             volumeSeekBar?.apply {
                 if (visibility != View.VISIBLE) {
@@ -771,6 +782,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             }
             setTimerToHideSupportAndAudioController()   // reset timer
         }
+        */
         previousMediaImageButton?.setOnClickListener { mPresenter.playPreviousSong() }
         playMediaImageButton?.setOnClickListener { mPresenter.startPlay() }
         pauseMediaImageButton?.setOnClickListener { mPresenter.pausePlay() }
@@ -869,7 +881,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 showSupportToolbarAndAudioController()
                 Log.d(TAG, "supportToolbar.onClick().View.INVISIBLE.")
             }
-            volumeSeekBar?.visibility = View.INVISIBLE
+            // volumeSeekBar?.visibility = View.INVISIBLE
             Log.d(TAG, "supportToolbar.onClick() is called.")
         }
         playerViewLinearLayout?.setOnClickListener {
@@ -955,7 +967,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun updateVolumeSeekBarProgress() {
-        volumeSeekBar?.setProgressAndThumb(mPresenter.currentProgressForVolumeSeekBar)
+        // volumeSeekBar?.setProgressAndThumb(mPresenter.currentProgressForVolumeSeekBar)
     }
 
     override fun showNativeAndHideBannerAd() {

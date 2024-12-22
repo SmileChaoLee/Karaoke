@@ -70,8 +70,10 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
             videoVLCPlayerView.visibility = View.VISIBLE
         }
 
+        /*
         val currentProgress = presenter.currentProgressForVolumeSeekBar
         volumeSeekBar?.setProgressAndThumb(currentProgress)
+        */
         // presenter.playSongPlayedBeforeActivityCreated()  // moved to onResume()
 
         Log.d(TAG, "onViewCreated() is finished.")
