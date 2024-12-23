@@ -22,8 +22,8 @@ import videoplayer.services.VlcPlayService.LocalBinder
 private const val TAG: String = "VlcPlayerFragment"
 
 class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresentView {
-    private val enableSubtitles = true
-    private val useTextureView = false
+    // private val enableSubtitles = true
+    // private val useTextureView = false
     private lateinit var presenter: VlcPlayerPresenter
     private lateinit var videoVLCPlayerView: VLCVideoLayout
     private var playService: VlcPlayService? = null
@@ -94,13 +94,12 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d(TAG, "onConfigurationChanged() is called.")
         super.onConfigurationChanged(newConfig)
-        presenter.setVideoWindowSize()
+        setVideoWindowSize()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() is called.")
-        // presenter.releaseMediaSessionCompat()
     }
 
     // implement abstract methods of super class
@@ -134,10 +133,6 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         playService?.setPresenter(presenter)
         playService?.initVlcPlayer()
         playService?.initMediaControllerCompat(presenter)
-        Log.d(TAG, "onPlayServiceConnected.Video player view")
-        // Video player view
-        // attachPlayerViews()
-        Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
     }
 
@@ -199,9 +194,12 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     // end of implementing methods of super class
 
     // Implement VlcPlayerPresenter.VlcPresentView
-    override fun attachPlayerViews() {
-        videoVLCPlayerView.requestFocus()
-        playService?.attachPlayerViews(videoVLCPlayerView, null,
-            enableSubtitles, useTextureView)
+    override fun setVideoWindowSize() {
+        Log.d(TAG, "setVideoWindowSize")
+        playService?.apply {
+            videoVLCPlayerView?.let {
+                setVideoWindowSize(it)
+            }
+        }
     }
 }

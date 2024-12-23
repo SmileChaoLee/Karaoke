@@ -94,13 +94,13 @@ class VlcPlayService : BasePlayService() {
         libVLC = null
     }
 
-    fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout, dm: DisplayManager?,
-                          enableSubtitles: Boolean, useTextureView: Boolean) {
+    private fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
         Log.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
+            videoVLCPlayerView.requestFocus()
             Log.d(TAG,"attachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
             if (!vlcVout.areViewsAttached()) {
-                attachViews(videoVLCPlayerView, dm, enableSubtitles, useTextureView)
+                attachViews(videoVLCPlayerView, null, true, false)
             }
         }
     }
@@ -115,7 +115,7 @@ class VlcPlayService : BasePlayService() {
         }
     }
 
-    fun setVideoWindowSize() {
+    fun setVideoWindowSize(videoVLCPlayerView: VLCVideoLayout) {
         Log.d(TAG,"setVideoWindowSize")
         presenter?.let {
             vlcPlayer?.scale = 0f
@@ -133,6 +133,7 @@ class VlcPlayService : BasePlayService() {
                 }
                 Log.d(TAG,"setVideoWindowSize.aspectRatio = ${vlcPlayer?.aspectRatio}")
             }
+            attachPlayerViews(videoVLCPlayerView)
         }
     }
 

@@ -1,8 +1,6 @@
 package videoplayer.Presenters;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import androidx.annotation.NonNull;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter;
-import com.smile.smilelibraries.utilities.ScreenUtil;
 
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -31,7 +28,7 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
     private static final String TAG = "VlcPlayerPresenter";
 
     public interface VlcPresentView extends BasePlayerPresenter.BasePresentView {
-        void attachPlayerViews();
+        void setVideoWindowSize();
     }
     // private final VlcPresentView mVlcView;
     private final VlcPresentView mPresentView;
@@ -328,17 +325,8 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
             //
         }
         // update the duration on controller UI
-        setVideoWindowSize();
+        mPresentView.setVideoWindowSize();
         mPresentView.update_Player_duration_seekbar(vlcPlayer.getLength());
-    }
-
-    public void setVideoWindowSize() {
-        Log.d(TAG, "setVideoWindowSize.getPlayService() = " + getPlayService());
-        if (getPlayService() == null) {
-            return;
-        }
-        getPlayService().setVideoWindowSize();
-        mPresentView.attachPlayerViews();    // attach video view after playing started
     }
 
     @Override
