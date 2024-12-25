@@ -520,12 +520,6 @@ class ExoPlayService : BasePlayService() {
             }
         }
     }
-    // For ExoPlayerListener.java
-    fun isPlaying(): Boolean? {
-        // return exoPlayer?.isPlaying
-        return currentPlayer?.isPlaying
-    }
-    //
 
     override fun initMediaCallback() {
         Log.d(TAG, "initMediaCallback.presenter = $presenter")
@@ -537,6 +531,14 @@ class ExoPlayService : BasePlayService() {
             Log.d(TAG,"initMediaCallback.controllerCallback = $controllerCallback")
             mediaControllerCompat?.registerCallback(controllerCallback!!)
         }
+    }
+
+    override fun isPlaying(): Boolean {
+        // return exoPlayer?.isPlaying
+        currentPlayer?.apply {
+            return isPlaying
+        }
+        return false
     }
 
     override fun setPlayerTime(progress: Long) {

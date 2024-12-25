@@ -138,7 +138,16 @@ public abstract class BasePlayerPresenter {
             // playingParam.setAutoPlay(true);
             mPlayingParam.setCurrentSongIndex(-1); // next song that will be played, which the index is 0
             // start playing video from list
-            startAutoPlay(false);
+            BasePlayService playService = mPresentView.getPlayService();
+            Log.d(TAG, "autoPlaySongList.playService = " + playService);
+            boolean isPlaying = playService != null && playService.isPlaying();
+            Log.d(TAG, "autoPlaySongList.isPlaying = " + isPlaying);
+            if (isPlaying) {
+                mPlayingParam.setFinishState(2);
+                playService.setPlayerTime(playService.getMediaDuration());
+            } else {
+                startAutoPlay(false);
+            }
         } else {
             Log.d(TAG, "autoPlaySongList.orderedSongs.size() = 0");
             ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noFilesSelectedString)
@@ -346,6 +355,7 @@ public abstract class BasePlayerPresenter {
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playPreviousSong.playService = " + playService);
         if (playService != null) {
+            mPlayingParam.setFinishState(2);
             playService.setPlayerTime(playService.getMediaDuration());
         }
         // startAutoPlay(false);
@@ -378,6 +388,7 @@ public abstract class BasePlayerPresenter {
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playNextSong.playService = " + playService);
         if (playService != null) {
+            mPlayingParam.setFinishState(2);
             playService.setPlayerTime(playService.getMediaDuration());
         }
         // startAutoPlay(false);    // go to next round

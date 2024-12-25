@@ -190,11 +190,6 @@ class VlcPlayService : BasePlayService() {
             }
         }
     }
-    // For ExoPlayerListener.java
-    fun isPlaying(): Boolean? {
-        Log.d(TAG, "isPlaying().vlcPlayer?.isPlaying = ${vlcPlayer?.isPlaying}")
-        return vlcPlayer?.isPlaying
-    }
     //
 
     override fun initMediaCallback() {
@@ -207,6 +202,14 @@ class VlcPlayService : BasePlayService() {
             Log.d(TAG,"initMediaCallback.controllerCallback = $controllerCallback")
             mediaControllerCompat?.registerCallback(controllerCallback!!)
         }
+    }
+
+    override fun isPlaying(): Boolean {
+        Log.d(TAG, "isPlaying().vlcPlayer?.isPlaying = ${vlcPlayer?.isPlaying}")
+        vlcPlayer?.apply {
+            return isPlaying
+        }
+        return false
     }
 
     override fun setPlayerTime(progress: Long) {
