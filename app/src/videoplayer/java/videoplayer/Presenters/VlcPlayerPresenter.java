@@ -197,9 +197,10 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
 
     @Override
     public void setAudioActionSubMenu() {
+        Log.d(TAG, "setAudioActionSubMenu");
         final Handler handler = new Handler(Looper.getMainLooper());
         final Runnable runnable = () -> {
-            Log.d(TAG, "getPlayingMediaInfoAndSetAudioActionSubMenu.run()");
+            Log.d(TAG, "getMediaInfoSetAudioSubMenu().run()");
             handler.removeCallbacksAndMessages(null);
             getMediaInfoSetAudioSubMenu();
             mPresentView.showNativeAndHideBannerAd();
@@ -301,10 +302,13 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
             // Media media = vlcPlayer.getMedia();  // for version 3.1.12
             IMedia media = vlcPlayer.getMedia();    // for version above 3.3.0
             int trackCount = media.getTrackCount();
+            // int trackCount = media.getTracks().length;
+            Log.d(TAG, "getMediaInfoSetAudioSubMenu.trackCount = " + trackCount);
             for (int i=0; i<trackCount; i++) {
                 // Media.Track track = media.getTrack(i);   // for version 3.1.12
                 // if (track.type == Media.Track.Type.Audio) {  // for version 3.1.12
                 IMedia.Track track = media.getTrack(i);
+                // IMedia.Track track = media.getTracks()[i];
                 if (track.type == IMedia.Track.Type.Audio) {
                     // audio
                     // Media.AudioTrack audioTrack = (Media.AudioTrack)track;

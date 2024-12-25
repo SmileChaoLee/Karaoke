@@ -214,6 +214,8 @@ abstract class BasePlayService : Service() {
         if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
             return
         }
+        Log.d(TAG, "replayMedia.playingParam.isMediaPrepared = ${playingParam.isMediaPrepared}")
+        playingParam.currentAudioPosition = 0
         if (playingParam.isMediaPrepared) {
             // song is playing, paused, or finished playing
             // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
@@ -221,10 +223,8 @@ abstract class BasePlayService : Service() {
             // but the playing was stopped in the middle of playing then won't send
             // Play.STATE_ENDED event
             // exoPlayer.setPlayWhenReady(false);
-            val currentAudioPosition: Long = 0
-            playingParam.currentAudioPosition = currentAudioPosition
             Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
-            specificPlayerReplayMedia(currentAudioPosition)
+            specificPlayerReplayMedia(0)
         } else {
             Log.d(TAG, "replayMedia.playMediaFromUri()")
             // song was stopped by user

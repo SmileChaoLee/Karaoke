@@ -65,7 +65,8 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             Log.d(TAG, "extras is not null.");
             PlayingParameters playingParamOrigin;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin, PlayingParameters.class);
+                playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin,
+                        PlayingParameters.class);
             } else playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin);
             if (playingParamOrigin != null) {
                 Log.d(TAG, "playingParamOrigin is not null.");

@@ -473,9 +473,11 @@ public abstract class BasePlayerPresenter {
     }
 
     public void updateStatusAndUi(PlaybackStateCompat state) {
-        Log.d(TAG, "updateStatusAndUi()");
+        Log.d(TAG, "updateStatusAndUi");
         int currentState = state.getState();
         mPlayingParam.setCurrentPlaybackState(currentState);
+        Log.d(TAG, "updateStatusAndUi.playingParam.isMediaPrepared() = " +
+                mPlayingParam.isMediaPrepared());
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");
             mPresentView.hideNativeAd();
@@ -492,6 +494,8 @@ public abstract class BasePlayerPresenter {
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_NONE");
                 onDurationSeekBarProgressChanged(0, true); // set time to 0 position
                 mPresentView.update_Player_duration_seekbar_progress(0);
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
+                mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
                 mPlayingParam.setMediaPrepared(false);
@@ -528,10 +532,9 @@ public abstract class BasePlayerPresenter {
                     Log.d(TAG, "updateStatusAndUi.update_Player_duration_seekbar_progress" +
                             "((int) playService.getMediaDuration())");
                     mPresentView.update_Player_duration_seekbar_progress((int) playService.getMediaDuration());
-                } else {
-                    Log.d(TAG, "updateStatusAndUi.update_Player_duration_seekbar_progress(0)");
-                    mPresentView.update_Player_duration_seekbar_progress(0);
                 }
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
+                mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
                 // nextSongOrShowNativeAndBannerAd(true);
