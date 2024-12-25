@@ -9,7 +9,7 @@
     tools:context=".fragments.MyFavoritesFragment">
 
     <LinearLayout
-        android:id="@+id/myListButtonLayout"
+        android:id="@+id/favoriteListButtonLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -82,7 +82,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/add_image"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:visibility="gone">
         </ImageButton>
 
     </LinearLayout>
@@ -91,7 +92,7 @@
         android:id="@+id/myListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/myListButtonLayout"
+        app:layout_constraintTop_toBottomOf="@+id/favoriteListButtonLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

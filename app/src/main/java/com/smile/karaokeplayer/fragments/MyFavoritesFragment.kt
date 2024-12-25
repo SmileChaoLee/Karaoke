@@ -266,7 +266,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
     }
 
     fun searchFavorites() {
-        Log.d(TAG, "searchFavorites() is called")
+        Log.d(TAG, "searchFavorites")
         searchCompleted = false
         Thread {
             var excessYn = false;
@@ -275,6 +275,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
                     var index = 0
                     for (element in sqlIt) {
+                        Log.d(TAG, "searchFavorites.element.included = ${element.included}")
                         element.included = "0"
                         tempList.add(element)
                         index++
