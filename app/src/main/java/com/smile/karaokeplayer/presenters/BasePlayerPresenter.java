@@ -260,6 +260,7 @@ public abstract class BasePlayerPresenter {
 
     public void startAutoPlay(boolean isSelfFinished) {
         Log.d(TAG, "startAutoPlay");
+        mPlayingParam.setFinishState(0);    // default value for start playing a video
         if (mActivity.isFinishing()) {
             // activity is being destroyed
             return;
@@ -341,7 +342,13 @@ public abstract class BasePlayerPresenter {
                 break;
         }
         mPlayingParam.setCurrentSongIndex(currentIndex);
-        startAutoPlay(false);
+        // finish the playing video and play the previous after receiving stop event
+        BasePlayService playService = mPresentView.getPlayService();
+        Log.d(TAG, "playPreviousSong.playService = " + playService);
+        if (playService != null) {
+            playService.setPlayerTime(playService.getMediaDuration());
+        }
+        // startAutoPlay(false);
     }
 
     public void playNextSong() {
@@ -367,7 +374,13 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.RepeatAllSongs:
                 break;
         }
-        startAutoPlay(false);    // go to next round
+        // finish the playing video and play the previous after receiving stop event
+        BasePlayService playService = mPresentView.getPlayService();
+        Log.d(TAG, "playNextSong.playService = " + playService);
+        if (playService != null) {
+            playService.setPlayerTime(playService.getMediaDuration());
+        }
+        // startAutoPlay(false);    // go to next round
     }
 
     public void playSongPlayedBeforeActivityCreated() {
@@ -460,6 +473,7 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             Log.d(TAG, "stopPlay.playService.stopPlay() ");
             playService.stopPlay(this);
+            mPlayingParam.setFinishState(1);   // user stops
         }
     }
 
@@ -538,7 +552,12 @@ public abstract class BasePlayerPresenter {
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
                 // nextSongOrShowNativeAndBannerAd(true);
-                startAutoPlay(true);
+                // startAutoPlay(true);
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
+                        mPlayingParam.getFinishState());
+                // not finished by pressing playPreviousSong or PlayNextSong buttons
+                boolean isSelfFinished = mPlayingParam.getFinishState() != 2;
+                startAutoPlay(isSelfFinished);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
                 String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);

@@ -53,10 +53,9 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         playingParam.setMediaPrepared(false);
 
         mPlayService.detachPlayerViews();
-        // final IMedia media = new Media(libVLC, uri);
         final IMedia media = mPlayService.createMedia(uri);
         mPlayService.prepare(media);
-        media.release();
+        // media.release();
 
         long currentAudioPosition = playingParam.getCurrentAudioPosition();
         float currentVolume = playingParam.getCurrentVolume();
@@ -80,32 +79,22 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             switch (playbackState) {
                 case PlaybackStateCompat.STATE_PAUSED:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PAUSED");
-                    // vlcPlayer.pause();
                     mPlayService.onPause();
                     break;
                 case PlaybackStateCompat.STATE_STOPPED:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_STOPPED");
-                    // vlcPlayer.stop();
                     mPlayService.onStop();
                     break;
                 case PlaybackStateCompat.STATE_PLAYING:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PLAYING");
                 case PlaybackStateCompat.STATE_NONE:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
-                    // start playing when ready or just start new playing
-                    /*
-                    final IMedia media = new Media(libVLC, uri);
-                    vlcPlayer.setMedia(media);
-                    vlcPlayer.play();
-                    media.release();
-                    */
                     break;
             }
             // the following must be after vlcPlayer.play()
             Log.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
                             ", currentAudioPosition = " + currentAudioPosition);
             mPlayService.setAudioVolume(currentVolume);
-            // vlcPlayer.setTime(currentAudioPosition); // use time to set position
             mPlayService.setPlayerTime(currentAudioPosition);
         } catch (Exception e) {
             Log.d(TAG, "onPrepareFromUri.Invalid mediaId");
@@ -118,16 +107,6 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         super.onPlay();
         Log.d(TAG, "onPlay() is called.");
         mPlayService.onPlay();
-        /*
-        MediaControllerCompat controller = mPlayService.getMediaControllerCompat();
-        PlaybackStateCompat stateCompat = controller.getPlaybackState();
-        int state = stateCompat.getState();
-        Log.d(TAG, "onPlay().state = " + state);
-        if (state != PlaybackStateCompat.STATE_PLAYING) {
-            Log.d(TAG, "onPlay().not PlaybackStateCompat.STATE_PLAYING");
-            mPlayService.onPlay();
-        }
-        */
     }
 
     @Override
@@ -147,14 +126,6 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         super.onPause();
         Log.d(TAG, "onPause() is called.");
         mPlayService.onPause();
-        /*
-        MediaControllerCompat controller = mPlayService.getMediaControllerCompat();
-        PlaybackStateCompat stateCompat = controller.getPlaybackState();
-        int state = stateCompat.getState();
-        if (state != PlaybackStateCompat.STATE_PAUSED) {
-            mPlayService.onPause();
-        }
-        */
     }
 
     @Override
@@ -162,14 +133,6 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         super.onStop();
         Log.d(TAG, "onStop() is called.");
         mPlayService.onStop();
-        /*
-        MediaControllerCompat controller = mPlayService.getMediaControllerCompat();
-        PlaybackStateCompat stateCompat = controller.getPlaybackState();
-        int state = stateCompat.getState();
-        if (state != PlaybackStateCompat.STATE_STOPPED) {
-            mPlayService.onStop();
-        }
-        */
     }
 
     @Override

@@ -301,19 +301,19 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
             // for testing
             // Media media = vlcPlayer.getMedia();  // for version 3.1.12
             IMedia media = vlcPlayer.getMedia();    // for version above 3.3.0
-            int trackCount = media.getTrackCount();
-            // int trackCount = media.getTracks().length;
+            // int trackCount = media.getTrackCount();
+            int trackCount = media.getTracks().length;
             Log.d(TAG, "getMediaInfoSetAudioSubMenu.trackCount = " + trackCount);
             for (int i=0; i<trackCount; i++) {
                 // Media.Track track = media.getTrack(i);   // for version 3.1.12
                 // if (track.type == Media.Track.Type.Audio) {  // for version 3.1.12
-                IMedia.Track track = media.getTrack(i);
-                // IMedia.Track track = media.getTracks()[i];
+                // IMedia.Track track = media.getTrack(i);
+                IMedia.Track track = media.getTracks()[i];
+                Log.d(TAG, "getMediaInfoSetAudioSubMenu.track.id = " + track.id);
                 if (track.type == IMedia.Track.Type.Audio) {
                     // audio
                     // Media.AudioTrack audioTrack = (Media.AudioTrack)track;
                     IMedia.AudioTrack audioTrack = (IMedia.AudioTrack)track;
-                    Log.d(TAG, "getMediaInfoSetAudioSubMenu.audioTrack id = " + track.id);
                     Log.d(TAG, "getMediaInfoSetAudioSubMenu.audioTrack.channels = " + audioTrack.channels);
                     Log.d(TAG, "getMediaInfoSetAudioSubMenu.audioTrack.rate = " + audioTrack.rate);
                 } else if (track.type == IMedia.Track.Type.Video) {

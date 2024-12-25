@@ -154,7 +154,7 @@ dependencies {
     exoplayerImplementation project(':extension-vp9')
     exoplayerImplementation project(':extension-av1')
 
-    videoplayerImplementation 'org.videolan.android:libvlc-all:3.6.0-eap12'
+    videoplayerImplementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
 
     /*
     gradle.startParameter.getTaskNames().each { task ->

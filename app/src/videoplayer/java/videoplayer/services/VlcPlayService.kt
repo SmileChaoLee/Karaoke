@@ -14,7 +14,6 @@ import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
-import org.videolan.libvlc.util.DisplayManager
 import org.videolan.libvlc.util.VLCVideoLayout
 import videoplayer.Callbacks.VlcMediaControllerCallback
 import videoplayer.Callbacks.VlcMediaSessionCallback
@@ -138,9 +137,11 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun prepare(med: IMedia) {
+        Log.d(TAG, "prepare")
         vlcPlayer?.apply {
-            media = med
-            play()
+            // media = med
+            play(med)
+            // media?.release()
         }
     }
     fun createMedia(uri: Uri): IMedia {

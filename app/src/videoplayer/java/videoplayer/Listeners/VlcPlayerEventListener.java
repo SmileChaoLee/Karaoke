@@ -77,7 +77,10 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                 Log.d(TAG, "onEvent()-->Stopped.mediaUri = " + mediaUri);
                 Log.d(TAG, "onEvent()-->Stopped.playingParam.isMediaPrepared() = " +
                         playingParam.isMediaPrepared());
-                if (mediaUri != null && !Uri.EMPTY.equals(mediaUri) && playingParam.isMediaPrepared()) {
+                Log.d(TAG, "onEvent()-->Stopped.playingParam.isSelfFinished() = " +
+                        playingParam.getFinishState());
+                // if (mediaUri != null && !Uri.EMPTY.equals(mediaUri) && playingParam.isMediaPrepared()) {
+                if (mediaUri != null && !Uri.EMPTY.equals(mediaUri) && playingParam.getFinishState() == 1) {
                     Log.d(TAG, "onEvent()-->Stopped--> vlcPlayer was stopped by user.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 } else {
