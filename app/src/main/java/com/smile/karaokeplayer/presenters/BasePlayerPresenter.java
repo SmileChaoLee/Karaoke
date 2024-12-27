@@ -146,6 +146,7 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setFinishState(2);
                 playService.setPlayerTime(playService.getMediaDuration());
             } else {
+                // paused, buffering, stopped, finished
                 startAutoPlay(false);
             }
         } else {
@@ -357,8 +358,8 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             mPlayingParam.setFinishState(2);
             playService.setPlayerTime(playService.getMediaDuration());
+            playService.onPlay();
         }
-        // startAutoPlay(false);
     }
 
     public void playNextSong() {
@@ -390,8 +391,8 @@ public abstract class BasePlayerPresenter {
         if (playService != null) {
             mPlayingParam.setFinishState(2);
             playService.setPlayerTime(playService.getMediaDuration());
+            playService.onPlay();
         }
-        // startAutoPlay(false);    // go to next round
     }
 
     public void playSongPlayedBeforeActivityCreated() {

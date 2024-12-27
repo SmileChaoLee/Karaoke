@@ -150,7 +150,7 @@ class VlcPlayService : BasePlayService() {
     fun setAudioTrack(audioTrackId: Int) {
         vlcPlayer?.setAudioTrack(audioTrackId)
     }
-    fun onPlay() {
+    override fun onPlay() {
         Log.d(TAG, "onPlay.presenter = $presenter")
         presenter?.playingParam?.let {
             Log.d(TAG, "onPlay().vlcPlayer = $vlcPlayer")

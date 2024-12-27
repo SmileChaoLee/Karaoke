@@ -182,11 +182,32 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="upgraded the libvlc library to 4.0.0-eap1">
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Fixed bugs">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_mediarouter_mediarouter_1_3_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_api_3_0_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_backend_cct_3_1_3_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_runtime_3_1_3_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_cast_2_19_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_mediasession_2_19_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_21_3_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_framework_21_3_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_flags_18_0_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_17_0_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_json_18_0_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_proto_16_0_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_4_0_0_eap1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -751,7 +772,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -844,7 +865,6 @@
     <MESSAGE value="Added ExoPlayService and bindService in the ExoPlayerPresenter but not in BasePlayService" />
     <MESSAGE value="Moving handling ExoPlayer to ExoPlayService - phase one - Everything seems working fine for now" />
     <MESSAGE value="1. Migrated APIs to ExoPlayService.kt&#10;2. Migrated CastContext to ExoPlayerActivity and worked" />
-    <MESSAGE value="Fixed bugs" />
     <MESSAGE value="refined and fixed bugs" />
     <MESSAGE value="refined" />
     <MESSAGE value="removed interstitial Ads and hide banner adds when native ad is showing" />
@@ -859,6 +879,7 @@
     <MESSAGE value="Changed myListButtonLayout to favoriteListButtonLayout" />
     <MESSAGE value="Fixed replayMedia() bugs" />
     <MESSAGE value="upgraded the libvlc library to 4.0.0-eap1" />
-    <option name="LAST_COMMIT_MESSAGE" value="upgraded the libvlc library to 4.0.0-eap1" />
+    <MESSAGE value="Fixed bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs" />
   </component>
 </project>

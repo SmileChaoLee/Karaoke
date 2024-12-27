@@ -489,7 +489,7 @@ class ExoPlayService : BasePlayService() {
         // exoPlayer?.playWhenReady = whenReady
         currentPlayer?.playWhenReady = whenReady
     }
-    fun onPlay() {
+    override fun onPlay() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onPlay().currentPlayer = $currentPlayer")
