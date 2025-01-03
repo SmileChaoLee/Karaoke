@@ -9,6 +9,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.core.os.BundleCompat;
 
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
@@ -142,9 +143,13 @@ public abstract class BasePlayerPresenter {
             Log.d(TAG, "autoPlaySongList.playService = " + playService);
             boolean isPlaying = playService != null && playService.isPlaying();
             Log.d(TAG, "autoPlaySongList.isPlaying = " + isPlaying);
-            if (isPlaying) {
+            if (isPlaying && playService.isSeekable()) {
+                /*
                 mPlayingParam.setFinishState(2);
+                playService.onPlay();
                 playService.setPlayerTime(playService.getMediaDuration());
+                 */
+                stopPlay(2);
             } else {
                 // paused, buffering, stopped, finished
                 startAutoPlay(false);
@@ -180,7 +185,8 @@ public abstract class BasePlayerPresenter {
                     mPlayingParam.setCurrentVolume(arguments
                             .getFloat(PlayerConstants.SingleSongVolume, mPlayingParam.getCurrentVolume()));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                        mSingleSongInfo = arguments.getParcelable(PlayerConstants.SingleSongInfoState, SongInfo.class);
+                        mSingleSongInfo = BundleCompat.getParcelable(arguments, PlayerConstants.SingleSongInfoState,
+                                SongInfo.class);
                     else mSingleSongInfo = arguments.getParcelable(PlayerConstants.SingleSongInfoState);
                     Log.d(TAG, "initializeVariablesBase.singleSongInfo = " + mSingleSongInfo);
                 }
@@ -200,11 +206,13 @@ public abstract class BasePlayerPresenter {
                 MySingleTon.INSTANCE.getOrderedSongs().addAll(orderedSongs);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mMediaUri = savedInstanceState.getParcelable(PlayerConstants.MediaUriState,Uri.class);
+                mMediaUri = BundleCompat.getParcelable(savedInstanceState,
+                        PlayerConstants.MediaUriState, Uri.class);
             } else mMediaUri = savedInstanceState.getParcelable(PlayerConstants.MediaUriState);
             Log.d(TAG, "initializeVariablesBase.mediaUri = " + mMediaUri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mPlayingParam = savedInstanceState.getParcelable(PlayerConstants.PlayingParamState, PlayingParameters.class);
+                mPlayingParam = BundleCompat.getParcelable(savedInstanceState,
+                        PlayerConstants.PlayingParamState, PlayingParameters.class);
             } else mPlayingParam = savedInstanceState.getParcelable(PlayerConstants.PlayingParamState);
             Log.d(TAG, "initializeVariablesBase.playingParam = " + mPlayingParam);
             if (mPlayingParam == null) {
@@ -212,7 +220,8 @@ public abstract class BasePlayerPresenter {
             }
             mCanShowNotSupportedFormat = savedInstanceState.getBoolean(PlayerConstants.CanShowNotSupportedFormatState);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mSingleSongInfo = savedInstanceState.getParcelable(PlayerConstants.SingleSongInfoState, SongInfo.class);
+                mSingleSongInfo = BundleCompat.getParcelable(savedInstanceState,
+                        PlayerConstants.SingleSongInfoState, SongInfo.class);
             } else mSingleSongInfo = savedInstanceState.getParcelable(PlayerConstants.SingleSongInfoState);
             Log.d(TAG, "initializeVariablesBase.singleSongInfo = " + mSingleSongInfo);
         }
@@ -308,7 +317,7 @@ public abstract class BasePlayerPresenter {
             if (playbackState!=PlaybackStateCompat.STATE_NONE
                     && playbackState!=PlaybackStateCompat.STATE_STOPPED) {
                 // not the following: (has not started, stopped, or finished)
-                stopPlay();
+                stopPlay(1);
             }
             mPlayingParam.setAutoPlay(false);    // must be the last in this block
             mPresentView.hidePlayerView();
@@ -352,14 +361,22 @@ public abstract class BasePlayerPresenter {
                 break;
         }
         mPlayingParam.setCurrentSongIndex(currentIndex);
+        stopPlay(2);
+        /*
         // finish the playing video and play the previous after receiving stop event
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playPreviousSong.playService = " + playService);
         if (playService != null) {
             mPlayingParam.setFinishState(2);
-            playService.setPlayerTime(playService.getMediaDuration());
-            playService.onPlay();
+            if (playService.isSeekable()) {
+                Log.d(TAG, "playPreviousSong.playService.isSeekable() = true");
+                playService.onPlay();
+                playService.setPlayerTime(playService.getMediaDuration());
+            } else {
+                startAutoPlay(false);
+            }
         }
+         */
     }
 
     public void playNextSong() {
@@ -385,14 +402,22 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.RepeatAllSongs:
                 break;
         }
+        stopPlay(2);
+        /*
         // finish the playing video and play the previous after receiving stop event
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playNextSong.playService = " + playService);
         if (playService != null) {
             mPlayingParam.setFinishState(2);
-            playService.setPlayerTime(playService.getMediaDuration());
-            playService.onPlay();
+            if (playService.isSeekable()) {
+                Log.d(TAG, "playNextSong.playService.isSeekable() = true");
+                playService.onPlay();
+                playService.setPlayerTime(playService.getMediaDuration());
+            } else {
+                startAutoPlay(false);
+            }
         }
+         */
     }
 
     public void playSongPlayedBeforeActivityCreated() {
@@ -479,13 +504,13 @@ public abstract class BasePlayerPresenter {
         }
     }
 
-    public void stopPlay() {
-        Log.d(TAG, "stopPlay");
+    public void stopPlay(int finishState) {
+        Log.d(TAG, "stopPlay.finishState = " + finishState);
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "stopPlay.playService.stopPlay() ");
             playService.stopPlay(this);
-            mPlayingParam.setFinishState(1);   // user stops
+            mPlayingParam.setFinishState(finishState);   // user stops
         }
     }
 
@@ -532,15 +557,16 @@ public abstract class BasePlayerPresenter {
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
                 if (!mPlayingParam.isMediaPrepared()) {
                     // the first time of Player.STATE_READY means prepared
-                    // getPlayingMediaInfoAndSetAudioActionSubMenu();
                     setAudioActionSubMenu();
                 }
                 mPlayingParam.setMediaPrepared(true);  // has been prepared
+                /*
                 startDurationSeekBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAndAudioController();
                 mPresentView.playButtonOffPauseButtonOn();
                 adsForOnlyMusic();
+                */
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 // when playing is paused

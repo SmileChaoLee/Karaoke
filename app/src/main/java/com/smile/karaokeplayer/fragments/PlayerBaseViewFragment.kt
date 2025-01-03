@@ -787,7 +787,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         playMediaImageButton?.setOnClickListener { mPresenter.startPlay() }
         pauseMediaImageButton?.setOnClickListener { mPresenter.pausePlay() }
         replayMediaImageButton?.setOnClickListener { mPresenter.replayMedia() }
-        stopMediaImageButton?.setOnClickListener { mPresenter.stopPlay() }
+        stopMediaImageButton?.setOnClickListener { mPresenter.stopPlay(1) }
         nextMediaImageButton?.setOnClickListener { mPresenter.playNextSong() }
         heartImageButton?.setOnClickListener {
             // add this media file to my favorite

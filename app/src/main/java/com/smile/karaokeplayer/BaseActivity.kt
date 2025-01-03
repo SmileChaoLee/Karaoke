@@ -32,6 +32,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.os.BundleCompat
+import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
@@ -160,11 +162,11 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
             isPlayToPause = savedInstanceState.getBoolean(IsPlayToPauseState, false)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                savedInstanceState.getParcelable(CallingComponentState, ComponentName::class.java)
+                BundleCompat.getParcelable(savedInstanceState, CallingComponentState, ComponentName::class.java)
             else savedInstanceState.getParcelable(CallingComponentState)
 
             (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                savedInstanceState.getParcelable(PlayDataState, Bundle::class.java)
+                BundleCompat.getParcelable(savedInstanceState, PlayDataState, Bundle::class.java)
             else savedInstanceState.getParcelable(PlayDataState))?.also {
                 playData = it
             }
@@ -392,7 +394,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
 
     override fun restorePlayingState() {
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            playData.getParcelable(PlayerConstants.PlayingParamState, PlayingParameters::class.java)
+            BundleCompat.getParcelable(playData, PlayerConstants.PlayingParamState, PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
             Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
             Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")

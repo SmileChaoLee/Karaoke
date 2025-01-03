@@ -7,6 +7,7 @@ import android.os.ResultReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import androidx.core.os.BundleCompat
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
@@ -69,10 +70,9 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         extras?.let {
             Log.d(TAG, "onPrepareFromUri().extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(
+                BundleCompat.getParcelable(it,
                     PlayerConstants.PlayingParamOrigin,
-                    PlayingParameters::class.java
-                )
+                    PlayingParameters::class.java)
             } else it.getParcelable(PlayerConstants.PlayingParamOrigin)
             playingParamOrigin?.let { playIt ->
                 currentPlaybackState = playIt.currentPlaybackState

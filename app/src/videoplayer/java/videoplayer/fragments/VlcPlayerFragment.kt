@@ -130,9 +130,9 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         val binder = service as LocalBinder
         playService = binder.getService()
         // Test code here for ExoPlayService
-        playService?.setPresenter(presenter)
+        playService?.presenter = this.presenter
         playService?.initVlcPlayer()
-        playService?.initMediaControllerCompat(presenter)
+        playService?.initMediaControllerCompat(this.presenter)
         presenter.playSongPlayedBeforeActivityCreated()
     }
 

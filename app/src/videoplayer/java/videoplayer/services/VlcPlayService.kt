@@ -26,7 +26,7 @@ class VlcPlayService : BasePlayService() {
         private const val TAG = "VlcPlayService"
     }
 
-    private var presenter : VlcPlayerPresenter? = null
+    var presenter : VlcPlayerPresenter? = null
     private var mediaSessionCallback: VlcMediaSessionCallback? = null
     private var controllerCallback: VlcMediaControllerCallback? = null
     var libVLC: LibVLC? = null
@@ -64,10 +64,6 @@ class VlcPlayService : BasePlayService() {
                 registerCallback(it)
             }
         }
-    }
-
-    fun setPresenter(presenter: VlcPlayerPresenter) {
-        this.presenter = presenter
     }
 
     fun initVlcPlayer() {
@@ -163,7 +159,7 @@ class VlcPlayService : BasePlayService() {
             }
         }
     }
-    fun onPause() {
+    override fun onPause() {
         Log.d(TAG, "onPause.presenter = $presenter")
         presenter?.playingParam?.let {
             Log.d(TAG, "onPause().vlcPlayer = $vlcPlayer")
@@ -176,7 +172,7 @@ class VlcPlayService : BasePlayService() {
             }
         }
     }
-    fun onStop() {
+    override fun onStop() {
         Log.d(TAG, "onStop.presenter = $presenter")
         presenter?.playingParam?.let {
             Log.d(TAG, "onStop().vlcPlayer = $vlcPlayer")
@@ -243,6 +239,7 @@ class VlcPlayService : BasePlayService() {
             // removed on 2022-08-29 for testing
             val vlcMaxVolume = 100
             vlcPlayer?.setVolume((volumeTmp * vlcMaxVolume).toInt())
+            return
         }
         Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")
     }

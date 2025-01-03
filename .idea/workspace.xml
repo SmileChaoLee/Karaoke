@@ -182,33 +182,27 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Fixed bugs">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_mediarouter_mediarouter_1_3_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_api_3_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_backend_cct_3_1_3_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_datatransport_transport_runtime_3_1_3_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_cast_2_19_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_exoplayer_extension_mediasession_2_19_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_21_3_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_cast_framework_21_3_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_flags_18_0_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_17_0_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_json_18_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_firebase_firebase_encoders_proto_16_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_0_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_4_0_0_eap1_aar.xml" beforeDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Fixed bugs for playPreviousSong and playNextSong buttons">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_4_0_0_eap1_aar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/listeners/ExoPlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/listeners/ExoPlayerListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseSongDataActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseSongDataActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Listeners/VlcPlayerEventListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaSessionCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaSessionCallback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -312,7 +306,7 @@
   },
   &quot;keyToStringList&quot;: {
     &quot;ExportApk.BuildVariants&quot;: [
-      &quot;exoplayerRelease&quot;
+      &quot;videoplayerRelease&quot;
     ],
     &quot;kotlin-gradle-user-dirs&quot;: [
       &quot;/home/chaolee/.gradle&quot;
@@ -772,7 +766,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="105" />
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -855,7 +849,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0' for solving missing-class-com-facebook-infer-annotation-nullsafemode-referenced-from-com" />
     <MESSAGE value="1. upgraded to Exoplayer 2.19.1&#10;2. Removed MediaSessionConnector from Exoplayer&#10;3. Used MediaSessionCallback instead for Exoplayer&#10;4. No more ExoPlaybackPreparer.java for Exoplayer&#10;5. Refined" />
     <MESSAGE value="Refined" />
     <MESSAGE value="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging" />
@@ -880,6 +873,7 @@
     <MESSAGE value="Fixed replayMedia() bugs" />
     <MESSAGE value="upgraded the libvlc library to 4.0.0-eap1" />
     <MESSAGE value="Fixed bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs" />
+    <MESSAGE value="Fixed bugs for playPreviousSong and playNextSong buttons" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs for playPreviousSong and playNextSong buttons" />
   </component>
 </project>

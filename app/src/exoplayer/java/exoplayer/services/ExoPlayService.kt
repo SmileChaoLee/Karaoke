@@ -46,7 +46,7 @@ class ExoPlayService : BasePlayService() {
         private const val TAG = "ExoPlayService"
     }
 
-    private var presenter : ExoPlayerPresenter? = null
+    var presenter : ExoPlayerPresenter? = null
     private var stereoVolumeAudioProcessor: StereoVolumeAudioProcessor? = null
     private var mediaSessionCallback: ExoMediaSessionCallback? = null
     private var controllerCallback: ExoMediaControllerCallback? = null
@@ -95,10 +95,6 @@ class ExoPlayService : BasePlayService() {
                 registerCallback(it)
             }
         }
-    }
-
-    fun setPresenter(presenter: ExoPlayerPresenter) {
-        this.presenter = presenter
     }
 
     fun initCastPlayerAndExoPlayer() {
@@ -499,7 +495,7 @@ class ExoPlayService : BasePlayService() {
             }
         }
     }
-    fun onPause() {
+    override fun onPause() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onPause().currentPlayer = $currentPlayer")
@@ -509,7 +505,7 @@ class ExoPlayService : BasePlayService() {
             }
         }
     }
-    fun onStop() {
+    override fun onStop() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onStop().currentPlayer = $currentPlayer")

@@ -24,6 +24,8 @@ abstract class BasePlayService : Service() {
     abstract fun initMediaCallback()
     abstract fun isPlaying(): Boolean
     abstract fun onPlay()
+    abstract fun onPause()
+    abstract fun onStop()
     abstract fun setPlayerTime(progress: Long)
     abstract fun isSeekable(): Boolean
     abstract fun setAudioVolume(volumeTmp: Float)

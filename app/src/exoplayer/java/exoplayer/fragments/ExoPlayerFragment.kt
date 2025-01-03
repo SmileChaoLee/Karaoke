@@ -184,8 +184,8 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         val binder = service as LocalBinder
         playService = binder.getService()
         // Test code here for ExoPlayService
-        playService?.setPresenter(presenter)
-        playService?.initMediaControllerCompat(presenter)
+        playService?.presenter = this.presenter
+        playService?.initMediaControllerCompat(this.presenter)
         playService?.initCastPlayerAndExoPlayer()
         Log.d(TAG, "onPlayServiceConnected.Video player view")
         // Video player view

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.os.BundleCompat;
 
 import com.smile.karaokeplayer.adapters.SpinnerAdapter;
 import com.smile.karaokeplayer.constants.CommonConstants;
@@ -57,6 +58,7 @@ public abstract class BaseSongDataActivity extends AppCompatActivity {
         toastTextSize = 0.9f * textFontSize;
 
         Intent callingIntent = getIntent();
+        Bundle extras = callingIntent.getExtras();
         if (savedInstanceState == null) {
             crudAction = callingIntent.getStringExtra(CommonConstants.CrudActionString);
             switch (crudAction.toUpperCase()) {
@@ -67,17 +69,25 @@ public abstract class BaseSongDataActivity extends AppCompatActivity {
                     break;
                 case CommonConstants.EditActionString:
                     // = "EDIT". Edit one record
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        mSongInfo = callingIntent.getParcelableExtra(PlayerConstants.SingleSongInfoState, SongInfo.class);
-                    } else mSongInfo = callingIntent.getParcelableExtra(PlayerConstants.SingleSongInfoState);
-                    actionButtonString = getString(R.string.saveString);
+                    if (extras != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            mSongInfo = BundleCompat.getParcelable(extras,
+                                    PlayerConstants.SingleSongInfoState, SongInfo.class);
+                        } else
+                            mSongInfo = extras.getParcelable(PlayerConstants.SingleSongInfoState);
+                        actionButtonString = getString(R.string.saveString);
+                    }
                     break;
                 case CommonConstants.DeleteActionString:
                     // = "DELETE". Delete one record
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        mSongInfo = callingIntent.getParcelableExtra(PlayerConstants.SingleSongInfoState, SongInfo.class);
-                    } else mSongInfo = callingIntent.getParcelableExtra(PlayerConstants.SingleSongInfoState);
-                    actionButtonString = getString(R.string.deleteString);
+                    if (extras != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            mSongInfo = BundleCompat.getParcelable(extras,
+                                    PlayerConstants.SingleSongInfoState, SongInfo.class);
+                        } else
+                            mSongInfo = extras.getParcelable(PlayerConstants.SingleSongInfoState);
+                        actionButtonString = getString(R.string.deleteString);
+                    }
                     break;
                 default:
                     returnToPrevious(Activity.RESULT_CANCELED);
@@ -89,7 +99,8 @@ public abstract class BaseSongDataActivity extends AppCompatActivity {
             actionButtonString = savedInstanceState.getString("ActionButtonString");
             crudAction = savedInstanceState.getString(CommonConstants.CrudActionString);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SingleSongInfoState, SongInfo.class);
+                mSongInfo = BundleCompat.getParcelable(savedInstanceState,
+                        PlayerConstants.SingleSongInfoState, SongInfo.class);
             } else mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SingleSongInfoState);
             Log.d(TAG, "savedInstanceState is not null.");
         }
