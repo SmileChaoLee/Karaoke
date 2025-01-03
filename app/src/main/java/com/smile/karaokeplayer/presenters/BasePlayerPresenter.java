@@ -560,13 +560,12 @@ public abstract class BasePlayerPresenter {
                     setAudioActionSubMenu();
                 }
                 mPlayingParam.setMediaPrepared(true);  // has been prepared
-                /*
                 startDurationSeekBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAndAudioController();
                 mPresentView.playButtonOffPauseButtonOn();
-                adsForOnlyMusic();
-                */
+                // adsForOnlyMusic();
+                mPresentView.hideNativeAd();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 // when playing is paused

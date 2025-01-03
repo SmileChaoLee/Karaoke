@@ -182,26 +182,17 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Fixed bugs for playPreviousSong and playNextSong buttons">
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="1. Fixed the bugs of Android 13&#10;2. Refined codes">
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_gms_play_services_base_18_0_0_aar.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_4_0_0_eap1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.androidTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/callbacks/ExoMediaSessionCallback.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/fragments/ExoPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/listeners/ExoPlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/listeners/ExoPlayerListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/services/ExoPlayService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseSongDataActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseSongDataActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/services/BasePlayService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaSessionCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Callbacks/VlcMediaSessionCallback.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/Presenters/VlcPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/videoplayer/services/VlcPlayService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -212,7 +203,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9CNA014GWJ)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/home/chaolee/.android/avd/Pixel_3a_API_33_x86_64.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -766,7 +757,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="106" />
+    <option name="localTasksCounter" value="107" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -849,7 +840,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="1. upgraded to Exoplayer 2.19.1&#10;2. Removed MediaSessionConnector from Exoplayer&#10;3. Used MediaSessionCallback instead for Exoplayer&#10;4. No more ExoPlaybackPreparer.java for Exoplayer&#10;5. Refined" />
     <MESSAGE value="Refined" />
     <MESSAGE value="Created a service for player&#10;   . Moved some APIs to BasePlayService&#10;Worked for ExoPlayer for now but needs more debugging" />
     <MESSAGE value="Create a PlayService to process video playing, pausing, stopping, replaying, etc." />
@@ -874,6 +864,7 @@
     <MESSAGE value="upgraded the libvlc library to 4.0.0-eap1" />
     <MESSAGE value="Fixed bugs" />
     <MESSAGE value="Fixed bugs for playPreviousSong and playNextSong buttons" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs for playPreviousSong and playNextSong buttons" />
+    <MESSAGE value="1. Fixed the bugs of Android 13&#10;2. Refined codes" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. Fixed the bugs of Android 13&#10;2. Refined codes" />
   </component>
 </project>

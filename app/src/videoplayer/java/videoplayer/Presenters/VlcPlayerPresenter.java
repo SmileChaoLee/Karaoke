@@ -199,16 +199,20 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
     public void setAudioActionSubMenu() {
         Log.d(TAG, "setAudioActionSubMenu");
         final Handler handler = new Handler(Looper.getMainLooper());
-        final Runnable runnable = () -> {
-            Log.d(TAG, "setAudioActionSubMenu.runnable.run()");
-            handler.removeCallbacksAndMessages(null);
-            getMediaInfoSetAudioSubMenu();
-            mPresentView.showNativeAndHideBannerAd();
-            startDurationSeekBarHandler();   // start updating duration seekbar
-            // set up a timer for supportToolbar's visibility
-            mPresentView.setTimerToHideSupportAndAudioController();
-            mPresentView.playButtonOffPauseButtonOn();
-            adsForOnlyMusic();
+        final Runnable runnable = new Runnable() {
+            int count = 0;
+            @Override
+            public void run() {
+                Log.d(TAG, "setAudioActionSubMenu.runnable.run().count = " + count);
+                getMediaInfoSetAudioSubMenu();
+                mPresentView.showNativeAndHideBannerAd();
+                if (count < 2) {
+                    handler.postDelayed(this, 1000); // delay 1 seconds
+                    count++;
+                } else {
+                    handler.removeCallbacksAndMessages(null);
+                }
+            }
         };
         handler.postDelayed(runnable, 1000); // delay 1 seconds
         mPresentView.setVideoWindowSize();

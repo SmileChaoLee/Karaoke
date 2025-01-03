@@ -283,12 +283,6 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         mPresentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
         // update the duration on controller UI
         mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
-
-        startDurationSeekBarHandler();   // start updating duration seekbar
-        // set up a timer for supportToolbar's visibility
-        mPresentView.setTimerToHideSupportAndAudioController();
-        mPresentView.playButtonOffPauseButtonOn();
-        adsForOnlyMusic();
     }
 
     @Override
