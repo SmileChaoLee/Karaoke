@@ -7,6 +7,8 @@ import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import android.view.View
+import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -209,8 +211,10 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun setPlayerTime(progress: Long) {
-        Log.d(TAG, "setPlayerTime")
+        Log.d(TAG, "setPlayerTime.progress = $progress")
         vlcPlayer?.setTime(progress)
+        Log.d(TAG, "setPlayerTime.position = ${vlcPlayer?.position}")
+        Log.d(TAG, "setPlayerTime.time = ${vlcPlayer?.time}")
     }
 
     override fun isSeekable(): Boolean {

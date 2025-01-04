@@ -530,6 +530,7 @@ public abstract class BasePlayerPresenter {
         Log.d(TAG, "updateStatusAndUi.playingParam.isMediaPrepared() = " +
                 mPlayingParam.isMediaPrepared());
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
+            // Only for ExoPlayer
             Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
@@ -552,14 +553,18 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setMediaPrepared(false);
                 mPresentView.showNativeAndHideBannerAd();
                 break;
+            case PlaybackStateCompat.STATE_CONNECTING:
+                // only for VlcPlayer
+                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_CONNECTING");
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
                 if (!mPlayingParam.isMediaPrepared()) {
-                    // the first time of Player.STATE_READY means prepared
+                    // the first time of STATE_PLAYING means prepared
                     setAudioActionSubMenu();
                 }
                 mPlayingParam.setMediaPrepared(true);  // has been prepared
+                mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
                 startDurationSeekBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAndAudioController();

@@ -88,11 +88,13 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                     break;
                 case PlaybackStateCompat.STATE_PLAYING:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PLAYING");
+                    break;
                 case PlaybackStateCompat.STATE_NONE:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
                     break;
             }
             // the following must be after vlcPlayer.play()
+            Log.d(TAG, "onPrepareFromUri.isMediaPrepared = " + playingParam.isMediaPrepared());
             Log.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
                             ", currentAudioPosition = " + currentAudioPosition);
             mPlayService.setAudioVolume(currentVolume);

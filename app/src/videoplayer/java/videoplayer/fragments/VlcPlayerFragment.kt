@@ -79,16 +79,25 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         Log.d(TAG, "onViewCreated() is finished.")
     }
 
+    override fun onStart() {
+        Log.d(TAG, "onStart() is called.")
+        super.onStart()
+        presenter.playSongPlayedBeforeActivityCreated()
+    }
+
     override fun onResume() {
         Log.d(TAG, "onResume() is called.")
         super.onResume()
-        presenter.playSongPlayedBeforeActivityCreated()
     }
 
     override fun onPause() {
         Log.d(TAG, "onPause() is called.")
         super.onPause()
-        playService?.detachPlayerViews()
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop() is called.")
+        super.onStop()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -100,6 +109,7 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy() is called.")
+        playService?.detachPlayerViews()
     }
 
     // implement abstract methods of super class
