@@ -74,8 +74,8 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
     public void setAudioVolumeInsideVolumeSeekBar(int i) {
         Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar");
         float currentVolume = 1.0f;
-        if (i < PlayerConstants.MaxProgress) {
-            currentVolume = (float)i / (float)PlayerConstants.MaxProgress;
+        if (i < PlayerConstants.MAX_PROGRESS) {
+            currentVolume = (float)i / (float)PlayerConstants.MAX_PROGRESS;
         }
         Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar.getPlayService() = " + getPlayService());
         if (getPlayService() != null) {
@@ -88,10 +88,10 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
         int currentProgress;
         float currentVolume = mPlayingParam.getCurrentVolume();
         if ( currentVolume >= 1.0f) {
-            currentProgress = PlayerConstants.MaxProgress;
+            currentProgress = PlayerConstants.MAX_PROGRESS;
         } else {
             // percentage of 100
-            currentProgress = (int) (currentVolume * PlayerConstants.MaxProgress);
+            currentProgress = (int) (currentVolume * PlayerConstants.MAX_PROGRESS);
         }
 
         return currentProgress;

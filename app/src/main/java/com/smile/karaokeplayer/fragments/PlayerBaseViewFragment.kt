@@ -51,6 +51,7 @@ import com.smile.karaokeplayer.models.SongListSQLite
 // import com.smile.karaokeplayer.models.VerticalSeekBar
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter.BasePresentView
+import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
@@ -83,7 +84,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var actionMenuView: ActionMenuView? = null
     private var audioControllerView: LinearLayout? = null
     // protected var volumeSeekBar: VerticalSeekBar? = null
-    // private var volumeImageButton: ImageButton? = null
+    private var nonVolumeImageButton: ImageButton? = null
+    private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
     private var playMediaImageButton: ImageButton? = null
     private var replayMediaImageButton: ImageButton? = null
@@ -256,22 +258,20 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             volumeSeekBar?.layoutParams?.let {
                 volumeSeekBarHeightForLandscape = it.height
             }
-            volumeImageButton = findViewById(R.id.volumeImageButton)
             */
+            nonVolumeImageButton = findViewById(R.id.nonVolumeImageButton)
+            volumeImageButton = findViewById(R.id.volumeImageButton)
             previousMediaImageButton = findViewById(R.id.previousMediaImageButton)
             playMediaImageButton = findViewById(R.id.playMediaImageButton)
             pauseMediaImageButton = findViewById(R.id.pauseMediaImageButton)
-        }
-
-        mPresenter.playingParam.let {
-            if (it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
-                playButtonOffPauseButtonOn()
-            } else {
-                playButtonOnPauseButtonOff()
+            mPresenter.playingParam.let {
+                if (it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
+                    playButtonOffPauseButtonOn()
+                } else {
+                    playButtonOnPauseButtonOff()
+                }
             }
-        }
 
-        fragmentView?.apply {
             replayMediaImageButton = findViewById(R.id.replayMediaImageButton)
             stopMediaImageButton = findViewById(R.id.stopMediaImageButton)
             nextMediaImageButton = findViewById(R.id.nextMediaImageButton)
@@ -292,7 +292,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 bannerLinearLayout?.also {layoutIt ->
                     layoutIt.visibility = View.VISIBLE // Show Banner Ad
                     myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                            layoutIt, actIt.resources.configuration.orientation)
+                        layoutIt, actIt.resources.configuration.orientation)
                     myBannerAdView?.showBannerAdView(0) // Admob first
                 }
             }
@@ -302,6 +302,10 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             message_area_LinearLayout?.visibility = View.GONE
             bufferingStringTextView = findViewById(R.id.bufferingStringTextView)
             ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+        }
+
+        fragmentView?.apply {
+
         }
 
         animationText = AlphaAnimation(0.0f, 1.0f)
@@ -602,7 +606,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 (buttonMarginLeft.toFloat() * (screenSize.x.toFloat() / screenSize.y.toFloat())).toInt()
             Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         }
-        val buttonNum = 7 // 7 buttons, no
+        val buttonNum = 8 // 8 buttons, no
         val imageButtonHeight = (textFontSize * 1.2f).toInt()
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
         if (maxWidth > screenSize.x) {
@@ -619,22 +623,36 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         var layoutParams: MarginLayoutParams = volumeSeekBar?.layoutParams as MarginLayoutParams
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(0, 0, 0, 0)
-        layoutParams: MarginLayoutParams = volumeImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(0, 0, 0, 0)
         */
-        var layoutParams: MarginLayoutParams = previousMediaImageButton?.layoutParams as MarginLayoutParams
+
+        val volumeButtonFrameLayout: FrameLayout? =
+            fragmentView?.findViewById(R.id.volumeButtonFrameLayout)
+        var layoutParams : MarginLayoutParams = volumeButtonFrameLayout?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
-        // layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         layoutParams.setMargins(0, 0, 0, 0)
+        layoutParams = nonVolumeImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
+        layoutParams = volumeImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
+        layoutParams = previousMediaImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
+        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         val playPauseButtonFrameLayout: FrameLayout? =
             fragmentView?.findViewById(R.id.playPauseButtonFrameLayout)
         layoutParams = playPauseButtonFrameLayout?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+        layoutParams = playMediaImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
+        layoutParams = pauseMediaImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
         layoutParams = replayMediaImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
@@ -707,7 +725,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             volumeSeekBar?.layoutParams?.height = volumeSeekBarHeightForLandscape
         }
         */
-        // supportToolbar?.layoutParams?.height = volumeImageButton?.layoutParams?.height
         supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height
         val bannerAdsLayout: LinearLayout? = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -794,6 +811,28 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             setTimerToHideSupportAndAudioController()   // reset timer
         }
         */
+        nonVolumeImageButton?.let{
+            it.setOnClickListener {
+                // silence the sound
+                mPresenter.playingParam.let { pIt->
+                    pIt.currentVolume = 0.0f
+                    playService?.setAudioVolume(pIt.currentVolume)
+                    it.visibility = View.GONE
+                    volumeImageButton?.visibility = View.VISIBLE
+                }
+            }
+        }
+        volumeImageButton?.let {
+            it.setOnClickListener {
+                // enable the sound
+                mPresenter.playingParam.let { pIt->
+                    pIt.currentVolume = 1.0f
+                    playService?.setAudioVolume(pIt.currentVolume)
+                    it.visibility = View.GONE
+                    nonVolumeImageButton?.visibility = View.VISIBLE
+                }
+            }
+        }
         previousMediaImageButton?.setOnClickListener { mPresenter.playPreviousSong() }
         playMediaImageButton?.setOnClickListener { mPresenter.startPlay() }
         pauseMediaImageButton?.setOnClickListener { mPresenter.pausePlay() }

@@ -200,10 +200,7 @@ class VlcPlayService : BasePlayService() {
                 CommonConstants.StereoChannel -> leftVolume = rightVolume
             }
             it.currentVolume = volumeTmp
-
-            // removed on 2022-08-29 for testing
-            val vlcMaxVolume = 100
-            vlcPlayer?.setVolume((volumeTmp * vlcMaxVolume).toInt())
+            vlcPlayer?.setVolume((volumeTmp * PlayerConstants.MAX_PROGRESS).toInt())
             return
         }
         Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")

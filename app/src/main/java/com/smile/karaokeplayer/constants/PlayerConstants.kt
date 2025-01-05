@@ -15,7 +15,7 @@ object PlayerConstants {
     const val PlayerView_Timeout = 10000 //  10 seconds
     const val NoAudioTrack = -1
     const val NoAudioChannel = -1
-    const val MaxProgress = 100
+    const val MAX_PROGRESS = 100
     const val NoRepeatPlaying = 0 // Player.REPEAT_MODE_OFF
     const val RepeatOneSong = 1 // Player.REPEAT_MODE_ONE
     const val RepeatAllSongs = 2 // Player.REPEAT_MODE_ALL
