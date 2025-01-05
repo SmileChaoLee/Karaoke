@@ -5,11 +5,9 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import android.view.View
-import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import com.smile.karaokeplayer.constants.CommonConstants
+import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.LibVLC
@@ -135,12 +133,8 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun prepare(med: IMedia) {
-        Log.d(TAG, "prepare")
-        vlcPlayer?.apply {
-            // media = med
-            play(med)
-            // media?.release()
-        }
+        Log.d(TAG, "prepare.vlcPlayer = $vlcPlayer")
+        vlcPlayer?.media = med
     }
     fun createMedia(uri: Uri): IMedia {
         return Media(libVLC, uri)
@@ -149,44 +143,16 @@ class VlcPlayService : BasePlayService() {
         vlcPlayer?.setAudioTrack(audioTrackId)
     }
     override fun onPlay() {
-        Log.d(TAG, "onPlay.presenter = $presenter")
-        presenter?.playingParam?.let {
-            Log.d(TAG, "onPlay().vlcPlayer = $vlcPlayer")
-            vlcPlayer?.apply {
-                if (it.isMediaPrepared &&
-                    it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) {
-                    Log.d(TAG, "onPlay().vlcPlayer is not playing, so play()")
-                    play()
-                }
-            }
-        }
+        Log.d(TAG, "onPlay.vlcPlayer = $vlcPlayer")
+        vlcPlayer?.play()
     }
     override fun onPause() {
-        Log.d(TAG, "onPause.presenter = $presenter")
-        presenter?.playingParam?.let {
-            Log.d(TAG, "onPause().vlcPlayer = $vlcPlayer")
-            vlcPlayer?.apply {
-                if (it.isMediaPrepared &&
-                    it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
-                    Log.d(TAG, "onPause().vlcPlayer is playing, so pause()")
-                    pause()
-                }
-            }
-        }
+        Log.d(TAG, "onPause.vlcPlayer = $vlcPlayer")
+        vlcPlayer?.pause()
     }
     override fun onStop() {
-        Log.d(TAG, "onStop.presenter = $presenter")
-        presenter?.playingParam?.let {
-            Log.d(TAG, "onStop().vlcPlayer = $vlcPlayer")
-            vlcPlayer?.apply {
-                if (it.isMediaPrepared ||
-                    it.currentPlaybackState == PlaybackStateCompat.STATE_BUFFERING) {
-                    Log.d(TAG, "onStop().vlcPlayer is PlaybackStateCompat.STATE_READY or " +
-                            "PlaybackStateCompat.STATE_BUFFERING , so stop()")
-                    stop()
-                }
-            }
-        }
+        Log.d(TAG, "onStop.vlcPlayer = $vlcPlayer")
+        vlcPlayer?.stop()
     }
     //
 
@@ -203,26 +169,21 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun isPlaying(): Boolean {
-        Log.d(TAG, "isPlaying().vlcPlayer?.isPlaying = ${vlcPlayer?.isPlaying}")
-        vlcPlayer?.apply {
-            return isPlaying
-        }
-        return false
+        val isPlaying = vlcPlayer?.isPlaying ?: false
+        Log.d(TAG, "isPlaying.isPlaying = $isPlaying")
+        return isPlaying
     }
 
     override fun setPlayerTime(progress: Long) {
         Log.d(TAG, "setPlayerTime.progress = $progress")
         vlcPlayer?.setTime(progress)
-        Log.d(TAG, "setPlayerTime.position = ${vlcPlayer?.position}")
         Log.d(TAG, "setPlayerTime.time = ${vlcPlayer?.time}")
     }
 
     override fun isSeekable(): Boolean {
-        Log.d(TAG, "isSeekable")
-        vlcPlayer?.apply {
-            return isSeekable
-        }
-        return false
+        val isSeekable = vlcPlayer?.isSeekable ?: false
+        Log.d(TAG, "isSeekable.isSeekable = $isSeekable")
+        return isSeekable
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
@@ -249,25 +210,21 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun getMediaDuration(): Long {
-        vlcPlayer?.apply {
-            return length
-        }
-        return 0
+        val len = vlcPlayer?.length ?: 0
+        Log.d(TAG, "getMediaDuration.len")
+        return len
     }
 
     override fun getCurrentPosition(): Long {
-        vlcPlayer?.apply {
-            return time
-        }
-        return 0
+        val time = vlcPlayer?.time ?: 0
+        Log.d(TAG, "getCurrentPosition.time")
+        return time
     }
 
     override fun getPlaybackState(): Int {
-        vlcPlayer?.apply {
-            return playerState
-        }
-        // return vlcPlayer.STATE_IDLE
-        return PlaybackStateCompat.STATE_NONE
+        val state = vlcPlayer?.playerState ?: PlayerConstants.PREPARE_MEDIA
+        Log.d(TAG, "getPlaybackState.state")
+        return state
     }
 
     override fun specificPlayerReplayMedia(currentAudioPosition: Long) {

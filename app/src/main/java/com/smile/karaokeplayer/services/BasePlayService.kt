@@ -120,8 +120,9 @@ abstract class BasePlayService : Service() {
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.apply {
             currentAudioPosition = 0
-            currentPlaybackState = PlaybackStateCompat.STATE_NONE
-            isMediaPrepared = false
+            // currentPlaybackState = PlaybackStateCompat.STATE_NONE
+            currentPlaybackState = PlayerConstants.PREPARE_MEDIA
+            preparedStatus = 0
             playMediaFromUri(mUri, this)
         }
     }
@@ -157,11 +158,12 @@ abstract class BasePlayService : Service() {
     fun playMediaFromUri(mediaUri: Uri?, playingParam: PlayingParameters) {
         Log.d(TAG, "playMediaFromUri.mediaUri = $mediaUri")
         mediaUri?.let { mediaIt ->
-            val playingParamOriginExtras = Bundle()
-            playingParamOriginExtras.putParcelable(PlayerConstants.PlayingParamOrigin, playingParam)
             mediaSessionCompat?.let {
                 it.controller?.transportControls?.apply {
                     Log.d(TAG, "playMediaFromUri.mediaTransportControls is not null")
+                    val playingParamOriginExtras = Bundle()
+                    playingParamOriginExtras.putParcelable(PlayerConstants.PlayingParamOrigin,
+                        PlayingParameters(playingParam))
                     prepareFromUri(mediaIt, playingParamOriginExtras)
                 }
             }
@@ -218,9 +220,9 @@ abstract class BasePlayService : Service() {
         if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
             return
         }
-        Log.d(TAG, "replayMedia.playingParam.isMediaPrepared = ${playingParam.isMediaPrepared}")
+        Log.d(TAG, "replayMedia.playingParam.preparedStatus = ${playingParam.preparedStatus}")
         playingParam.currentAudioPosition = 0
-        if (playingParam.isMediaPrepared) {
+        if (playingParam.preparedStatus != 0) {
             // song is playing, paused, or finished playing
             // cannot do the following statement (exoPlayer.setPlayWhenReady(false); )
             // because it will send Play.STATE_ENDED event after the playing has finished
@@ -230,9 +232,9 @@ abstract class BasePlayService : Service() {
             Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
             specificPlayerReplayMedia(0)
         } else {
-            Log.d(TAG, "replayMedia.playMediaFromUri()")
-            // song was stopped by user
-            playingParam.currentPlaybackState = PlaybackStateCompat.STATE_NONE
+            Log.d(TAG, "replayMedia.playMediaFromUri")
+            // playingParam.currentPlaybackState = PlaybackStateCompat.STATE_NONE
+            playingParam.currentPlaybackState = PlayerConstants.PREPARE_MEDIA
             playMediaFromUri(mediaUri, playingParam)
         }
     }
@@ -243,9 +245,10 @@ abstract class BasePlayService : Service() {
         val playbackState = playingParam.currentPlaybackState
         Log.d(TAG, "startPlay.mediaUri = $mediaUri")
         Log.d(TAG, "startPlay.playbackState = $playbackState")
-        if ((mediaUri != null && Uri.EMPTY != mediaUri)
-            && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
+        if (mediaUri != null && Uri.EMPTY != mediaUri) {
+            // && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
             // no media file opened or playing has been stopped
+            /*
             if ((playbackState == PlaybackStateCompat.STATE_PAUSED)
                 || (playbackState == PlaybackStateCompat.STATE_REWINDING)
                 || (playbackState == PlaybackStateCompat.STATE_FAST_FORWARDING)
@@ -255,16 +258,22 @@ abstract class BasePlayService : Service() {
                     it.play()
                 }
             }
-        } else {
+            */
+            mediaSessionCompat?.controller?.transportControls?.let {
+                Log.d(TAG, "startPlay.mediaTransportControls.play()")
+                it.play()
+            }
+        } /* else {
             // (playbackState == PlaybackStateCompat.STATE_STOPPED) or
             // (playbackState == PlaybackStateCompat.STATE_NONE)
             Log.d(TAG, "startPlay.replayMedia()")
             replayMedia(presenter)
-        }
+        } */
     }
 
     fun pausePlay(presenter: BasePlayerPresenter) {
         Log.d(TAG, "pausePlay()")
+        /*
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         if ((mediaUri != null && Uri.EMPTY != mediaUri)
@@ -274,10 +283,16 @@ abstract class BasePlayService : Service() {
                 it.pause()
             }
         }
+        */
+        mediaSessionCompat?.controller?.transportControls?.let {
+            Log.d(TAG, "pausePlay().mediaTransportControls.pause().")
+            it.pause()
+        }
     }
 
     fun stopPlay(presenter: BasePlayerPresenter) {
         Log.d(TAG, "stopPlay()")
+        /*
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         if ((mediaUri != null && Uri.EMPTY != mediaUri)
@@ -286,6 +301,11 @@ abstract class BasePlayService : Service() {
                 Log.d(TAG, "stopPlay().mediaTransportControls.stop().")
                 it.stop()
             }
+        }
+        */
+        mediaSessionCompat?.controller?.transportControls?.let {
+            Log.d(TAG, "stopPlay().mediaTransportControls.stop().")
+            it.stop()
         }
     }
 }

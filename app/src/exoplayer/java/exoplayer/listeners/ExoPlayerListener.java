@@ -77,12 +77,12 @@ public class ExoPlayerListener implements Player.Listener {
                 // or stopPlay(2) because of playPreviousSong() or playNextSong()
                 Log.d(TAG, "onPlaybackStateChanged().Player.STATE_IDLE");
                 if (mService.getPresenter() != null
-                        && mService.getPresenter().getPlayingParam().getFinishState() == 1) {
+                        && mService.getPresenter().getPlayingParam().getFinishState() == PlayerConstants.STOPPED_BY_USER) {
                     // stopped by user
                     Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_NONE");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 } else {
-                    // finishState = 2, stopped by program
+                    // finishState = PlayerConstants.FINISHED_BY_PROGRAM (2), stopped by program
                     Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_STOPPED");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }

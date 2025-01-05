@@ -149,7 +149,7 @@ public abstract class BasePlayerPresenter {
                 playService.onPlay();
                 playService.setPlayerTime(playService.getMediaDuration());
                  */
-                stopPlay(2);
+                stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
             } else {
                 // paused, buffering, stopped, finished
                 startAutoPlay(false);
@@ -279,7 +279,7 @@ public abstract class BasePlayerPresenter {
 
     public void startAutoPlay(boolean isSelfFinished) {
         Log.d(TAG, "startAutoPlay");
-        mPlayingParam.setFinishState(0);    // default value for start playing a video
+        mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);    // default value for start playing a video
         if (mActivity.isFinishing()) {
             // activity is being destroyed
             return;
@@ -314,10 +314,11 @@ public abstract class BasePlayerPresenter {
         } else {
             // previous is auto play
             int playbackState = mPlayingParam.getCurrentPlaybackState();
-            if (playbackState!=PlaybackStateCompat.STATE_NONE
+            if (playbackState!=PlayerConstants.PREPARE_MEDIA
+                    && playbackState!=PlaybackStateCompat.STATE_NONE
                     && playbackState!=PlaybackStateCompat.STATE_STOPPED) {
                 // not the following: (has not started, stopped, or finished)
-                stopPlay(1);
+                stopPlay(PlayerConstants.STOPPED_BY_USER);
             }
             mPlayingParam.setAutoPlay(false);    // must be the last in this block
             mPresentView.hidePlayerView();
@@ -361,7 +362,7 @@ public abstract class BasePlayerPresenter {
                 break;
         }
         mPlayingParam.setCurrentSongIndex(currentIndex);
-        stopPlay(2);
+        stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
         /*
         // finish the playing video and play the previous after receiving stop event
         BasePlayService playService = mPresentView.getPlayService();
@@ -402,7 +403,7 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.RepeatAllSongs:
                 break;
         }
-        stopPlay(2);
+        stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
         /*
         // finish the playing video and play the previous after receiving stop event
         BasePlayService playService = mPresentView.getPlayService();
@@ -421,7 +422,10 @@ public abstract class BasePlayerPresenter {
     }
 
     public void playSongPlayedBeforeActivityCreated() {
-        Log.d(TAG, "playSongPlayedBeforeActivityCreated.isPlaySingleSong = " + mPlayingParam.isPlaySingleSong());
+        Log.d(TAG, "playSongPlayedBeforeActivityCreated.isPlaySingleSong = "
+                + mPlayingParam.isPlaySingleSong());
+        Log.d(TAG, "playSongPlayedBeforeActivityCreated.preparedStatus = "
+                + mPlayingParam.getPreparedStatus());
         if (mPresentView != null) mPresentView.updateVolumeSeekBarProgress();
         if (mMediaUri == null || Uri.EMPTY.equals(mMediaUri)) {
             if (mPlayingParam.isPlaySingleSong()) {
@@ -442,11 +446,19 @@ public abstract class BasePlayerPresenter {
         } else {
             int playbackState = mPlayingParam.getCurrentPlaybackState();
             Log.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = " + playbackState);
-            if (playbackState != PlaybackStateCompat.STATE_NONE) {
+            // if (playbackState != PlaybackStateCompat.STATE_NONE) {
+            if (playbackState != PlayerConstants.PREPARE_MEDIA) {
                 BasePlayService playService = mPresentView.getPlayService();
                 if (playService != null) {
                     Log.d(TAG, "playSongPlayedBeforeActivityCreated.playService.playMediaFromUri()");
                     playService.playMediaFromUri(mMediaUri, mPlayingParam);
+                    /*
+                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.startAutoPlay()");
+                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.mPlayingParam.getCurrentSongIndex() = "
+                            + mPlayingParam.getCurrentSongIndex());
+                    mPlayingParam.setCurrentSongIndex(mPlayingParam.getCurrentSongIndex()-1);
+                    startAutoPlay(mPlayingParam.getFinishState() != 2);
+                     */
                 }
             }
         }
@@ -480,14 +492,17 @@ public abstract class BasePlayerPresenter {
 
     public void startPlay() {
         Log.d(TAG, "startPlay");
+        /*
         int playbackState = mPlayingParam.getCurrentPlaybackState();
-        if (playbackState==PlaybackStateCompat.STATE_NONE
+        if (playbackState==PlayerConstants.PREPARE_MEDIA
+            || playbackState==PlaybackStateCompat.STATE_NONE
             || playbackState==PlaybackStateCompat.STATE_STOPPED) {
             // start playing the first song in the list
             Log.d(TAG, "startPlay.calling autoPlaySongList()");
             autoPlaySongList();
             return;
         }
+        */
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "startPlay.playService.startPlay() ");
@@ -506,11 +521,20 @@ public abstract class BasePlayerPresenter {
 
     public void stopPlay(int finishState) {
         Log.d(TAG, "stopPlay.finishState = " + finishState);
+        String state;
+        if (finishState == 0) {
+            state = "FINISHED_NORMALLY";
+        } else if (finishState == 1) {
+            state = "STOPPED_BY_USER";
+        } else {
+            state = "FINISHED_BY_PROGRAM";
+        }
+        Log.d(TAG, "stopPlay.finishState String = " + state);
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "stopPlay.playService.stopPlay() ");
             playService.stopPlay(this);
-            mPlayingParam.setFinishState(finishState);   // user stops
+            mPlayingParam.setFinishState(finishState);
         }
     }
 
@@ -527,8 +551,8 @@ public abstract class BasePlayerPresenter {
         Log.d(TAG, "updateStatusAndUi");
         int currentState = state.getState();
         mPlayingParam.setCurrentPlaybackState(currentState);
-        Log.d(TAG, "updateStatusAndUi.playingParam.isMediaPrepared() = " +
-                mPlayingParam.isMediaPrepared());
+        Log.d(TAG, "updateStatusAndUi.playingParam.preparedStatus = " +
+                mPlayingParam.getPreparedStatus());
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             // Only for ExoPlayer
             Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");
@@ -550,7 +574,7 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
-                mPlayingParam.setMediaPrepared(false);
+                mPlayingParam.setPreparedStatus(0);
                 mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_CONNECTING:
@@ -559,11 +583,11 @@ public abstract class BasePlayerPresenter {
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
-                if (!mPlayingParam.isMediaPrepared()) {
-                    // the first time of STATE_PLAYING means prepared
+                if (mPlayingParam.getPreparedStatus() == 1) {
+                    // the first time of STATE_PLAYING means just prepared
                     setAudioActionSubMenu();
                 }
-                mPlayingParam.setMediaPrepared(true);  // has been prepared
+                mPlayingParam.setPreparedStatus(2);  // has been prepared and playing
                 mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
                 startDurationSeekBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
@@ -582,7 +606,7 @@ public abstract class BasePlayerPresenter {
                 // 1. exoPlayer finished playing
                 // 2. after vlcPlayer finished playing
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_STOPPED");
-                mPlayingParam.setMediaPrepared(false);
+                mPlayingParam.setPreparedStatus(0);
                 BasePlayService playService = mPresentView.getPlayService();
                 if (playService != null) {
                     Log.d(TAG, "updateStatusAndUi.update_Player_duration_seekbar_progress" +
@@ -598,8 +622,7 @@ public abstract class BasePlayerPresenter {
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
-                boolean isSelfFinished = mPlayingParam.getFinishState() != 2;
-                startAutoPlay(isSelfFinished);
+                startAutoPlay(mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
                 String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);

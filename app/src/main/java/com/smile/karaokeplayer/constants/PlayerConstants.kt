@@ -19,6 +19,11 @@ object PlayerConstants {
     const val NoRepeatPlaying = 0 // Player.REPEAT_MODE_OFF
     const val RepeatOneSong = 1 // Player.REPEAT_MODE_ONE
     const val RepeatAllSongs = 2 // Player.REPEAT_MODE_ALL
+    const val PREPARE_MEDIA = -10
+    const val FINISHED_NORMALLY = 0
+    const val STOPPED_BY_USER = 1
+    const val FINISHED_BY_PROGRAM = 2
+
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     const val IsPlaySingleSongState = "IsPlaySingleSong"

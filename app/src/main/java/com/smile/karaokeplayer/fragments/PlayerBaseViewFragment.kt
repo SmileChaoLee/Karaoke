@@ -136,8 +136,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "controllerTimerRunnable() is called")
         controllerTimerHandler.removeCallbacksAndMessages(null)
         mPresenter.playingParam?.let {
-            if (it.isMediaPrepared) {
-                Log.d(TAG, "controllerTimerRunnable.playingParam.isMediaPrepared")
+            if (it.preparedStatus != 0) {
+                Log.d(TAG, "controllerTimerRunnable.playingParam.preparedStatus != 0")
                 if (supportToolbar?.visibility == View.VISIBLE) {
                     // hide supportToolbar
                     hideSupportToolbarAndAudioController()
@@ -429,7 +429,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 leftChannelMenuItem?.isEnabled = true
                 rightChannelMenuItem?.isEnabled = true
                 stereoChannelMenuItem?.isEnabled = true
-                if (playingParam.isMediaPrepared) {
+                if (playingParam.preparedStatus != 0) {
                     if (currentChannelPlayed == CommonConstants.LeftChannel) {
                         leftChannelMenuItem?.isCheckable = true
                         leftChannelMenuItem?.isChecked = true
@@ -474,6 +474,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onStart() {
+        Log.d(TAG, "onStart() is called.")
+        super.onStart()
+    }
+
     override fun onResume() {
         Log.d(TAG, "onResume() is called.")
         super.onResume()
@@ -488,6 +493,12 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         super.onPause()
         myBannerAdView?.pause()
         bannerLinearLayout?.visibility = View.GONE
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop() is called.")
+        super.onStop()
+        mPresenter.playingParam?.preparedStatus = 4
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -787,7 +798,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         playMediaImageButton?.setOnClickListener { mPresenter.startPlay() }
         pauseMediaImageButton?.setOnClickListener { mPresenter.pausePlay() }
         replayMediaImageButton?.setOnClickListener { mPresenter.replayMedia() }
-        stopMediaImageButton?.setOnClickListener { mPresenter.stopPlay(1) }
+        stopMediaImageButton?.setOnClickListener { mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER) }
         nextMediaImageButton?.setOnClickListener { mPresenter.playNextSong() }
         heartImageButton?.setOnClickListener {
             // add this media file to my favorite
