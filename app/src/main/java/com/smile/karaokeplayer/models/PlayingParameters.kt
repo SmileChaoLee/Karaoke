@@ -10,7 +10,8 @@ class PlayingParameters (
         // preparedStatus = 0 --> No media is prepared
         // preparedStatus = 1 --> The  media was just prepared in onPrepareFromUri() in MediaSessionCallback
         // preparedStatus = 2 --> The media is being played, paused, or buffered
-        // preparedStatus = 3 --> The app is in the background ot just comes back from background
+        // preparedStatus = 3 --> The app is in the background
+        // preparedStatus = 4 --> just comes back from background
         var currentPlaybackState: Int, var isAutoPlay: Boolean, var preparedStatus: Int,
         var isPlaySingleSong: Boolean, var isInSongList: Boolean,
         var musicAudioTrackIndex: Int, var vocalAudioTrackIndex: Int,

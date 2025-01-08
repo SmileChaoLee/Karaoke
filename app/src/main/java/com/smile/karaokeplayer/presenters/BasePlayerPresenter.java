@@ -568,6 +568,11 @@ public abstract class BasePlayerPresenter {
                 // 3. vlcPlayer finished playing (Event.EndReached)
                 // 4. vlcPlayer is stopped by user
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_NONE");
+                if (mPlayingParam.getPreparedStatus() == 1) {
+                    // the first time of STATE_PLAYING means just prepared
+                    // or just came back from background
+                    setAudioActionSubMenu();
+                }
                 onDurationSeekBarProgressChanged(0, true); // set time to 0 position
                 mPresentView.update_Player_duration_seekbar_progress(0);
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
@@ -577,14 +582,12 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setPreparedStatus(0);
                 mPresentView.showNativeAndHideBannerAd();
                 break;
-            case PlaybackStateCompat.STATE_CONNECTING:
-                // only for VlcPlayer
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_CONNECTING");
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
+                    // or just came back from background
                     setAudioActionSubMenu();
                 }
                 mPlayingParam.setPreparedStatus(2);  // has been prepared and playing
@@ -599,6 +602,11 @@ public abstract class BasePlayerPresenter {
             case PlaybackStateCompat.STATE_PAUSED:
                 // when playing is paused
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PAUSED");
+                if (mPlayingParam.getPreparedStatus() == 1) {
+                    // the first time of STATE_PLAYING means just prepared
+                    // or just came back from background
+                    setAudioActionSubMenu();
+                }
                 mPresentView.playButtonOnPauseButtonOff();
                 mPresentView.showNativeAndHideBannerAd();
                 break;
@@ -606,6 +614,11 @@ public abstract class BasePlayerPresenter {
                 // 1. exoPlayer finished playing
                 // 2. after vlcPlayer finished playing
                 Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_STOPPED");
+                if (mPlayingParam.getPreparedStatus() == 1) {
+                    // the first time of STATE_PLAYING means just prepared
+                    // or just came back from background
+                    setAudioActionSubMenu();
+                }
                 mPlayingParam.setPreparedStatus(0);
                 BasePlayService playService = mPresentView.getPlayService();
                 if (playService != null) {

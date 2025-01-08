@@ -89,7 +89,7 @@ class VlcPlayService : BasePlayService() {
         libVLC = null
     }
 
-    private fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
+    fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
         Log.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             videoVLCPlayerView.requestFocus()

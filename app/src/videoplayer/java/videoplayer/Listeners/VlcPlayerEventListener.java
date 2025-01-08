@@ -1,9 +1,12 @@
 package videoplayer.Listeners;
 
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.PlayingParameters;
 
 import org.videolan.libvlc.MediaPlayer;
@@ -15,7 +18,6 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
     private final VlcPlayService mPlayService;
     private final VlcPlayerPresenter mPresenter;
     private final MediaPlayer mVlcPlayer;
-    private boolean isSentPlaybackState = false;
 
     public VlcPlayerEventListener(VlcPlayerPresenter presenter, VlcPlayService playService) {
         mPlayService = playService;
@@ -29,32 +31,51 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
             Log.d(TAG, "onEvent().mPresenter = null");
             return;
         }
-        PlayingParameters playingParam = mPresenter.getPlayingParam();
-        if (playingParam.getPreparedStatus() == 2) {
-            // media is being played
-            isSentPlaybackState = false;
+        final PlayingParameters playingParam = mPresenter.getPlayingParam();
+        if (playingParam.getPreparedStatus() == 5) {
+            if (mVlcPlayer.getPosition() > 0.0) {
+                Log.d(TAG, "onEvent()-->preparedStatus = " + playingParam.getPreparedStatus());
+                Log.d(TAG, "onEvent()-->position = " + mVlcPlayer.getPosition());
+                Log.d(TAG, "onEvent()-->length = " + mVlcPlayer.getLength());
+                // just came back from background
+                int playbackState = playingParam.getCurrentPlaybackState();
+                Log.d(TAG, "onEvent()-->setMediaPlaybackState(" + playbackState + ")");
+                mPlayService.setPlayerTime(playingParam.getCurrentAudioPosition());
+                mPresenter.getPresentView().update_Player_duration_seekbar_progress(
+                        (int) playingParam.getCurrentAudioPosition());
+                playingParam.setPreparedStatus(1);  // just prepared
+                mPlayService.setMediaPlaybackState(playbackState);
+                switch (playbackState) {
+                    case PlaybackStateCompat.STATE_PAUSED:
+                        Log.d(TAG, "onEvent()-->PlaybackStateCompat.STATE_PAUSED");
+                        mPresenter.pausePlay();
+                        break;
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        // playing is finished
+                        Log.d(TAG, "onEvent()-->PlaybackStateCompat.STATE_STOPPED");
+                        mPresenter.stopPlay(PlayerConstants.FINISHED_NORMALLY);
+                        break;
+                    case PlaybackStateCompat.STATE_PLAYING:
+                        Log.d(TAG, "onEvent()-->PlaybackStateCompat.STATE_PLAYING");
+                        break;
+                    case PlaybackStateCompat.STATE_NONE:
+                        // stopped by user previously
+                        Log.d(TAG, "onEvent()-->PlaybackStateCompat.STATE_NONE");
+                        mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER);
+                        break;
+                    default:
+                        Log.d(TAG, "onEvent().default.playbackState = " + playbackState);
+                        break;
+                }
+            }
+            return;
         }
-        Log.d(TAG, "onEvent()-->position = " + mVlcPlayer.getPosition());
-        Log.d(TAG, "onEvent()-->time = " + mVlcPlayer.getTime());
-        if (mVlcPlayer.getPosition() == 0.0) {
-            // start playing
-            Log.d(TAG, "onEvent()-->length = " + mVlcPlayer.getLength());
-        }
-        Log.d(TAG, "onEvent()-->playingParam.getCurrentAudioPosition() = "
-                + playingParam.getCurrentAudioPosition());
+
         switch(event.type) {
             case MediaPlayer.Event.Buffering:
-                Log.d(TAG, "onEvent()-->Buffering.playingParam.preparedStatus = " +
-                        playingParam.getPreparedStatus());
-                Log.d(TAG, "onEvent()-->Buffering-->mVlcPlayer.isPlaying() = " + mVlcPlayer.isPlaying());
-                if (playingParam.getPreparedStatus() == 1) {
-                    // The media was just opened (prepared)
-                    if (!isSentPlaybackState) {
-                        Log.d(TAG, "onEvent()-->Buffering-->setMediaPlaybackState(PlaybackStateCompat.STATE_CONNECTING");
-                        mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_CONNECTING);
-                        isSentPlaybackState = true;
-                    }
-                }
+                // Log.d(TAG, "onEvent()-->Buffering.playingParam.preparedStatus = " +
+                //         playingParam.getPreparedStatus());
+                // Log.d(TAG, "onEvent()-->Buffering-->mVlcPlayer.isPlaying() = " + mVlcPlayer.isPlaying());
                 break;
             case MediaPlayer.Event.Playing:
                 Log.d(TAG, "onEvent()-->Playing.playingParam.preparedStatus = " +
@@ -64,7 +85,9 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
             case MediaPlayer.Event.Paused:
                 Log.d(TAG, "onEvent()-->Paused.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
-                mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                if (playingParam.getPreparedStatus() != 5) {
+                    mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                }
                 break;
             case MediaPlayer.Event.Stopped:
                 // Event.Stopped is for
@@ -102,8 +125,7 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                         playingParam.getPreparedStatus());
                 break;
             case MediaPlayer.Event.PositionChanged:
-                Log.d(TAG, "onEvent()-->PositionChanged.playingParam.preparedStatus = " +
-                        playingParam.getPreparedStatus());
+                // Log.d(TAG, "onEvent()-->PositionChanged");
                 break;
             case MediaPlayer.Event.TimeChanged:
                 // Log.d(TAG, "onEvent()-->TimeChanged.");
@@ -116,8 +138,6 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                 break;
             default:
                 Log.d(TAG, "onEvent()-->default-->event.type = " + event.type);
-                Log.d(TAG, "onEvent()-->default.playingParam.preparedStatus = " +
-                        playingParam.getPreparedStatus());
                 break;
         }
     }

@@ -56,7 +56,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         final IMedia media = mPlayService.createMedia(uri);
         mPlayService.prepare(media);
         media.release();
-
+        mPlayService.onPlay();
         long currentAudioPosition = playingParam.getCurrentAudioPosition();
         float currentVolume = playingParam.getCurrentVolume();
         int playbackState = playingParam.getCurrentPlaybackState();
@@ -73,6 +73,8 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                 Log.d(TAG, "playingParamOrigin.playbackState = " + playbackState);
                 currentAudioPosition = playingParamOrigin.getCurrentAudioPosition();
                 currentVolume = playingParamOrigin.getCurrentVolume();
+                mPresenter.getPlayingParam().setCurrentAudioPosition(currentAudioPosition);
+                mPresenter.getPlayingParam().setCurrentVolume(currentVolume);
             }
         }
 
@@ -80,29 +82,21 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             switch (playbackState) {
                 case PlaybackStateCompat.STATE_PAUSED:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PAUSED");
-                    // mPlayService.onPause();
-                    mPresenter.pausePlay();
                     break;
                 case PlaybackStateCompat.STATE_STOPPED:
                     // playing is finished
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_STOPPED");
-                    // mPlayService.onStop();
-                    mPresenter.stopPlay(PlayerConstants.FINISHED_NORMALLY);
                     break;
                 case PlaybackStateCompat.STATE_PLAYING:
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PLAYING");
-                    mPlayService.onPlay();
                     break;
                 case PlaybackStateCompat.STATE_NONE:
                     // stopped by user previously
                     Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
-                    // mPlayService.onStop();
-                    mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER);
                     break;
                 case PlayerConstants.PREPARE_MEDIA:
                     // prepare media for playing
                     Log.d(TAG, "onPrepareFromUri.PlayerConstants.PREPARE_MEDIA");
-                    mPlayService.onPlay();
                     break;
                 default:
                     Log.d(TAG, "onPrepareFromUri.default.playbackState = " + playbackState);
@@ -112,10 +106,12 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             Log.d(TAG, "onPrepareFromUri.preparedStatus = " + playingParam.getPreparedStatus());
             Log.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
                             ", currentAudioPosition = " + currentAudioPosition);
-            // thw following 2 statements are useless because
-            // mPlayService.setAudioVolume(currentVolume);
-            // mPlayService.setPlayerTime(currentAudioPosition);
-            playingParam.setPreparedStatus(1);  // just prepared
+            if (playingParam.getPreparedStatus() == 4) {
+                // // just prepared but just came back from background
+                playingParam.setPreparedStatus(5);  // VlcPlayerEventListener
+            } else {
+                playingParam.setPreparedStatus(1);
+            }
         } catch (Exception e) {
             Log.d(TAG, "onPrepareFromUri.Invalid mediaId");
             e.printStackTrace();

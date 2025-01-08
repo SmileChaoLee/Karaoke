@@ -481,6 +481,12 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     override fun onStart() {
         Log.d(TAG, "onStart() is called.")
         super.onStart()
+        mPresenter.playingParam?.let {
+            if (it.preparedStatus == 3) { // running in the background before
+                // set to come back from background
+                it.preparedStatus = 4
+            }
+        }
     }
 
     override fun onResume() {
@@ -502,7 +508,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     override fun onStop() {
         Log.d(TAG, "onStop() is called.")
         super.onStop()
-        mPresenter.playingParam?.preparedStatus = 4
+        mPresenter.playingParam?.preparedStatus = 3 // running in background
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
