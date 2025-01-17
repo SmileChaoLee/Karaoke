@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.smile.karaokeplayer.constants.PlayerConstants;
 
 import exoplayer.services.ExoPlayService;
 
@@ -77,7 +78,8 @@ public class ExoPlayerListener implements Player.Listener {
                 // or stopPlay(2) because of playPreviousSong() or playNextSong()
                 Log.d(TAG, "onPlaybackStateChanged().Player.STATE_IDLE");
                 if (mService.getPresenter() != null
-                        && mService.getPresenter().getPlayingParam().getFinishState() == PlayerConstants.STOPPED_BY_USER) {
+                        && mService.getPresenter().getPlayingParam().getFinishState()
+                        == PlayerConstants.STOPPED_BY_USER) {
                     // stopped by user
                     Log.d(TAG, "onPlaybackStateChanged.PlaybackStateCompat.STATE_NONE");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);

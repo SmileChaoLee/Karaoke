@@ -6,7 +6,7 @@ ext {
             target : 35,
             min : 23
     ]
-    annotation_version ="1.8.2"
+    annotation_version = "1.8.2"
     exoplayer_version = "2.19.1"
 }
 

@@ -1,8 +1,6 @@
 package videoplayer.Listeners;
 
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 

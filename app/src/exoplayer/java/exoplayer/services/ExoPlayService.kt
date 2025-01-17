@@ -489,9 +489,16 @@ class ExoPlayService : BasePlayService() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onPlay().currentPlayer = $currentPlayer")
-            if (playbackState == Player.STATE_READY && !isPlaying) {
-                Log.d(TAG, "onPlay().currentPlayer is not playing, so play()")
-                play()
+            Player.STATE_IDLE
+            presenter?.let {
+                if (it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE) {
+                    Log.d(TAG, "onPlay().currentPlaybackState = PlaybackStateCompat.STATE_NONE")
+                    // stopped by user (Player.STATE_IDLE)
+                    // prepare() or
+                    replayMedia(it)
+                } else {
+                    play()
+                }
             }
         }
     }
@@ -499,21 +506,14 @@ class ExoPlayService : BasePlayService() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onPause().currentPlayer = $currentPlayer")
-            if (playbackState == Player.STATE_READY && isPlaying) {
-                Log.d(TAG, "onPause().currentPlayer is playing, so pause()")
-                pause()
-            }
+            pause()
         }
     }
     override fun onStop() {
         // exoPlayer?.apply {
         currentPlayer?.apply {
             Log.d(TAG, "onStop().currentPlayer = $currentPlayer")
-            if (playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING) {
-                Log.d(TAG, "onStop().currentPlayer is Player.STATE_READY or " +
-                        "Player.STATE_BUFFERING , so stop()")
-                stop()
-            }
+            stop()
         }
     }
 

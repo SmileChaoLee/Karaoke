@@ -47,7 +47,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")
         val playingParam: PlayingParameters? = presenter.playingParam
-        playingParam?.isMediaPrepared = false
+        playingParam?.preparedStatus = 1
         val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build()
         playService.setTrackSelectionParameters(trackParameters)
         // val mediaItem = MediaItem.fromUri(uri)
@@ -93,6 +93,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
                 playService.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_STOPPED -> {
+                // playing was finished
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
                 playService.setPlayWhenReady(false)
             }
@@ -100,10 +101,15 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
                 Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
                 playService.setPlayWhenReady(true)  // start playing when ready
             }
+            PlayerConstants.PREPARE_MEDIA -> {
+                Log.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
+                playService.setPlayWhenReady(true)  // start playing when ready
+            }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
-                Log.d(TAG,"onPrepareFromUr().iPlaybackStateCompat.STATE_NONE or default")
-                playService.setPlayWhenReady(true)  // start playing when ready
+                // stopped by user
+                Log.d(TAG,"onPrepareFromUr().PlaybackStateCompat.STATE_NONE or default")
+                playService.setPlayWhenReady(false)
             }
         }
     }

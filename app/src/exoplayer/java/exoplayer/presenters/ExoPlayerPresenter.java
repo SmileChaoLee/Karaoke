@@ -121,9 +121,9 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     public void setAudioVolumeInsideVolumeSeekBar(int i) {
         Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar");
         float currentVolume = 1.0f;
-        if (i < PlayerConstants.MaxProgress) {
-            currentVolume = (float)(1.0f - (Math.log(PlayerConstants.MaxProgress - i)
-                    / Math.log(PlayerConstants.MaxProgress)));
+        if (i < PlayerConstants.MAX_PROGRESS) {
+            currentVolume = (float)(1.0f - (Math.log(PlayerConstants.MAX_PROGRESS - i)
+                    / Math.log(PlayerConstants.MAX_PROGRESS)));
         }
         Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar.getPlayService()" + getPlayService());
         if (getPlayService() != null) {
@@ -138,10 +138,10 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         int currentProgress;
         float currentVolume = mPlayingParam.getCurrentVolume();
         if ( currentVolume >= 1.0f) {
-            currentProgress = PlayerConstants.MaxProgress;
+            currentProgress = PlayerConstants.MAX_PROGRESS;
         } else {
-            currentProgress = PlayerConstants.MaxProgress
-                    - (int)Math.pow(PlayerConstants.MaxProgress, (1-currentVolume));
+            currentProgress = PlayerConstants.MAX_PROGRESS
+                    - (int)Math.pow(PlayerConstants.MAX_PROGRESS, (1-currentVolume));
             currentProgress = Math.max(0, currentProgress);
         }
         return currentProgress;
