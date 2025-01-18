@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -55,6 +57,7 @@ public abstract class BasePlayerPresenter {
         void setTimerToHideSupportAndAudioController();
         void showMusicAndVocalIsNotSet();
         void showInterstitialAd();
+        void closeInterstitialAd();
         void hidePlayerView();
         void showPlayerView();
         void setCurrentPlayerToPlayerView();
@@ -630,12 +633,28 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
-                // nextSongOrShowNativeAndBannerAd(true);
-                // startAutoPlay(true);
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
-                startAutoPlay(mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM);
+                final boolean isSelfFinished = mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM;
+                if (isSelfFinished) {
+                    mPlayingParam.setNumPlayed(mPlayingParam.getNumPlayed() + 1);
+                }
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = " + mPlayingParam.getNumPlayed());
+                if (mPlayingParam.getNumPlayed() >= 10) {
+                    // show interstitial ad after 10 songs
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    final Runnable runnable = () -> {
+                        handler.removeCallbacksAndMessages(null);
+                        mPresentView.closeInterstitialAd();
+                        startAutoPlay(isSelfFinished);
+                    };
+                    mPresentView.showInterstitialAd();
+                    mPlayingParam.setNumPlayed(0);
+                    handler.postDelayed(runnable, 5000);    // 5 seconds
+                } else {
+                    startAutoPlay(isSelfFinished);
+                }
                 break;
             case PlaybackStateCompat.STATE_ERROR:
                 String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);
