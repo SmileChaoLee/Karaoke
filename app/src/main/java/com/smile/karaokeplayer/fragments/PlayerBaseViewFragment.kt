@@ -193,6 +193,14 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         setHasOptionsMenu(true) // must have because it has menu
 
+        /*
+        activity?.let {
+            interstitialAd = ShowInterstitial(it,
+                    (it.application as BaseApplication).facebookInterstitial,
+                    (it.application as BaseApplication).adMobInterstitial)
+        }
+        */
+
         val presenter = getPlayerPresenter()
         if (presenter == null) {
             Log.d(TAG, "onCreate.presenter is null so exit activity.")
@@ -1082,20 +1090,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun showInterstitialAd() {
-        Log.d(TAG, "showInterstitialAd()")
-        activity?.let {
-            interstitialAd = ShowInterstitial(it,
-                (it.application as BaseApplication).facebookInterstitial,
-                (it.application as BaseApplication).adMobInterstitial)
-            interstitialAd?.apply {
-                ShowAdThread().startShowAd(0)   // AdMob first
-            }
+        interstitialAd?.apply {
+            ShowAdThread().startShowAd(0)   // AdMob first
         }
-    }
-
-    override fun closeInterstitialAd() {
-        Log.d(TAG, "closeInterstitialAd()")
-        interstitialAd?.close()
     }
     // end of implementing PlayerBasePresenter.BasePresentView
 
