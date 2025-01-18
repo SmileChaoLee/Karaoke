@@ -145,9 +145,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 
-    exoplayerImplementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
-    exoplayerImplementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
-    exoplayerImplementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
+    // exoplayerImplementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
+    // exoplayerImplementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
+    // exoplayerImplementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
+    exoplayerImplementation 'androidx.media3:media3-exoplayer:1.5.1'
+    exoplayerImplementation 'androidx.media3:media3-exoplayer-dash:1.5.1'
+    exoplayerImplementation 'androidx.media3:media3-ui:1.5.1'
+    exoplayerImplementation 'androidx.media3:media3-session:1.5.1'
+    exoplayerImplementation 'androidx.media3:media3-cast:1.5.1'
     exoplayerImplementation project(':extension-ffmpeg')
     exoplayerImplementation project(':extension-flac')
     exoplayerImplementation project(':extension-opus')

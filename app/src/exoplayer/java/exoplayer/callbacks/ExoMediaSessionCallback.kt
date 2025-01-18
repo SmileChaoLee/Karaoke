@@ -7,16 +7,19 @@ import android.os.ResultReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import androidx.annotation.OptIn
 import androidx.core.os.BundleCompat
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.MediaMetadata
-import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.MimeTypes
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.PlayingParameters
 import exoplayer.presenters.ExoPlayerPresenter
 import exoplayer.services.ExoPlayService
 
+@UnstableApi
 class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
                               private val playService: ExoPlayService)
     : MediaSessionCompat.Callback() {
@@ -43,6 +46,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         Log.d(TAG, "onPrepareFromMediaId()")
     }
 
+    @OptIn(UnstableApi::class)
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")

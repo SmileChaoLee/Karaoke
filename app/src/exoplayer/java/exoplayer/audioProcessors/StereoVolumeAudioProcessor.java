@@ -2,16 +2,19 @@ package exoplayer.audioProcessors;
 
 import android.util.Log;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.audio.BaseAudioProcessor;
+import androidx.media3.common.C;
+import androidx.media3.common.audio.BaseAudioProcessor;
+import androidx.media3.common.util.UnstableApi;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
+@UnstableApi
 public class StereoVolumeAudioProcessor extends BaseAudioProcessor {
 
     private static final String TAG = "StereoVolumeAudioProcessor";
     private static final int maxChannels = 16;
-    private float[] volume;
+    private final float[] volume;
     public static final int LEFT_SPEAKER = 0;
     public static final int RIGHT_SPEAKER = 1;
 
@@ -19,9 +22,7 @@ public class StereoVolumeAudioProcessor extends BaseAudioProcessor {
         super();
         // volume has to be set at first place
         volume = new float[maxChannels]; // max is 16 channels
-        for (int i=0; i<volume.length; i++) {
-            volume[i] = 1.0f;
-        }
+        Arrays.fill(volume, 1.0f);
     }
 
     /**

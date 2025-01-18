@@ -9,25 +9,26 @@ import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.mediarouter.media.MediaRouter
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.cast.CastPlayer
+import androidx.media3.cast.SessionAvailabilityListener
+import androidx.media3.common.util.UnstableApi
 import com.google.android.exoplayer2.ext.av1.Gav1Library
-import com.google.android.exoplayer2.ext.cast.CastPlayer
-import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary
 import com.google.android.exoplayer2.ext.flac.FlacLibrary
 import com.google.android.exoplayer2.ext.opus.OpusLibrary
 import com.google.android.exoplayer2.ext.vp9.VpxLibrary
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionOverride
-import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
+import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.common.TrackSelectionOverride
+import androidx.media3.common.TrackSelectionParameters
 import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.services.BasePlayService
@@ -40,6 +41,7 @@ import exoplayer.listeners.ExoPlayerListener
 import exoplayer.presenters.ExoPlayerPresenter
 import java.util.Arrays
 
+@UnstableApi
 class ExoPlayService : BasePlayService() {
 
     companion object {
@@ -491,9 +493,12 @@ class ExoPlayService : BasePlayService() {
             Log.d(TAG, "onPlay().currentPlayer = $currentPlayer")
             Player.STATE_IDLE
             presenter?.let {
-                if (it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE) {
-                    Log.d(TAG, "onPlay().currentPlaybackState = PlaybackStateCompat.STATE_NONE")
+                if ((it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE
+                || it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_STOPPED)) {
                     // stopped by user (Player.STATE_IDLE)
+                    Log.d(TAG, "onPlay().currentPlaybackState = PlaybackStateCompat.STATE_NONE")
+                    // or Playing was finished (Player.STATE_ENDED)
+                    Log.d(TAG, "or PlaybackStateCompat.STATE_STOPPED")
                     // prepare() or
                     replayMedia(it)
                 } else {

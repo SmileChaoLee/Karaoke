@@ -3,14 +3,16 @@ package exoplayer.exoRenderersFactory;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.audio.AudioCapabilities;
-import com.google.android.exoplayer2.audio.AudioProcessor;
-import com.google.android.exoplayer2.audio.AudioSink;
-import com.google.android.exoplayer2.audio.DefaultAudioSink;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.common.audio.AudioProcessor;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.audio.AudioCapabilities;
+import androidx.media3.exoplayer.audio.AudioSink;
+import androidx.media3.exoplayer.audio.DefaultAudioSink;
 
 import exoplayer.audioProcessors.StereoVolumeAudioProcessor;
 
+@UnstableApi
 public class MyRenderersFactory extends DefaultRenderersFactory {
 
     private static final String TAG = "MyRenderersFactory";
@@ -27,9 +29,11 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER);
     }
 
+    /*  // old one
     @Nullable
     @Override
-    protected AudioSink buildAudioSink(Context context, boolean enableFloatOutput, boolean enableAudioTrackPlaybackParams, boolean enableOffload) {
+    protected AudioSink buildAudioSink(Context context, boolean enableFloatOutput
+            , boolean enableAudioTrackPlaybackParams, boolean enableOffload) {
         AudioSink audioSink = new DefaultAudioSink.Builder()
                 .setAudioCapabilities(AudioCapabilities.DEFAULT_AUDIO_CAPABILITIES)
                 .setAudioProcessors(audioProcessors)
@@ -37,8 +41,21 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
                 .build();
         return audioSink;
     }
+    */
 
     public StereoVolumeAudioProcessor getStereoVolumeAudioProcessor() {
         return stereoVolumeAudioProcessor;
+    }
+
+    @Nullable
+    @Override
+    protected AudioSink buildAudioSink(Context context, boolean enableFloatOutput,
+                                       boolean enableAudioTrackPlaybackParams) {
+        AudioSink audioSink = new DefaultAudioSink.Builder()
+                .setAudioCapabilities(AudioCapabilities.DEFAULT_AUDIO_CAPABILITIES)
+                .setAudioProcessors(audioProcessors)
+                .setEnableFloatOutput(enableFloatOutput)
+                .build();
+        return audioSink;
     }
 }

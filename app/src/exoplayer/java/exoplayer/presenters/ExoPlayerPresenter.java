@@ -10,8 +10,10 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
+import androidx.annotation.OptIn;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.common.TrackSelectionParameters;
 import com.google.android.gms.cast.framework.CastContext;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
@@ -21,6 +23,7 @@ import exoplayer.ExoPlayerActivity;
 import exoplayer.fragments.ExoPlayerFragment;
 import exoplayer.services.ExoPlayService;
 
+@UnstableApi
 public class ExoPlayerPresenter extends BasePlayerPresenter {
 
     private static final String TAG = "ExoPlayerPresenter";
@@ -33,6 +36,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     private ArrayList<Integer[]> audioTrackIndicesList = new ArrayList<>();
     private final Handler durationSeekBarHandler = new Handler(Looper.getMainLooper());
     private final Runnable durationSeekBarRunnable = new Runnable() {
+        @OptIn(markerClass = UnstableApi.class)
         @Override
         public synchronized void run() {
             Log.d(TAG, "durationSeekBarRunnable.run()");
@@ -87,6 +91,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         return activity.getCastContext();
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     public ExoPlayService getPlayService() {
         Log.d(TAG, "getPlayService()");
         return mPresentView.getPlayService() != null?
@@ -117,6 +122,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         return mTrackSelectionParameters;
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void setAudioVolumeInsideVolumeSeekBar(int i) {
         Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar");
@@ -147,6 +153,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         return currentProgress;
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
         Log.d(TAG, "setAudioTrackAndChannel().numberOfAudioTracks = " + mNumberOfAudioTracks);
@@ -223,6 +230,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         durationSeekBarHandler.removeCallbacksAndMessages(null);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void setAudioActionSubMenu() {
         Log.d(TAG, "setAudioActionSubMenu.getPlayService() = " + getPlayService());
@@ -285,6 +293,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
         Log.d(TAG,"saveInstanceState.getPlayService()");

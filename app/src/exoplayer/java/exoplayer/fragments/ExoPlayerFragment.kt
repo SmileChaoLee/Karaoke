@@ -15,8 +15,9 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.media3.common.util.UnstableApi
 import androidx.mediarouter.app.MediaRouteButton
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import androidx.media3.ui.PlayerView
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.R
@@ -30,9 +31,10 @@ import exoplayer.services.ExoPlayService.LocalBinder
 
 private const val TAG: String = "ExoPlayerFragment"
 
+@UnstableApi
 class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     private lateinit var presenter: ExoPlayerPresenter
-    private var playerView: StyledPlayerView? = null
+    private var playerView: PlayerView? = null
     private var playService: ExoPlayService? = null
     private var mediaRouteButton: MediaRouteButton? = null
     private var mPlayServiceIntent: Intent? = null
@@ -78,7 +80,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
             FrameLayout.LayoutParams.MATCH_PARENT)
         layParams.gravity = Gravity.CENTER
         activity?.let {
-            playerView = StyledPlayerView(it.applicationContext)
+            playerView = PlayerView(it.applicationContext)
             Log.d(TAG, "setVideoPlayerView.playerView = $playerView")
             playerView?.apply {
                 layoutParams = layParams

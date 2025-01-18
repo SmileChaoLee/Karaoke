@@ -6,12 +6,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.Player;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+
 import com.smile.karaokeplayer.constants.PlayerConstants;
 
 import exoplayer.services.ExoPlayService;
 
+@UnstableApi
 public class ExoPlayerListener implements Player.Listener {
 
     private static final String TAG = "ExoPlayerListener";
