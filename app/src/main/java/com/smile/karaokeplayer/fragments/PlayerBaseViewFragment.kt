@@ -1,5 +1,6 @@
 package com.smile.karaokeplayer.fragments
 
+// import com.smile.karaokeplayer.models.VerticalSeekBar
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
@@ -48,13 +49,12 @@ import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongListSQLite
-// import com.smile.karaokeplayer.models.VerticalSeekBar
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter.BasePresentView
-import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.interfaces.DismissFunction
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
@@ -193,13 +193,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         setHasOptionsMenu(true) // must have because it has menu
 
-        /*
         activity?.let {
             interstitialAd = ShowInterstitial(it,
                     (it.application as BaseApplication).facebookInterstitial,
                     (it.application as BaseApplication).adMobInterstitial)
         }
-        */
 
         val presenter = getPlayerPresenter()
         if (presenter == null) {
@@ -1089,9 +1087,33 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
     }
 
-    override fun showInterstitialAd() {
-        interstitialAd?.apply {
-            ShowAdThread().startShowAd(0)   // AdMob first
+    override fun showInterstitialAd(isSelfFinished : Boolean) {
+        interstitialAd?.let {
+            it.ShowAdThread(object : DismissFunction {
+                override fun backgroundWork() {
+                    Log.d(TAG, "DismissFunction.backgroundWork()")
+                }
+                override fun executeDismiss() {
+                    Log.d(TAG, "DismissFunction.executeDismiss()")
+                    mPresenter.let { pIt->
+                        if (!pIt.startAutoPlay(isSelfFinished) && pIt.playingParam.numPlayed == 0) {
+                            // no next song and just show Interstitial Ad before
+                            // Show NativeAd
+                            Log.d(TAG, "DismissFunction.executeDismiss().showNativeAndHideBannerAd()")
+                            try {
+                                showNativeAndHideBannerAd()
+                            } catch (ex: Exception) {
+                                Log.d(TAG,"DismissFunction.executeDismiss().Exception" +
+                                        "form showNativeAndHideBannerAd(): " + ex)
+                            }
+                        }
+                    }
+                }
+                override fun afterFinished(isAdShown: Boolean) {
+                    Log.d(TAG, "DismissFunction.afterFinished().isAdShown = $isAdShown")
+                    if (!isAdShown) mPresenter.startAutoPlay(isSelfFinished)
+                }
+            }).startShowAd(0)  // AdMob first
         }
     }
     // end of implementing PlayerBasePresenter.BasePresentView

@@ -23,6 +23,7 @@ object PlayerConstants {
     const val FINISHED_NORMALLY = 0
     const val STOPPED_BY_USER = 1
     const val FINISHED_BY_PROGRAM = 2
+    const val SHOW_INTERSTITIAL_AFTER_NUM_SONGS = 10
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

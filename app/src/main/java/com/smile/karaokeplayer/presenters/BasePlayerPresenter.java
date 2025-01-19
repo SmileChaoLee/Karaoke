@@ -54,7 +54,7 @@ public abstract class BasePlayerPresenter {
         void buildAudioTrackMenuItem(int audioTrackNumber);
         void setTimerToHideSupportAndAudioController();
         void showMusicAndVocalIsNotSet();
-        void showInterstitialAd();
+        void showInterstitialAd(boolean isSelfFinished);
         void hidePlayerView();
         void showPlayerView();
         void setCurrentPlayerToPlayerView();
@@ -277,25 +277,35 @@ public abstract class BasePlayerPresenter {
         }
     }
 
-    public void startAutoPlay(boolean isSelfFinished) {
+    public boolean startAutoPlay(boolean isSelfFinished) {
         Log.d(TAG, "startAutoPlay");
+        boolean stillPlayNext = false;
         mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);    // default value for start playing a video
         if (mActivity.isFinishing()) {
             // activity is being destroyed
-            return;
+            return stillPlayNext;
         }
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "startAutoPlay.playService = " + playService);
         if (playService != null) {
             Log.d(TAG, "startAutoPlay.playService.startAutoPlay()");
-            boolean stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
+            stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
-            if (!stillPlayNext) {    // still play the next song
-                mPresentView.showNativeAndHideBannerAd();
+            if (!stillPlayNext) {    // no more playing the next song
+                if (mPlayingParam.getNumPlayed() > 0) {
+                    // did not show interstitial Ad before finishing playing
+                    try {
+                        mPresentView.showNativeAndHideBannerAd();
+                    } catch (Exception ex) {
+                        Log.d(TAG, "startAutoPlay.Exception form showNativeAndHideBannerAd(): "
+                                + ex);
+                    }
+                }
             }
         }
-
         mPresentView.setImageButtonStatus();
+
+        return stillPlayNext;
     }
 
     public void setAutoPlayStatusAndAction() {
@@ -633,7 +643,18 @@ public abstract class BasePlayerPresenter {
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
-                startAutoPlay(mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM);
+                final boolean isSelfFinished = mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM;
+                if (isSelfFinished) {
+                    mPlayingParam.setNumPlayed(mPlayingParam.getNumPlayed() + 1);
+                }
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = " + mPlayingParam.getNumPlayed());
+                if (mPlayingParam.getNumPlayed() >= PlayerConstants.SHOW_INTERSTITIAL_AFTER_NUM_SONGS) {
+                    // show interstitial ad after 10 songs
+                    mPlayingParam.setNumPlayed(0);
+                    mPresentView.showInterstitialAd(isSelfFinished);
+                } else {
+                    startAutoPlay(isSelfFinished);
+                }
                 break;
             case PlaybackStateCompat.STATE_ERROR:
                 String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);

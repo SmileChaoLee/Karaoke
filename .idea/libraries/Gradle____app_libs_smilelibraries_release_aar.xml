@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: ./app/libs/smilelibraries-release.aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/32c518b980b150c97bb4eecd5b43e811/transformed/smilelibraries-release/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/32c518b980b150c97bb4eecd5b43e811/transformed/smilelibraries-release/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/32c518b980b150c97bb4eecd5b43e811/transformed/smilelibraries-release/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/a6fe382bf4adf8df744e73919615d3ac/transformed/smilelibraries-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/a6fe382bf4adf8df744e73919615d3ac/transformed/smilelibraries-release/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/a6fe382bf4adf8df744e73919615d3ac/transformed/smilelibraries-release/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
