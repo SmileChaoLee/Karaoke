@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -28,7 +29,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil;
 
 import java.util.ArrayList;
 
-public abstract class BaseSongDataActivity extends AppCompatActivity {
+public class BaseSongDataActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseSongDataActivity";
     private float toastTextSize;
@@ -44,7 +45,6 @@ public abstract class BaseSongDataActivity extends AppCompatActivity {
     private String actionButtonString;
     private String crudAction;
     private SongInfo mSongInfo;
-    public abstract void setKaraokeSettingLayoutVisibility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +177,8 @@ public abstract class BaseSongDataActivity extends AppCompatActivity {
         edit_vocalChannelSpinner.setSelection(mSongInfo.getVocalChannel());
 
         //
-        setKaraokeSettingLayoutVisibility();    // abstract method
+        // setKaraokeSettingLayoutVisibility();    // abstract method
+        karaokeSettingLayout.setVisibility(View.VISIBLE);
         //
 
         TextView editIncludedPlaylistTextView = findViewById(R.id.editIncludedPlayListTextView);

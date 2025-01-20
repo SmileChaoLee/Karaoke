@@ -25,7 +25,6 @@ class SelectedFavoriteAdapter (
 
     interface OnRecyclerItemClickListener {
         fun onRecyclerItemClick(v: View?, position: Int)
-        fun setAudioLayoutVisibility(audioMusicLayout : LinearLayout)
         fun editSongButtonFunc(position : Int)
         fun deleteSongButtonFunc(position : Int)
         fun playSongButtonFunc(position : Int)
@@ -106,8 +105,8 @@ class SelectedFavoriteAdapter (
             vocalChannelTextView = itemView.findViewById(R.id.vocalChannelTextView)
             ScreenUtil.resizeTextSize(vocalChannelTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
 
-            itemClickListener.setAudioLayoutVisibility(audioMusicLinearLayout) // abstract method
-            itemClickListener.setAudioLayoutVisibility(audioVocalLinearLayout)
+            // audioVocalLinearLayout.setVisibility(View.GONE);
+            audioVocalLinearLayout.setVisibility(View.VISIBLE)
 
             val includedPlaylistTextView : TextView = itemView.findViewById(R.id.includedPlaylistTextView)
             ScreenUtil.resizeTextSize(includedPlaylistTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)

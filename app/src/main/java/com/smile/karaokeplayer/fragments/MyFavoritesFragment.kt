@@ -19,6 +19,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaokeplayer.BaseApplication
+import com.smile.karaokeplayer.BaseFavoriteListActivity
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaokeplayer.interfaces.PlayMyFavorites
@@ -195,7 +196,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                     }
                     if (listIt.size > 0) {
                         playMyFavorites?.let {playIt ->
-                            playIt.intentForFavoriteListActivity().apply {
+                            intentForFavoriteListActivity().apply {
                                 Log.d(TAG, "editButton.listIt.size = ${listIt.size}")
                                 playIt.onSavePlayingState(component)
                                 // putExtra(PlayerConstants.MyFavoriteListState, listIt)
@@ -301,6 +302,10 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
             }
 
         }.start()
+    }
+
+    private fun intentForFavoriteListActivity(): Intent {
+        return Intent(activity, BaseFavoriteListActivity::class.java)
     }
 
     private fun initFavoriteRecyclerView() {

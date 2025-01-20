@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.smile.karaokeplayer.BaseActivity
+import com.smile.karaokeplayer.BaseFavoriteListActivity
 import videoplayer.fragments.VlcPlayerFragment
 
 private const val TAG : String = "VlcPlayerActivity"
@@ -18,10 +19,4 @@ class VlcPlayerActivity : BaseActivity() {
     override fun comeBackFromFavorite(playData : Bundle?) {
         onReceiveFunc(isSingleSong = false, needPlay = false, intent = null, pData = playData)
     }
-
-    // implementing interface PlayMyFavorites
-    override fun intentForFavoriteListActivity(): Intent {
-        return Intent(this, FavoriteListActivity::class.java)
-    }
-    // Finishes implementing interface PlayMyFavorites
 }

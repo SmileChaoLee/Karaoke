@@ -43,12 +43,6 @@ class ExoPlayerActivity : BaseActivity() {
         onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
     }
 
-    // implementing interface PlayMyFavorites
-    override fun intentForFavoriteListActivity(): Intent {
-        return Intent(this, FavoriteListActivity::class.java)
-    }
-    // Finishes implementing interface PlayMyFavorites
-
     override fun onResume() {
         Log.d(TAG, "onResume")
         super.onResume()

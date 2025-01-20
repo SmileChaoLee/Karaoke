@@ -33,7 +33,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
-public abstract class BaseFavoriteListActivity extends AppCompatActivity
+public class BaseFavoriteListActivity extends AppCompatActivity
         implements SelectedFavoriteAdapter.OnRecyclerItemClickListener {
 
     private static final String TAG = "BFavoriteListActivity";
@@ -52,9 +52,6 @@ public abstract class BaseFavoriteListActivity extends AppCompatActivity
     private RecyclerView myListRecyclerView;
     private SelectedFavoriteAdapter myRecyclerViewAdapter;
     private int positionEdit = -1;
-
-    public abstract Intent createIntentFromSongDataActivity();
-    public abstract void setAudioLinearLayoutVisibility(LinearLayout linearLayout);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -214,6 +211,11 @@ public abstract class BaseFavoriteListActivity extends AppCompatActivity
         finish();
     }
 
+    public Intent createIntentFromSongDataActivity() {
+        Log.d(TAG, "createIntentFromSongDataActivity() is called");
+        return new Intent(this, BaseSongDataActivity.class);
+    }
+
     private void deleteOneSongFromFavoriteList(SongInfo singleSongInfo) {
         currentAction = CommonConstants.DeleteActionString;
         Intent deleteIntent = createIntentFromSongDataActivity();
@@ -258,10 +260,6 @@ public abstract class BaseFavoriteListActivity extends AppCompatActivity
     }
 
     @Override
-    public void setAudioLayoutVisibility(@NotNull LinearLayout audioLayout) {
-        setAudioLinearLayoutVisibility(audioLayout);
-    }
-    @Override
     public void editSongButtonFunc(int position) {
         if (position<0 || position>= MySingleTon.INSTANCE.getSelectedFavorites().size()) {
             return;
@@ -282,10 +280,10 @@ public abstract class BaseFavoriteListActivity extends AppCompatActivity
     @Override
     public void playSongButtonFunc(int position) {
         // play this item (media file)
+        Log.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
         if (position<0 || position>= MySingleTon.INSTANCE.getSelectedFavorites().size()) {
             return;
         }
-        Log.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
         currentAction = CommonConstants.PlayActionString;
         // getCallingActivity() only works from startActivityForResult
         // Intent playerActivityIntent = new Intent();
