@@ -22,8 +22,8 @@ android {
 
         applicationId = "com.smile.karaokeplayer"
         multiDexEnabled true
-        versionCode 730
-        versionName "7.30"
+        versionCode 731
+        versionName "7.31"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
     }

@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.media3:media3-session:1.5.1@aar" external-system-id="GRADLE">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/c17b16c0ba17618740058f69e1fc480a/transformed/media3-session-1.5.1/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/c17b16c0ba17618740058f69e1fc480a/transformed/media3-session-1.5.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/c17b16c0ba17618740058f69e1fc480a/transformed/media3-session-1.5.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/c17b16c0ba17618740058f69e1fc480a/transformed/media3-session-1.5.1/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.media3/media3-session/1.5.1/9326e2c823f04a2e2a69c3a306a26c809aec0f36/media3-session-1.5.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.media3:media3-cast:1.5.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/0c453dd15f819c10b9afa8e88fe7b182/transformed/media3-cast-1.5.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/0c453dd15f819c10b9afa8e88fe7b182/transformed/media3-cast-1.5.1/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.media3/media3-cast/1.5.1/c40f4158d4f7b6ce1634c943ca0072c57e7d665f/media3-cast-1.5.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
