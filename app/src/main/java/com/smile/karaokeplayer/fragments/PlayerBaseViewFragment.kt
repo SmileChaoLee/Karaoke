@@ -797,6 +797,17 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
     }
 
+    private fun disableButtonForSometime(button: View) {
+        val seconds = 0.2f  // 200 ms
+        button.isEnabled = false
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = Runnable {
+            handler.removeCallbacksAndMessages(null)
+            button.isEnabled = true
+        }
+        handler.postDelayed(runnable, (seconds * 1000.0).toLong())
+    }
+
     private fun setOnClickEvents() {
         /*
         volumeSeekBar?.visibility = View.INVISIBLE // default is not showing
@@ -825,7 +836,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             setTimerToHideSupportAndAudioController()   // reset timer
         }
         */
-        nonVolumeImageButton?.let{
+        nonVolumeImageButton?.let{ it->
             it.setOnClickListener {
                 // silence the sound
                 mPresenter.playingParam.let { pIt->
@@ -833,10 +844,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     playService?.setAudioVolume(pIt.currentVolume)
                     it.visibility = View.GONE
                     volumeImageButton?.visibility = View.VISIBLE
+                    disableButtonForSometime(it)
                 }
             }
         }
-        volumeImageButton?.let {
+        volumeImageButton?.let { it->
             it.setOnClickListener {
                 // enable the sound
                 mPresenter.playingParam.let { pIt->
@@ -844,16 +856,47 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     playService?.setAudioVolume(pIt.currentVolume)
                     it.visibility = View.GONE
                     nonVolumeImageButton?.visibility = View.VISIBLE
+                    disableButtonForSometime(it)
                 }
             }
         }
-        previousMediaImageButton?.setOnClickListener { mPresenter.playPreviousSong() }
-        playMediaImageButton?.setOnClickListener { mPresenter.startPlay() }
-        pauseMediaImageButton?.setOnClickListener { mPresenter.pausePlay() }
-        replayMediaImageButton?.setOnClickListener { mPresenter.replayMedia() }
-        stopMediaImageButton?.setOnClickListener { mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER) }
-        nextMediaImageButton?.setOnClickListener { mPresenter.playNextSong() }
-        heartImageButton?.setOnClickListener {
+        previousMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.playPreviousSong()
+                disableButtonForSometime(it)
+            }
+        }
+        playMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.startPlay()
+                disableButtonForSometime(it)
+            }
+        }
+        pauseMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.pausePlay()
+                disableButtonForSometime(it)
+            }
+        }
+        replayMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.replayMedia()
+                disableButtonForSometime(it)
+            }
+        }
+        stopMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER)
+                disableButtonForSometime(it)
+            }
+        }
+        nextMediaImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.playNextSong()
+                disableButtonForSometime(it)
+            }
+        }
+        heartImageButton?.setOnClickListener { it->
             // add this media file to my favorite
             mPresenter.let { pIt ->
                 val index = pIt.playingParam.currentSongIndex
@@ -876,30 +919,56 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     }
                 }
             }
+            disableButtonForSometime(it)
         }
 
-        orientationImageButton?.setOnClickListener {
-            val config = resources.configuration
-            val orientation =
-                if (config.orientation == Configuration.ORIENTATION_PORTRAIT) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
-            Log.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
-            setScreenOrientation(orientation)
+        orientationImageButton?.let { it->
+            it.setOnClickListener {
+                val config = resources.configuration
+                val orientation =
+                    if (config.orientation == Configuration.ORIENTATION_PORTRAIT) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+                Log.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
+                setScreenOrientation(orientation)
+                disableButtonForSometime(it)
+            }
         }
-        repeatImageButton?.setOnClickListener { mPresenter.setRepeatSongStatus() }
-        switchToMusicImageButton?.setOnClickListener { mPresenter.switchAudioToMusic() }
-        switchToVocalImageButton?.setOnClickListener { mPresenter.switchAudioToVocal() }
-        hideVideoImageButton?.setOnClickListener {
-            if (playerViewLinearLayout?.visibility==View.VISIBLE) hidePlayerView() else showPlayerView()
+        repeatImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.setRepeatSongStatus()
+                disableButtonForSometime(it)
+            }
+        }
+        switchToMusicImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.switchAudioToMusic()
+                disableButtonForSometime(it)
+            }
+        }
+        switchToVocalImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.switchAudioToVocal()
+                disableButtonForSometime(it)
+            }
+        }
+        hideVideoImageButton?.let { it->
+            it.setOnClickListener {
+                if (playerViewLinearLayout?.visibility==View.VISIBLE) hidePlayerView() else showPlayerView()
+                disableButtonForSometime(it)
+            }
         }
 
-        audioChannelImageButton?.setOnClickListener {
-            audioChannelButtonListener()
+        audioChannelImageButton?.let { it->
+            it.setOnClickListener {
+                audioChannelButtonListener()
+                disableButtonForSometime(it)
+            }
         }
-        audioTrackImageButton?.setOnClickListener {
-            mPresenter.playingParam.apply {
-                currentAudioTrackIndexPlayed++
-                if (currentAudioTrackIndexPlayed > mPresenter.numberOfAudioTracks) currentAudioTrackIndexPlayed = 1
-                val str: String? =
+        audioTrackImageButton?.let { it->
+            it.setOnClickListener {
+                mPresenter.playingParam.apply {
+                    currentAudioTrackIndexPlayed++
+                    if (currentAudioTrackIndexPlayed > mPresenter.numberOfAudioTracks) currentAudioTrackIndexPlayed = 1
+                    val str: String? =
                         when (currentAudioTrackIndexPlayed) {
                             1 -> activity?.getString(R.string.audioTrack1String)
                             2 -> activity?.getString(R.string.audioTrack2String)
@@ -911,20 +980,27 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                             8 -> activity?.getString(R.string.audioTrack8String)
                             else -> activity?.getString(R.string.unknown)
                         }
-                ScreenUtil.showToast(activity, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                    ScreenUtil.showToast(activity, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
                         Toast.LENGTH_SHORT)
-                mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
+                    mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
+                }
+                disableButtonForSometime(it)
             }
         }
 
-        actionMenuImageButton?.setOnClickListener {
-            Log.d(TAG, "actionMenuImageButton.setOnClickListener")
-            actionMenuView?.showOverflowMenu()
-            autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
-            setTimerToHideSupportAndAudioController()   // reset the timer
+        actionMenuImageButton?.let { it->
+            it.setOnClickListener {
+                Log.d(TAG, "actionMenuImageButton.setOnClickListener")
+                actionMenuView?.showOverflowMenu()
+                autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
+                setTimerToHideSupportAndAudioController()   // reset the timer
+                disableButtonForSometime(it)
+            }
         }
-        actionMenuView?.setOnMenuItemClickListener { item: MenuItem? ->
-            item?.let { onOptionsItemSelected(it) } == true
+        actionMenuView?.let {
+            it.setOnMenuItemClickListener { item: MenuItem? ->
+                item?.let { itemIt-> onOptionsItemSelected(itemIt) } == true
+            }
         }
         player_duration_seekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -935,23 +1011,29 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
-        supportToolbar?.setOnClickListener { v: View ->
-            if (v.visibility == View.VISIBLE) {
-                // use custom toolbar
-                hideSupportToolbarAndAudioController()
-                Log.d(TAG, "supportToolbar.onClick().View.VISIBLE.")
-            } else {
-                // use custom toolbar
-                showSupportToolbarAndAudioController()
-                Log.d(TAG, "supportToolbar.onClick().View.INVISIBLE.")
+        supportToolbar?.let {
+            it.setOnClickListener { v: View ->
+                if (v.visibility == View.VISIBLE) {
+                    // use custom toolbar
+                    hideSupportToolbarAndAudioController()
+                    Log.d(TAG, "supportToolbar.onClick().View.VISIBLE.")
+                } else {
+                    // use custom toolbar
+                    showSupportToolbarAndAudioController()
+                    Log.d(TAG, "supportToolbar.onClick().View.INVISIBLE.")
+                }
+                // volumeSeekBar?.visibility = View.INVISIBLE
+                Log.d(TAG, "supportToolbar.onClick() is called.")
+                disableButtonForSometime(it)
             }
-            // volumeSeekBar?.visibility = View.INVISIBLE
-            Log.d(TAG, "supportToolbar.onClick() is called.")
         }
-        playerViewLinearLayout?.setOnClickListener {
-            Log.d(TAG, "playerViewLinearLayout.onClick() is called.")
-            if (playerViewLinearLayout?.visibility == View.VISIBLE) {
-                supportToolbar?.performClick()
+        playerViewLinearLayout?.let { it->
+            it.setOnClickListener {
+                Log.d(TAG, "playerViewLinearLayout.onClick() is called.")
+                if (playerViewLinearLayout?.visibility == View.VISIBLE) {
+                    supportToolbar?.performClick()
+                }
+                disableButtonForSometime(it)
             }
         }
     }
