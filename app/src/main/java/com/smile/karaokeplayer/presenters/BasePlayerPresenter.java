@@ -340,6 +340,7 @@ public abstract class BasePlayerPresenter {
         Log.d(TAG, "playPreviousSong");
         int orderedSongsSize = MySingleTon.INSTANCE.getOrderedSongs().size();
         if (orderedSongsSize <= 1 ) {
+            Log.d(TAG, "playPreviousSong.orderedSongsSize <= 1, only one song in the list");
             // only one file in the play list
             ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noPreviousSongString)
                     , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
@@ -353,6 +354,7 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.NoRepeatPlaying:
             case PlayerConstants.RepeatOneSong:
                 if (currentIndex <= 0) {
+                    Log.d(TAG, "playPreviousSong.currentIndex <= 0, current is the first one.");
                     // no more previous
                     ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noPreviousSongString)
                             , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
@@ -372,22 +374,12 @@ public abstract class BasePlayerPresenter {
                 break;
         }
         mPlayingParam.setCurrentSongIndex(currentIndex);
-        stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
-        /*
-        // finish the playing video and play the previous after receiving stop event
-        BasePlayService playService = mPresentView.getPlayService();
-        Log.d(TAG, "playPreviousSong.playService = " + playService);
-        if (playService != null) {
-            mPlayingParam.setFinishState(2);
-            if (playService.isSeekable()) {
-                Log.d(TAG, "playPreviousSong.playService.isSeekable() = true");
-                playService.onPlay();
-                playService.setPlayerTime(playService.getMediaDuration());
-            } else {
-                startAutoPlay(false);
-            }
+        if (mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PLAYING
+                || mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PAUSED) {
+            stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
+        } else {
+            startAutoPlay(false);
         }
-         */
     }
 
     public void playNextSong() {
@@ -397,6 +389,7 @@ public abstract class BasePlayerPresenter {
         int repeatStatus = mPlayingParam.getRepeatStatus();
         if (orderedSongsSize <= 1 ) {
             // only one file in the play list
+            Log.d(TAG, "playNextSong.orderedSongsSize <= 1, only one song in the list");
             ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noNextSongString)
                     , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
             return; // no more next
@@ -405,6 +398,8 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.NoRepeatPlaying:
             case PlayerConstants.RepeatOneSong:
                 if (currentIndex >= (orderedSongsSize-1)) {
+                    Log.d(TAG, "playPreviousSong.currentIndex >= (orderedSongsSize-1)," +
+                            " current is the last one.");
                     ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noNextSongString)
                             , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
                     return; // no more next
@@ -413,22 +408,13 @@ public abstract class BasePlayerPresenter {
             case PlayerConstants.RepeatAllSongs:
                 break;
         }
-        stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
-        /*
-        // finish the playing video and play the previous after receiving stop event
-        BasePlayService playService = mPresentView.getPlayService();
-        Log.d(TAG, "playNextSong.playService = " + playService);
-        if (playService != null) {
-            mPlayingParam.setFinishState(2);
-            if (playService.isSeekable()) {
-                Log.d(TAG, "playNextSong.playService.isSeekable() = true");
-                playService.onPlay();
-                playService.setPlayerTime(playService.getMediaDuration());
-            } else {
-                startAutoPlay(false);
-            }
+        // mPlayingParam.setCurrentSongIndex(currentIndex); no need because it already is
+        if (mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PLAYING
+            || mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PAUSED) {
+            stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
+        } else {
+            startAutoPlay(false);
         }
-         */
     }
 
     public void playSongPlayedBeforeActivityCreated() {
