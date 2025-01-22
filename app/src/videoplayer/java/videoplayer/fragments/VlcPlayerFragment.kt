@@ -30,10 +30,10 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     private var mPlayServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called")
         presenter = VlcPlayerPresenter(this, this)
 
-        super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
+        super.onCreate(savedInstanceState)  // must be after VlcPlayerPresenter(this, this)
+        Log.d(TAG, "onCreate() is called")
         arguments?.let {
         }
 
@@ -52,9 +52,8 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated() is called.")
         super.onViewCreated(view, savedInstanceState)
-
+        Log.d(TAG, "onViewCreated() is called.")
         // Video player view
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -80,24 +79,33 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart() is called.")
         super.onStart()
-        presenter.playSongPlayedBeforeActivityCreated()
+        Log.d(TAG, "onStart")
+        presenter.playingParam.let {
+            Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
+            Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
+            Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
+            if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
+                // isSingleSongOpened = 2 means playing single song
+                Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
+                presenter.playSongPlayedBeforeActivityCreated()
+            }
+        }
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume() is called.")
         super.onResume()
+        Log.d(TAG, "onResume")
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause() is called.")
         super.onPause()
+        Log.d(TAG, "onPause")
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop() is called.")
         super.onStop()
+        Log.d(TAG, "onStop")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -168,7 +168,7 @@ public abstract class BasePlayerPresenter {
 
     @SuppressWarnings("unchecked")
     protected void initializeVariablesBase(Bundle savedInstanceState, Intent callingIntent) {
-        Log.d(TAG, "initializeVariablesBase");
+        Log.d(TAG, "initializeVariablesBase.savedInstanceState = " + savedInstanceState);
         if (savedInstanceState == null) {
             mNumberOfVideoTracks = 0;
             mNumberOfAudioTracks = 0;
@@ -437,6 +437,7 @@ public abstract class BasePlayerPresenter {
         Log.d(TAG, "playSongPlayedBeforeActivityCreated.preparedStatus = "
                 + mPlayingParam.getPreparedStatus());
         if (mPresentView != null) mPresentView.updateVolumeSeekBarProgress();
+        Log.d(TAG, "playSongPlayedBeforeActivityCreated.mMediaUri = " + mMediaUri);
         if (mMediaUri == null || Uri.EMPTY.equals(mMediaUri)) {
             if (mPlayingParam.isPlaySingleSong()) {
                 // called by SongListActivity
@@ -462,13 +463,6 @@ public abstract class BasePlayerPresenter {
                 if (playService != null) {
                     Log.d(TAG, "playSongPlayedBeforeActivityCreated.playService.playMediaFromUri()");
                     playService.playMediaFromUri(mMediaUri, mPlayingParam);
-                    /*
-                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.startAutoPlay()");
-                    Log.d(TAG, "playSongPlayedBeforeActivityCreated.mPlayingParam.getCurrentSongIndex() = "
-                            + mPlayingParam.getCurrentSongIndex());
-                    mPlayingParam.setCurrentSongIndex(mPlayingParam.getCurrentSongIndex()-1);
-                    startAutoPlay(mPlayingParam.getFinishState() != 2);
-                     */
                 }
             }
         }
@@ -563,6 +557,10 @@ public abstract class BasePlayerPresenter {
         mPlayingParam.setCurrentPlaybackState(currentState);
         Log.d(TAG, "updateStatusAndUi.playingParam.preparedStatus = " +
                 mPlayingParam.getPreparedStatus());
+        if (mPlayingParam.isPlaySingleSong() && mPlayingParam.getSingleSongPlayingStatus() == 1) {
+            Log.d(TAG, "updateStatusAndUi.setSingleSongPlayingStatus(2)");
+            mPlayingParam.setSingleSongPlayingStatus(2);    // prepared and playing
+        }
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             // Only for ExoPlayer
             Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");

@@ -102,7 +102,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     @SuppressWarnings("unchecked")
     @Override
     public void initializeVariables(Bundle savedInstanceState, Intent callingIntent) {
-        Log.d(TAG, "initializeVariables()");
+        Log.d(TAG, "initializeVariables");
         initializeVariablesBase(savedInstanceState, callingIntent);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();

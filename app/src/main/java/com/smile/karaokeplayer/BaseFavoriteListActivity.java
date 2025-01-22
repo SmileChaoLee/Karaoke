@@ -28,9 +28,9 @@ import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.SongInfo;
 import com.smile.karaokeplayer.models.SongListSQLite;
+import com.smile.smilelibraries.interfaces.DismissFunction;
 import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial;
 import com.smile.smilelibraries.utilities.ScreenUtil;
-import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class BaseFavoriteListActivity extends AppCompatActivity
@@ -56,7 +56,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     @Override
     @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreate");
         float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this, ScreenUtil.FontSize_Pixel_Type, null);
         textFontSize = ScreenUtil.suitableFontSize(this, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
         // float fontScale = ScreenUtil.suitableFontScale(this, ScreenUtil.FontSize_Pixel_Type, 0.0f);
@@ -99,40 +99,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
                     + tempList.size());
             MySingleTon.INSTANCE.getSelectedFavorites().clear();
             MySingleTon.INSTANCE.getSelectedFavorites().addAll(tempList);
-        } else {
-            /*
-            Intent callingIntent = getIntent();
-            Bundle arguments = null;
-            if (callingIntent != null) {
-                arguments = callingIntent.getExtras();
-            }
-            Log.d(TAG, "onCreate.savedInstanceState is null");
-            // first recreating then using the FavoriteSingleTon.INSTANCE.getSelectedList()
-            // It won't happen in this case (no R.id.MyFavorite any more, no CommonConstants.AddActionString)
-            if (arguments == null) {
-                Log.d(TAG, "onCreate.savedInstanceState is null, arguments is null");
-                currentAction = CommonConstants.AddActionString;
-                tempList = songListSQLite.readPlayList();
-            } else {
-                Log.d(TAG, "onCreate.savedInstanceState is null, arguments is not null");
-                currentAction = CommonConstants.EditActionString;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                    tempList = (ArrayList<SongInfo>) arguments
-                            .getSerializable(PlayerConstants.MyFavoriteListState, ArrayList.class);
-                else
-                    tempList = (ArrayList<SongInfo>) arguments
-                            .getSerializable(PlayerConstants.MyFavoriteListState);
-                if (tempList == null) {
-                    // for all favorites
-                    currentAction = CommonConstants.AddActionString;
-                    tempList = songListSQLite.readPlayList();
-                } else {
-                    Log.d(TAG, "onCreate.arguments is not null, tempList.size() = " + tempList.size());
-                }
-            }
-            MySingleTon.INSTANCE.getSelectedFavorites().clear();
-            MySingleTon.INSTANCE.getSelectedFavorites().addAll(tempList);
-            */
         }
 
         editFavoritesLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -161,12 +127,14 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        Log.d(TAG, "onConfigurationChanged");
         setLayoutViewWeight();
         super.onConfigurationChanged(newConfig);
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState");
         outState.putString(CrudActionState, currentAction);
         outState.putInt(PositionEditState, positionEdit);
         // must create a new instance for FavoriteSingleTon.INSTANCE.getSelectedList()
@@ -178,13 +146,13 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume()");
+        Log.d(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause()");
+        Log.d(TAG, "onPause");
         super.onPause();
     }
 
@@ -203,20 +171,38 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     }
 
     private void returnToPrevious() {
-        Log.d(TAG, "returnToPrevious()");
+        Log.d(TAG, "returnToPrevious");
         if (interstitialAd != null) {
-            interstitialAd.new ShowAdThread().startShowAd(0);   // AdMob first
+            interstitialAd.new ShowAdThread(new DismissFunction() {
+                @Override
+                public void backgroundWork() {
+                    Log.d(TAG, "returnToPrevious.backgroundWork");
+                }
+                @Override
+                public void executeDismiss() {
+                    Log.d(TAG, "returnToPrevious.executeDismiss");
+                    setResult(Activity.RESULT_OK);   // no bundle data
+                    finish();
+                }
+                @Override
+                public void afterFinished(boolean isAdShown) {
+                    Log.d(TAG, "returnToPrevious.executeDismiss.isAdShown = " + isAdShown);
+                    if (!isAdShown) { // interstitial Ad did not show
+                        setResult(Activity.RESULT_OK);   // no bundle data
+                        finish();
+                    }
+                }
+            }).startShowAd(0);   // AdMob first
         }
-        setResult(Activity.RESULT_OK);   // no bundle data
-        finish();
     }
 
-    public Intent createIntentFromSongDataActivity() {
-        Log.d(TAG, "createIntentFromSongDataActivity() is called");
+    private Intent createIntentFromSongDataActivity() {
+        Log.d(TAG, "createIntentFromSongDataActivity");
         return new Intent(this, BaseSongDataActivity.class);
     }
 
     private void deleteOneSongFromFavoriteList(SongInfo singleSongInfo) {
+        Log.d(TAG, "deleteOneSongFromFavoriteList");
         currentAction = CommonConstants.DeleteActionString;
         Intent deleteIntent = createIntentFromSongDataActivity();
         deleteIntent.putExtra(CommonConstants.CrudActionString, CommonConstants.DeleteActionString);
@@ -225,6 +211,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     }
 
     private void editOneSongFromFavoriteList(SongInfo singleSongInfo) {
+        Log.d(TAG, "editOneSongFromFavoriteList");
         currentAction = CommonConstants.EditActionString;
         Intent editIntent = createIntentFromSongDataActivity();
         editIntent.putExtra(CommonConstants.CrudActionString, CommonConstants.EditActionString);
@@ -261,15 +248,18 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     @Override
     public void editSongButtonFunc(int position) {
+        Log.d(TAG, "editSongButtonFunc.position = " + position);
         if (position<0 || position>= MySingleTon.INSTANCE.getSelectedFavorites().size()) {
             return;
         }
         Log.d(TAG, "editSongButtonFunc.positionEdit = " + positionEdit);
+        Log.d(TAG, "editSongButtonFunc.editOneSongFromFavoriteList()");
         positionEdit = position;
         editOneSongFromFavoriteList(MySingleTon.INSTANCE.getSelectedFavorites().get(position));
     }
     @Override
     public void deleteSongButtonFunc(int position) {
+        Log.d(TAG, "deleteSongButtonFunc.position = " + position);
         if (position<0 || position>= MySingleTon.INSTANCE.getSelectedFavorites().size()) {
             return;
         }
@@ -280,20 +270,30 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     @Override
     public void playSongButtonFunc(int position) {
         // play this item (media file)
-        Log.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
+        Log.d(TAG, "playSongButtonFunc.position = " + position);
         if (position<0 || position>= MySingleTon.INSTANCE.getSelectedFavorites().size()) {
             return;
         }
+        Log.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
+        positionEdit = -1;  // no edit or delete
         currentAction = CommonConstants.PlayActionString;
+        /*
         // getCallingActivity() only works from startActivityForResult
-        // Intent playerActivityIntent = new Intent();
-        // playerActivityIntent.setComponent(getCallingActivity());
-        // playerActivityIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        // Bundle extras = new Bundle();
-        // extras.putBoolean(PlayerConstants.IsPlaySingleSongState, true);   // play single song
-        // extras.putParcelable(PlayerConstants.SingleSongInfoState, singleSongInfo);
-        // playerActivityIntent.putExtras(extras);
-        // playSongLauncher.launch(playerActivityIntent);
+        Log.d(TAG, "playSongButtonFunc.getCallingActivity() = " + getCallingActivity());
+        Intent playerActivityIntent = new Intent();
+        playerActivityIntent.setComponent(getCallingActivity());
+        playerActivityIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        Bundle extras = new Bundle();
+        extras.putBoolean(PlayerConstants.IsPlaySingleSongState, true);   // play single song
+        extras.putParcelable(PlayerConstants.SingleSongInfoState,
+                (MySingleTon.INSTANCE.getSelectedFavorites().get(position)));
+        playerActivityIntent.putExtras(extras);
+        ActivityResultLauncher<Intent> playSongLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    Log.d(TAG, "playSongButtonFunc.playSongLauncher.result");
+                });
+        playSongLauncher.launch(playerActivityIntent);
+        */
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         Intent bIntent = new Intent(PlayerConstants.PlaySingleSongAction);
         Bundle extras = new Bundle();
@@ -301,42 +301,26 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         extras.putParcelable(PlayerConstants.SingleSongInfoState,
                 (MySingleTon.INSTANCE.getSelectedFavorites().get(position)));
         bIntent.putExtras(extras);
+        Log.d(TAG, "playSongButtonFunc.sendBroadcast().to play");
         broadcastManager.sendBroadcast(bIntent);
     }
     // Finish implementing SelectedFavoriteAdapter.OnRecyclerItemClickListener
 
     private void updateFavoriteList(Intent data) {
+        Log.d(TAG, "updateFavoriteList");
         if (data != null && positionEdit != -1) {
             Log.d(TAG, "updateFavoriteList.positionEdit = " + positionEdit);
             SongInfo songInfo = data.getParcelableExtra(PlayerConstants.SingleSongInfoState);
             if (currentAction.equals(CommonConstants.EditActionString)) {
+                // edit
                 MySingleTon.INSTANCE.getSelectedFavorites().set(positionEdit, songInfo);
                 myRecyclerViewAdapter.notifyItemChanged(positionEdit);
-            } else {
+            } else if (currentAction.equals(CommonConstants.DeleteActionString)){
                 // delete
                 MySingleTon.INSTANCE.getSelectedFavorites().remove(positionEdit);
                 myRecyclerViewAdapter.notifyItemRemoved(positionEdit);
-            }
-        }
-    }
-    private void updateFavoriteList_Old(Intent data) {
-        // for edit and delete
-        if (data != null) {
-            SongInfo songInfo = data.getParcelableExtra(PlayerConstants.SingleSongInfoState);
-            int id = songInfo.getId();
-            Log.d(TAG, "updateFavoriteList.id = " + id);
-            for (int i = 0; i < MySingleTon.INSTANCE.getSelectedFavorites().size(); i++) {
-                if (MySingleTon.INSTANCE.getSelectedFavorites().get(i).getId() == id) {
-                    if (currentAction.equals(CommonConstants.EditActionString)) {
-                        // FavoriteSingleTon.INSTANCE.getSelectedList().set(i, new SongInfo(songInfo));
-                        MySingleTon.INSTANCE.getSelectedFavorites().set(i, songInfo);
-                        myRecyclerViewAdapter.notifyItemChanged(i);
-                    } else {
-                        MySingleTon.INSTANCE.getSelectedFavorites().remove(i);
-                        myRecyclerViewAdapter.notifyItemRemoved(i);
-                    }
-                    break;
-                }
+            } else {    // currentAction = CommonConstants.PlayActionString
+                // do nothing
             }
         }
     }
@@ -352,6 +336,5 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         layoutP.weight = weight;
         layoutP = (LinearLayout.LayoutParams)myListRecyclerView.getLayoutParams();
         layoutP.weight = weightSum - weight * 2;
-
     }
 }

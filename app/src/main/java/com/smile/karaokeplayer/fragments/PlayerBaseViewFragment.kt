@@ -477,9 +477,10 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart() is called.")
+        Log.d(TAG, "onStart")
         super.onStart()
         mPresenter.playingParam?.let {
+            Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             if (it.preparedStatus == 3) { // running in the background before
                 // set to come back from background
                 it.preparedStatus = 4
@@ -488,7 +489,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume() is called.")
+        Log.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
         MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout
@@ -497,16 +498,19 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause() is called.")
+        Log.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
         bannerLinearLayout?.visibility = View.GONE
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop() is called.")
+        Log.d(TAG, "onStop")
         super.onStop()
-        mPresenter.playingParam?.preparedStatus = 3 // running in background
+        mPresenter.playingParam?.let {
+            Log.d(TAG, "onStop.isPlaySingleSong = ${it.isPlaySingleSong}")
+            it.preparedStatus = 3 // running in background
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -560,6 +564,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     fun setMainMenu() {
+        Log.d(TAG, "setMainMenu")
         mPresenter.playingParam.let {
             val isVisible = !it.isPlaySingleSong
             autoPlayMenuItem?.isVisible = isVisible
@@ -601,6 +606,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     private fun setButtonsPositionAndSize(config: Configuration) {
+        Log.d(TAG, "setButtonsPositionAndSize")
         var buttonMarginLeft = (60.0f * fontScale).toInt() // 60 pixels = 20dp on Nexus 5
         var buttonMarginLeft2 = buttonMarginLeft
         val screenSize = ScreenUtil.getScreenSize(activity)
@@ -610,13 +616,15 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 (buttonMarginLeft.toFloat() * (screenSize.x.toFloat() / screenSize.y.toFloat())).toInt()
             Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         }
-        val buttonNum = 8 // 8 buttons, no
+        val buttonNum = 8 // 8 buttons
         val imageButtonHeight = (textFontSize * 1.2f).toInt()
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
         if (maxWidth > screenSize.x) {
+            Log.d(TAG, "maxWidth > screenSize.x")
             // greater than the width of screen
-            buttonMarginLeft = (screenSize.x - 10 - buttonNum * imageButtonHeight) / (buttonNum - 1)
+            buttonMarginLeft = (screenSize.x - 10 - buttonNum * imageButtonHeight) / (buttonNum-1)
         }
+        Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum2 = 8
         val maxWidth2 = buttonNum2 * imageButtonHeight + (buttonNum2 - 1) * buttonMarginLeft2
         if (maxWidth2 > screenSize.x) {
@@ -674,6 +682,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         layoutParams = actionMenuView?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         val tempBitmap = BitmapFactory.decodeResource(resources, R.drawable.circle_and_three_dots)
         val iconDrawable: Drawable = BitmapDrawable(
@@ -719,7 +729,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
 
         // reset the heights of volumeBar and supportToolbar
-        val timesOfVolumeBarForPortrait = 1.5f
+        // val timesOfVolumeBarForPortrait = 1.5f
         /*
         if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // if orientation is portrait, then double the height of volumeBar

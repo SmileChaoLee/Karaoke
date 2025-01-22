@@ -84,13 +84,14 @@ public class BaseSongDataActivity extends AppCompatActivity {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             mSongInfo = BundleCompat.getParcelable(extras,
                                     PlayerConstants.SingleSongInfoState, SongInfo.class);
-                        } else
+                        } else {
                             mSongInfo = extras.getParcelable(PlayerConstants.SingleSongInfoState);
+                        }
                         actionButtonString = getString(R.string.deleteString);
                     }
                     break;
                 default:
-                    returnToPrevious(Activity.RESULT_CANCELED);
+                    returnToPreviousWithResult(Activity.RESULT_CANCELED);
                     return;
             }
             Log.d(TAG, "savedInstanceState is null.");
@@ -106,11 +107,11 @@ public class BaseSongDataActivity extends AppCompatActivity {
         }
 
         if (crudAction == null) {
-            returnToPrevious(Activity.RESULT_CANCELED);
+            returnToPreviousWithResult(Activity.RESULT_CANCELED);
             return;
         }
         if (mSongInfo == null) {
-            returnToPrevious(Activity.RESULT_CANCELED);
+            returnToPreviousWithResult(Activity.RESULT_CANCELED);
             return;
         }
 
@@ -243,19 +244,19 @@ public class BaseSongDataActivity extends AppCompatActivity {
             songListSQLite.closeDatabase();
 
             if (databaseResult != -1) {
-                returnToPrevious(Activity.RESULT_OK);
+                returnToPreviousWithResult(Activity.RESULT_OK);
             }
         });
 
         final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
         ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
-        edit_exitEditSongButton.setOnClickListener(view -> returnToPrevious(Activity.RESULT_CANCELED));
+        edit_exitEditSongButton.setOnClickListener(view -> returnToPreviousWithResult(Activity.RESULT_CANCELED));
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Log.d(TAG, "getOnBackPressedDispatcher.handleOnBackPressed");
-                returnToPrevious(Activity.RESULT_CANCELED);
+                returnToPreviousWithResult(Activity.RESULT_CANCELED);
             }
         });
     }
@@ -263,18 +264,18 @@ public class BaseSongDataActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume() is called.");
+        Log.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause() is called.");
+        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-
+        Log.d(TAG, "onSaveInstanceState");
         setSongInfoFromInput(false);
 
         outState.putParcelable(PlayerConstants.SingleSongInfoState, mSongInfo);
@@ -287,10 +288,12 @@ public class BaseSongDataActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy");
         mSongInfo = null;
     }
 
-    private void returnToPrevious(int isOK) {
+    private void returnToPreviousWithResult(int isOK) {
+        Log.d(TAG, "returnToPreviousWithResult");
         Intent returnIntent = new Intent();
         Bundle extras = new Bundle();
         extras.putParcelable(PlayerConstants.SingleSongInfoState, mSongInfo);
@@ -301,7 +304,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
     }
 
     private boolean setSongInfoFromInput(boolean hasMessage) {
-
+        Log.d(TAG, "setSongInfoFromInput");
         boolean isValid = true;
 
         String title = "";

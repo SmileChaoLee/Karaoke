@@ -107,7 +107,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             Log.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
                             ", currentAudioPosition = " + currentAudioPosition);
             if (playingParam.getPreparedStatus() == 4) {
-                // // just prepared but just came back from background
+                // just prepared but just came back from background
                 playingParam.setPreparedStatus(5);  // VlcPlayerEventListener
             } else {
                 playingParam.setPreparedStatus(1);

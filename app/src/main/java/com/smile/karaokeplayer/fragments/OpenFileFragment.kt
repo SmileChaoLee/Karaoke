@@ -218,12 +218,12 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                 song.included = "1"
                                 val numRecords = songListSQLite.recordsOfPlayList()
                                 Log.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
-                                if (numRecords < MySingleTon.maxSongs) {
+                                if (numRecords < MySingleTon.MAX_SONGS) {
                                     songListSQLite.addSongToSongList(song)
                                 } else {
                                     // excess max number of favorites
                                     ScreenUtil.showToast(activity,getString(R.string.excess_max) +
-                                            " ${MySingleTon.maxSongs}", textFontSize,
+                                            " ${MySingleTon.MAX_SONGS}", textFontSize,
                                             BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                     break
                                 }
@@ -344,11 +344,11 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                     }
                     songIt.add(song)
                     index++
-                    if (index >= MySingleTon.maxSongs) {
+                    if (index >= MySingleTon.MAX_SONGS) {
                         // excess the max
                         ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
-                                " ${MySingleTon.maxSongs}", textFontSize,
+                                " ${MySingleTon.MAX_SONGS}", textFontSize,
                                 BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         break
                     }

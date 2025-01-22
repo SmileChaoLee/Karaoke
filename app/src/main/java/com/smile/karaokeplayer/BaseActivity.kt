@@ -33,8 +33,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.os.BundleCompat
-import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.gms.cast.framework.CastContext
+import com.google.android.gms.dynamite.DynamiteModule.LoadingException
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import com.smile.karaokeplayer.fragments.TablayoutFragment
@@ -72,8 +73,9 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
 
+    var castContext: CastContext? = null
+
     abstract fun getFragment() : PlayerBaseViewFragment
-    abstract fun comeBackFromFavorite(playData : Bundle?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
@@ -197,6 +199,28 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
             if (isReplaced) commit()
         }
 
+        // for the chrome cast
+        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
+            try {
+                castContext = CastContext.getSharedInstance(this)
+                Log.d(TAG, "castContext = $castContext")
+            } catch (e: RuntimeException) {
+                castContext = null
+                var cause = e.cause
+                while (cause != null) {
+                    if (cause is LoadingException) {
+                        Log.d(TAG,"onCreate.Failed to get CastContext." +
+                                "Try updating Google Play Services and restart the app.")
+                    }
+                    cause = cause.cause
+                }
+                // Unknown error. We propagate it.
+                Log.d(TAG, "onCreate.Failed to get CastContext. Unknown error.")
+            }
+        }
+        //
+
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
@@ -305,18 +329,20 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean, intent : Intent?, pData : Bundle?) {
-        Log.d(TAG, "onReceiveFunc()")
+        Log.d(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
             mPresenter.let{
                 it.initializeVariables(pData, intent)
                 if (needPlay) it.playSongPlayedBeforeActivityCreated()
                 setMainMenu()
+                Log.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
                 if (isSingleSong) {
+                    it.playingParam.singleSongPlayingStatus = 1  // start playing single song
                     showPlayerView()
                 } else {
                     // PlayerConstants.BackToBaseActivity
                     if (it.playingParam.isPlayerViewVisible) showPlayerView() else hidePlayerView()
-                    Log.d(TAG, "onReceiveFunc().currentPlaybackState = ${it.playingParam.currentPlaybackState}")
+                    Log.d(TAG, "onReceiveFunc.currentPlaybackState = ${it.playingParam.currentPlaybackState}")
                 }
             }
             showSupportToolbarAndAudioController()
@@ -343,21 +369,25 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
 
     // Implement interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun returnToPrevious(isSingleSong : Boolean) {
-        Log.d(TAG, "returnToPrevious().isSingleSong = $isSingleSong")
+        Log.d(TAG, "returnToPrevious.isSingleSong = $isSingleSong")
         if (isSingleSong) {
-            playerFragment?.mPresenter?.pausePlay()
-            callingComponentName?.let {
-                Intent().apply {
-                    component = it
-                    addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                    startActivity(this)
+            playerFragment?.mPresenter?.let {
+                it.pausePlay()
+                it.playingParam.singleSongPlayingStatus = 0  // exit playing single song
+                callingComponentName?.let { callIt->
+                    Intent().apply {
+                        component = callIt
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                        startActivity(this)
+                    }
                 }
+                Log.d(TAG, "returnToPrevious.preparedStatus = ${it.playingParam.preparedStatus}")
             }
             return
         }
         // exit application
         // finish()
-        Log.d(TAG, "returnToPrevious().finish()")
+        Log.d(TAG, "returnToPrevious.finish()")
         finishAndRemoveTask()
         // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask()
         // else finishAffinity()
@@ -384,23 +414,31 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
             playData.clear()
             it.onSaveInstanceState(playData)
             isPlayToPause = false
-            if (it.mPresenter.playingParam?.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
-                // playing then pause before going to my favorite activity
-                it.mPresenter.pausePlay()
-                isPlayToPause = true
+            it.mPresenter.playingParam?.let { pIt->
+                if (pIt.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
+                    // playing then pause before going to my favorite activity
+                    it.mPresenter.pausePlay()
+                    isPlayToPause = true
+                }
+                pIt.preparedStatus = 10;    // going to BaseFavoriteListActivity
             }
         }
     }
 
     override fun restorePlayingState() {
+        Log.d(TAG, "restorePlayingState.return from BaseFavoriteListActivity")
+        // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             BundleCompat.getParcelable(playData, PlayerConstants.PlayingParamState, PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
             Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
             Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")
+            Log.d(TAG, "restorePlayingState.preparedStatus = $preparedStatus")
             if (isPlayToPause) currentPlaybackState = PlaybackStateCompat.STATE_PLAYING // restore to playing
+            preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
+            Log.d(TAG, "restorePlayingState.preparedStatus changed to $preparedStatus")
         }
-        comeBackFromFavorite(playData)
+        onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
         callingComponentName = null
         isPlayToPause = false
     }

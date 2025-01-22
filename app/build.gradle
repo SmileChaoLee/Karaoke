@@ -137,6 +137,7 @@ dependencies {
 
     implementation files('libs/smilelibraries-release.aar')
     implementation files('libs/NativeTemplatesModels-release.aar')
+    implementation 'com.google.android.gms:play-services-cast-framework:22.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'

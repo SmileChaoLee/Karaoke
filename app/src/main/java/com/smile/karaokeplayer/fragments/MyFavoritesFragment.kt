@@ -78,7 +78,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                         if (intent.getBooleanExtra(ExcessYN, false)) {
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
-                                    " ${MySingleTon.maxSongs}", textFontSize,
+                                    " ${MySingleTon.MAX_SONGS}", textFontSize,
                                     BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         }
                         myRecyclerViewAdapter?.notifyDataSetChanged()
@@ -163,11 +163,11 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                         if (MySingleTon.favorites[i].included == "1") {
                             songIt.add(MySingleTon.favorites[i])
                             index++
-                            if (index >= MySingleTon.maxSongs) {
+                            if (index >= MySingleTon.MAX_SONGS) {
                                 // excess the max
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
-                                        " ${MySingleTon.maxSongs}", textFontSize,
+                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
                                         BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                 break
                             }
@@ -271,7 +271,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         searchCompleted = false
         Thread {
             var excessYn = false;
-            val tempList: ArrayList<SongInfo> = ArrayList(MySingleTon.maxSongs)
+            val tempList: ArrayList<SongInfo> = ArrayList(MySingleTon.MAX_SONGS)
             activity?.let {
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
                     var index = 0
@@ -280,7 +280,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                         element.included = "0"
                         tempList.add(element)
                         index++
-                        if (index >= MySingleTon.maxSongs) {
+                        if (index >= MySingleTon.MAX_SONGS) {
                             // excess the max
                             excessYn = true
                             break
