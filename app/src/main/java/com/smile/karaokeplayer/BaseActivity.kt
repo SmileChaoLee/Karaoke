@@ -345,7 +345,7 @@ abstract class BaseActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBa
                     Log.d(TAG, "onReceiveFunc.currentPlaybackState = ${it.playingParam.currentPlaybackState}")
                 }
             }
-            showSupportToolbarAndAudioController()
+            showSupportToolbarAudioControlSetTimer()
         }
         Intent().apply {
             Log.d(TAG, "onReceiveFunc.componentName = $componentName")

@@ -1,6 +1,7 @@
 package com.smile.karaokeplayer.fragments
 
 // import com.smile.karaokeplayer.models.VerticalSeekBar
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
@@ -22,6 +23,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -72,7 +74,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     lateinit var mPresenter: BasePlayerPresenter
-
+    private var screenSizeX = 0
+    private var screenSizeY = 0
     private var playBaseFragmentFunc: PlayBaseFragmentFunc? = null
     protected var fragmentView: View? = null
     protected var textFontSize = 0f
@@ -124,14 +127,14 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     // submenu of file
     private var autoPlayMenuItem: MenuItem? = null
     private var audioMenuItem: MenuItem? = null
-
     // submenu of audio
     private var audioTrackMenuItem: MenuItem? = null
-
     // submenu of channel
     private var leftChannelMenuItem: MenuItem? = null
     private var rightChannelMenuItem: MenuItem? = null
     private var stereoChannelMenuItem: MenuItem? = null
+
+    private var oldMotionEventX = 0.0f
 
     private val controllerTimerHandler = Handler(Looper.getMainLooper())
     private val controllerTimerRunnable = Runnable {
@@ -145,7 +148,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     hideSupportToolbarAndAudioController()
                 }
             } else {
-                showSupportToolbarAndAudioController()
+                showSupportToolbarAudioControlSetTimer()
             }
         }
     }
@@ -231,7 +234,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         super.onViewCreated(view, savedInstanceState)
 
         fragmentView = view
-
         // Video player view
         fragmentView?.apply {
             playerViewLinearLayout = findViewById(R.id.playerViewLinearLayout)
@@ -240,6 +242,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
 
         activity?.let {
+            screenSizeX = ScreenUtil.getScreenSize(it).x
+            screenSizeY = ScreenUtil.getScreenSize(it).y
             (it as AppCompatActivity).apply {
                 setSupportActionBar(supportToolbar)
                 supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -520,6 +524,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         setOrientationImageButton(newConfig.orientation)
         setButtonsPositionAndSize(newConfig)
         activity?.let {actIt ->
+            screenSizeX = ScreenUtil.getScreenSize(actIt).x
+            screenSizeY = ScreenUtil.getScreenSize(actIt).y
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
@@ -600,7 +606,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         setImageButtonStatus()
         // must be after statement of playerViewLinearLayout.visibility = View.VISIBLE
-        setTimerToHideSupportAndAudioController()   // reset the timer
+        setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
     }
@@ -609,27 +615,28 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "setButtonsPositionAndSize")
         var buttonMarginLeft = (60.0f * fontScale).toInt() // 60 pixels = 20dp on Nexus 5
         var buttonMarginLeft2 = buttonMarginLeft
-        val screenSize = ScreenUtil.getScreenSize(activity)
-        Log.d(TAG, "screenSize.x = ${screenSize.x}, screenSize.y = ${screenSize.y}, buttonMarginLeft = $buttonMarginLeft")
+        // val screenSize = ScreenUtil.getScreenSize(activity)
+        // Log.d(TAG, "screenSize.x = ${screenSize.x}, screenSize.y = ${screenSize.y}, buttonMarginLeft = $buttonMarginLeft")
+        Log.d(TAG, "screenSize.x = $screenSizeX, screenSize.y = $screenSizeX, buttonMarginLeft = $buttonMarginLeft")
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
-                (buttonMarginLeft.toFloat() * (screenSize.x.toFloat() / screenSize.y.toFloat())).toInt()
+                (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
             Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         }
         val buttonNum = 8 // 8 buttons
         val imageButtonHeight = (textFontSize * 1.2f).toInt()
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
-        if (maxWidth > screenSize.x) {
+        if (maxWidth > screenSizeX) {
             Log.d(TAG, "maxWidth > screenSize.x")
             // greater than the width of screen
-            buttonMarginLeft = (screenSize.x - 10 - buttonNum * imageButtonHeight) / (buttonNum-1)
+            buttonMarginLeft = (screenSizeX - 10 - buttonNum * imageButtonHeight) / (buttonNum-1)
         }
         Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum2 = 8
         val maxWidth2 = buttonNum2 * imageButtonHeight + (buttonNum2 - 1) * buttonMarginLeft2
-        if (maxWidth2 > screenSize.x) {
+        if (maxWidth2 > screenSizeX) {
             // greater than the width of screen
-            buttonMarginLeft2 = (screenSize.x - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
+            buttonMarginLeft2 = (screenSizeX - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
         }
         /*
         var layoutParams: MarginLayoutParams = volumeSeekBar?.layoutParams as MarginLayoutParams
@@ -746,7 +753,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         val nativeAdLayoutLP = nativeAdLayout?.layoutParams as ConstraintLayout.LayoutParams
         val bannerHeightPercent = bannerAdsLayoutLP.matchConstraintPercentHeight
         Log.d(TAG,"bannerHeightPercent = $bannerHeightPercent")
-        val heightPercent = 1.0f - bannerHeightPercent - imageButtonHeight * 3.30f / screenSize.y
+        val heightPercent = 1.0f - bannerHeightPercent - imageButtonHeight * 3.30f / screenSizeY
         Log.d(TAG, "heightPercent = $heightPercent")
         nativeAdLayoutLP.matchConstraintPercentHeight = (heightPercent * 100.0f).toInt() / 100.0f
         Log.d(TAG, "nativeAdLayoutLP.matchConstraintPercentHeight = " +
@@ -776,13 +783,18 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         playBaseFragmentFunc?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
     }
 
-    fun showSupportToolbarAndAudioController() {
-        Log.d(TAG, "showSupportToolbarAndAudioController()")
+    fun showSupportToolbarAudioControlSetTimer() {
+        Log.d(TAG, "showSupportToolbarAudioControlSetTimer()")
+        showSupportToolbarAudioControl()
+        setTimerToHideSupportAudioControl()   // reset the timer
+    }
+
+    private fun showSupportToolbarAudioControl() {
+        Log.d(TAG, "showSupportToolbarAudioControl")
         bannerLinearLayout?.visibility = View.GONE
         supportToolbar?.visibility = View.VISIBLE
         audioControllerView?.visibility = View.VISIBLE
         nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
-        setTimerToHideSupportAndAudioController()   // reset the timer
     }
 
     private fun hideSupportToolbarAndAudioController() {
@@ -808,6 +820,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         handler.postDelayed(runnable, (seconds * 1000.0).toLong())
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setOnClickEvents() {
         /*
         volumeSeekBar?.visibility = View.INVISIBLE // default is not showing
@@ -993,7 +1006,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 Log.d(TAG, "actionMenuImageButton.setOnClickListener")
                 actionMenuView?.showOverflowMenu()
                 autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
-                setTimerToHideSupportAndAudioController()   // reset the timer
+                setTimerToHideSupportAudioControl()   // reset the timer
                 disableButtonForSometime(it)
             }
         }
@@ -1013,27 +1026,81 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         })
         supportToolbar?.let {
             it.setOnClickListener { v: View ->
+                /*
                 if (v.visibility == View.VISIBLE) {
                     // use custom toolbar
                     hideSupportToolbarAndAudioController()
                     Log.d(TAG, "supportToolbar.onClick().View.VISIBLE.")
                 } else {
                     // use custom toolbar
-                    showSupportToolbarAndAudioController()
+                    showSupportToolbarAndAudioController(true)
                     Log.d(TAG, "supportToolbar.onClick().View.INVISIBLE.")
                 }
+                */
+                showSupportToolbarAudioControlSetTimer()
                 // volumeSeekBar?.visibility = View.INVISIBLE
                 Log.d(TAG, "supportToolbar.onClick() is called.")
-                disableButtonForSometime(it)
             }
         }
         playerViewLinearLayout?.let { it->
             it.setOnClickListener {
-                Log.d(TAG, "playerViewLinearLayout.onClick() is called.")
+                Log.d(TAG, "playerViewLinearLayout.onClick()")
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
                     supportToolbar?.performClick()
                 }
-                disableButtonForSometime(it)
+            }
+            it.setOnTouchListener { _, motionEvent ->
+                val posX = motionEvent.x
+                // Log.d(TAG, "setOnTouchListener.motionEvent.x = $posX")
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        Log.d(TAG, "setOnTouchListener.ACTION_DOWN.posX = $posX")
+                        oldMotionEventX = posX
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        Log.d(TAG, "setOnTouchListener.ACTION_UP")
+                    }
+                    MotionEvent.ACTION_MOVE -> run {
+                        if (!playService.isSeekable()) return@run
+                        mPresenter.playingParam.apply {
+                            if (!(currentPlaybackState == PlaybackStateCompat.STATE_PLAYING
+                                        || currentPlaybackState == PlaybackStateCompat.STATE_PAUSED)) {
+                                Log.d(TAG, "setOnTouchListener.ACTION_MOVE.not playing or paused")
+                                return@run
+                            }
+                        }
+                        if (posX <= 0 || posX >= screenSizeX) {
+                            Log.d(TAG, "setOnTouchListener.ACTION_MOVE.out of the screen size")
+                            return@run
+                        }
+                        val distance = posX - oldMotionEventX
+                        // Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
+                        if (distance >= -5.0 && distance <= 5.0f) {
+                            Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance is too small")
+                            return@run
+                        }
+                        val duration = playService.getMediaDuration()
+                        if (duration > 0) {
+                            player_duration_seekbar?.let {
+                                val progress = it.progress + ((distance / screenSizeX) * duration).toInt()
+                                if (progress <= (duration - 2000)) {
+                                    // less than 2 seconds before the end
+                                    it.progress = progress
+                                    mPresenter.onDurationSeekBarProgressChanged(it.progress, true)
+                                    showSupportToolbarAudioControl() // show the player buttons
+                                    oldMotionEventX = posX
+                                }
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_OUTSIDE -> {
+                        Log.d(TAG, "setOnTouchListener.ACTION_OUTSIDE")
+                    }
+                    else -> {
+                        Log.d(TAG, "setOnTouchListener.else")
+                    }
+                }
+                false
             }
         }
     }
@@ -1169,7 +1236,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
     }
 
-    override fun setTimerToHideSupportAndAudioController() {
+    override fun setTimerToHideSupportAudioControl() {
         Log.d(TAG, "setTimerToHideSupportAndAudioController() is called.")
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             controllerTimerHandler.removeCallbacksAndMessages(null)

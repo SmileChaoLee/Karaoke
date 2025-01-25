@@ -52,7 +52,7 @@ public abstract class BasePlayerPresenter {
         void showBufferingMessage();
         void dismissBufferingMessage();
         void buildAudioTrackMenuItem(int audioTrackNumber);
-        void setTimerToHideSupportAndAudioController();
+        void setTimerToHideSupportAudioControl();
         void showMusicAndVocalIsNotSet();
         void showInterstitialAd(boolean isSelfFinished);
         void hidePlayerView();
@@ -588,7 +588,7 @@ public abstract class BasePlayerPresenter {
                 mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
                 startDurationSeekBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
-                mPresentView.setTimerToHideSupportAndAudioController();
+                mPresentView.setTimerToHideSupportAudioControl();
                 mPresentView.playButtonOffPauseButtonOn();
                 // adsForOnlyMusic();
                 mPresentView.hideNativeAd();

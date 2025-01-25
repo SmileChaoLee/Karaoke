@@ -26,6 +26,11 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/audio_track_channel_buttons_layout.xml">
         <config>
           <theme>@style/AppTheme</theme>
@@ -182,27 +187,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Disable the button for 200ms after it is pressed.">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_cast_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_common_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_container_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_database_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_datasource_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_decoder_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_exoplayer_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_exoplayer_dash_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_extractor_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_session_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_media3_media3_ui_1_5_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_guava_failureaccess_1_0_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_guava_guava_33_3_1_android.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_errorprone_error_prone_annotations_2_15_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_errorprone_error_prone_annotations_2_28_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_videolan_android_libvlc_all_4_0_0_eap1_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Upgraded the version code for releasing to Google Play Store">
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/ExoPlayerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/exoplayer/java/exoplayer/ExoPlayerActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/presenters/BasePlayerPresenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/app/videoplayer/release/app-videoplayer-release.aab" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -335,11 +331,11 @@
       <recent name="com.smile.karaokeplayer" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.smile.karaokeplayer" />
       <recent name="" />
       <recent name="exoplayer.callbacks" />
       <recent name="com.smile.karaokeplayer.adapters" />
       <recent name="com.smile.karaokeplayer.models" />
-      <recent name="com.smile.karaokeplayer" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.smile.karaokeplayer.presenters" />
@@ -768,7 +764,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="122" />
+    <option name="localTasksCounter" value="123" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -851,7 +847,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="1. Refined&#10;2. Changed transparentDark to transparent for buttons" />
     <MESSAGE value="Refined UI (buttons)" />
     <MESSAGE value="Refined UI (buttons) again" />
     <MESSAGE value="Refined and fixed bugs" />
@@ -876,6 +871,7 @@
     <MESSAGE value="Fixed bugs when coming back from playing single song (from editing favorite list)" />
     <MESSAGE value="Fixed bugs of playPreviousSong and playNextSong buttons" />
     <MESSAGE value="Disable the button for 200ms after it is pressed." />
-    <option name="LAST_COMMIT_MESSAGE" value="Disable the button for 200ms after it is pressed." />
+    <MESSAGE value="Upgraded the version code for releasing to Google Play Store" />
+    <option name="LAST_COMMIT_MESSAGE" value="Upgraded the version code for releasing to Google Play Store" />
   </component>
 </project>

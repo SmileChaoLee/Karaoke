@@ -2,6 +2,8 @@ package exoplayer
 
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import com.smile.karaokeplayer.BaseActivity
 import exoplayer.fragments.ExoPlayerFragment
 
@@ -14,5 +16,6 @@ class ExoPlayerActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
     }
 
+    @OptIn(UnstableApi::class)
     override fun getFragment() = ExoPlayerFragment()
 }
