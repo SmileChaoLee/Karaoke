@@ -20,7 +20,6 @@ import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.presenters.BasePlayerPresenter;
 
-import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity;
 import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService;
 

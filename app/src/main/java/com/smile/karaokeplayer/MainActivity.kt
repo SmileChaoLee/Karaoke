@@ -142,16 +142,11 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
         setTabLayoutViewWeight(resources.configuration.orientation)
 
+        tablayoutFragment = null
         callingIntent = intent
-        if (savedInstanceState == null) {
-            Log.d(TAG, "savedInstanceState is null.creating playerFragment")
-            if (callingIntent.extras == null) {
-                Log.d(TAG, "callingIntent.extras is null")
-                tablayoutFragment = TablayoutFragment()
-            } else {
-                Log.d(TAG, "callingIntent.extras is not null")
-            }
-        } else {
+        Log.d(TAG, "savedInstanceState = null")
+        Log.d(TAG, "callingIntent.extras = ${callingIntent.extras}")
+        if (savedInstanceState != null) {
             isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE_STATE, false)
             whichPlayer = savedInstanceState.getInt(WHICH_PLAYER_STATE, 1)
 
@@ -165,30 +160,22 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
                 playData = it
             }
 
-            tablayoutFragment = supportFragmentManager.findFragmentByTag(TAB_LAYOUT_FRAGMENT_TAG) as TablayoutFragment?
+            supportFragmentManager.findFragmentByTag(TAB_LAYOUT_FRAGMENT_TAG)?.let {
+                tablayoutFragment = it as TablayoutFragment
+            }
             Log.d(TAG, "savedInstanceState is not null.tablayoutFragment = $tablayoutFragment")
         }
 
+        if (tablayoutFragment == null) tablayoutFragment = TablayoutFragment()
         supportFragmentManager.beginTransaction().apply {
-            var isReplaced = false
             tablayoutFragment?.let {
                 if (!it.isInLayout) {
                     Log.d(TAG, "tablayoutFragment.isInLayout() = false")
                     replace(R.id.tablayoutViewLayout, it, TAB_LAYOUT_FRAGMENT_TAG)
                     tablayoutViewLayout.visibility = View.VISIBLE
-                    isReplaced = true
+                    commit()
                 }
             }
-            /*
-            playerFragment?.let {
-                if (!it.isInLayout) {
-                    Log.d(TAG, "playerFragment.isInLayout() = false")
-                    replace(R.id.basePlayViewLayout, it, PLAYER_FRAGMENT_TAG)
-                    isReplaced = true
-                }
-            }
-            */
-            if (isReplaced) commit()
         }
 
         // for the chrome cast
