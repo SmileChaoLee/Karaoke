@@ -133,9 +133,10 @@ public abstract class BasePlayerPresenter {
     }
 
     public void autoPlaySongList() {
-        Log.d(TAG, "autoPlaySongList");
+        Log.d(TAG, "autoPlaySongList.orderedSongs.size = "
+                + MySingleTon.INSTANCE.getOrderedSongs().size());
         mCanShowNotSupportedFormat = true;
-        if (MySingleTon.INSTANCE.getOrderedSongs().size() > 0) {
+        if (!MySingleTon.INSTANCE.getOrderedSongs().isEmpty()) {
             // playingParam.setAutoPlay(true);
             mPlayingParam.setCurrentSongIndex(-1); // next song that will be played, which the index is 0
             // start playing video from list
@@ -155,7 +156,6 @@ public abstract class BasePlayerPresenter {
                 startAutoPlay(false);
             }
         } else {
-            Log.d(TAG, "autoPlaySongList.orderedSongs.size() = 0");
             ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noFilesSelectedString)
                     , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
         }
@@ -191,7 +191,7 @@ public abstract class BasePlayerPresenter {
                     Log.d(TAG, "initializeVariablesBase.singleSongInfo = " + mSingleSongInfo);
                 }
             }
-            MySingleTon.INSTANCE.getOrderedSongs().clear();
+            // MySingleTon.INSTANCE.getOrderedSongs().clear();
         } else {
             // needed to be set
             mNumberOfVideoTracks = savedInstanceState.getInt(PlayerConstants.NumberOfVideoTracksState,0);
@@ -318,7 +318,7 @@ public abstract class BasePlayerPresenter {
             MySingleTon.INSTANCE.getOrderedSongs().addAll(songList);
             // playingParam.setAutoPlay(playSongList()); // must be above autoPlay savedSongList()
             // must be above autoPlay savedSongList()
-            mPlayingParam.setAutoPlay(MySingleTon.INSTANCE.getOrderedSongs().size() > 0);
+            mPlayingParam.setAutoPlay(!MySingleTon.INSTANCE.getOrderedSongs().isEmpty());
             autoPlaySongList();
             mPresentView.showPlayerView();
         } else {

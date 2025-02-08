@@ -62,8 +62,8 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         // float fontScale = ScreenUtil.suitableFontScale(this, ScreenUtil.FontSize_Pixel_Type, 0.0f);
         toastTextSize = 0.8f * textFontSize;
         interstitialAd = new ShowInterstitial(this,
-                ((BaseApplication)getApplication()).facebookInterstitial,
-                ((BaseApplication)getApplication()).adMobInterstitial);
+                ((SmileApplication)getApplication()).facebookInterstitial,
+                ((SmileApplication)getApplication()).adMobInterstitial);
         songListSQLite = new SongListSQLite(getApplicationContext());
 
         super.onCreate(savedInstanceState);

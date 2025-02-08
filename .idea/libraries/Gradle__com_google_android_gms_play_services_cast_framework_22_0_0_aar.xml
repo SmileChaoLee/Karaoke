@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.gms:play-services-cast-framework:22.0.0@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/8a6a9c9186b12e35e45079f3ebceb765/transformed/play-services-cast-framework-22.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/8a6a9c9186b12e35e45079f3ebceb765/transformed/play-services-cast-framework-22.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/8a6a9c9186b12e35e45079f3ebceb765/transformed/play-services-cast-framework-22.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/ff4905ee1ce407dc3e2570111549a27f/transformed/play-services-cast-framework-22.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/ff4905ee1ce407dc3e2570111549a27f/transformed/play-services-cast-framework-22.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/ff4905ee1ce407dc3e2570111549a27f/transformed/play-services-cast-framework-22.0.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.android.gms/play-services-cast-framework/22.0.0/e7399d55483e03d76126a1a0451a963454e1b770/play-services-cast-framework-22.0.0-javadoc.jar!/" />

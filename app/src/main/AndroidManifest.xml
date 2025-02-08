@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
+        android:name=".SmileApplication"
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
@@ -42,6 +43,14 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".BaseActivity"
             android:exported="true">
@@ -54,9 +63,27 @@
             android:name=".BaseSongDataActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".vlcplayer.VlcPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".exoplayer.ExoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true">
+        </activity>
         <service
             android:name=".services.BasePlayService"
-            android:exported="true">
+            android:exported="false">
+        </service>
+        <service
+            android:name=".vlcplayer.services.VlcPlayService"
+            android:exported="false">
+        </service>
+        <service
+            android:name=".exoplayer.services.ExoPlayService"
+            android:exported="false">
         </service>
     </application>
 

@@ -8,13 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
+import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "TablayoutFragment"
 
@@ -25,7 +28,7 @@ class TablayoutFragment : Fragment() {
         const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
     }
 
-    // private lateinit var fragmentAdapter: FragmentAdapter
+    private var toastTextSize: Float = 0f
     private val openFragment = OpenFileFragment()
     private val favoriteFragment = MyFavoritesFragment()
     private var bannerLayoutForTab: LinearLayout? = null
@@ -44,15 +47,21 @@ class TablayoutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         Log.d(TAG, "onCreateView()")
-
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_tablayout, container, false)
+        return inflater.inflate(R.layout.fragment_tablayout, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated()")
         bannerLayoutForTab = view.findViewById(R.id.bannerLayoutForTab)
         activity?.let {actIt ->
+            val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(actIt,
+                ScreenUtil.FontSize_Pixel_Type, null)
+            toastTextSize = 0.7f * ScreenUtil.suitableFontSize(actIt, defaultTextFontSize,
+                ScreenUtil.FontSize_Pixel_Type, 0.0f)
             bannerLayoutForTab?.also { layoutIt ->
                 myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                        layoutIt, actIt.resources.configuration.orientation)
+                    layoutIt, actIt.resources.configuration.orientation)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
@@ -111,8 +120,18 @@ class TablayoutFragment : Fragment() {
             tab.text = tabText[position]
         }.attach()
         */
+    }
 
-        return view
+    fun onBackPressed() {
+        Log.d(TAG, "onBackPressed() is called")
+        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
+        if (exitAppTimer.canExit()) {
+            activity?.finish()
+        } else {
+            exitAppTimer.start()
+            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp), toastTextSize,
+                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

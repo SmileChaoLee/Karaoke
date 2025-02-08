@@ -131,7 +131,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                 R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         SpinnerAdapter audioVocalTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
                 R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
-        ArrayList<String> aList = new ArrayList<>(BaseApplication.audioChannelMap.values());
+        ArrayList<String> aList = new ArrayList<>(SmileApplication.audioChannelMap.values());
         SpinnerAdapter audioMusicChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
                 R.id.spinnerTextView, aList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         SpinnerAdapter audioVocalChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
@@ -327,9 +327,9 @@ public class BaseSongDataActivity extends AppCompatActivity {
         mSongInfo.setSongName(title);
         mSongInfo.setFilePath(filePath);
         mSongInfo.setMusicTrackNo(Integer.parseInt(musicTrack));
-        mSongInfo.setMusicChannel(BaseApplication.audioChannelReverseMap.get(musicChannel));
+        mSongInfo.setMusicChannel(SmileApplication.audioChannelReverseMap.get(musicChannel));
         mSongInfo.setVocalTrackNo(Integer.parseInt(vocalTrack));
-        mSongInfo.setVocalChannel(BaseApplication.audioChannelReverseMap.get(vocalChannel));
+        mSongInfo.setVocalChannel(SmileApplication.audioChannelReverseMap.get(vocalChannel));
         mSongInfo.setIncluded(included);
 
         if (filePath.isEmpty()) {

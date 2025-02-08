@@ -19,7 +19,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/opus/build/generated/ap_generated_sources/release/out" isTestSource="false" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../../extensions/opus/build/generated/res/resValues/release">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/opus/build/generated/res/resValues/release" type="java-resource" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/opus/build/generated/res/resValues/release" type="java-resource" />
     </content>
     <content url="file://$MODULE_DIR$/../../../../extensions/opus/src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/opus/src/main/java" isTestSource="false" />
@@ -47,9 +47,8 @@
     <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.checkerframework:checker-qual:3.43.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-annotations-jvm:1.9.22" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-jvm:1.8.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.7.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.7.10" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-jvm:1.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.9.24" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:guava:31.1-android" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:failureaccess:1.0.1" level="project" />

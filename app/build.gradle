@@ -21,31 +21,14 @@ android {
         minSdk sdk_version.min
 
         applicationId = "com.smile.karaokeplayer"
+        manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
+        manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
+
         multiDexEnabled true
         versionCode 735
         versionName "7.35"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
-    }
-
-    flavorDimensions = ["player"]
-    productFlavors {
-        exoplayer {
-            dimension("player")
-            // applicationId = "com.smile.karaokeplayer"
-            applicationId = "com.smile.videoplayer"
-            manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
-            // manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
-            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
-        }
-        videoplayer {
-            dimension("player")
-            // applicationId = "com.smile.videoplayer"
-            applicationId = "com.smile.karaokeplayer"
-            manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
-            // manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5376732060"
-            manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
-        }
     }
 
     sourceSets {
@@ -54,24 +37,6 @@ android {
             resources.srcDir("src/main/rec")
             manifest {
                 srcFile "src/main/AndroidManifest.xml"
-            }
-        }
-        exoplayer {
-            java {
-                srcDirs += "src/exoplayer/java"
-                exclude "**/ExoPlaybackPreparer.java"
-            }
-            res.srcDirs += "src/exoplayer/res"
-            manifest {
-                srcFile "src/exoplayer/AndroidManifest.xml"
-            }
-        }
-
-        videoplayer {
-            java.srcDirs += "src/videoplayer/java"
-            res.srcDirs += "src/videoplayer/res"
-            manifest {
-                srcFile "src/videoplayer/AndroidManifest.xml"
             }
         }
     }
@@ -123,15 +88,15 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.annotation:annotation:$annotation_version"
+    implementation "androidx.annotation:annotation:1.9.1"
 
-    implementation 'com.facebook.android:audience-network-sdk:6.16.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.18.0'
     implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-ads:23.6.0'
 
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
 
     implementation 'androidx.core:core-ktx:1.15.0'
 
@@ -145,22 +110,18 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:truth:1.6.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    implementation 'androidx.media3:media3-exoplayer:1.5.1'
+    implementation 'androidx.media3:media3-exoplayer-dash:1.5.1'
+    implementation 'androidx.media3:media3-ui:1.5.1'
+    implementation 'androidx.media3:media3-session:1.5.1'
+    implementation 'androidx.media3:media3-cast:1.5.1'
+    implementation project(':extension-ffmpeg')
+    implementation project(':extension-flac')
+    implementation project(':extension-opus')
+    implementation project(':extension-vp9')
+    implementation project(':extension-av1')
 
-    // exoplayerImplementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
-    // exoplayerImplementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
-    // exoplayerImplementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
-    exoplayerImplementation 'androidx.media3:media3-exoplayer:1.5.1'
-    exoplayerImplementation 'androidx.media3:media3-exoplayer-dash:1.5.1'
-    exoplayerImplementation 'androidx.media3:media3-ui:1.5.1'
-    exoplayerImplementation 'androidx.media3:media3-session:1.5.1'
-    exoplayerImplementation 'androidx.media3:media3-cast:1.5.1'
-    exoplayerImplementation project(':extension-ffmpeg')
-    exoplayerImplementation project(':extension-flac')
-    exoplayerImplementation project(':extension-opus')
-    exoplayerImplementation project(':extension-vp9')
-    exoplayerImplementation project(':extension-av1')
-
-    videoplayerImplementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
+    implementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
 
     /*
     gradle.startParameter.getTaskNames().each { task ->

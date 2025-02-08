@@ -1,0 +1,21 @@
+package com.smile.karaokeplayer.exoplayer
+
+import android.os.Bundle
+import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import com.smile.karaokeplayer.BaseActivity
+import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment
+
+private const val TAG : String = "ExoPlayerActivity"
+
+class ExoPlayerActivity : BaseActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
+        super.onCreate(savedInstanceState)
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun getFragment() = ExoPlayerFragment()
+}

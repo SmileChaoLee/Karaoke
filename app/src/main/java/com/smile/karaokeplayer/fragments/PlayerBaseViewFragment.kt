@@ -45,7 +45,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.TemplateView
-import com.smile.karaokeplayer.BaseApplication
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
@@ -174,6 +174,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             onPlayServiceConnected(service)
             isServiceBound = true
             isServiceDestroyed = false
+            // for testing
+            mPresenter.playingParam.isAutoPlay = false
+            mPresenter.autoPlaySongList()
+            showPlayerView()
+            //
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -198,8 +203,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
         activity?.let {
             interstitialAd = ShowInterstitial(it,
-                    (it.application as BaseApplication).facebookInterstitial,
-                    (it.application as BaseApplication).adMobInterstitial)
+                    (it.application as SmileApplication).facebookInterstitial,
+                    (it.application as SmileApplication).adMobInterstitial)
         }
 
         val presenter = getPlayerPresenter()
@@ -331,7 +336,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             }
             nativeAdTemplateView = findViewById(R.id.nativeAdTemplateView)
             nativeTemplate = GoogleAdMobNativeTemplate(
-                    activity, nativeAdsFrameLayout, BaseApplication.googleAdMobNativeID, nativeAdTemplateView
+                    activity, nativeAdsFrameLayout, SmileApplication.googleAdMobNativeID, nativeAdTemplateView
             )
         }
 
@@ -360,7 +365,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         // or
         supportToolbar?.popupTheme?.let {
             val wrapper: Context = ContextThemeWrapper(activity, it)
-            // ScreenUtil.buildActionViewClassMenu(activity, wrapper, mainMenu, fontScale, BaseApplication.FontSize_Scale_Type);
+            // ScreenUtil.buildActionViewClassMenu(activity, wrapper, mainMenu, fontScale, SmileApplication.FontSize_Scale_Type);
             ScreenUtil.resizeMenuTextIconSize(wrapper, mainMenu, fontScale)
         }
 
@@ -928,7 +933,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                             sqlIt.closeDatabase()
                         }
                         ScreenUtil.showToast(it, getString(R.string.add_to_favorites), textFontSize,
-                                BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                 }
             }

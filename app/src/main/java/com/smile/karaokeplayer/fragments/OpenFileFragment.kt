@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.BaseApplication
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaokeplayer.constants.CommonConstants
@@ -31,10 +31,12 @@ import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-private const val TAG : String = "OpenFileFragment"
-private const val SearchFolderCompleted = "SearchCurrentFolder"
-
 class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
+
+    companion object {
+        private const val TAG : String = "OpenFileFragment"
+        private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
+    }
 
     private var textFontSize = 0f
     private var playSongs: PlaySongs? = null
@@ -54,9 +56,9 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                BaseApplication.FontSize_Scale_Type, null)
+                SmileApplication.FontSize_Scale_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                BaseApplication.FontSize_Scale_Type,0.0f)
+                SmileApplication.FontSize_Scale_Type,0.0f)
 
         playSongs = (activity as PlaySongs)
         Log.d(TAG, "onCreate.playSongs = $playSongs")
@@ -86,7 +88,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
-                    if (it == SearchFolderCompleted) {
+                    if (it == SEARCH_FOLDER_COMPLETED) {
                         Log.d(TAG, "BroadcastReceiver.onReceive.SearchFolder")
                         pathTextView?.text = FileDesList.currentPath
                         myRecyclerViewAdapter?.notifyDataSetChanged()
@@ -99,7 +101,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             LocalBroadcastManager.getInstance(it).apply {
                 Log.d(TAG, "LocalBroadcastManager.registerReceiver")
                 registerReceiver(broadcastReceiver, IntentFilter().apply {
-                    addAction(SearchFolderCompleted)
+                    addAction(SEARCH_FOLDER_COMPLETED)
                 })
             }
         }
@@ -124,7 +126,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
-            ScreenUtil.resizeTextSize(pathTextView, textFontSize, BaseApplication.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(pathTextView, textFontSize, SmileApplication.FontSize_Scale_Type)
             val backKeyButton: ImageButton = it.findViewById(R.id.openFileBackKeyButton)
             var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
@@ -193,7 +195,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         if (songsIt.size == 0) {
                             ScreenUtil.showToast(
                                 activityIt, getString(R.string.noFilesSelectedString), textFontSize,
-                                    BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                    SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         } else {
                             MySingleTon.orderedSongs.clear()
                             MySingleTon.orderedSongs.addAll(songsIt)
@@ -224,14 +226,14 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                     // excess max number of favorites
                                     ScreenUtil.showToast(activity,getString(R.string.excess_max) +
                                             " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                            BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                            SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                     break
                                 }
                             }
                             toastMsg = getString(R.string.add_to_favorites)
                         }
                         ScreenUtil.showToast(activity, toastMsg, textFontSize,
-                                BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                     songListSQLite.closeDatabase()
                 }
@@ -313,7 +315,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
                     sendBroadcast(Intent().apply {
-                        action = SearchFolderCompleted
+                        action = SEARCH_FOLDER_COMPLETED
                     })
                 }
             }
@@ -349,7 +351,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
                                 " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         break
                     }
                 }

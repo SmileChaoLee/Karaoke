@@ -6,7 +6,7 @@ ext {
             target : 35,
             min : 23
     ]
-    annotation_version = "1.8.2"
+    annotation_version = "1.9.1"
     exoplayer_version = "2.19.1"
 }
 
@@ -17,7 +17,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.1'
+        classpath 'com.android.tools.build:gradle:8.8.0'
         classpath 'com.google.gms:google-services:4.4.2'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10'
 

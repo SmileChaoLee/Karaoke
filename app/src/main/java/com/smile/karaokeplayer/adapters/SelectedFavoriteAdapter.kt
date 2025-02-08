@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.BaseApplication
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
@@ -154,9 +154,9 @@ class SelectedFavoriteAdapter (
             titleNameTextView.text = singleSongInfo.songName
             filePathTextView.text = singleSongInfo.filePath
             musicTrackTextView.text = singleSongInfo.musicTrackNo.toString()
-            musicChannelTextView.text = BaseApplication.audioChannelMap[singleSongInfo.musicChannel]
+            musicChannelTextView.text = SmileApplication.audioChannelMap[singleSongInfo.musicChannel]
             vocalTrackTextView.text = singleSongInfo.vocalTrackNo.toString()
-            vocalChannelTextView.text = BaseApplication.audioChannelMap[singleSongInfo.vocalChannel]
+            vocalChannelTextView.text = SmileApplication.audioChannelMap[singleSongInfo.vocalChannel]
             inPlaylist = singleSongInfo.included == "1"
             includedPlaylistCheckBox.isChecked = holder.inPlaylist
             includedPlaylistCheckBox.setOnCheckedChangeListener {

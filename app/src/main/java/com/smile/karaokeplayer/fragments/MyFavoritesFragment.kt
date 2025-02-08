@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.BaseApplication
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.BaseFavoriteListActivity
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.FavoriteRecyclerViewAdapter
@@ -29,11 +29,13 @@ import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-private const val TAG : String = "MyFavoritesFragment"
-private const val SearchFavoritesCompleted = "SearchFavorites"
-private const val ExcessYN = "ExcessYN"
-
 class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
+
+    companion object {
+        private const val TAG : String = "MyFavoritesFragment"
+        private const val SEARCH_FAVORITES_COMPLETED = "SearchFavorites"
+        private const val EXCESS_YN = "ExcessYN"
+    }
 
     private var textFontSize = 0f
     private var fontScale = 0f
@@ -52,9 +54,9 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                BaseApplication.FontSize_Scale_Type, null)
+                SmileApplication.FontSize_Scale_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                BaseApplication.FontSize_Scale_Type,0.0f)
+                SmileApplication.FontSize_Scale_Type,0.0f)
         fontScale = ScreenUtil.suitableFontScale(activity, ScreenUtil.FontSize_Pixel_Type, 0.0f)
 
         activity?.let {
@@ -73,13 +75,13 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
-                    if (it == SearchFavoritesCompleted) {
+                    if (it == SEARCH_FAVORITES_COMPLETED) {
                         Log.d(TAG, "BroadcastReceiver.onReceive.SearchFavorites")
-                        if (intent.getBooleanExtra(ExcessYN, false)) {
+                        if (intent.getBooleanExtra(EXCESS_YN, false)) {
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
                                     " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                    BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                    SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         }
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
@@ -91,7 +93,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
             LocalBroadcastManager.getInstance(it).apply {
                 Log.d(TAG, "LocalBroadcastManager.registerReceiver")
                 registerReceiver(broadcastReceiver, IntentFilter().apply {
-                    addAction(SearchFavoritesCompleted)
+                    addAction(SEARCH_FAVORITES_COMPLETED)
                 })
             }
         }
@@ -168,7 +170,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
                                         " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                        BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                        SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                 break
                             }
                         }
@@ -177,7 +179,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                 if (songs.size == 0) {
                     ScreenUtil.showToast(
                             activity, getString(R.string.noFilesSelectedString), textFontSize,
-                            BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                 } else {
                     MySingleTon.orderedSongs.clear()
                     MySingleTon.orderedSongs.addAll(songs)
@@ -209,7 +211,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                     } else {
                         ScreenUtil.showToast(
                                 activity, getString(R.string.noFilesSelectedString), textFontSize,
-                                BaseApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -295,8 +297,8 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
                     sendBroadcast(Intent().apply {
-                        action = SearchFavoritesCompleted
-                        putExtra(ExcessYN,excessYn)
+                        action = SEARCH_FAVORITES_COMPLETED
+                        putExtra(EXCESS_YN,excessYn)
                     })
                 }
             }
