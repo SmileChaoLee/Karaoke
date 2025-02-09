@@ -52,12 +52,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BaseFavoriteListActivity"
-            android:exported="true">
+            android:name=".BaseFavoriteListActivity">
         </activity>
         <activity
-            android:name=".BaseSongDataActivity"
-            android:exported="true">
+            android:name=".BaseSongDataActivity">
         </activity>
         <service
             android:name=".services.BasePlayService"

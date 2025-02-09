@@ -71,8 +71,8 @@ android {
         // for default fun of Kotlin
         freeCompilerArgs = ['-Xjvm-default=all']
     }
-    buildFeatures {
-        viewBinding true
+    buildFeatures  {
+        dataBinding true    // viewBinding true
         buildConfig true
     }
     namespace 'com.smile.karaokeplayer'

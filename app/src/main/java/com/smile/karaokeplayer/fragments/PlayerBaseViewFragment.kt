@@ -57,7 +57,6 @@ import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.interfaces.DismissFunction
-import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
@@ -106,7 +105,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var switchToMusicImageButton: ImageButton? = null
     // protected var switchToVocalImageButton: ImageButton? = null
     private var switchToVocalImageButton: ImageButton? = null
-    private var hideVideoImageButton: ImageButton? = null
+    var hideVideoImageButton: ImageButton? = null
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
@@ -560,18 +559,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         unbindAndStopPlayService()
         super.onDestroy()
-    }
-
-    fun onBackPressed() {
-        Log.d(TAG, "onBackPressed() is called")
-        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
-        if (exitAppTimer.canExit()) {
-            closeFragment()
-        } else {
-            exitAppTimer.start()
-            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp), toastTextSize,
-                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
-        }
     }
 
     fun setMainMenu() {

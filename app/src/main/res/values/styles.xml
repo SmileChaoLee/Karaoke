@@ -158,4 +158,10 @@
     </style>
     <!-- the end of CastExpandedController -->
 
+    <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/my_button_background_color</item>
+        <item name="android:textColor">@color/darkGreen</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>

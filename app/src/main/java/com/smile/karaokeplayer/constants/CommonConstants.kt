@@ -10,4 +10,5 @@ object CommonConstants {
     const val DeleteActionString = "DELETE"
     const val PlayActionString = "PLAYING"
     const val IsButtonForPlay = "Is_Button_For_Play"
+    const val WHICH_PLAYER = "whichPlayer"
 }

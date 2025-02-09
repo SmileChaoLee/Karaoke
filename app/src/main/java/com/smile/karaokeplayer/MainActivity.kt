@@ -19,14 +19,17 @@ import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.os.BundleCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -34,6 +37,7 @@ import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.dynamite.DynamiteModule.LoadingException
 import com.smile.karaokeplayer.constants.PlayerConstants
+import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import com.smile.karaokeplayer.fragments.TablayoutFragment
 import com.smile.karaokeplayer.interfaces.PlayMyFavorites
@@ -41,9 +45,10 @@ import com.smile.karaokeplayer.interfaces.PlaySongs
 import com.smile.karaokeplayer.models.FileDesList
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.PlayingParameters
-import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment
+import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment
+import com.smile.smilelibraries.models.ExitAppTimer
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
 class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmentFunc,
@@ -60,13 +65,16 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         private const val WHICH_PLAYER_STATE = "WhichPlayer"
     }
 
+    private var textFontSize = 0f
+    private var toastTextSize = 0f
     private var playerFragment: PlayerBaseViewFragment? = null
     private var permissionExternalStorage = false
     // private var permissionManageExternalStorage = false
     private lateinit var basePlayViewLayout : LinearLayout
-    private var tablayoutFragment : TablayoutFragment? = null
-    private lateinit var tablayoutViewLayout : LinearLayout
     private lateinit var baseTabLayout : LinearLayout
+    private lateinit var tablayoutViewLayout : LinearLayout
+    private lateinit var choosePlayerLayout : ConstraintLayout
+    private var tablayoutFragment : TablayoutFragment? = null
     private var weightSum : Float = 0f
     // the declaration of baseReceiver must be lateinit var.
     // Not var and BroadcastReceiver? = null
@@ -76,8 +84,8 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private var hasPlayedSingle : Boolean = false
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
-    private var whichPlayer : Int = 1   // 1-->vlcPlayer, 2-->exoPlayer
-
+    private var whichPlayer : Int = 0   // 0--> no selection, 1-->vlcPlayer, 2-->exoPlayer
+    private var mOrderedSongs : ArrayList<SongInfo>? = null
     var castContext: CastContext? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +100,14 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
 
+        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@MainActivity,
+            SmileApplication.FontSize_Scale_Type, null)
+        textFontSize = ScreenUtil.suitableFontSize(this@MainActivity, defaultTextFontSize,
+            SmileApplication.FontSize_Scale_Type,0.0f)
+        toastTextSize = textFontSize * 0.7f
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         object : BroadcastReceiver() {
@@ -141,6 +156,42 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         weightSum = baseTabLayout.weightSum
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
         setTabLayoutViewWeight(resources.configuration.orientation)
+        choosePlayerLayout = findViewById(R.id.choosePlayerLayout)
+        choosePlayerLayout.visibility = View.GONE
+        val vlcPlayerButton : Button = findViewById(R.id.vlcPlayerButton)
+        vlcPlayerButton.let {
+            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+            it.setOnClickListener {
+                Log.d(TAG, "vlcPlayerButton.setOnClickListener")
+                whichPlayer = 1
+                isEnableView(tablayoutViewLayout, true)
+                playerFragment?.hideVideoImageButton?.isEnabled = true
+                choosePlayerLayout.visibility = View.GONE
+                startPlaySelectedSongList()
+            }
+        }
+        val exoPlayerButton : Button = findViewById(R.id.exoPlayerButton)
+        exoPlayerButton.let {
+            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+            it.setOnClickListener {
+                Log.d(TAG, "exoPlayerButton.setOnClickListener")
+                whichPlayer = 2
+                isEnableView(tablayoutViewLayout, true)
+                playerFragment?.hideVideoImageButton?.isEnabled = true
+                choosePlayerLayout.visibility = View.GONE
+                startPlaySelectedSongList()
+            }
+        }
+        val cancelButton : Button = findViewById(R.id.cancelButton)
+        cancelButton.let {
+            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+            it.setOnClickListener {
+                Log.d(TAG, "cancelButton.setOnClickListener")
+                isEnableView(tablayoutViewLayout, true)
+                playerFragment?.hideVideoImageButton?.isEnabled = true
+                choosePlayerLayout.visibility = View.GONE
+            }
+        }
 
         tablayoutFragment = null
         callingIntent = intent
@@ -179,7 +230,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         }
 
         // for the chrome cast
-        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
             try {
                 castContext = CastContext.getSharedInstance(this)
@@ -203,8 +254,15 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
-                playerFragment?.onBackPressed()
-                tablayoutFragment?.onBackPressed()
+                /*
+                playerFragment?.apply {
+                    onBackPressed()
+                } ?: run {
+                    // tablayoutFragment?.onBackPressed()
+                    onBackPressedActivity()
+                }
+                */
+                onBackPressedActivity()
             }
         })
 
@@ -219,40 +277,6 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             })
         }
     }
-
-    /*
-    private fun requestManageExternalStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Log.d(TAG, "Environment.isExternalStorageManager() = ${Environment.isExternalStorageManager()}")
-            if (!Environment.isExternalStorageManager()) {
-                permissionManageExternalStorage = false
-                val launcher: ActivityResultLauncher<Intent> = registerForActivityResult(ActivityResultContracts
-                        .StartActivityForResult()) { result: ActivityResult? ->
-                    result?.run {
-                        if (resultCode == Activity.RESULT_OK) {
-                            if (Environment.isExternalStorageManager()) {
-                                permissionManageExternalStorage = true
-                            }
-                        }
-                        // still can run this app if permissionManageExternalStorage = false
-                    }
-                }
-                try {
-                    val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                    val mIntent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)
-                    launcher.launch(mIntent)
-                } catch (ex: Exception) {
-                    Log.d(TAG, "Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION Exception")
-                    ex.message?.let {
-                        Log.d(TAG, it)
-                    }
-                    val mIntent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                    launcher.launch(mIntent)
-                }
-            }
-        }
-    }
-    */
 
     // @RequiresApi(api = Build.VERSION_CODES.M)
     private fun askIgnoreOptimizationsBattery() {
@@ -309,6 +333,18 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             unregisterReceiver(baseReceiver)
         }
         super.onDestroy()
+    }
+
+    private fun onBackPressedActivity() {
+        Log.d(TAG, "onBackPressedActivity() is called")
+        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
+        if (exitAppTimer.canExit()) {
+            returnToPrevious(false)
+        } else {
+            exitAppTimer.start()
+            ScreenUtil.showToast(this, getString(R.string.backKeyToExitApp), toastTextSize,
+                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
+        }
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean, intent : Intent?, pData : Bundle?) {
@@ -433,10 +469,39 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
 
     // implementing interface PlaySongs
     @OptIn(UnstableApi::class)
-    override fun playSelectedSongList() {
-        Log.d(TAG, "playSelectedSongList.songs.size = ${MySingleTon.orderedSongs.size}")
+    override fun playSelectedSongList(songs : ArrayList<SongInfo>) {
         Log.d(TAG, "playSelectedSongList.whichPlayer = $whichPlayer")
-        var needPlace = true;
+        Log.d(TAG, "playSelectedSongList.songs.size = ${songs.size}")
+        if (songs.isEmpty()) return
+        mOrderedSongs = ArrayList(songs)    // temporary memory
+        isEnableView(tablayoutViewLayout, false)
+        playerFragment?.hideVideoImageButton?.isEnabled = false
+        choosePlayerLayout.visibility = View.VISIBLE
+    }
+
+    private fun isEnableView(view : View, isEnable : Boolean) {
+        view.let {
+            it.isEnabled = isEnable
+            if (it is ViewGroup) {
+                for (i in 0 until it.childCount) {
+                    isEnableView(it.getChildAt(i), isEnable)
+                }
+            }
+        }
+    }
+
+    private fun startPlaySelectedSongList() {
+        Log.d(TAG, "startPlaySelectedSongList.whichPlayer = $whichPlayer")
+        if (whichPlayer != 1 && whichPlayer != 2) return
+        mOrderedSongs?.let {
+            Log.d(TAG, "startPlaySelectedSongList.mOrderedSongs.size = ${it.size}")
+            if (it.isEmpty()) return
+            MySingleTon.orderedSongs.clear()
+            MySingleTon.orderedSongs.addAll(it)
+        } ?: run {
+            return
+        }
+        var needPlace = true
         supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT_TAG)?.let {
             playerFragment = it as PlayerBaseViewFragment
             if (playerFragment is VlcPlayerFragment) {

@@ -197,9 +197,9 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                 activityIt, getString(R.string.noFilesSelectedString), textFontSize,
                                     SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         } else {
-                            MySingleTon.orderedSongs.clear()
-                            MySingleTon.orderedSongs.addAll(songsIt)
-                            playSongs?.playSelectedSongList()
+                            // MySingleTon.orderedSongs.clear()
+                            // MySingleTon.orderedSongs.addAll(songsIt)
+                            playSongs?.playSelectedSongList(ArrayList(songsIt))
                         }
                     }
                     songListSQLite.closeDatabase()

@@ -11,11 +11,6 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_base.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_favorite_list.xml">
         <config>
           <theme>@style/AppTheme</theme>
@@ -182,25 +177,42 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Slide (drag) the screen to change duration seekbar">
-      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Remove redundant codes and refine">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_databinding_databinding_adapters_8_8_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_databinding_databinding_common_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_databinding_databinding_ktx_8_8_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_databinding_databinding_runtime_8_8_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_ktx_2_6_2_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_2_0_21.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk7_2_0_21.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk8_2_0_21.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.iml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/my_button_background_color.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/values-v17/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk7_1_9_10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk8_1_9_10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/vp9/KaraokePlayer.extension-vp9.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/KaraokePlayer.app.unitTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/ffmpeg/KaraokePlayer.extension-ffmpeg.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/BaseActivity.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/exoplayer/ExoPlayerActivity.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/exoplayer/presenters/ExoPlayerPresenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/exoplayer/presenters/ExoPlayerPresenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/vlcplayer/VlcPlayerActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/constants/CommonConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/constants/CommonConstants.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/MyFavoritesFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/MyFavoritesFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/OpenFileFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/OpenFileFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/TablayoutFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/TablayoutFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/interfaces/PlaySongs.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/interfaces/PlaySongs.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_base.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-v18/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-v18/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +222,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9CNA014GWJ)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/home/chaolee/.android/avd/Pixel_3a_API_33_x86_64.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -289,49 +301,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;BundleExportedModule&quot;: &quot;KaraokePlayer.app&quot;,
-    &quot;DEBUGGABLE_DEVICE&quot;: &quot;google-pixel_7-2C141FDH20088Y&quot;,
-    &quot;DEBUGGABLE_PROCESS&quot;: &quot;com.smile.karaokeplayer&quot;,
-    &quot;DEBUGGER_ID&quot;: &quot;Auto&quot;,
-    &quot;ExportBundle.BundlePathForKaraokePlayer.app&quot;: &quot;/home/chaolee/AndroidStudioProjects/KaraokePlayer/app&quot;,
-    &quot;ResourceManagerPrefKey.ModuleName&quot;: &quot;KaraokePlayer.app.main&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHOW_ALL_PROCESSES&quot;: &quot;false&quot;,
-    &quot;ToolWindowRunning Devices.ShowToolbar&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/main/res/values-night&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "BundleExportedModule": "KaraokePlayer.app",
+    "DEBUGGABLE_DEVICE": "google-pixel_7-2C141FDH20088Y",
+    "DEBUGGABLE_PROCESS": "com.smile.karaokeplayer",
+    "DEBUGGER_ID": "Auto",
+    "ExportBundle.BundlePathForKaraokePlayer.app": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app",
+    "ResourceManagerPrefKey.ModuleName": "KaraokePlayer.app.main",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHOW_ALL_PROCESSES": "false",
+    "ToolWindowRunning Devices.ShowToolbar": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/main/res/drawable",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;ExportApk.BuildVariants&quot;: [
-      &quot;videoplayerRelease&quot;
+  "keyToStringList": {
+    "ExportApk.BuildVariants": [
+      "videoplayerRelease"
     ]
   }
-}</component>
+}]]></component>
   <component name="PsdUISettings">
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
       <recent name="$PROJECT_DIR$/app/src/main/res/values-night" />
       <recent name="$PROJECT_DIR$/app/src/main/res/values" />
       <recent name="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/src/main/res" />
@@ -346,11 +358,11 @@
       <recent name="com.smile.karaokeplayer" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.smile.karaokeplayer.models" />
       <recent name="com.smile.karaokeplayer" />
       <recent name="" />
       <recent name="exoplayer.callbacks" />
       <recent name="com.smile.karaokeplayer.adapters" />
-      <recent name="com.smile.karaokeplayer.models" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.smile.karaokeplayer.presenters" />
@@ -784,7 +796,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -867,7 +879,6 @@
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
     </ignored-roots>
-    <MESSAGE value="Refined UI (buttons) again" />
     <MESSAGE value="Refined and fixed bugs" />
     <MESSAGE value="Refined code for VlcPlayer" />
     <MESSAGE value="Changed myListButtonLayout to favoriteListButtonLayout" />
@@ -892,19 +903,20 @@
     <MESSAGE value="Disable the button for 200ms after it is pressed." />
     <MESSAGE value="Upgraded the version code for releasing to Google Play Store" />
     <MESSAGE value="Slide (drag) the screen to change duration seekbar" />
-    <option name="LAST_COMMIT_MESSAGE" value="Slide (drag) the screen to change duration seekbar" />
+    <MESSAGE value="Remove redundant codes and refine" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove redundant codes and refine" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.smile.karaokeplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1739014331922" />
+            <CheckInfo lastCheckTimestamp="1739100735771" />
           </value>
         </entry>
         <entry key="com.smile.karaokeplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1739014331917" />
+            <CheckInfo lastCheckTimestamp="1739100735773" />
           </value>
         </entry>
         <entry key="com.smile.videoplayer">

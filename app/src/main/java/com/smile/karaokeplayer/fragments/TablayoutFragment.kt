@@ -8,14 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
-import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -105,10 +103,10 @@ class TablayoutFragment : Fragment() {
         })
 
         playTabLayout?.let {
-            var openTab: TabLayout.Tab = it.newTab()
+            val openTab: TabLayout.Tab = it.newTab()
             openTab.text = tabText[0]
             it.addTab(openTab, true)
-            var favoriteTab: TabLayout.Tab = it.newTab()
+            val favoriteTab: TabLayout.Tab = it.newTab()
             favoriteTab.text = tabText[1]
             it.addTab(favoriteTab)
         }
@@ -120,18 +118,6 @@ class TablayoutFragment : Fragment() {
             tab.text = tabText[position]
         }.attach()
         */
-    }
-
-    fun onBackPressed() {
-        Log.d(TAG, "onBackPressed() is called")
-        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
-        if (exitAppTimer.canExit()) {
-            activity?.finish()
-        } else {
-            exitAppTimer.start()
-            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp), toastTextSize,
-                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
-        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
