@@ -25,6 +25,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
@@ -50,6 +51,7 @@ import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.utilities.ScreenUtil
 
+
 @UnstableApi
 class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmentFunc,
         PlaySongs, PlayMyFavorites {
@@ -74,6 +76,14 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private lateinit var baseTabLayout : LinearLayout
     private lateinit var tablayoutViewLayout : LinearLayout
     private lateinit var choosePlayerLayout : ConstraintLayout
+    private lateinit var chooseButtonConstraintLayout : ConstraintLayout
+    private lateinit var vlcPlayerLinearLayout : LinearLayout
+    private lateinit var exoPlayerLinearLayout : LinearLayout
+    private lateinit var vlcPlayerButton : Button
+    private lateinit var isVlcCurrent : TextView
+    private lateinit var exoPlayerButton : Button
+    private lateinit var isExoCurrent : TextView
+    private lateinit var cancelButton : Button
     private var tablayoutFragment : TablayoutFragment? = null
     private var weightSum : Float = 0f
     // the declaration of baseReceiver must be lateinit var.
@@ -156,42 +166,54 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         weightSum = baseTabLayout.weightSum
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
         setTabLayoutViewWeight(resources.configuration.orientation)
+
         choosePlayerLayout = findViewById(R.id.choosePlayerLayout)
         choosePlayerLayout.visibility = View.GONE
-        val vlcPlayerButton : Button = findViewById(R.id.vlcPlayerButton)
+        chooseButtonConstraintLayout = findViewById(R.id.chooseButtonConstraintLayout)
+        vlcPlayerLinearLayout = findViewById(R.id.vlcPlayerLinearLayout)
+        exoPlayerLinearLayout = findViewById(R.id.exoPlayerLinearLayout)
+
+        val descriptionRatio = 0.7f
+        vlcPlayerButton = findViewById(R.id.vlcPlayerButton)
         vlcPlayerButton.let {
-            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
             it.setOnClickListener {
                 Log.d(TAG, "vlcPlayerButton.setOnClickListener")
                 whichPlayer = 1
                 isEnableView(tablayoutViewLayout, true)
-                playerFragment?.hideVideoImageButton?.isEnabled = true
+                playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
                 startPlaySelectedSongList()
             }
         }
-        val exoPlayerButton : Button = findViewById(R.id.exoPlayerButton)
+        isVlcCurrent = findViewById(R.id.isVlcCurrent)
+        val vlcDescription : TextView = findViewById(R.id.vlcDescription)
+        ScreenUtil.resizeTextSize(vlcDescription, textFontSize*descriptionRatio
+            , ScreenUtil.FontSize_Pixel_Type)
+        exoPlayerButton = findViewById(R.id.exoPlayerButton)
         exoPlayerButton.let {
-            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
             it.setOnClickListener {
                 Log.d(TAG, "exoPlayerButton.setOnClickListener")
                 whichPlayer = 2
                 isEnableView(tablayoutViewLayout, true)
-                playerFragment?.hideVideoImageButton?.isEnabled = true
+                playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
                 startPlaySelectedSongList()
             }
         }
-        val cancelButton : Button = findViewById(R.id.cancelButton)
+        isExoCurrent = findViewById(R.id.isExoCurrent)
+        val exoDescription : TextView = findViewById(R.id.exoDescription)
+        ScreenUtil.resizeTextSize(exoDescription, textFontSize*descriptionRatio
+            , ScreenUtil.FontSize_Pixel_Type)
+        cancelButton = findViewById(R.id.cancelButton)
         cancelButton.let {
-            ScreenUtil.resizeTextSize(it, textFontSize, ScreenUtil.FontSize_Pixel_Type)
             it.setOnClickListener {
                 Log.d(TAG, "cancelButton.setOnClickListener")
                 isEnableView(tablayoutViewLayout, true)
-                playerFragment?.hideVideoImageButton?.isEnabled = true
+                playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
             }
         }
+        setLayoutAndTextSize(resources.configuration.orientation)
 
         tablayoutFragment = null
         callingIntent = intent
@@ -325,6 +347,36 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Log.d(TAG, "onConfigurationChanged()")
         super.onConfigurationChanged(newConfig)
         setTabLayoutViewWeight(newConfig.orientation)
+        setLayoutAndTextSize(newConfig.orientation)
+    }
+
+    private fun setLayoutAndTextSize(orientation: Int) {
+        Log.d(TAG, "setLayoutAndTextSize")
+
+        val textSize = if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            textFontSize * 1.0f else textFontSize * 0.8f
+        ScreenUtil.resizeTextSize(vlcPlayerButton, textSize, ScreenUtil.FontSize_Pixel_Type)
+        ScreenUtil.resizeTextSize(exoPlayerButton, textSize, ScreenUtil.FontSize_Pixel_Type)
+        ScreenUtil.resizeTextSize(cancelButton, textSize, ScreenUtil.FontSize_Pixel_Type)
+        ScreenUtil.resizeTextSize(isVlcCurrent, textSize, ScreenUtil.FontSize_Pixel_Type)
+        ScreenUtil.resizeTextSize(isExoCurrent, textSize, ScreenUtil.FontSize_Pixel_Type)
+
+        var percentHeightRatio = 0.6f
+        var percentWidthRatio = 0.85f
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            percentHeightRatio = 0.72f
+            percentWidthRatio = 0.6f
+        }
+        var lp = chooseButtonConstraintLayout.layoutParams as ConstraintLayout.LayoutParams
+        lp.matchConstraintPercentHeight = percentHeightRatio
+        lp.matchConstraintPercentWidth = percentWidthRatio
+
+        percentHeightRatio = if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            0.3f else 0.45f
+        lp = vlcPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
+        lp.matchConstraintPercentHeight = percentHeightRatio
+        lp = exoPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
+        lp.matchConstraintPercentHeight = percentHeightRatio
     }
 
     override fun onDestroy() {
@@ -475,8 +527,22 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         if (songs.isEmpty()) return
         mOrderedSongs = ArrayList(songs)    // temporary memory
         isEnableView(tablayoutViewLayout, false)
-        playerFragment?.hideVideoImageButton?.isEnabled = false
+        playerFragment?.disableSomeButtonsDueToBecausePopup()
         choosePlayerLayout.visibility = View.VISIBLE
+        when (whichPlayer) {
+            1-> {
+                isVlcCurrent.visibility = View.VISIBLE
+                isExoCurrent.visibility = View.GONE
+            }
+            2-> {
+                isExoCurrent.visibility = View.VISIBLE
+                isVlcCurrent.visibility = View.GONE
+            }
+            else->{
+                isVlcCurrent.visibility = View.GONE
+                isExoCurrent.visibility = View.GONE
+            }
+        }
     }
 
     private fun isEnableView(view : View, isEnable : Boolean) {

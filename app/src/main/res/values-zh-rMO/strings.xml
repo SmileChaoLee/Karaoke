@@ -8,6 +8,7 @@
     <string name="openString">開啟</string>
     <string name="closeString">關閉</string>
     <string name="privacyPolicyString">隐私政策</string>
+    <string name="cancelString">取消</string>
     <string name="exitString">離開</string>
     <string name="actionString">動作</string>
     <string name="playString">播放</string>
@@ -70,4 +71,13 @@
     <string name="add_to_favorites">加入我的最愛</string>
     <string name="excess_max">超過最大數</string>
     <string name="notSupportedString">沒有支援</string>
+    <string name="vlcPlayerName">Vlc播放器</string>
+    <string name="exoPlayerName">Exo播放器</string>
+    <string name="vlcDescription">1.支援大部份的多煤體格式\n
+        2.支援音軌切換
+        3.沒有支援聲道切換</string>
+    <string name="exoDescription">1.支援比較少的多煤體格式\n
+        2.支援音軌切換
+        3.支援聲道切換</string>
+    <string name="currentString">目前使用中</string>
 </resources>

@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.media3:media3-database:1.5.1@aar" external-system-id="GRADLE">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/725fbab42378d14bcf0b09f8c38d2036/transformed/media3-database-1.5.1/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/2b23033d70780e67e07fa69a41eab084/transformed/media3-database-1.5.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/725fbab42378d14bcf0b09f8c38d2036/transformed/media3-database-1.5.1/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/725fbab42378d14bcf0b09f8c38d2036/transformed/media3-database-1.5.1/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/2b23033d70780e67e07fa69a41eab084/transformed/media3-database-1.5.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/2b23033d70780e67e07fa69a41eab084/transformed/media3-database-1.5.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

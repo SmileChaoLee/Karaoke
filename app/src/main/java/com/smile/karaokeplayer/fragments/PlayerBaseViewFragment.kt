@@ -105,7 +105,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var switchToMusicImageButton: ImageButton? = null
     // protected var switchToVocalImageButton: ImageButton? = null
     private var switchToVocalImageButton: ImageButton? = null
-    var hideVideoImageButton: ImageButton? = null
+    private var hideVideoImageButton: ImageButton? = null
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
@@ -779,6 +779,17 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "showSupportToolbarAudioControlSetTimer()")
         showSupportToolbarAudioControl()
         setTimerToHideSupportAudioControl()   // reset the timer
+    }
+
+    // called by MainActivity
+    fun disableSomeButtonsDueToBecausePopup() {
+        hideVideoImageButton?.isEnabled = false
+        orientationImageButton?.isEnabled = false
+    }
+    // called by MainActivity
+    fun enableSomeButtonsDueToPopupGone() {
+        hideVideoImageButton?.isEnabled = true
+        orientationImageButton?.isEnabled = true
     }
 
     private fun showSupportToolbarAudioControl() {

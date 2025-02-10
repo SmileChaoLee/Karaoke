@@ -7,6 +7,7 @@
     <string name="openString">Open</string>
     <string name="closeString">Close</string>
     <string name="privacyPolicyString">Privacy Policy</string>
+    <string name="cancelString">Cancel</string>
     <string name="exitString">Exit</string>
     <string name="actionString">Action</string>
     <string name="playString">Play</string>
@@ -69,4 +70,13 @@
     <string name="add_to_favorites">Add To Favorites</string>
     <string name="excess_max">Excess Max</string>
     <string name="notSupportedString">Not Supported.</string>
+    <string name="vlcPlayerName">VlcPlayer</string>
+    <string name="exoPlayerName">ExoPlayer</string>
+    <string name="vlcDescription">1.Support most media formats\n
+        2.Supports audio track switch\n
+        3.Not supports channel switch</string>
+    <string name="exoDescription">1. Support less media formats\n
+        2.Supports audio track switch\n
+        3.Supports channel switch</string>
+    <string name="currentString">Current</string>
 </resources>

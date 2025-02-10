@@ -38,52 +38,111 @@
         android:visibility="gone"
         tools:context=".ChoosePlayerActivity">
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/chooseButtonConstraintLayout"
             android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="#BB0606F8"
-            android:gravity="center"
-            app:layout_constraintHeight_percent="0.5"
-            app:layout_constraintWidth_percent="0.8"
+            app:layout_constraintHeight_percent="0.6"
+            app:layout_constraintWidth_percent="0.85"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <Button
-                android:id="@+id/vlcPlayerButton"
+            <LinearLayout
+                android:id="@+id/vlcPlayerLinearLayout"
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:text="VlcPlayer"
-                style="@style/MyButtonStyle"
-                app:layout_constraintHeight_percent="0.1"
+                android:layout_gravity="start"
+                android:layout_marginStart="30dp"
+                app:layout_constraintHeight_percent="0.3"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/exoPlayerButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-            </Button>
-            <Button
-                android:id="@+id/exoPlayerButton"
+                app:layout_constraintBottom_toTopOf="@id/exoPlayerLinearLayout"
+                app:layout_constraintStart_toStartOf="parent">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/vlcPlayerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/vlcPlayerName"
+                        style="@style/MyButtonStyle">
+                    </Button>
+                    <TextView
+                        android:id="@+id/isVlcCurrent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textColor="@color/gnt_red"
+                        android:background="@color/blue"
+                        android:text="@string/currentString">
+                    </TextView>
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/vlcDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:background="@color/blue"
+                    android:text="@string/vlcDescription">
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/exoPlayerLinearLayout"
+                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:text="ExoPlayer"
-                style="@style/MyButtonStyle"
-                app:layout_constraintHeight_percent="0.1"
-                app:layout_constraintTop_toBottomOf="@id/vlcPlayerButton"
+                android:layout_gravity="start"
+                android:layout_marginStart="30dp"
+                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintTop_toBottomOf="@id/vlcPlayerLinearLayout"
                 app:layout_constraintBottom_toTopOf="@id/cancelButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-            </Button>
+                app:layout_constraintStart_toStartOf="parent">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/exoPlayerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/exoPlayerName"
+                        style="@style/MyButtonStyle">
+                    </Button>
+                    <TextView
+                        android:id="@+id/isExoCurrent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:textColor="@color/gnt_red"
+                        android:background="@color/blue"
+                        android:text="@string/currentString">
+                    </TextView>
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/exoDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:background="@color/blue"
+                    android:text="@string/exoDescription">
+                </TextView>
+            </LinearLayout>
             <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:text="Cancel"
+                android:layout_gravity="start"
+                android:layout_marginStart="30dp"
+                android:text="@string/cancelString"
                 style="@style/MyButtonStyle"
                 app:layout_constraintHeight_percent="0.1"
-                app:layout_constraintTop_toBottomOf="@id/exoPlayerButton"
+                app:layout_constraintTop_toBottomOf="@id/exoPlayerLinearLayout"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintStart_toStartOf="parent">
             </Button>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

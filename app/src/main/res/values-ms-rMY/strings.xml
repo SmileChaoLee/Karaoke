@@ -8,6 +8,7 @@
     <string name="openString">Buka</string>
     <string name="closeString">Tutup</string>
     <string name="privacyPolicyString">Privasi Dasar</string>
+    <string name="cancelString">Cancel</string>
     <string name="exitString">Keluar</string>
     <string name="actionString">Tindakan</string>
     <string name="playString">Bermain</string>
@@ -70,4 +71,13 @@
     <string name="add_to_favorites">Add To Favorites</string>
     <string name="excess_max">Excess Max</string>
     <string name="notSupportedString">Not Supported.</string>
+    <string name="vlcPlayerName">VlcPlayer</string>
+    <string name="exoPlayerName">ExoPlayer</string>
+    <string name="vlcDescription">1.Support most media formats\n
+        2.Supports audio track switch\n
+        3.Not supports channel switch</string>
+    <string name="exoDescription">1. Support less media formats\n
+        2.Supports audio track switch\n
+        3.Supports channel switch</string>
+    <string name="currentString">Current</string>
 </resources>

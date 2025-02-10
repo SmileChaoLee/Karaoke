@@ -181,8 +181,6 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                             activity, getString(R.string.noFilesSelectedString), textFontSize,
                             SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                 } else {
-                    // MySingleTon.orderedSongs.clear()
-                    // MySingleTon.orderedSongs.addAll(songs)
                     playSongs?.playSelectedSongList(ArrayList(songs))
                 }
             }

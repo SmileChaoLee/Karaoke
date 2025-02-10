@@ -55,14 +55,18 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/release/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/release/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/release/out" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/ap_generated_sources/release/out" isTestSource="false" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/res/processReleaseGoogleServices">
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/processReleaseGoogleServices" type="java-resource" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/processReleaseGoogleServices" type="java-resource" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/release">
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/release" type="java-resource" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/res/resValues/release" type="java-resource" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/release">
+      <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/release" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/build/generated/source/buildConfig/release" isTestSource="false" generated="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../../app/src/main">
@@ -77,11 +81,11 @@
     <orderEntry type="module" module-name="KaraokePlayer.extension-opus.main" />
     <orderEntry type="module" module-name="KaraokePlayer.extension-vp9.main" />
     <orderEntry type="module" module-name="KaraokePlayer.extension-av1.main" />
-    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-runtime:8.8.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.databinding:viewbinding:8.8.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-runtime:8.6.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.databinding:viewbinding:8.6.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime:2.6.2@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-adapters:8.8.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-ktx:8.8.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-adapters:8.6.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-ktx:8.6.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-ktx:2.6.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata:2.6.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.arch.core:core-runtime:2.2.0@aar" level="project" />
@@ -180,16 +184,16 @@
     <orderEntry type="library" name="Gradle: org.videolan.android:libvlc-all:4.0.0-eap1@aar" level="project" />
     <orderEntry type="library" name="Gradle: ./app/libs/smilelibraries-release.aar" level="project" />
     <orderEntry type="library" name="Gradle: ./app/libs/NativeTemplatesModels-release.aar" level="project" />
-    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-common:8.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.databinding:databinding-common:8.6.1" level="project" />
     <orderEntry type="library" name="Gradle: androidx.annotation:annotation-jvm:1.9.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.0.21" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.9.24" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:23.0.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.arch.core:core-common:2.2.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common:2.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20" level="project" />
     <orderEntry type="library" name="Gradle: androidx.collection:collection-jvm:1.4.2" level="project" />
     <orderEntry type="library" name="Gradle: com.facebook.infer.annotation:infer-annotation:0.18.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
