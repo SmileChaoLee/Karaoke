@@ -1078,7 +1078,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                         }
                         val distance = posX - oldMotionEventX
                         // Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
-                        if (distance >= -5.0 && distance <= 5.0f) {
+                        if (distance >= -20.0 && distance <= 20.0f) {
                             Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance is too small")
                             return@run
                         }
