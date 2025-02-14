@@ -164,7 +164,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
             songListSQLite = null;
         }
         if (interstitialAd != null) {
-            interstitialAd.close();
+            interstitialAd.releaseInterstitial();
         }
         Runtime.getRuntime().gc();
         super.onDestroy();

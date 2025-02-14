@@ -206,19 +206,20 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     (it.application as SmileApplication).adMobInterstitial)
         }
 
-        val presenter = getPlayerPresenter()
-        if (presenter == null) {
+        activity?.let {
+            if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
+            Log.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
+        }
+        
+        getPlayerPresenter()?.let {
+            mPresenter = it
+        } ?: run {
             Log.d(TAG, "onCreate.presenter is null so exit activity.")
             playBaseFragmentFunc?.returnToPrevious(false)
             return
         }
 
-        activity?.let {
-            if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
-            Log.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
-        }
-
-        mPresenter = presenter
+        // mPresenter = presenter
         textFontSize = mPresenter.textFontSize
         fontScale = mPresenter.fontScale
         toastTextSize = mPresenter.toastTextSize
@@ -552,7 +553,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onDestroy() is called.")
         myBannerAdView?.destroy()
         nativeTemplate?.release()
-        interstitialAd?.close()
+        interstitialAd?.releaseInterstitial()
         // clear the screen on, added on 2021-02-18
         activity?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
