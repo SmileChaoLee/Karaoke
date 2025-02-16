@@ -22,6 +22,7 @@ import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.CommonConstants
+import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter
@@ -44,13 +45,16 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         Log.d(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this, this)
         super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
-        arguments?.let {}
+        var isAutoPlay = false
+        arguments?.let {
+            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
+        }
         // must be after super.onCreate(savedInstanceState)
         activity?.let {
             mPlayServiceIntent = Intent(it, ExoPlayService::class.java)
             val callingIntent: Intent? = it.intent
             Log.d(TAG, "onCreate.callingIntent = $callingIntent")
-            mPresenter.initializeVariables(savedInstanceState, callingIntent)
+            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
     }
 

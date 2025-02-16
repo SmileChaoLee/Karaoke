@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
-import com.smile.karaokeplayer.presenters.BasePlayerPresenter;
+import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
 
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment;
 import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService;
 
-public class VlcPlayerPresenter extends BasePlayerPresenter {
+public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     private static final String TAG = "VlcPlayerPresenter";
 
@@ -57,9 +57,10 @@ public class VlcPlayerPresenter extends BasePlayerPresenter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent) {
+    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent,
+                                    boolean isAutoPlay) {
         Log.d(TAG, "initializeVariables");
-        initializeVariablesBase(savedInstanceState, callingIntent);
+        initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
         } else {

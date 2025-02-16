@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.smile.karaokeplayer.R
+import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
@@ -34,7 +35,9 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
 
         super.onCreate(savedInstanceState)  // must be after VlcPlayerPresenter(this, this)
         Log.d(TAG, "onCreate() is called")
+        var isAutoPlay = false
         arguments?.let {
+            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
         }
 
         // must be after super.onCreate(savedInstanceState)
@@ -45,7 +48,7 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
             mPlayServiceIntent = Intent(it, VlcPlayService::class.java)
             val callingIntent: Intent? = it.intent
             Log.d(TAG, "onCreate.callingIntent = $callingIntent")
-            mPresenter.initializeVariables(savedInstanceState, callingIntent)
+            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
 
         Log.d(TAG, "onCreate() is finished")

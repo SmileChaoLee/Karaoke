@@ -4,5 +4,5 @@ import com.smile.karaokeplayer.models.SongInfo
 import java.util.ArrayList
 
 interface PlaySongs {
-    fun playSelectedSongList(songs : ArrayList<SongInfo>)
+    fun choosePlayerToPlaySelectedSongs(songs : ArrayList<SongInfo>)
 }

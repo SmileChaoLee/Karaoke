@@ -18,13 +18,13 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.smile.karaokeplayer.MainActivity;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
-import com.smile.karaokeplayer.presenters.BasePlayerPresenter;
+import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
 
 import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService;
 
 @UnstableApi
-public class ExoPlayerPresenter extends BasePlayerPresenter {
+public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     private static final String TAG = "ExoPlayerPresenter";
 
@@ -57,7 +57,7 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
         }
     };
 
-    public interface ExoPlayerPresentView extends BasePlayerPresenter.BasePresentView {
+    public interface ExoPlayerPresentView extends PlayerBasePresenter.BasePresentView {
         void setCurrentPlayerToPlayerView();
     }
 
@@ -102,9 +102,10 @@ public class ExoPlayerPresenter extends BasePlayerPresenter {
     // Begin of override abstract method
     @SuppressWarnings("unchecked")
     @Override
-    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent) {
+    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent,
+                                    boolean isAutoPlay) {
         Log.d(TAG, "initializeVariables");
-        initializeVariablesBase(savedInstanceState, callingIntent);
+        initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
             mTrackSelectionParameters = new TrackSelectionParameters.Builder(mActivity).build();

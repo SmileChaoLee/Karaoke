@@ -27,8 +27,9 @@ object PlayerConstants {
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    const val IsPlaySingleSongState = "IsPlaySingleSong"
-    const val SingleSongInfoState = "SingleSongInfo"
+    const val IS_PLAY_SINGLE_SONG_STATE = "IsPlaySingleSong"
+    const val SINGLE_SONG_INFO_STATE = "SingleSongInfo"
+    const val IS_AUTOPLAY_STATE = "isAutoPlay"
 
     const val SongListState: String = "SongList"
     const val MyFavoriteListState = "MyFavoriteList"

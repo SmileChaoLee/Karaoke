@@ -5,12 +5,15 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.media3.common.util.UnstableApi;
+
 import com.google.android.gms.cast.framework.CastState;
 import com.smile.karaokeplayer.R;
 import com.smile.smilelibraries.utilities.ScreenUtil;
 import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter;
 
+@UnstableApi
 public class ExoPlayerCastStateListener implements
         com.google.android.gms.cast.framework.CastStateListener {
     private static final String TAG = "ExoPlayerCastStateListener";

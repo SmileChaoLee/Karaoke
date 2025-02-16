@@ -5,8 +5,11 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.media3.common.util.UnstableApi;
+
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter;
 
+@UnstableApi
 public class ExoMediaControllerCallback extends MediaControllerCompat.Callback {
 
     private static final String TAG = "ExoMediaControllerCallback";

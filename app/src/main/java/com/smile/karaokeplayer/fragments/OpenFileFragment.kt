@@ -197,7 +197,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                 activityIt, getString(R.string.noFilesSelectedString), textFontSize,
                                     SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         } else {
-                            playSongs?.playSelectedSongList(ArrayList(songsIt))
+                            playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songsIt))
                         }
                     }
                     songListSQLite.closeDatabase()

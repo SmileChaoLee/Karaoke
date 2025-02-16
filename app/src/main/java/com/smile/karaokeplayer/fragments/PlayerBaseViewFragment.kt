@@ -51,8 +51,8 @@ import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongListSQLite
-import com.smile.karaokeplayer.presenters.BasePlayerPresenter
-import com.smile.karaokeplayer.presenters.BasePlayerPresenter.BasePresentView
+import com.smile.karaokeplayer.presenters.PlayerBasePresenter
+import com.smile.karaokeplayer.presenters.PlayerBasePresenter.BasePresentView
 import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
@@ -70,9 +70,10 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         fun baseHidePlayerView()
         fun baseShowPlayerView()
         fun returnToPrevious(isSingleSong : Boolean)
+        fun choosePlayerToAutoPlay()
     }
 
-    lateinit var mPresenter: BasePlayerPresenter
+    lateinit var mPresenter: PlayerBasePresenter
     private var screenSizeX = 0
     private var screenSizeY = 0
     private var playBaseFragmentFunc: PlayBaseFragmentFunc? = null
@@ -137,7 +138,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
     private val controllerTimerHandler = Handler(Looper.getMainLooper())
     private val controllerTimerRunnable = Runnable {
-        Log.d(TAG, "controllerTimerRunnable() is called")
+        Log.d(TAG, "controllerTimerRunnable")
         controllerTimerHandler.removeCallbacksAndMessages(null)
         mPresenter.playingParam?.let {
             if (it.preparedStatus != 0) {
@@ -154,7 +155,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
     private var interstitialAd: ShowInterstitial? = null
 
-    abstract fun getPlayerPresenter(): BasePlayerPresenter?
+    abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
     // abstract fun setMediaRouteButtonVisible()
     abstract fun setMenuItemsVisibility()
@@ -173,11 +174,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             onPlayServiceConnected(service)
             isServiceBound = true
             isServiceDestroyed = false
-            // for testing
-            mPresenter.playingParam.isAutoPlay = false
+            // mPresenter.playingParam.isAutoPlay = false   // bug
             mPresenter.autoPlaySongList()
             showPlayerView()
-            //
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -394,8 +393,13 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         val id = item.itemId
         if (id == R.id.autoPlay) {
-            // item.isChecked() return the previous value
-            mPresenter.setAutoPlayStatusAndAction()
+            autoPlayMenuItem?.let {
+                // print the original check status
+                Log.d(TAG, "autoPlayMenuItem?.isChecked = ${it.isChecked}")
+                if (!it.isChecked) playBaseFragmentFunc?.choosePlayerToAutoPlay()
+                else mPresenter?.stopAutoPlay()
+                it.isChecked = !it.isChecked
+            }
         } else if (id == R.id.privacyPolicy) {
             PrivacyPolicyUtil.startPrivacyPolicyActivity(
                 activity,
@@ -784,13 +788,22 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
     // called by MainActivity
     fun disableSomeButtonsDueToBecausePopup() {
+        Log.d(TAG, "disableSomeButtonsDueToBecausePopup()")
         hideVideoImageButton?.isEnabled = false
         orientationImageButton?.isEnabled = false
     }
     // called by MainActivity
     fun enableSomeButtonsDueToPopupGone() {
+        Log.d(TAG, "enableSomeButtonsDueToPopupGone()")
         hideVideoImageButton?.isEnabled = true
         orientationImageButton?.isEnabled = true
+    }
+    // called by MainActivity
+    fun setIsCheckAutoPlay() {
+        Log.d(TAG, "setIsCheckAutoPlay()")
+        autoPlayMenuItem?.let {
+            it.isChecked = !it.isChecked
+        }
     }
 
     private fun showSupportToolbarAudioControl() {
@@ -802,7 +815,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     private fun hideSupportToolbarAndAudioController() {
-        Log.d(TAG, "hideSupportToolbarAndAudioController()")
+        Log.d(TAG, "hideSupportToolbarAndAudioController.context = $context")
+        if (context == null) return
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             supportToolbar?.visibility = View.GONE
             audioControllerView?.visibility = View.GONE
@@ -1241,7 +1255,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun setTimerToHideSupportAudioControl() {
-        Log.d(TAG, "setTimerToHideSupportAndAudioController() is called.")
+        Log.d(TAG, "setTimerToHideSupportAndAudioController")
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             controllerTimerHandler.removeCallbacksAndMessages(null)
             controllerTimerHandler.postDelayed(controllerTimerRunnable,

@@ -47,6 +47,7 @@ import com.smile.karaokeplayer.models.FileDesList
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
+import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         private const val PLAY_DATA_STATE = "PlayData"
         private const val CALLING_COMPONENT_STATE = "CallingComponentName"
         private const val WHICH_PLAYER_STATE = "WhichPlayer"
+        private const val CHOOSE_PLAYER_STATE = "ChoosePlayerState"
     }
 
     private var textFontSize = 0f
@@ -95,6 +97,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
     private var whichPlayer : Int = 0   // 0--> no selection, 1-->vlcPlayer, 2-->exoPlayer
+    private var choosePlayerState : Int = 0   // 0--> select files, 1-->Auto Play from menu
     private var mOrderedSongs : ArrayList<SongInfo>? = null
     var castContext: CastContext? = null
 
@@ -179,10 +182,16 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             it.setOnClickListener {
                 Log.d(TAG, "vlcPlayerButton.setOnClickListener")
                 whichPlayer = 1
-                isEnableView(tablayoutViewLayout, true)
                 playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
-                startPlaySelectedSongList()
+                if (choosePlayerState == 0) {
+                    // select files to play
+                    isEnableView(tablayoutViewLayout, true)
+                    startPlaySelectedSongList()
+                } else {
+                    // = 2. auto play from menu
+                    startPlayAutoPlay()
+                }
             }
         }
         isVlcCurrent = findViewById(R.id.isVlcCurrent)
@@ -194,10 +203,16 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             it.setOnClickListener {
                 Log.d(TAG, "exoPlayerButton.setOnClickListener")
                 whichPlayer = 2
-                isEnableView(tablayoutViewLayout, true)
                 playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
-                startPlaySelectedSongList()
+                if (choosePlayerState == 0) {
+                    // select files to play
+                    isEnableView(tablayoutViewLayout, true)
+                    startPlaySelectedSongList()
+                } else {
+                    // = 2. auto play from menu
+                    startPlayAutoPlay()
+                }
             }
         }
         isExoCurrent = findViewById(R.id.isExoCurrent)
@@ -208,9 +223,15 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         cancelButton.let {
             it.setOnClickListener {
                 Log.d(TAG, "cancelButton.setOnClickListener")
-                isEnableView(tablayoutViewLayout, true)
                 playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
+                if (choosePlayerState == 0) {
+                    // select files to play
+                    isEnableView(tablayoutViewLayout, true)
+                } else {
+                    // restore check status
+                    playerFragment?.setIsCheckAutoPlay()
+                }
             }
         }
         setLayoutAndTextSize(resources.configuration.orientation)
@@ -222,6 +243,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         if (savedInstanceState != null) {
             isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE_STATE, false)
             whichPlayer = savedInstanceState.getInt(WHICH_PLAYER_STATE, 1)
+            choosePlayerState = savedInstanceState.getInt(CHOOSE_PLAYER_STATE, 0)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 BundleCompat.getParcelable(savedInstanceState, CALLING_COMPONENT_STATE, ComponentName::class.java)
@@ -340,6 +362,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         outState.putParcelable(CALLING_COMPONENT_STATE, callingComponentName)
         outState.putParcelable(PLAY_DATA_STATE, playData)
         outState.putInt(WHICH_PLAYER_STATE, whichPlayer)
+        outState.putInt(CHOOSE_PLAYER_STATE, choosePlayerState)
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
@@ -403,7 +426,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Log.d(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
             mPresenter.let{
-                it.initializeVariables(pData, intent)
+                it.initializeVariables(pData, intent, it.playingParam.isAutoPlay)
                 if (needPlay) it.playSongPlayedBeforeActivityCreated()
                 setMainMenu()
                 Log.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
@@ -437,8 +460,6 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         tablayoutViewLayout.visibility = View.GONE
         tablayoutFragment?.becomeInVisible()
     }
-
-    // Implement interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun returnToPrevious(isSingleSong : Boolean) {
         Log.d(TAG, "returnToPrevious.isSingleSong = $isSingleSong")
         if (isSingleSong) {
@@ -475,6 +496,11 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Process.killProcess(Process.myPid())
         // exitProcess(0);
     }
+    override fun choosePlayerToAutoPlay() {
+        Log.d(TAG, "choosePlayerToAutoPlay.whichPlayer = $whichPlayer")
+        choosePlayerState = 1   // auto play from menu
+        showChoosePlayerPopup()
+    }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
 
     // implementing interface PlayMyFavorites
@@ -491,7 +517,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
                     it.mPresenter.pausePlay()
                     isPlayToPause = true
                 }
-                pIt.preparedStatus = 10;    // going to BaseFavoriteListActivity
+                pIt.preparedStatus = 10    // going to BaseFavoriteListActivity
             }
         }
     }
@@ -521,12 +547,20 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
 
     // implementing interface PlaySongs
     @OptIn(UnstableApi::class)
-    override fun playSelectedSongList(songs : ArrayList<SongInfo>) {
-        Log.d(TAG, "playSelectedSongList.whichPlayer = $whichPlayer")
-        Log.d(TAG, "playSelectedSongList.songs.size = ${songs.size}")
+    override fun choosePlayerToPlaySelectedSongs(songs : ArrayList<SongInfo>) {
+        Log.d(TAG, "choosePlayerToPlaySelectedSongs.whichPlayer = $whichPlayer")
+        Log.d(TAG, "choosePlayerToPlaySelectedSongs.songs.size = ${songs.size}")
         if (songs.isEmpty()) return
+        choosePlayerState = 0   // select files to play
         mOrderedSongs = ArrayList(songs)    // temporary memory
         isEnableView(tablayoutViewLayout, false)
+        showChoosePlayerPopup()
+    }
+    // Finish implementing interface PlaySongs
+
+
+    private fun showChoosePlayerPopup() {
+        Log.d(TAG, "showChoosePlayerPopup")
         playerFragment?.disableSomeButtonsDueToBecausePopup()
         choosePlayerLayout.visibility = View.VISIBLE
         when (whichPlayer) {
@@ -546,6 +580,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     }
 
     private fun isEnableView(view : View, isEnable : Boolean) {
+        Log.d(TAG, "isEnableView")
         view.let {
             it.isEnabled = isEnable
             if (it is ViewGroup) {
@@ -558,15 +593,31 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
 
     private fun startPlaySelectedSongList() {
         Log.d(TAG, "startPlaySelectedSongList.whichPlayer = $whichPlayer")
-        if (whichPlayer != 1 && whichPlayer != 2) return
         mOrderedSongs?.let {
             Log.d(TAG, "startPlaySelectedSongList.mOrderedSongs.size = ${it.size}")
-            if (it.isEmpty()) return
-            MySingleTon.orderedSongs.clear()
-            MySingleTon.orderedSongs.addAll(it)
-        } ?: run {
-            return
+            if (it.isNotEmpty()) {
+                MySingleTon.orderedSongs.clear()
+                MySingleTon.orderedSongs.addAll(it)
+                startPlaySongs(false)
+            }
         }
+    }
+
+    private fun startPlayAutoPlay() {
+        Log.d(TAG, "startPlayAutoPlay.whichPlayer = $whichPlayer")
+        DatabaseAccessUtil.readSavedSongList(this@MainActivity, true).let {
+            Log.d(TAG, "startPlayAutoPlay.auto play song size = ${it.size}")
+            if (it.isNotEmpty()) {
+                MySingleTon.orderedSongs.clear()
+                MySingleTon.orderedSongs.addAll(it)
+                startPlaySongs(true)
+            }
+        }
+    }
+
+    private fun startPlaySongs(isAutoPlay : Boolean) {
+        Log.d(TAG, "startPlaySongs.whichPlayer= $whichPlayer")
+        if (whichPlayer != 1 && whichPlayer != 2) return
         var needPlace = true
         supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT_TAG)?.let {
             playerFragment = it as PlayerBaseViewFragment
@@ -586,26 +637,29 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Log.d(TAG, "playSelectedSongList.needPlace = $needPlace")
         playerFragment?.let {
             if (needPlace) {
+                it.arguments = Bundle().apply {
+                    putBoolean(PlayerConstants.IS_AUTOPLAY_STATE, isAutoPlay)
+                }
                 supportFragmentManager.beginTransaction().apply {
                     if (!it.isInLayout) {
                         Log.d(TAG, "playSelectedSongList.playerFragment.isInLayout() = false")
                         replace(R.id.basePlayViewLayout, it, PLAYER_FRAGMENT_TAG)
                         commit()
                         /*  moved to PlayerBaseViewFragment under onServiceConnected()
-                        it.mPresenter.playingParam.isAutoPlay = false
+                        it.mPresenter.playingParam.isAutoPlay = isAutoPlay
                         it.mPresenter.autoPlaySongList()
                         it.showPlayerView()
                         */
                     }
                 }
             } else {
-                it.mPresenter.playingParam.isAutoPlay = false
+                it.mPresenter.playingParam.isAutoPlay = isAutoPlay
                 it.mPresenter.autoPlaySongList()
                 it.showPlayerView()
+                it.setImageButtonStatus()
             }
         }
     }
-    // Finish implementing interface PlaySongs
 
     private fun createViewDependingOnOrientation() {
         if (callingIntent.extras == null) {

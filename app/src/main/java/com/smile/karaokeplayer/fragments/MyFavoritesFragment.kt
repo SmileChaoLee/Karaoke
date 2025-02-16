@@ -181,7 +181,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                             activity, getString(R.string.noFilesSelectedString), textFontSize,
                             SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                 } else {
-                    playSongs?.playSelectedSongList(ArrayList(songs))
+                    playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
                 }
             }
             val editButton: ImageButton = it.findViewById(R.id.favoriteEditButton)

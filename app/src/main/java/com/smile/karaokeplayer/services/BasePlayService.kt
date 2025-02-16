@@ -13,7 +13,7 @@ import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon.orderedSongs
 import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
-import com.smile.karaokeplayer.presenters.BasePlayerPresenter
+import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 
 abstract class BasePlayService : Service() {
 
@@ -86,7 +86,7 @@ abstract class BasePlayService : Service() {
         mediaControllerCompat = null
     }
 
-    private fun playSingleSong(presenter: BasePlayerPresenter, songInfo: SongInfo?) {
+    private fun playSingleSong(presenter: PlayerBasePresenter, songInfo: SongInfo?) {
         Log.d(TAG, "playSingleSong")
         if (songInfo == null) {
             return
@@ -127,7 +127,7 @@ abstract class BasePlayService : Service() {
         }
     }
 
-    fun initMediaControllerCompat(presenter: BasePlayerPresenter) {
+    fun initMediaControllerCompat(presenter: PlayerBasePresenter) {
         // Create a MediaControllerCompat
         Log.d(TAG, "initMediaControllerCompat")
         presenter.activity?.let {
@@ -170,7 +170,7 @@ abstract class BasePlayService : Service() {
         }
     }
 
-    fun startAutoPlay(presenter: BasePlayerPresenter, isSelfFinished: Boolean): Boolean {
+    fun startAutoPlay(presenter: PlayerBasePresenter, isSelfFinished: Boolean): Boolean {
         val playingParam: PlayingParameters? = presenter.playingParam
         val orderedSongsSize = orderedSongs.size
         Log.d(TAG, "startAutoPlay.orderedSongs = $orderedSongsSize")
@@ -212,7 +212,7 @@ abstract class BasePlayService : Service() {
         return stillPlayNext
     }
 
-    fun replayMedia(presenter: BasePlayerPresenter) {
+    fun replayMedia(presenter: PlayerBasePresenter) {
         Log.d(TAG, "replayMedia")
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
@@ -239,7 +239,7 @@ abstract class BasePlayService : Service() {
         }
     }
 
-    fun startPlay(presenter: BasePlayerPresenter) {
+    fun startPlay(presenter: PlayerBasePresenter) {
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         val playbackState = playingParam.currentPlaybackState
@@ -271,7 +271,7 @@ abstract class BasePlayService : Service() {
         } */
     }
 
-    fun pausePlay(presenter: BasePlayerPresenter) {
+    fun pausePlay(presenter: PlayerBasePresenter) {
         Log.d(TAG, "pausePlay()")
         /*
         val mediaUri = presenter.mediaUri
@@ -290,7 +290,7 @@ abstract class BasePlayService : Service() {
         }
     }
 
-    fun stopPlay(presenter: BasePlayerPresenter) {
+    fun stopPlay(presenter: PlayerBasePresenter) {
         Log.d(TAG, "stopPlay()")
         /*
         val mediaUri = presenter.mediaUri
