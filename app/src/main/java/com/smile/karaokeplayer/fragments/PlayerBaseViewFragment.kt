@@ -45,8 +45,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.TemplateView
-import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.R
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
@@ -154,6 +154,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     private var interstitialAd: ShowInterstitial? = null
+    var isShowingInterstitialAd = false // used by VlcPlayerFragment only
 
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
@@ -1265,30 +1266,37 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     }
 
     override fun showInterstitialAd(isSelfFinished : Boolean) {
+        Log.d(TAG, "showInterstitialAd")
         interstitialAd?.let {
+            isShowingInterstitialAd = true
             it.ShowAdThread(object : DismissFunction {
                 override fun backgroundWork() {
-                    Log.d(TAG, "DismissFunction.backgroundWork()")
+                    Log.d(TAG, "showInterstitialAd.DismissFunction.backgroundWork()")
                 }
                 override fun executeDismiss() {
-                    Log.d(TAG, "DismissFunction.executeDismiss()")
+                    Log.d(TAG, "showInterstitialAd.DismissFunction.executeDismiss()")
+                    isShowingInterstitialAd = false
                     mPresenter.let { pIt->
                         if (!pIt.startAutoPlay(isSelfFinished) && pIt.playingParam.numPlayed == 0) {
                             // no next song and just show Interstitial Ad before
                             // Show NativeAd
-                            Log.d(TAG, "DismissFunction.executeDismiss().showNativeAndHideBannerAd()")
+                            Log.d(TAG, "showInterstitialAd.DismissFunction.executeDismiss()" +
+                                    ".showNativeAndHideBannerAd()")
                             try {
                                 showNativeAndHideBannerAd()
                             } catch (ex: Exception) {
-                                Log.d(TAG,"DismissFunction.executeDismiss().Exception" +
-                                        "form showNativeAndHideBannerAd(): " + ex)
+                                Log.d(TAG,"showInterstitialAd.DismissFunction.executeDismiss().Exception" +
+                                        "from showNativeAndHideBannerAd(): " + ex)
                             }
                         }
                     }
                 }
                 override fun afterFinished(isAdShown: Boolean) {
                     Log.d(TAG, "DismissFunction.afterFinished().isAdShown = $isAdShown")
-                    if (!isAdShown) mPresenter.startAutoPlay(isSelfFinished)
+                    if (!isAdShown) {
+                        mPresenter.startAutoPlay(isSelfFinished)
+                        isShowingInterstitialAd = false
+                    }
                 }
             }).startShowAd(0)  // AdMob first
         }
