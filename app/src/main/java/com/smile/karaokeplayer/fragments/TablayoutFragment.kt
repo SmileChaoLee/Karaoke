@@ -1,6 +1,5 @@
 package com.smile.karaokeplayer.fragments
 
-import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaokeplayer.R
-import com.smile.karaokeplayer.utilities.BannerAdUtil
+import com.smile.karaokeplayer.SmileApplication
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -58,12 +57,13 @@ class TablayoutFragment : Fragment() {
             toastTextSize = 0.7f * ScreenUtil.suitableFontSize(actIt, defaultTextFontSize,
                 ScreenUtil.FontSize_Pixel_Type, 0.0f)
             bannerLayoutForTab?.also { layoutIt ->
-                myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                    layoutIt, actIt.resources.configuration.orientation)
+                myBannerAdView = SetBannerAdView(actIt, null,
+                    layoutIt, SmileApplication.googleAdMobBannerID,
+                    SmileApplication.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab, View.GONE)
+        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
 
         playTabLayout = view.findViewById(R.id.fragmentsTabLayout)
         val tabText = arrayOf(getString(R.string.open_files), getString(R.string.my_favorites))
@@ -126,19 +126,20 @@ class TablayoutFragment : Fragment() {
         activity?.let {actIt ->
             myBannerAdView?.destroy()
             bannerLayoutForTab?.also {layoutIt ->
-                myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                        layoutIt, newConfig.orientation)
+                myBannerAdView = SetBannerAdView(actIt, null,
+                    layoutIt, SmileApplication.googleAdMobBannerID,
+                    SmileApplication.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(newConfig.orientation, bannerLayoutForTab, View.GONE)
+        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onResume() {
         Log.d(TAG, "onResume()")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLayoutForTab, View.GONE)
+        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {

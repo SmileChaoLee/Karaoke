@@ -23,7 +23,7 @@ object PlayerConstants {
     const val FINISHED_NORMALLY = 0
     const val STOPPED_BY_USER = 1
     const val FINISHED_BY_PROGRAM = 2
-    const val SHOW_INTERSTITIAL_AFTER_NUM_SONGS = 10
+    const val SHOW_INTERSTITIAL_AFTER_NUM_SONGS = 2
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,7 +31,6 @@ object PlayerConstants {
     const val SINGLE_SONG_INFO_STATE = "SingleSongInfo"
     const val IS_AUTOPLAY_STATE = "isAutoPlay"
 
-    const val SongListState: String = "SongList"
     const val MyFavoriteListState = "MyFavoriteList"
     const val PlaySingleSongAction = "PlaySingleSongAction"
     const val SingleSongVolume = "SingleSongVolume"

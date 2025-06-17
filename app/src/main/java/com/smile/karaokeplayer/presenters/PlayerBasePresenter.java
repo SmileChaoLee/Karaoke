@@ -611,7 +611,8 @@ public abstract class PlayerBasePresenter {
                 if (playService != null) {
                     Log.d(TAG, "updateStatusAndUi.update_Player_duration_seekbar_progress" +
                             "((int) playService.getMediaDuration())");
-                    mPresentView.update_Player_duration_seekbar_progress((int) playService.getMediaDuration());
+                    mPresentView.update_Player_duration_seekbar_progress(
+                            (int) playService.getMediaDuration());
                 }
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
                 mPlayingParam.setCurrentAudioPosition(0);
@@ -620,13 +621,16 @@ public abstract class PlayerBasePresenter {
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
-                final boolean isSelfFinished = mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM;
+                final boolean isSelfFinished = mPlayingParam.getFinishState()
+                        != PlayerConstants.FINISHED_BY_PROGRAM;
                 if (isSelfFinished) {
                     mPlayingParam.setNumPlayed(mPlayingParam.getNumPlayed() + 1);
                 }
-                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = " + mPlayingParam.getNumPlayed());
-                if (mPlayingParam.getNumPlayed() >= PlayerConstants.SHOW_INTERSTITIAL_AFTER_NUM_SONGS) {
-                    // show interstitial ad after 10 songs
+                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = "
+                        + mPlayingParam.getNumPlayed());
+                if (mPlayingParam.getNumPlayed() >=
+                        PlayerConstants.SHOW_INTERSTITIAL_AFTER_NUM_SONGS) {
+                    // show interstitial ad after 2 songs
                     mPlayingParam.setNumPlayed(0);
                     mPresentView.showInterstitialAd(isSelfFinished);
                 } else {

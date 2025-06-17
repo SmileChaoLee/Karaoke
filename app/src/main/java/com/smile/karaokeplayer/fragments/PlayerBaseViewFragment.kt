@@ -1,8 +1,6 @@
 package com.smile.karaokeplayer.fragments
 
-// import com.smile.karaokeplayer.models.VerticalSeekBar
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
@@ -53,7 +51,6 @@ import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter.BasePresentView
-import com.smile.karaokeplayer.utilities.BannerAdUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.interfaces.DismissFunction
@@ -112,6 +109,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
     private var audioTrackImageButton: ImageButton? = null
     // private var volumeSeekBarHeightForLandscape = 0
 
+    private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
     private var nativeTemplate: GoogleAdMobNativeTemplate? = null
@@ -298,8 +296,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             activity?.let {actIt ->
                 bannerLinearLayout?.also {layoutIt ->
                     layoutIt.visibility = View.VISIBLE // Show Banner Ad
-                    myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                        layoutIt, actIt.resources.configuration.orientation)
+                    myBannerAdView = SetBannerAdView(actIt, null,
+                        layoutIt, SmileApplication.googleAdMobBannerID,
+                        SmileApplication.facebookBannerID, 0)
                     myBannerAdView?.showBannerAdView(0) // Admob first
                 }
             }
@@ -398,7 +397,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 // print the original check status
                 Log.d(TAG, "autoPlayMenuItem?.isChecked = ${it.isChecked}")
                 if (!it.isChecked) playBaseFragmentFunc?.choosePlayerToAutoPlay()
-                else mPresenter?.stopAutoPlay()
+                else mPresenter.stopAutoPlay()
                 it.isChecked = !it.isChecked
             }
         } else if (id == R.id.privacyPolicy) {
@@ -506,7 +505,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout
+        // MyBannerAdView.setVisible(bannerLinearLayout
+        //     , nativeAdViewVisibility)
+        MyBannerAdView.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
         startAndBindPlayService()
     }
@@ -515,7 +516,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
-        bannerLinearLayout?.visibility = View.GONE
+        // bannerLinearLayout?.visibility = View.GONE
+        bannerAdsLayout?.visibility = View.GONE
     }
 
     override fun onStop() {
@@ -539,12 +541,15 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
-                myBannerAdView = BannerAdUtil.getBannerAdView(actIt as Activity, null,
-                        layoutIt, newConfig.orientation)
+                myBannerAdView = SetBannerAdView(actIt, null,
+                    layoutIt, SmileApplication.googleAdMobBannerID,
+                    SmileApplication.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(newConfig.orientation, bannerLinearLayout
+        // MyBannerAdView.setVisible(bannerLinearLayout
+        //     , nativeAdViewVisibility)
+        MyBannerAdView.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
     }
 
@@ -745,7 +750,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
         */
         supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height
-        val bannerAdsLayout: LinearLayout? = fragmentView?.findViewById(R.id.bannerAdsLayout)
+        bannerAdsLayout = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
         val nativeAdLayout: FrameLayout? = fragmentView?.findViewById(R.id.nativeAdLayout)
         val nativeAdLayoutLP = nativeAdLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -809,7 +814,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
     private fun showSupportToolbarAudioControl() {
         Log.d(TAG, "showSupportToolbarAudioControl")
-        bannerLinearLayout?.visibility = View.GONE
+        // bannerLinearLayout?.visibility = View.GONE
+        bannerAdsLayout?.visibility = View.GONE
         supportToolbar?.visibility = View.VISIBLE
         audioControllerView?.visibility = View.VISIBLE
         nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
@@ -823,7 +829,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            MyBannerAdView.setVisible(resources.configuration.orientation, bannerLinearLayout
+            // MyBannerAdView.setVisible(bannerLinearLayout
+            //     , nativeAdViewVisibility)
+            MyBannerAdView.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
     }
@@ -1211,7 +1219,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                     nativeAdViewVisibility = View.VISIBLE
                     nativeTemplate?.showNativeAd()
                     // hide the banner ad
-                    bannerLinearLayout?.visibility = View.GONE
+                    // bannerLinearLayout?.visibility = View.GONE
+                    bannerAdsLayout?.visibility = View.GONE
                 } else {
                     hideNativeAd()
                 }
