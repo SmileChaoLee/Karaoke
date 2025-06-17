@@ -73,7 +73,6 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private var toastTextSize = 0f
     private var playerFragment: PlayerBaseViewFragment? = null
     private var permissionExternalStorage = false
-    // private var permissionManageExternalStorage = false
     private lateinit var basePlayViewLayout : LinearLayout
     private lateinit var baseTabLayout : LinearLayout
     private lateinit var tablayoutViewLayout : LinearLayout
@@ -88,8 +87,6 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private lateinit var cancelButton : Button
     private var tablayoutFragment : TablayoutFragment? = null
     private var weightSum : Float = 0f
-    // the declaration of baseReceiver must be lateinit var.
-    // Not var and BroadcastReceiver? = null
     private lateinit var baseReceiver: BroadcastReceiver
     private lateinit var callingIntent : Intent
     private var isPlayToPause : Boolean = false
