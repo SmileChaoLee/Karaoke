@@ -84,17 +84,14 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart")
-        Log.d(TAG, "onStart.isShowingInterstitialAd = $isShowingInterstitialAd")
-        if (!isShowingInterstitialAd) {
-            presenter.playingParam.let {
-                Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
-                Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
-                Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
-                if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
-                    // isSingleSongOpened = 2 means playing single song
-                    Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
-                    presenter.playSongPlayedBeforeActivityCreated()
-                }
+        presenter.playingParam.let {
+            Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
+            Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
+            Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
+            if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
+                // isSingleSongOpened = 2 means playing single song
+                Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
+                presenter.playSongPlayedBeforeActivityCreated()
             }
         }
     }

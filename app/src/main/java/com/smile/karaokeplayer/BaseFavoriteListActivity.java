@@ -28,8 +28,6 @@ import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.SongInfo;
 import com.smile.karaokeplayer.models.SongListSQLite;
-import com.smile.smilelibraries.interfaces.DismissFunction;
-import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial;
 import com.smile.smilelibraries.utilities.ScreenUtil;
 import java.util.ArrayList;
 
@@ -44,7 +42,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     private float toastTextSize;
     private ActivityResultLauncher<Intent> editFavoritesLauncher;
     private String currentAction = CommonConstants.AddActionString;
-    private ShowInterstitial interstitialAd = null;
     private float weightSum = 0.f;
     private LinearLayout favoriteListLinearLayout;
     private LinearLayout favoritesTitleLayout;
@@ -61,9 +58,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         textFontSize = ScreenUtil.suitableFontSize(this, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
         // float fontScale = ScreenUtil.suitableFontScale(this, ScreenUtil.FontSize_Pixel_Type, 0.0f);
         toastTextSize = 0.8f * textFontSize;
-        interstitialAd = new ShowInterstitial(this,
-                ((SmileApplication)getApplication()).facebookInterstitial,
-                ((SmileApplication)getApplication()).adMobInterstitial);
         songListSQLite = new SongListSQLite(getApplicationContext());
 
         super.onCreate(savedInstanceState);
@@ -163,37 +157,12 @@ public class BaseFavoriteListActivity extends AppCompatActivity
             songListSQLite.closeDatabase();
             songListSQLite = null;
         }
-        if (interstitialAd != null) {
-            interstitialAd.releaseInterstitial();
-        }
         Runtime.getRuntime().gc();
         super.onDestroy();
     }
 
     private void returnToPrevious() {
         Log.d(TAG, "returnToPrevious");
-        if (interstitialAd != null) {
-            interstitialAd.new ShowAdThread(new DismissFunction() {
-                @Override
-                public void backgroundWork() {
-                    Log.d(TAG, "returnToPrevious.backgroundWork");
-                }
-                @Override
-                public void executeDismiss() {
-                    Log.d(TAG, "returnToPrevious.executeDismiss");
-                    setResult(Activity.RESULT_OK);   // no bundle data
-                    finish();
-                }
-                @Override
-                public void afterFinished(boolean isAdShown) {
-                    Log.d(TAG, "returnToPrevious.executeDismiss.isAdShown = " + isAdShown);
-                    if (!isAdShown) { // interstitial Ad did not show
-                        setResult(Activity.RESULT_OK);   // no bundle data
-                        finish();
-                    }
-                }
-            }).startShowAd(0);   // AdMob first
-        }
     }
 
     private Intent createIntentFromSongDataActivity() {

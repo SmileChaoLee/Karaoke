@@ -53,10 +53,8 @@ import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter.BasePresentView
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
-import com.smile.smilelibraries.interfaces.DismissFunction
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
-import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG: String = "PlayerBaseViewFragment"
@@ -151,14 +149,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         }
     }
 
-    private var interstitialAd: ShowInterstitial? = null
-    var isShowingInterstitialAd = false // used by VlcPlayerFragment only
-
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
-    // abstract fun setMediaRouteButtonVisible()
     abstract fun setMenuItemsVisibility()
-    // abstract fun setSwitchToVocalImageButtonVisibility()
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun onPlayServiceDisconnected()
     abstract fun startAndBindPlayService()
@@ -197,12 +190,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         setHasOptionsMenu(true) // must have because it has menu
-
-        activity?.let {
-            interstitialAd = ShowInterstitial(it,
-                    (it.application as SmileApplication).facebookInterstitial,
-                    (it.application as SmileApplication).adMobInterstitial)
-        }
 
         activity?.let {
             if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
@@ -563,7 +550,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onDestroy() is called.")
         myBannerAdView?.destroy()
         nativeTemplate?.release()
-        interstitialAd?.releaseInterstitial()
         // clear the screen on, added on 2021-02-18
         activity?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -1271,43 +1257,6 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             controllerTimerHandler.postDelayed(controllerTimerRunnable,
                     PlayerConstants.PlayerView_Timeout.toLong()
             ) // 10 seconds
-        }
-    }
-
-    override fun showInterstitialAd(isSelfFinished : Boolean) {
-        Log.d(TAG, "showInterstitialAd")
-        interstitialAd?.let {
-            isShowingInterstitialAd = true
-            it.ShowAdThread(object : DismissFunction {
-                override fun backgroundWork() {
-                    Log.d(TAG, "showInterstitialAd.DismissFunction.backgroundWork()")
-                }
-                override fun executeDismiss() {
-                    Log.d(TAG, "showInterstitialAd.DismissFunction.executeDismiss()")
-                    isShowingInterstitialAd = false
-                    mPresenter.let { pIt->
-                        if (!pIt.startAutoPlay(isSelfFinished) && pIt.playingParam.numPlayed == 0) {
-                            // no next song and just show Interstitial Ad before
-                            // Show NativeAd
-                            Log.d(TAG, "showInterstitialAd.DismissFunction.executeDismiss()" +
-                                    ".showNativeAndHideBannerAd()")
-                            try {
-                                showNativeAndHideBannerAd()
-                            } catch (ex: Exception) {
-                                Log.d(TAG,"showInterstitialAd.DismissFunction.executeDismiss().Exception" +
-                                        "from showNativeAndHideBannerAd(): " + ex)
-                            }
-                        }
-                    }
-                }
-                override fun afterFinished(isAdShown: Boolean) {
-                    Log.d(TAG, "DismissFunction.afterFinished().isAdShown = $isAdShown")
-                    if (!isAdShown) {
-                        mPresenter.startAutoPlay(isSelfFinished)
-                        isShowingInterstitialAd = false
-                    }
-                }
-            }).startShowAd(0)  // AdMob first
         }
     }
     // end of implementing PlayerBasePresenter.BasePresentView

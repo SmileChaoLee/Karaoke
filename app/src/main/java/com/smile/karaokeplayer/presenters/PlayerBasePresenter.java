@@ -54,7 +54,6 @@ public abstract class PlayerBasePresenter {
         void buildAudioTrackMenuItem(int audioTrackNumber);
         void setTimerToHideSupportAudioControl();
         void showMusicAndVocalIsNotSet();
-        void showInterstitialAd(boolean isSelfFinished);
         void hidePlayerView();
         void showPlayerView();
         void setCurrentPlayerToPlayerView();
@@ -288,15 +287,7 @@ public abstract class PlayerBasePresenter {
             stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
             if (!stillPlayNext) {    // no more playing the next song
-                if (mPlayingParam.getNumPlayed() > 0) {
-                    // did not show interstitial Ad before finishing playing
-                    try {
-                        mPresentView.showNativeAndHideBannerAd();
-                    } catch (Exception ex) {
-                        Log.d(TAG, "startAutoPlay.Exception form showNativeAndHideBannerAd(): "
-                                + ex);
-                    }
-                }
+                mPresentView.showNativeAndHideBannerAd();
             }
         }
         mPresentView.setImageButtonStatus();
@@ -628,14 +619,7 @@ public abstract class PlayerBasePresenter {
                 }
                 Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = "
                         + mPlayingParam.getNumPlayed());
-                if (mPlayingParam.getNumPlayed() >=
-                        PlayerConstants.SHOW_INTERSTITIAL_AFTER_NUM_SONGS) {
-                    // show interstitial ad after 2 songs
-                    mPlayingParam.setNumPlayed(0);
-                    mPresentView.showInterstitialAd(isSelfFinished);
-                } else {
-                    startAutoPlay(isSelfFinished);
-                }
+                startAutoPlay(isSelfFinished);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
                 String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);
