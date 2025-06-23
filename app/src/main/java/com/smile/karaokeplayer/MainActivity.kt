@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     private var hasPlayedSingle : Boolean = false
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
-    private var whichPlayer : Int = 0   // 0--> no selection, 1-->vlcPlayer, 2-->exoPlayer
+    private var whichPlayer : Int = PlayerConstants.VLC_PLAYER
     private var choosePlayerState : Int = 0   // 0--> select files, 1-->Auto Play from menu
     private var mOrderedSongs : ArrayList<SongInfo>? = null
     var castContext: CastContext? = null
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         vlcPlayerButton.let {
             it.setOnClickListener {
                 Log.d(TAG, "vlcPlayerButton.setOnClickListener")
-                whichPlayer = 1
+                whichPlayer = PlayerConstants.VLC_PLAYER
                 playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
                 if (choosePlayerState == 0) {
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         exoPlayerButton.let {
             it.setOnClickListener {
                 Log.d(TAG, "exoPlayerButton.setOnClickListener")
-                whichPlayer = 2
+                whichPlayer = PlayerConstants.EXO_PLAYER
                 playerFragment?.enableSomeButtonsDueToPopupGone()
                 choosePlayerLayout.visibility = View.GONE
                 if (choosePlayerState == 0) {
@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Log.d(TAG, "callingIntent.extras = ${callingIntent.extras}")
         if (savedInstanceState != null) {
             isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE_STATE, false)
-            whichPlayer = savedInstanceState.getInt(WHICH_PLAYER_STATE, 1)
+            whichPlayer = savedInstanceState.getInt(WHICH_PLAYER_STATE, PlayerConstants.VLC_PLAYER)
             choosePlayerState = savedInstanceState.getInt(CHOOSE_PLAYER_STATE, 0)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -392,10 +392,15 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         lp.matchConstraintPercentWidth = percentWidthRatio
 
         percentHeightRatio = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            0.3f else 0.45f
+            0.3f else 0.425f
         lp = vlcPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
         lp.matchConstraintPercentHeight = percentHeightRatio
         lp = exoPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
+        lp.matchConstraintPercentHeight = percentHeightRatio
+
+        percentHeightRatio = if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            0.1f else 0.15f
+        lp = cancelButton.layoutParams as ConstraintLayout.LayoutParams
         lp.matchConstraintPercentHeight = percentHeightRatio
     }
 
@@ -561,11 +566,11 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         playerFragment?.disableSomeButtonsDueToBecausePopup()
         choosePlayerLayout.visibility = View.VISIBLE
         when (whichPlayer) {
-            1-> {
+            PlayerConstants.VLC_PLAYER-> {
                 isVlcCurrent.visibility = View.VISIBLE
                 isExoCurrent.visibility = View.GONE
             }
-            2-> {
+            PlayerConstants.EXO_PLAYER-> {
                 isExoCurrent.visibility = View.VISIBLE
                 isVlcCurrent.visibility = View.GONE
             }
@@ -614,21 +619,25 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
 
     private fun startPlaySongs(isAutoPlay : Boolean) {
         Log.d(TAG, "startPlaySongs.whichPlayer= $whichPlayer")
-        if (whichPlayer != 1 && whichPlayer != 2) return
+        if (whichPlayer != PlayerConstants.VLC_PLAYER
+            && whichPlayer != PlayerConstants.EXO_PLAYER) return
         var needPlace = true
         supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT_TAG)?.let {
             playerFragment = it as PlayerBaseViewFragment
             if (playerFragment is VlcPlayerFragment) {
                 Log.d(TAG, "playSelectedSongList.VlcPlayerFragment found")
-                if (whichPlayer != 1) playerFragment = ExoPlayerFragment() else needPlace = false
+                if (whichPlayer != PlayerConstants.VLC_PLAYER)
+                    playerFragment = ExoPlayerFragment() else needPlace = false
             } else {
                 // ExoPlayerFragment
                 Log.d(TAG, "playSelectedSongList.ExoPlayerFragment found")
-                if (whichPlayer == 1) playerFragment = VlcPlayerFragment() else needPlace = false
+                if (whichPlayer == PlayerConstants.VLC_PLAYER)
+                    playerFragment = VlcPlayerFragment() else needPlace = false
             }
         } ?: run {
             Log.d(TAG, "playSelectedSongList.No playerFragment found!")
-            playerFragment = if (whichPlayer == 1) VlcPlayerFragment() else ExoPlayerFragment()
+            playerFragment = if (whichPlayer == PlayerConstants.VLC_PLAYER)
+                VlcPlayerFragment() else ExoPlayerFragment()
         }
         Log.d(TAG, "playSelectedSongList.playerFragment = $playerFragment")
         Log.d(TAG, "playSelectedSongList.needPlace = $needPlace")

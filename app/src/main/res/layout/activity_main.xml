@@ -52,7 +52,7 @@
             <LinearLayout
                 android:id="@+id/vlcPlayerLinearLayout"
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_gravity="start"
                 android:layout_marginStart="30dp"
@@ -62,22 +62,27 @@
                 app:layout_constraintStart_toStartOf="parent">
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2">
                     <Button
                         android:id="@+id/vlcPlayerButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/vlcPlayerName"
+                        android:gravity="center"
+                        android:layout_weight="1"
                         style="@style/MyButtonStyle">
                     </Button>
                     <TextView
                         android:id="@+id/isVlcCurrent"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
                         android:textColor="@color/gnt_red"
-                        android:background="@color/blue"
+                        android:background="@android:color/transparent"
+                        android:layout_marginStart="10dp"
+                        android:gravity="center_vertical"
+                        android:layout_weight="1"
                         android:text="@string/currentString">
                     </TextView>
                 </LinearLayout>
@@ -93,7 +98,7 @@
             <LinearLayout
                 android:id="@+id/exoPlayerLinearLayout"
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_gravity="start"
                 android:layout_marginStart="30dp"
@@ -103,22 +108,27 @@
                 app:layout_constraintStart_toStartOf="parent">
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2">
                     <Button
                         android:id="@+id/exoPlayerButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/exoPlayerName"
+                        android:gravity="center"
+                        android:layout_weight="1"
                         style="@style/MyButtonStyle">
                     </Button>
                     <TextView
                         android:id="@+id/isExoCurrent"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
                         android:textColor="@color/gnt_red"
-                        android:background="@color/blue"
+                        android:background="@android:color/transparent"
+                        android:layout_marginStart="10dp"
+                        android:gravity="center_vertical"
+                        android:layout_weight="1"
                         android:text="@string/currentString">
                     </TextView>
                 </LinearLayout>
@@ -133,12 +143,13 @@
             </LinearLayout>
             <Button
                 android:id="@+id/cancelButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_gravity="start"
+                android:gravity="center"
                 android:layout_marginStart="30dp"
                 android:text="@string/cancelString"
                 style="@style/MyButtonStyle"
+                app:layout_constraintWidth_percent="0.5"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintTop_toBottomOf="@id/exoPlayerLinearLayout"
                 app:layout_constraintBottom_toBottomOf="parent"
