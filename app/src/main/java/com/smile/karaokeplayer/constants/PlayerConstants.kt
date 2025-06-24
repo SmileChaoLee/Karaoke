@@ -33,4 +33,7 @@ object PlayerConstants {
     const val PlaySingleSongAction = "PlaySingleSongAction"
     const val SingleSongVolume = "SingleSongVolume"
     const val BackToBaseActivity = "BackToBaseActivity"
+
+    const val VLC_PLAYER = 1
+    const val EXO_PLAYER = 2
 }

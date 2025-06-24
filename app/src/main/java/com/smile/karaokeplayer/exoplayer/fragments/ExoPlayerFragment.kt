@@ -16,19 +16,19 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
-import androidx.mediarouter.app.MediaRouteButton
 import androidx.media3.ui.PlayerView
+import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
-import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter.ExoPlayerPresentView
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService.LocalBinder
+import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
 class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
@@ -79,7 +79,7 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         playerView?.player = null
     }
 
-    fun setVideoPlayerView() {
+    private fun setVideoPlayerView() {
         Log.d(TAG, "setVideoPlayerView")
         val layParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT)
@@ -92,7 +92,8 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
                 setBackgroundColor(ContextCompat.getColor(it.applicationContext, android.R.color.black))
                 playerViewLinearLayout?.addView(this)
                 visibility = View.VISIBLE
-                useArtwork = true
+                // useArtwork = true
+                setArtworkDisplayMode(PlayerView.ARTWORK_DISPLAY_MODE_OFF)
                 useController = false
                 // must be after super.onCreate(savedInstanceState)
                 // player = playService?.exoPlayer

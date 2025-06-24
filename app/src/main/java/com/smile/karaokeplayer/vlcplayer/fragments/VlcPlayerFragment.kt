@@ -71,13 +71,6 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
             playerViewLinearLayout?.addView(videoVLCPlayerView)
             videoVLCPlayerView.visibility = View.VISIBLE
         }
-
-        /*
-        val currentProgress = presenter.currentProgressForVolumeSeekBar
-        volumeSeekBar?.setProgressAndThumb(currentProgress)
-        */
-        // presenter.playSongPlayedBeforeActivityCreated()  // moved to onResume()
-
         Log.d(TAG, "onViewCreated() is finished.")
     }
 
@@ -88,7 +81,8 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
             Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
             Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
-            if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
+            // if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
+            if (!it.isPlaySingleSong || it.singleSongPlayingStatus == 2) {
                 // isSingleSongOpened = 2 means playing single song
                 Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
                 presenter.playSongPlayedBeforeActivityCreated()
@@ -139,12 +133,6 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
         channelMenuItem?.isVisible = true
         channelMenuItem?.isEnabled = false
     }
-
-    /*
-    override fun setSwitchToVocalImageButtonVisibility() {
-        switchToVocalImageButton?.visibility = View.GONE
-    }
-    */
 
     override fun onPlayServiceConnected(service: IBinder) {
         Log.d(TAG, "onPlayServiceConnected")
@@ -218,9 +206,7 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     override fun setVideoWindowSize() {
         Log.d(TAG, "setVideoWindowSize")
         playService?.apply {
-            videoVLCPlayerView?.let {
-                setVideoWindowSize(it)
-            }
+            setVideoWindowSize(videoVLCPlayerView)
         }
     }
 }
