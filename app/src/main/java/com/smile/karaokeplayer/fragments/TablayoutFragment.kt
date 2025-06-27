@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaokeplayer.R
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -58,8 +58,8 @@ class TablayoutFragment : Fragment() {
                 ScreenUtil.FontSize_Pixel_Type, 0.0f)
             bannerLayoutForTab?.also { layoutIt ->
                 myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileApplication.googleAdMobBannerID,
-                    SmileApplication.facebookBannerID, 0)
+                    layoutIt, SmileApp.googleAdMobBannerID,
+                    SmileApp.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
@@ -127,8 +127,8 @@ class TablayoutFragment : Fragment() {
             myBannerAdView?.destroy()
             bannerLayoutForTab?.also {layoutIt ->
                 myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileApplication.googleAdMobBannerID,
-                    SmileApplication.facebookBannerID, 0)
+                    layoutIt, SmileApp.googleAdMobBannerID,
+                    SmileApp.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }

@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaokeplayer.constants.CommonConstants
@@ -56,9 +56,9 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                SmileApplication.FontSize_Scale_Type, null)
+                SmileApp.FontSize_Scale_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                SmileApplication.FontSize_Scale_Type,0.0f)
+                SmileApp.FontSize_Scale_Type,0.0f)
 
         playSongs = (activity as PlaySongs)
         Log.d(TAG, "onCreate.playSongs = $playSongs")
@@ -126,7 +126,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
-            ScreenUtil.resizeTextSize(pathTextView, textFontSize, SmileApplication.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(pathTextView, textFontSize, SmileApp.FontSize_Scale_Type)
             val backKeyButton: ImageButton = it.findViewById(R.id.openFileBackKeyButton)
             var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
@@ -195,7 +195,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         if (songsIt.size == 0) {
                             ScreenUtil.showToast(
                                 activityIt, getString(R.string.noFilesSelectedString), textFontSize,
-                                    SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                    SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         } else {
                             playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songsIt))
                         }
@@ -224,14 +224,14 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                     // excess max number of favorites
                                     ScreenUtil.showToast(activity,getString(R.string.excess_max) +
                                             " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                            SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                            SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                     break
                                 }
                             }
                             toastMsg = getString(R.string.add_to_favorites)
                         }
                         ScreenUtil.showToast(activity, toastMsg, textFontSize,
-                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                     songListSQLite.closeDatabase()
                 }
@@ -349,7 +349,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
                                 " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         break
                     }
                 }

@@ -18,7 +18,6 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.os.BundleCompat;
 
 import com.smile.karaokeplayer.adapters.SpinnerAdapter;
 import com.smile.karaokeplayer.constants.CommonConstants;
@@ -71,8 +70,8 @@ public class BaseSongDataActivity extends AppCompatActivity {
                     // = "EDIT". Edit one record
                     if (extras != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            mSongInfo = BundleCompat.getParcelable(extras,
-                                    PlayerConstants.SINGLE_SONG_INFO_STATE, SongInfo.class);
+                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                                    SongInfo.class);
                         } else
                             mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
                         actionButtonString = getString(R.string.saveString);
@@ -82,8 +81,8 @@ public class BaseSongDataActivity extends AppCompatActivity {
                     // = "DELETE". Delete one record
                     if (extras != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            mSongInfo = BundleCompat.getParcelable(extras,
-                                    PlayerConstants.SINGLE_SONG_INFO_STATE, SongInfo.class);
+                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                                    SongInfo.class);
                         } else {
                             mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
                         }
@@ -100,8 +99,8 @@ public class BaseSongDataActivity extends AppCompatActivity {
             actionButtonString = savedInstanceState.getString("ActionButtonString");
             crudAction = savedInstanceState.getString(CommonConstants.CrudActionString);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mSongInfo = BundleCompat.getParcelable(savedInstanceState,
-                        PlayerConstants.SINGLE_SONG_INFO_STATE, SongInfo.class);
+                mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                        SongInfo.class);
             } else mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
             Log.d(TAG, "savedInstanceState is not null.");
         }
@@ -131,7 +130,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                 R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         SpinnerAdapter audioVocalTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
                 R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
-        ArrayList<String> aList = new ArrayList<>(SmileApplication.audioChannelMap.values());
+        ArrayList<String> aList = new ArrayList<>(SmileApp.audioChannelMap.values());
         SpinnerAdapter audioMusicChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
                 R.id.spinnerTextView, aList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         SpinnerAdapter audioVocalChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
@@ -327,9 +326,9 @@ public class BaseSongDataActivity extends AppCompatActivity {
         mSongInfo.setSongName(title);
         mSongInfo.setFilePath(filePath);
         mSongInfo.setMusicTrackNo(Integer.parseInt(musicTrack));
-        mSongInfo.setMusicChannel(SmileApplication.audioChannelReverseMap.get(musicChannel));
+        mSongInfo.setMusicChannel(SmileApp.audioChannelReverseMap.get(musicChannel));
         mSongInfo.setVocalTrackNo(Integer.parseInt(vocalTrack));
-        mSongInfo.setVocalChannel(SmileApplication.audioChannelReverseMap.get(vocalChannel));
+        mSongInfo.setVocalChannel(SmileApp.audioChannelReverseMap.get(vocalChannel));
         mSongInfo.setIncluded(included);
 
         if (filePath.isEmpty()) {

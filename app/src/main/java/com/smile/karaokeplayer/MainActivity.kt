@@ -1,6 +1,7 @@
 package com.smile.karaokeplayer
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -9,7 +10,6 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -32,7 +32,6 @@ import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.os.BundleCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
@@ -51,7 +50,7 @@ import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.utilities.ScreenUtil
-
+import androidx.core.net.toUri
 
 @UnstableApi
 class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmentFunc,
@@ -111,9 +110,9 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@MainActivity,
-            SmileApplication.FontSize_Scale_Type, null)
+            SmileApp.FontSize_Scale_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(this@MainActivity, defaultTextFontSize,
-            SmileApplication.FontSize_Scale_Type,0.0f)
+            SmileApp.FontSize_Scale_Type,0.0f)
         toastTextSize = textFontSize * 0.7f
 
         super.onCreate(savedInstanceState)
@@ -243,11 +242,13 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             choosePlayerState = savedInstanceState.getInt(CHOOSE_PLAYER_STATE, 0)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, CALLING_COMPONENT_STATE, ComponentName::class.java)
+                savedInstanceState.getParcelable(CALLING_COMPONENT_STATE,
+                    ComponentName::class.java)
             else savedInstanceState.getParcelable(CALLING_COMPONENT_STATE)
 
             (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, PLAY_DATA_STATE, Bundle::class.java)
+                savedInstanceState.getParcelable(PLAY_DATA_STATE,
+                    Bundle::class.java)
             else savedInstanceState.getParcelable(PLAY_DATA_STATE))?.also {
                 playData = it
             }
@@ -307,7 +308,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
             }
         })
 
-        findViewById<FrameLayout?>(R.id.activity_main_layout).apply {
+        findViewById<FrameLayout>(R.id.activity_main_layout).apply {
             viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     // Layout has been finished
@@ -320,18 +321,19 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
     }
 
     // @RequiresApi(api = Build.VERSION_CODES.M)
+    @SuppressLint("BatteryLife")
     private fun askIgnoreOptimizationsBattery() {
-        val pm = getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val pm = getSystemService(POWER_SERVICE) as? PowerManager
         if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
             val intent = Intent()
             val pName = packageName
             intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-            intent.data = Uri.parse("package:$pName")
+            intent.data = "package:$pName".toUri()
             startActivity(intent)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
             Log.d(TAG, "onRequestPermissionsResult.permissions = $str")
@@ -528,7 +530,8 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         Log.d(TAG, "restorePlayingState.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            BundleCompat.getParcelable(playData, PlayerConstants.PlayingParamState, PlayingParameters::class.java)
+            playData.getParcelable(PlayerConstants.PlayingParamState,
+                PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
             Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
             Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")

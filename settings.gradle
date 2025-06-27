@@ -1,3 +1,24 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 include ':app', ':extension-ffmpeg', ':extension-vp9', ':extension-flac', ':extension-opus', ':extension-av1'
 project(':extension-ffmpeg').projectDir = new File('extensions/ffmpeg')
 project(':extension-vp9').projectDir = new File('extensions/vp9')

@@ -15,9 +15,9 @@ import com.smile.smilelibraries.utilities.ScreenUtil;
 
 import java.util.LinkedHashMap;
 
-public class SmileApplication extends MultiDexApplication {
+public class SmileApp extends MultiDexApplication {
 
-    private static final String TAG = "SmileApplication";
+    private static final String TAG = "SmileApp";
 
     // protected String facebookInterstitialID = "";
     protected String googleAdMobAppID = "";
@@ -38,6 +38,8 @@ public class SmileApplication extends MultiDexApplication {
     public static String googleAdMobNativeID = "";
     // public FacebookInterstitial facebookInterstitial;
     // public AdMobInterstitial adMobInterstitial;
+    public static float textFontSize = 0f;
+    public static float toastTextSize = 0f;
 
     @Override
     public void onCreate() {

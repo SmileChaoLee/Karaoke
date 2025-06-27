@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -44,7 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.TemplateView
 import com.smile.karaokeplayer.R
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
@@ -56,10 +54,15 @@ import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
+import androidx.core.view.size
+import androidx.core.view.get
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.scale
 
 private const val TAG: String = "PlayerBaseViewFragment"
 
-abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
+abstract class PlayerBaseViewFragment : Fragment(),
+    BasePresentView {
 
     interface PlayBaseFragmentFunc {
         fun baseHidePlayerView()
@@ -284,8 +287,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                 bannerLinearLayout?.also {layoutIt ->
                     layoutIt.visibility = View.VISIBLE // Show Banner Ad
                     myBannerAdView = SetBannerAdView(actIt, null,
-                        layoutIt, SmileApplication.googleAdMobBannerID,
-                        SmileApplication.facebookBannerID, 0)
+                        layoutIt, SmileApp.googleAdMobBannerID,
+                        SmileApp.facebookBannerID, 0)
                     myBannerAdView?.showBannerAdView(0) // Admob first
                 }
             }
@@ -322,7 +325,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             }
             nativeAdTemplateView = findViewById(R.id.nativeAdTemplateView)
             nativeTemplate = GoogleAdMobNativeTemplate(
-                    activity, nativeAdsFrameLayout, SmileApplication.googleAdMobNativeID, nativeAdTemplateView
+                    activity, nativeAdsFrameLayout, SmileApp.googleAdMobNativeID, nativeAdTemplateView
             )
         }
 
@@ -339,6 +342,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         Log.d(TAG, "onViewCreated() is finished.")
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         Log.d(TAG, "onCreateOptionsMenu() is called")
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -351,7 +355,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         // or
         supportToolbar?.popupTheme?.let {
             val wrapper: Context = ContextThemeWrapper(activity, it)
-            // ScreenUtil.buildActionViewClassMenu(activity, wrapper, mainMenu, fontScale, SmileApplication.FontSize_Scale_Type);
+            // ScreenUtil.buildActionViewClassMenu(activity, wrapper, mainMenu, fontScale, SmileApp.FontSize_Scale_Type);
             ScreenUtil.resizeMenuTextIconSize(wrapper, mainMenu, fontScale)
         }
 
@@ -372,6 +376,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val playingParam = mPresenter.playingParam
         val currentChannelPlayed = playingParam.currentChannelPlayed
@@ -397,8 +402,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         } else if (id == R.id.audioTrack) {
             // if there are audio tracks
             item.subMenu?.let {
-                for (i in 0 until it.size()) {
-                    val mItem = it.getItem(i)
+                for (i in 0 until it.size) {
+                    val mItem = it[i]
                     // audio track index start from 1 for user interface
                     if (i + 1 == playingParam.currentAudioTrackIndexPlayed) {
                         mItem.isCheckable = true
@@ -529,8 +534,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
                 myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileApplication.googleAdMobBannerID,
-                    SmileApplication.facebookBannerID, 0)
+                    layoutIt, SmileApp.googleAdMobBannerID,
+                    SmileApp.facebookBannerID, 0)
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
@@ -682,10 +687,9 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         val tempBitmap = BitmapFactory.decodeResource(resources, R.drawable.circle_and_three_dots)
-        val iconDrawable: Drawable = BitmapDrawable(
-                resources,
-                Bitmap.createScaledBitmap(tempBitmap, imageButtonHeight, imageButtonHeight, true)
-        )
+        val iconDrawable: Drawable =
+            tempBitmap.scale(imageButtonHeight, imageButtonHeight)
+                .toDrawable(resources)
         actionMenuView?.overflowIcon = iconDrawable // set icon of three dots for ActionMenuView
         // supportToolbar.setOverflowIcon(iconDrawable);   // set icon of three dots for toolbar
 
@@ -735,7 +739,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             volumeSeekBar?.layoutParams?.height = volumeSeekBarHeightForLandscape
         }
         */
-        supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height
+        supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height!!
         bannerAdsLayout = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
         val nativeAdLayout: FrameLayout? = fragmentView?.findViewById(R.id.nativeAdLayout)
@@ -758,8 +762,8 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
 
     private fun closeMenu(menu: Menu?) {
         menu?.let {
-            for (i in 0 until it.size()) {
-                it.getItem(i)?.subMenu?.let { it2 ->
+            for (i in 0 until it.size) {
+                it[i].subMenu?.let { it2 ->
                     closeMenu(it2)
                 }
             }
@@ -941,7 +945,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
                             sqlIt.closeDatabase()
                         }
                         ScreenUtil.showToast(it, getString(R.string.add_to_favorites), textFontSize,
-                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -1170,6 +1174,7 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
         playingTimeTextView?.text = durationString
     }
 
+    @SuppressLint("DefaultLocale")
     override fun update_Player_duration_seekbar(duration: Float) {
         var durationTmp = duration
         player_duration_seekbar?.progress = 0
@@ -1241,11 +1246,11 @@ abstract class PlayerBaseViewFragment : Fragment(), BasePresentView {
             var index = 0
             while (index < audioTrackNumber) {
                 // audio track index start from 1 for user interface
-                it.getItem(index).isVisible = true
+                it[index].isVisible = true
                 index++
             }
-            for (j in index until it.size()) {
-                it.getItem(j).isVisible = false
+            for (j in index until it.size) {
+                it[j].isVisible = false
             }
         }
     }

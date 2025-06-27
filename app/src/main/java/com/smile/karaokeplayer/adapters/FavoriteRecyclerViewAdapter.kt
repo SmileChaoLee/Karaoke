@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -61,9 +61,9 @@ class FavoriteRecyclerViewAdapter private constructor(
         init {
             Log.d(TAG, "MyViewHolder() is called")
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
-            ScreenUtil.resizeTextSize(songNameTextView, textFontSize, SmileApplication.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(songNameTextView, textFontSize, SmileApp.FontSize_Scale_Type)
             songPathTextView = itemView.findViewById(R.id.myListPathTextView)
-            ScreenUtil.resizeTextSize(songPathTextView, textFontSize, SmileApplication.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(songPathTextView, textFontSize, SmileApp.FontSize_Scale_Type)
 
             itemView.setOnClickListener {
                 recyclerItemClickListener.onRecyclerItemClick(

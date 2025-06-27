@@ -8,8 +8,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import androidx.core.os.BundleCompat;
-
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import org.videolan.libvlc.interfaces.IMedia;
@@ -64,7 +62,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             Log.d(TAG, "extras is not null.");
             PlayingParameters playingParamOrigin;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                playingParamOrigin = BundleCompat.getParcelable(extras, PlayerConstants.PlayingParamOrigin,
+                playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin,
                         PlayingParameters.class);
             } else playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin);
             if (playingParamOrigin != null) {

@@ -1,5 +1,6 @@
 package com.smile.karaokeplayer.fragments
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -18,7 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.BaseFavoriteListActivity
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.FavoriteRecyclerViewAdapter
@@ -29,7 +30,8 @@ import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
+class MyFavoritesFragment : Fragment(),
+    FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
 
     companion object {
         private const val TAG : String = "MyFavoritesFragment"
@@ -54,9 +56,9 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                SmileApplication.FontSize_Scale_Type, null)
+                SmileApp.FontSize_Scale_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                SmileApplication.FontSize_Scale_Type,0.0f)
+                SmileApp.FontSize_Scale_Type,0.0f)
         fontScale = ScreenUtil.suitableFontScale(activity, ScreenUtil.FontSize_Pixel_Type, 0.0f)
 
         activity?.let {
@@ -72,6 +74,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         } // update the UI }
 
         object : BroadcastReceiver() {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
@@ -81,7 +84,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
                                     " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                    SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                    SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                         }
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
@@ -170,16 +173,16 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
                                         " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                        SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                        SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                                 break
                             }
                         }
                     }
                 }
-                if (songs.size == 0) {
+                if (songs.isEmpty()) {
                     ScreenUtil.showToast(
                             activity, getString(R.string.noFilesSelectedString), textFontSize,
-                            SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                 } else {
                     playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
                 }
@@ -194,7 +197,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                     for (element in MySingleTon.favorites) {
                         if (element.included == "1") listIt.add(element)
                     }
-                    if (listIt.size > 0) {
+                    if (listIt.isNotEmpty()) {
                         playMyFavorites?.let {playIt ->
                             intentForFavoriteListActivity().apply {
                                 Log.d(TAG, "editButton.listIt.size = ${listIt.size}")
@@ -209,7 +212,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
                     } else {
                         ScreenUtil.showToast(
                                 activity, getString(R.string.noFilesSelectedString), textFontSize,
-                                SmileApplication.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -261,6 +264,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clearFavoriteList() {
         MySingleTon.favorites.clear()
         myRecyclerViewAdapter?.notifyDataSetChanged()
@@ -270,7 +274,7 @@ class MyFavoritesFragment : Fragment(), FavoriteRecyclerViewAdapter.OnRecyclerIt
         Log.d(TAG, "searchFavorites")
         searchCompleted = false
         Thread {
-            var excessYn = false;
+            var excessYn = false
             val tempList: ArrayList<SongInfo> = ArrayList(MySingleTon.MAX_SONGS)
             activity?.let {
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->

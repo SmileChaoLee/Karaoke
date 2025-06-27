@@ -29,6 +29,8 @@ import com.smile.karaokeplayer.exoplayer.services.ExoPlayService
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService.LocalBinder
 import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
 import com.smile.smilelibraries.utilities.ScreenUtil
+import androidx.core.graphics.scale
+import androidx.core.graphics.drawable.toDrawable
 
 @UnstableApi
 class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
@@ -159,15 +161,9 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
             val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
             layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
             val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
-            val mediaRouteButtonDrawable: Drawable = BitmapDrawable(
-                resources,
-                Bitmap.createScaledBitmap(
-                    mediaRouteButtonBitmap,
-                    imageButtonHeight,
-                    imageButtonHeight,
-                    true
-                )
-            )
+            val mediaRouteButtonDrawable: Drawable =
+                mediaRouteButtonBitmap.scale(imageButtonHeight, imageButtonHeight)
+                    .toDrawable(resources)
             mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
         } catch (ex: Exception) {
             Log.d(TAG, "setMediaRouteButtonView.Exception")

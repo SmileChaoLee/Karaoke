@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApplication
+import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.FileDescription
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -62,7 +62,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
         init {
             Log.d(TAG, "MyViewHolder() is called")
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
-            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, SmileApplication.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, SmileApp.FontSize_Scale_Type)
 
             folderImageView = itemView.findViewById(R.id.folderImageView)
             val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams

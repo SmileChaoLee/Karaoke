@@ -8,7 +8,6 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.annotation.OptIn
-import androidx.core.os.BundleCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -77,8 +76,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         extras?.let {
             Log.d(TAG, "onPrepareFromUri().extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                BundleCompat.getParcelable(it,
-                    PlayerConstants.PlayingParamOrigin,
+                it.getParcelable(PlayerConstants.PlayingParamOrigin,
                     PlayingParameters::class.java)
             } else it.getParcelable(PlayerConstants.PlayingParamOrigin)
             playingParamOrigin?.let { playIt ->
