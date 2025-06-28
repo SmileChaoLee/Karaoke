@@ -289,7 +289,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
                 MySingleTon.INSTANCE.getSelectedFavorites().remove(positionEdit);
                 myRecyclerViewAdapter.notifyItemRemoved(positionEdit);
             } else {    // currentAction = CommonConstants.PlayActionString
-                // do nothing
+                Log.d(TAG, "updateFavoriteList.do nothing");
             }
         }
     }
