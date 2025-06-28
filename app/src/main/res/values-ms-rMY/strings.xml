@@ -80,4 +80,5 @@
         2.Supports audio track switch\n
         3.Supports channel switch</string>
     <string name="currentString">Current</string>
+    <string name="loadingStr">Loading …</string>
 </resources>

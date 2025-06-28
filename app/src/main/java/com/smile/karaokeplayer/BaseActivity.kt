@@ -10,7 +10,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.os.Process
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
@@ -277,7 +276,7 @@ abstract class BaseActivity : AppCompatActivity(),
             playerFragment?.mPresenter?.let {
                 it.pausePlay()
                 it.playingParam.singleSongPlayingStatus = 0  // exit playing single song
-                callingComponentName?.let { callIt->
+                callingComponentName?.let { callIt ->
                     Intent().apply {
                         component = callIt
                         addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
@@ -288,24 +287,12 @@ abstract class BaseActivity : AppCompatActivity(),
             }
             return
         }
-        // exit application
-        // finish()
-        Log.d(TAG, "returnToPrevious.finish()")
-        finishAndRemoveTask()
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask()
-        // else finishAffinity()
-
-        Log.d(TAG, "returnToPrevious().onDestroy()")
-        onDestroy()
-
         MySingleTon.favorites.clear()
         MySingleTon.selectedFavorites.clear()
         MySingleTon.orderedSongs.clear()
         FileDesList.fileList.clear()
-
-        Log.d(TAG, "returnToPrevious().Process.killProcess()")
-        Process.killProcess(Process.myPid())
-        // exitProcess(0);
+        // exit application
+        finish()
     }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
 

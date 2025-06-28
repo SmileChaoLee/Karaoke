@@ -80,4 +80,5 @@
         2.支援音軌切換\n
         3.支援聲道切換</string>
     <string name="currentString">目前使用中</string>
+    <string name="loadingStr">下載中 …</string>
 </resources>
