@@ -58,6 +58,7 @@ import androidx.core.view.size
 import androidx.core.view.get
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.scale
+import com.smile.smilelibraries.models.ExitAppTimer
 
 private const val TAG: String = "PlayerBaseViewFragment"
 
@@ -68,7 +69,6 @@ abstract class PlayerBaseViewFragment : Fragment(),
         fun baseHidePlayerView()
         fun baseShowPlayerView()
         fun returnToPrevious(isSingleSong : Boolean)
-        fun choosePlayerToAutoPlay()
     }
 
     lateinit var mPresenter: PlayerBasePresenter
@@ -169,9 +169,11 @@ abstract class PlayerBaseViewFragment : Fragment(),
             onPlayServiceConnected(service)
             isServiceBound = true
             isServiceDestroyed = false
+            Log.d(TAG, "onServiceConnected.isAutoPlay = " +
+                    "${mPresenter.playingParam.isAutoPlay}")
             // mPresenter.playingParam.isAutoPlay = false   // bug
-            mPresenter.autoPlaySongList()
-            showPlayerView()
+            // mPresenter.autoPlaySongList()
+            // showPlayerView()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -388,9 +390,12 @@ abstract class PlayerBaseViewFragment : Fragment(),
             autoPlayMenuItem?.let {
                 // print the original check status
                 Log.d(TAG, "autoPlayMenuItem?.isChecked = ${it.isChecked}")
-                if (!it.isChecked) playBaseFragmentFunc?.choosePlayerToAutoPlay()
-                else mPresenter.stopAutoPlay()
-                it.isChecked = !it.isChecked
+                if (!it.isChecked) {
+                    it.isChecked = mPresenter.setAutoPlayStatusAndAction()
+                } else {
+                    mPresenter.stopAutoPlay()
+                    it.isChecked = false
+                }
             }
         } else if (id == R.id.privacyPolicy) {
             PrivacyPolicyUtil.startPrivacyPolicyActivity(
@@ -561,6 +566,18 @@ abstract class PlayerBaseViewFragment : Fragment(),
         }
         unbindAndStopPlayService()
         super.onDestroy()
+    }
+
+    fun onBackPressed() {
+        Log.d(TAG, "onBackPressed() is called")
+        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
+        if (exitAppTimer.canExit()) {
+            closeFragment()
+        } else {
+            exitAppTimer.start()
+            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp), toastTextSize,
+                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
+        }
     }
 
     fun setMainMenu() {

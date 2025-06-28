@@ -2,11 +2,7 @@ package com.smile.karaokeplayer
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -14,307 +10,191 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.os.PowerManager
-import android.os.Process
 import android.provider.Settings
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.OptIn
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.media3.common.util.UnstableApi
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.dynamite.DynamiteModule.LoadingException
-import com.smile.karaokeplayer.constants.PlayerConstants
-import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
-import com.smile.karaokeplayer.fragments.TablayoutFragment
-import com.smile.karaokeplayer.interfaces.PlayMyFavorites
-import com.smile.karaokeplayer.interfaces.PlaySongs
-import com.smile.karaokeplayer.models.FileDesList
-import com.smile.karaokeplayer.models.MySingleTon
-import com.smile.karaokeplayer.models.PlayingParameters
-import com.smile.karaokeplayer.models.SongInfo
-import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
-import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment
-import com.smile.smilelibraries.models.ExitAppTimer
-import com.smile.smilelibraries.utilities.ScreenUtil
 import androidx.core.net.toUri
+import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity
+import com.smile.karaokeplayer.ui.theme.KaraokePlayerTheme
+import com.smile.karaokeplayer.ui.theme.Yellow3
+import com.smile.karaokeplayer.vlcplayer.VlcPlayerActivity
+import com.smile.smilelibraries.utilities.ScreenUtil
 
-@UnstableApi
-class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmentFunc,
-        PlaySongs, PlayMyFavorites {
+class MainActivity : ComponentActivity() {
 
-    companion object {
-        private const val TAG : String = "MainActivity"
-        private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
-        private const val PLAYER_FRAGMENT_TAG = "PlayerFragment"
-        private const val TAB_LAYOUT_FRAGMENT_TAG = "TablayoutFragment"
-        private const val IS_PLAY_TO_PAUSE_STATE = "IsPlayToPause"
-        private const val PLAY_DATA_STATE = "PlayData"
-        private const val CALLING_COMPONENT_STATE = "CallingComponentName"
-        private const val WHICH_PLAYER_STATE = "WhichPlayer"
-        private const val CHOOSE_PLAYER_STATE = "ChoosePlayerState"
-    }
-
+    private var permissionExternalStorage = false
     private var textFontSize = 0f
     private var toastTextSize = 0f
-    private var playerFragment: PlayerBaseViewFragment? = null
-    private var permissionExternalStorage = false
-    private lateinit var basePlayViewLayout : LinearLayout
-    private lateinit var baseTabLayout : LinearLayout
-    private lateinit var tablayoutViewLayout : LinearLayout
-    private lateinit var choosePlayerLayout : ConstraintLayout
-    private lateinit var chooseButtonConstraintLayout : ConstraintLayout
-    private lateinit var vlcPlayerLinearLayout : LinearLayout
-    private lateinit var exoPlayerLinearLayout : LinearLayout
-    private lateinit var vlcPlayerButton : Button
-    private lateinit var isVlcCurrent : TextView
-    private lateinit var exoPlayerButton : Button
-    private lateinit var isExoCurrent : TextView
-    private lateinit var cancelButton : Button
-    private var tablayoutFragment : TablayoutFragment? = null
-    private var weightSum : Float = 0f
-    private lateinit var baseReceiver: BroadcastReceiver
-    private lateinit var callingIntent : Intent
-    private var isPlayToPause : Boolean = false
-    private var hasPlayedSingle : Boolean = false
-    private var callingComponentName : ComponentName? = null
-    private var playData = Bundle()
-    private var whichPlayer : Int = PlayerConstants.VLC_PLAYER
-    private var choosePlayerState : Int = 0   // 0--> select files, 1-->Auto Play from menu
-    private var mOrderedSongs : ArrayList<SongInfo>? = null
-    var castContext: CastContext? = null
+    // the following are for VLCPlayer
+    private lateinit var vlcLauncher: ActivityResultLauncher<Intent>
+    // the following are for ExoPlayer
+    private lateinit var exoLauncher: ActivityResultLauncher<Intent>
+    //
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        // the orientation is always the current one right now before creating or recreating after destroying
-        requestedOrientation = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
-
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@MainActivity,
             SmileApp.FontSize_Scale_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(this@MainActivity, defaultTextFontSize,
+        textFontSize = ScreenUtil.suitableFontSize(this@MainActivity,
+            defaultTextFontSize,
             SmileApp.FontSize_Scale_Type,0.0f)
         toastTextSize = textFontSize * 0.7f
+        SmileApp.textFontSize = textFontSize
+        SmileApp.toastTextSize = toastTextSize
+        Composables.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
+        Composables.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        vlcLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            Log.d(TAG, "vlcLauncher.result received")
+            if (result.resultCode == RESULT_OK) {
+                Log.d(TAG, "vlcLauncher.RESULT_OK")
+            }
+        }
 
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "onCreate.BroadcastReceiver.onReceive")
-                intent?.action?.let {
-                    if (it == PlayerConstants.PlaySingleSongAction) {
-                        Log.d(TAG, "onReceive.PlaySingleSongAction")
-                        intent.putExtra(PlayerConstants.SingleSongVolume,
-                                playerFragment?.mPresenter?.playingParam?.currentVolume)
-                        onReceiveFunc(isSingleSong = true, needPlay = true, intent = intent, pData = null)
-                        hasPlayedSingle = true
+        exoLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            Log.d(TAG, "exoLauncher.result received")
+            if (result.resultCode == RESULT_OK) {
+                Log.d(TAG, "exoLauncher.RESULT_OK")
+            }
+        }
+
+        setContent {
+            Log.d(TAG,"onCreate.setContent")
+            KaraokePlayerTheme {
+                permissionExternalStorage =
+                    (ActivityCompat.checkSelfPermission(applicationContext,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED)
+                if (!permissionExternalStorage) {
+                    val permissions : Array<String> =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
+                                Manifest.permission.READ_MEDIA_VIDEO,
+                                Manifest.permission.READ_MEDIA_AUDIO)
+                        } else {
+                            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        }
+                    ActivityCompat.requestPermissions(this,
+                        permissions,
+                        PERMISSION_WRITE_EXTERNAL_CODE
+                    )
+                }
+                askIgnoreOptimizationsBattery()
+
+                val screen = ScreenUtil.getScreenSize(this@MainActivity)
+                val maxWidth = ScreenUtil.pixelToDp(screen.x.toFloat())
+                val maxHeight = ScreenUtil.pixelToDp(screen.y.toFloat())
+                Log.d(TAG, "onCreate.setContent.maxHeight = $maxHeight")
+                var verSpacerWeight = 2.0f
+                var horSpacerWeight = 1.0f
+                if (resources.configuration.orientation
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+                    verSpacerWeight = 1.0f
+                    horSpacerWeight = 2.5f
+                }
+                val buttonWidth = maxWidth * (10.0f - horSpacerWeight * 2.0f)
+                // 1 in 5
+                val buttonHeight = maxHeight * (10.0f - (verSpacerWeight * 2.0f)) / 50.0f
+                Log.d(TAG, "onCreate.setContent.buttonHeight = $buttonHeight")
+                val backgroundColor = Yellow3
+                val buttonBackground = Color.Transparent
+                val buttonContentColor = Color.Green
+                val buttonContainerColor = Color.Blue
+                Column(modifier = Modifier.fillMaxSize()
+                    .background(color = backgroundColor)) {
+                    Spacer(modifier = Modifier.fillMaxWidth().weight(verSpacerWeight))
+                    Row(modifier = Modifier.weight(10.0f - verSpacerWeight * 2.0f)) {
+                        Spacer(modifier = Modifier.fillMaxHeight().weight(horSpacerWeight))
+                        Column(modifier = Modifier
+                            .weight(10.0f - horSpacerWeight * 2.0f)) {
+                            Column(modifier = Modifier.weight(1.0f).
+                                fillMaxHeight(),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center) {
+                                Button(
+                                    onClick = { startExoActivity() },
+                                    modifier = Modifier//.weight(1.0f)
+                                        .width(width = buttonWidth.dp)
+                                        .height(height = buttonHeight.dp)
+                                        .background(color = buttonBackground),
+                                    colors = ButtonColors(
+                                        containerColor = buttonContainerColor,
+                                        disabledContainerColor = buttonContainerColor,
+                                        contentColor = buttonContentColor,
+                                        disabledContentColor = buttonContentColor
+                                    )
+                                )
+                                { Text(text = "ExoPlayer", fontSize = Composables.fontSize) }
+                                Text(//modifier = Modifier.weight(2.0f),
+                                    text = getString(R.string.exoDescription),
+                                    color = Color.Red, fontSize = Composables.toastFontSize)
+                            }
+                            Column(modifier = Modifier.weight(1.0f),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center) {
+                                Button(
+                                    onClick = { startVlcActivity() },
+                                    modifier = Modifier//.weight(1.0f)
+                                        .width(width = buttonWidth.dp)
+                                        .height(height = buttonHeight.dp)
+                                        .background(color = buttonBackground),
+                                    colors = ButtonColors(
+                                        containerColor = buttonContainerColor,
+                                        disabledContainerColor = buttonContainerColor,
+                                        contentColor = buttonContentColor,
+                                        disabledContentColor = buttonContentColor
+                                    )
+                                )
+                                { Text(text = "VLCPlayer", fontSize = Composables.fontSize) }
+                                Text(//modifier = Modifier.weight(2.0f),
+                                    text = getString(R.string.vlcDescription),
+                                    color = Color.Red, fontSize = Composables.toastFontSize)
+                            }
+                        }
+                        Spacer(modifier = Modifier.fillMaxHeight().weight(horSpacerWeight))
                     }
+                    Spacer(modifier = Modifier.fillMaxSize().weight(verSpacerWeight))
                 }
             }
-        }.also { baseReceiver = it }
 
-        LocalBroadcastManager.getInstance(this).apply {
-            Log.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
-            registerReceiver(baseReceiver, IntentFilter().apply {
-                addAction(PlayerConstants.PlaySingleSongAction)
-                addAction(PlayerConstants.BackToBaseActivity)
-            })
-        }
-
-        permissionExternalStorage =
-                (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED)
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!permissionExternalStorage) {
-                val permissions : Array<String> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-                ActivityCompat.requestPermissions(this, permissions, PERMISSION_WRITE_EXTERNAL_CODE)
-            }
-
-        askIgnoreOptimizationsBattery()
-
-        basePlayViewLayout = findViewById(R.id.basePlayViewLayout)
-        baseTabLayout = findViewById(R.id.baseTabLayout)
-        weightSum = baseTabLayout.weightSum
-        tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
-        setTabLayoutViewWeight(resources.configuration.orientation)
-
-        choosePlayerLayout = findViewById(R.id.choosePlayerLayout)
-        choosePlayerLayout.visibility = View.GONE
-        chooseButtonConstraintLayout = findViewById(R.id.chooseButtonConstraintLayout)
-        vlcPlayerLinearLayout = findViewById(R.id.vlcPlayerLinearLayout)
-        exoPlayerLinearLayout = findViewById(R.id.exoPlayerLinearLayout)
-
-        val descriptionRatio = 0.7f
-        vlcPlayerButton = findViewById(R.id.vlcPlayerButton)
-        vlcPlayerButton.let {
-            it.setOnClickListener {
-                Log.d(TAG, "vlcPlayerButton.setOnClickListener")
-                whichPlayer = PlayerConstants.VLC_PLAYER
-                playerFragment?.enableSomeButtonsDueToPopupGone()
-                choosePlayerLayout.visibility = View.GONE
-                if (choosePlayerState == 0) {
-                    // select files to play
-                    isEnableView(tablayoutViewLayout, true)
-                    startPlaySelectedSongList()
-                } else {
-                    // = 2. auto play from menu
-                    startPlayAutoPlay()
-                }
-            }
-        }
-        isVlcCurrent = findViewById(R.id.isVlcCurrent)
-        val vlcDescription : TextView = findViewById(R.id.vlcDescription)
-        ScreenUtil.resizeTextSize(vlcDescription, textFontSize*descriptionRatio
-            , ScreenUtil.FontSize_Pixel_Type)
-        exoPlayerButton = findViewById(R.id.exoPlayerButton)
-        exoPlayerButton.let {
-            it.setOnClickListener {
-                Log.d(TAG, "exoPlayerButton.setOnClickListener")
-                whichPlayer = PlayerConstants.EXO_PLAYER
-                playerFragment?.enableSomeButtonsDueToPopupGone()
-                choosePlayerLayout.visibility = View.GONE
-                if (choosePlayerState == 0) {
-                    // select files to play
-                    isEnableView(tablayoutViewLayout, true)
-                    startPlaySelectedSongList()
-                } else {
-                    // = 2. auto play from menu
-                    startPlayAutoPlay()
-                }
-            }
-        }
-        isExoCurrent = findViewById(R.id.isExoCurrent)
-        val exoDescription : TextView = findViewById(R.id.exoDescription)
-        ScreenUtil.resizeTextSize(exoDescription, textFontSize*descriptionRatio
-            , ScreenUtil.FontSize_Pixel_Type)
-        cancelButton = findViewById(R.id.cancelButton)
-        cancelButton.let {
-            it.setOnClickListener {
-                Log.d(TAG, "cancelButton.setOnClickListener")
-                playerFragment?.enableSomeButtonsDueToPopupGone()
-                choosePlayerLayout.visibility = View.GONE
-                if (choosePlayerState == 0) {
-                    // select files to play
-                    isEnableView(tablayoutViewLayout, true)
-                } else {
-                    // restore check status
-                    playerFragment?.setIsCheckAutoPlay()
-                }
-            }
-        }
-        setLayoutAndTextSize(resources.configuration.orientation)
-
-        tablayoutFragment = null
-        callingIntent = intent
-        Log.d(TAG, "savedInstanceState = null")
-        Log.d(TAG, "callingIntent.extras = ${callingIntent.extras}")
-        if (savedInstanceState != null) {
-            isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE_STATE, false)
-            whichPlayer = savedInstanceState.getInt(WHICH_PLAYER_STATE, PlayerConstants.VLC_PLAYER)
-            choosePlayerState = savedInstanceState.getInt(CHOOSE_PLAYER_STATE, 0)
-
-            callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                savedInstanceState.getParcelable(CALLING_COMPONENT_STATE,
-                    ComponentName::class.java)
-            else savedInstanceState.getParcelable(CALLING_COMPONENT_STATE)
-
-            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                savedInstanceState.getParcelable(PLAY_DATA_STATE,
-                    Bundle::class.java)
-            else savedInstanceState.getParcelable(PLAY_DATA_STATE))?.also {
-                playData = it
-            }
-
-            supportFragmentManager.findFragmentByTag(TAB_LAYOUT_FRAGMENT_TAG)?.let {
-                tablayoutFragment = it as TablayoutFragment
-            }
-            Log.d(TAG, "savedInstanceState is not null.tablayoutFragment = $tablayoutFragment")
-        }
-
-        if (tablayoutFragment == null) tablayoutFragment = TablayoutFragment()
-        supportFragmentManager.beginTransaction().apply {
-            tablayoutFragment?.let {
-                if (!it.isInLayout) {
-                    Log.d(TAG, "tablayoutFragment.isInLayout() = false")
-                    replace(R.id.tablayoutViewLayout, it, TAB_LAYOUT_FRAGMENT_TAG)
-                    tablayoutViewLayout.visibility = View.VISIBLE
-                    commit()
-                }
-            }
-        }
-
-        // for the chrome cast
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
-            try {
-                castContext = CastContext.getSharedInstance(this)
-                Log.d(TAG, "castContext = $castContext")
-            } catch (e: RuntimeException) {
-                castContext = null
-                var cause = e.cause
-                while (cause != null) {
-                    if (cause is LoadingException) {
-                        Log.d(TAG,"onCreate.Failed to get CastContext." +
-                                "Try updating Google Play Services and restart the app.")
-                    }
-                    cause = cause.cause
-                }
-                // Unknown error. We propagate it.
-                Log.d(TAG, "onCreate.Failed to get CastContext. Unknown error.")
-            }
-        }
-        //
-
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                Log.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
-                /*
-                playerFragment?.apply {
-                    onBackPressed()
-                } ?: run {
-                    // tablayoutFragment?.onBackPressed()
-                    onBackPressedActivity()
-                }
-                */
-                onBackPressedActivity()
-            }
-        })
-
-        findViewById<FrameLayout>(R.id.activity_main_layout).apply {
-            viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    // Layout has been finished
-                    // hove to use removeGlobalOnLayoutListener() method after API 16 or is API 16
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    createViewDependingOnOrientation()
+            onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    exitApp()
                 }
             })
         }
@@ -333,6 +213,7 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         }
     }
 
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
@@ -346,340 +227,50 @@ class MainActivity : AppCompatActivity(), PlayerBaseViewFragment.PlayBaseFragmen
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
             Log.d(TAG, "onRequestPermissionsResult.Permission Denied")
-            returnToPrevious(false) // exit the activity immediately
+            exitApp()
+        }
+    }
+
+    private fun exitApp() {
+        Log.d(TAG, "exitApp")
+        finish()
+    }
+
+    private fun startVlcActivity() {
+        Intent(
+            this@MainActivity,
+            VlcPlayerActivity::class.java
+        ).also {
+            vlcLauncher.launch(it)
+        }
+    }
+
+    private fun startExoActivity() {
+        Intent(
+            this@MainActivity,
+            ExoPlayerActivity::class.java
+        ).also {
+            exoLauncher.launch(it)
         }
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume")
         super.onResume()
+        Log.d(TAG, "onResume")
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        Log.d(TAG, "onSaveInstanceState()")
-        outState.putBoolean(IS_PLAY_TO_PAUSE_STATE, isPlayToPause)
-        outState.putParcelable(CALLING_COMPONENT_STATE, callingComponentName)
-        outState.putParcelable(PLAY_DATA_STATE, playData)
-        outState.putInt(WHICH_PLAYER_STATE, whichPlayer)
-        outState.putInt(CHOOSE_PLAYER_STATE, choosePlayerState)
         super.onSaveInstanceState(outState, outPersistentState)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        Log.d(TAG, "onConfigurationChanged()")
-        super.onConfigurationChanged(newConfig)
-        setTabLayoutViewWeight(newConfig.orientation)
-        setLayoutAndTextSize(newConfig.orientation)
-    }
-
-    private fun setLayoutAndTextSize(orientation: Int) {
-        Log.d(TAG, "setLayoutAndTextSize")
-
-        val textSize = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            textFontSize * 1.0f else textFontSize * 0.8f
-        ScreenUtil.resizeTextSize(vlcPlayerButton, textSize, ScreenUtil.FontSize_Pixel_Type)
-        ScreenUtil.resizeTextSize(exoPlayerButton, textSize, ScreenUtil.FontSize_Pixel_Type)
-        ScreenUtil.resizeTextSize(cancelButton, textSize, ScreenUtil.FontSize_Pixel_Type)
-        ScreenUtil.resizeTextSize(isVlcCurrent, textSize, ScreenUtil.FontSize_Pixel_Type)
-        ScreenUtil.resizeTextSize(isExoCurrent, textSize, ScreenUtil.FontSize_Pixel_Type)
-
-        var percentHeightRatio = 0.6f
-        var percentWidthRatio = 0.85f
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            percentHeightRatio = 0.72f
-            percentWidthRatio = 0.6f
-        }
-        var lp = chooseButtonConstraintLayout.layoutParams as ConstraintLayout.LayoutParams
-        lp.matchConstraintPercentHeight = percentHeightRatio
-        lp.matchConstraintPercentWidth = percentWidthRatio
-
-        percentHeightRatio = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            0.3f else 0.425f
-        lp = vlcPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
-        lp.matchConstraintPercentHeight = percentHeightRatio
-        lp = exoPlayerLinearLayout.layoutParams as ConstraintLayout.LayoutParams
-        lp.matchConstraintPercentHeight = percentHeightRatio
-
-        percentHeightRatio = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            0.1f else 0.15f
-        lp = cancelButton.layoutParams as ConstraintLayout.LayoutParams
-        lp.matchConstraintPercentHeight = percentHeightRatio
+        Log.d(TAG, "onSaveInstanceState()")
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
-        LocalBroadcastManager.getInstance(this).apply {
-            unregisterReceiver(baseReceiver)
-        }
         super.onDestroy()
+        Log.d(TAG, "onDestroy")
     }
 
-    private fun onBackPressedActivity() {
-        Log.d(TAG, "onBackPressedActivity() is called")
-        val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
-        if (exitAppTimer.canExit()) {
-            returnToPrevious(false)
-        } else {
-            exitAppTimer.start()
-            ScreenUtil.showToast(this, getString(R.string.backKeyToExitApp), toastTextSize,
-                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
-        }
-    }
-
-    fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean, intent : Intent?, pData : Bundle?) {
-        Log.d(TAG, "onReceiveFunc.needPlay = $needPlay")
-        playerFragment?.run {
-            mPresenter.let{
-                it.initializeVariables(pData, intent, it.playingParam.isAutoPlay)
-                if (needPlay) it.playSongPlayedBeforeActivityCreated()
-                setMainMenu()
-                Log.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
-                if (isSingleSong) {
-                    it.playingParam.singleSongPlayingStatus = 1  // start playing single song
-                    showPlayerView()
-                } else {
-                    // PlayerConstants.BackToBaseActivity
-                    if (it.playingParam.isPlayerViewVisible) showPlayerView() else hidePlayerView()
-                    Log.d(TAG, "onReceiveFunc.currentPlaybackState = ${it.playingParam.currentPlaybackState}")
-                }
-            }
-            showSupportToolbarAudioControlSetTimer()
-        }
-        Intent().apply {
-            Log.d(TAG, "onReceiveFunc.componentName = $componentName")
-            component = componentName
-            addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(this)
-        }
-    }
-
-    // implementing interface PlayerBaseViewFragment.PlayBaseFragmentFunc
-    override fun baseHidePlayerView() {
-        Log.d(TAG, "baseHidePlayerView()")
-        tablayoutViewLayout.visibility = View.VISIBLE
-        tablayoutFragment?.becomeVisible()
-    }
-    override fun baseShowPlayerView() {
-        Log.d(TAG, "baseShowPlayerView()")
-        tablayoutViewLayout.visibility = View.GONE
-        tablayoutFragment?.becomeInVisible()
-    }
-    override fun returnToPrevious(isSingleSong : Boolean) {
-        Log.d(TAG, "returnToPrevious.isSingleSong = $isSingleSong")
-        if (isSingleSong) {
-            playerFragment?.mPresenter?.let {
-                it.pausePlay()
-                it.playingParam.singleSongPlayingStatus = 0  // exit playing single song
-                callingComponentName?.let { callIt->
-                    Intent().apply {
-                        component = callIt
-                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                        startActivity(this)
-                    }
-                }
-                Log.d(TAG, "returnToPrevious.preparedStatus = ${it.playingParam.preparedStatus}")
-            }
-            return
-        }
-        // exit application
-        // finish()
-        Log.d(TAG, "returnToPrevious.finish()")
-        finishAndRemoveTask()
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask()
-        // else finishAffinity()
-
-        Log.d(TAG, "returnToPrevious().onDestroy()")
-        onDestroy()
-
-        MySingleTon.favorites.clear()
-        MySingleTon.selectedFavorites.clear()
-        MySingleTon.orderedSongs.clear()
-        FileDesList.fileList.clear()
-
-        Log.d(TAG, "returnToPrevious().Process.killProcess()")
-        Process.killProcess(Process.myPid())
-        // exitProcess(0);
-    }
-    override fun choosePlayerToAutoPlay() {
-        Log.d(TAG, "choosePlayerToAutoPlay.whichPlayer = $whichPlayer")
-        choosePlayerState = 1   // auto play from menu
-        showChoosePlayerPopup()
-    }
-    // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
-
-    // implementing interface PlayMyFavorites
-    override fun onSavePlayingState(compName : ComponentName?) {
-        Log.d(TAG, "onSavePlayingState.compName = $compName")
-        callingComponentName = compName
-        playerFragment?.let {
-            playData.clear()
-            it.onSaveInstanceState(playData)
-            isPlayToPause = false
-            it.mPresenter.playingParam?.let { pIt->
-                if (pIt.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
-                    // playing then pause before going to my favorite activity
-                    it.mPresenter.pausePlay()
-                    isPlayToPause = true
-                }
-                pIt.preparedStatus = 10    // going to BaseFavoriteListActivity
-            }
-        }
-    }
-
-    override fun restorePlayingState() {
-        Log.d(TAG, "restorePlayingState.return from BaseFavoriteListActivity")
-        // come Back From Favorite
-        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            playData.getParcelable(PlayerConstants.PlayingParamState,
-                PlayingParameters::class.java)
-        else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
-            Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
-            Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")
-            Log.d(TAG, "restorePlayingState.preparedStatus = $preparedStatus")
-            if (isPlayToPause) currentPlaybackState = PlaybackStateCompat.STATE_PLAYING // restore to playing
-            preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
-            Log.d(TAG, "restorePlayingState.preparedStatus changed to $preparedStatus")
-        }
-        onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
-        callingComponentName = null
-        isPlayToPause = false
-    }
-
-    override fun switchToOpenFileFragment() {
-        tablayoutFragment?.switchToOpenFileFragment()
-    }
-    // Finishes implementing interface PlayMyFavorites
-
-    // implementing interface PlaySongs
-    @OptIn(UnstableApi::class)
-    override fun choosePlayerToPlaySelectedSongs(songs : ArrayList<SongInfo>) {
-        Log.d(TAG, "choosePlayerToPlaySelectedSongs.whichPlayer = $whichPlayer")
-        Log.d(TAG, "choosePlayerToPlaySelectedSongs.songs.size = ${songs.size}")
-        if (songs.isEmpty()) return
-        choosePlayerState = 0   // select files to play
-        mOrderedSongs = ArrayList(songs)    // temporary memory
-        isEnableView(tablayoutViewLayout, false)
-        showChoosePlayerPopup()
-    }
-    // Finish implementing interface PlaySongs
-
-
-    private fun showChoosePlayerPopup() {
-        Log.d(TAG, "showChoosePlayerPopup")
-        playerFragment?.disableSomeButtonsDueToBecausePopup()
-        choosePlayerLayout.visibility = View.VISIBLE
-        when (whichPlayer) {
-            PlayerConstants.VLC_PLAYER-> {
-                isVlcCurrent.visibility = View.VISIBLE
-                isExoCurrent.visibility = View.GONE
-            }
-            PlayerConstants.EXO_PLAYER-> {
-                isExoCurrent.visibility = View.VISIBLE
-                isVlcCurrent.visibility = View.GONE
-            }
-            else->{
-                isVlcCurrent.visibility = View.GONE
-                isExoCurrent.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun isEnableView(view : View, isEnable : Boolean) {
-        Log.d(TAG, "isEnableView")
-        view.let {
-            it.isEnabled = isEnable
-            if (it is ViewGroup) {
-                for (i in 0 until it.childCount) {
-                    isEnableView(it.getChildAt(i), isEnable)
-                }
-            }
-        }
-    }
-
-    private fun startPlaySelectedSongList() {
-        Log.d(TAG, "startPlaySelectedSongList.whichPlayer = $whichPlayer")
-        mOrderedSongs?.let {
-            Log.d(TAG, "startPlaySelectedSongList.mOrderedSongs.size = ${it.size}")
-            if (it.isNotEmpty()) {
-                MySingleTon.orderedSongs.clear()
-                MySingleTon.orderedSongs.addAll(it)
-                startPlaySongs(false)
-            }
-        }
-    }
-
-    private fun startPlayAutoPlay() {
-        Log.d(TAG, "startPlayAutoPlay.whichPlayer = $whichPlayer")
-        DatabaseAccessUtil.readSavedSongList(this@MainActivity, true).let {
-            Log.d(TAG, "startPlayAutoPlay.auto play song size = ${it.size}")
-            if (it.isNotEmpty()) {
-                MySingleTon.orderedSongs.clear()
-                MySingleTon.orderedSongs.addAll(it)
-                startPlaySongs(true)
-            }
-        }
-    }
-
-    private fun startPlaySongs(isAutoPlay : Boolean) {
-        Log.d(TAG, "startPlaySongs.whichPlayer= $whichPlayer")
-        if (whichPlayer != PlayerConstants.VLC_PLAYER
-            && whichPlayer != PlayerConstants.EXO_PLAYER) return
-        var needPlace = true
-        supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT_TAG)?.let {
-            playerFragment = it as PlayerBaseViewFragment
-            if (playerFragment is VlcPlayerFragment) {
-                Log.d(TAG, "playSelectedSongList.VlcPlayerFragment found")
-                if (whichPlayer != PlayerConstants.VLC_PLAYER)
-                    playerFragment = ExoPlayerFragment() else needPlace = false
-            } else {
-                // ExoPlayerFragment
-                Log.d(TAG, "playSelectedSongList.ExoPlayerFragment found")
-                if (whichPlayer == PlayerConstants.VLC_PLAYER)
-                    playerFragment = VlcPlayerFragment() else needPlace = false
-            }
-        } ?: run {
-            Log.d(TAG, "playSelectedSongList.No playerFragment found!")
-            playerFragment = if (whichPlayer == PlayerConstants.VLC_PLAYER)
-                VlcPlayerFragment() else ExoPlayerFragment()
-        }
-        Log.d(TAG, "playSelectedSongList.playerFragment = $playerFragment")
-        Log.d(TAG, "playSelectedSongList.needPlace = $needPlace")
-        playerFragment?.let {
-            if (needPlace) {
-                it.arguments = Bundle().apply {
-                    putBoolean(PlayerConstants.IS_AUTOPLAY_STATE, isAutoPlay)
-                }
-                supportFragmentManager.beginTransaction().apply {
-                    if (!it.isInLayout) {
-                        Log.d(TAG, "playSelectedSongList.playerFragment.isInLayout() = false")
-                        replace(R.id.basePlayViewLayout, it, PLAYER_FRAGMENT_TAG)
-                        commit()
-                        /*  moved to PlayerBaseViewFragment under onServiceConnected()
-                        it.mPresenter.playingParam.isAutoPlay = isAutoPlay
-                        it.mPresenter.autoPlaySongList()
-                        it.showPlayerView()
-                        */
-                    }
-                }
-            } else {
-                it.mPresenter.playingParam.isAutoPlay = isAutoPlay
-                it.mPresenter.autoPlaySongList()
-                it.showPlayerView()
-                it.setImageButtonStatus()
-            }
-        }
-    }
-
-    private fun createViewDependingOnOrientation() {
-        if (callingIntent.extras == null) {
-            playerFragment?.hidePlayerView()
-        }
-    }
-
-    private fun setTabLayoutViewWeight(orientation : Int) {
-        Log.d(TAG, "weightSum = $weightSum")
-        val layoutP = tablayoutViewLayout.layoutParams as LinearLayout.LayoutParams
-        layoutP.weight = if (orientation == Configuration.ORIENTATION_LANDSCAPE) weightSum * 0.7f
-        else weightSum * 0.8f
+    companion object {
+        private const val TAG : String = "MainActivity"
+        private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
     }
 }

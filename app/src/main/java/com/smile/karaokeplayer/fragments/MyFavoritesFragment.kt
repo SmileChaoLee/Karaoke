@@ -184,7 +184,8 @@ class MyFavoritesFragment : Fragment(),
                             activity, getString(R.string.noFilesSelectedString), textFontSize,
                             SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
                 } else {
-                    playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
+                    // playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
+                    playSongs?.playSelectedSongList(ArrayList(songs))
                 }
             }
             val editButton: ImageButton = it.findViewById(R.id.favoriteEditButton)

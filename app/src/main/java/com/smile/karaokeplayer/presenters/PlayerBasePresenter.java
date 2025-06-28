@@ -289,17 +289,21 @@ public abstract class PlayerBasePresenter {
         return stillPlayNext;
     }
 
-    public void setAutoPlayStatusAndAction() {
-        Log.d(TAG, "setAutoPlayStatusAndAction");
-        ArrayList<SongInfo> songList = DatabaseAccessUtil.readSavedSongList(mActivity, true);
+    public boolean setAutoPlayStatusAndAction() {
+        ArrayList<SongInfo> songList = DatabaseAccessUtil.readSavedSongList(mActivity,
+                true);
+        Log.d(TAG, "setAutoPlayStatusAndAction.songList.size() = " + songList.size());
+        boolean isAutoPlay = false;
         if (!songList.isEmpty()) {
             MySingleTon.INSTANCE.getOrderedSongs().clear();
             MySingleTon.INSTANCE.getOrderedSongs().addAll(songList);
-            mPlayingParam.setAutoPlay(!MySingleTon.INSTANCE.getOrderedSongs().isEmpty());
+            isAutoPlay = true;
+            mPlayingParam.setAutoPlay(isAutoPlay);
             autoPlaySongList();
             mPresentView.showPlayerView();
             mPresentView.setImageButtonStatus();
         }
+        return isAutoPlay;
     }
 
     public void stopAutoPlay() {

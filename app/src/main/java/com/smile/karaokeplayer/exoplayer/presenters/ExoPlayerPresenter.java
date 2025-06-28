@@ -15,9 +15,9 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
 import com.google.android.gms.cast.framework.CastContext;
-import com.smile.karaokeplayer.MainActivity;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
+import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity;
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
 
 import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
@@ -57,7 +57,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         }
     };
 
-    public interface ExoPlayerPresentView extends PlayerBasePresenter.BasePresentView {
+    public interface ExoPlayerPresentView extends BasePresentView {
         void setCurrentPlayerToPlayerView();
     }
 
@@ -84,7 +84,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     public CastContext getCastContext() {
         // ExoPlayerActivity activity = (ExoPlayerActivity)mActivity;
-        MainActivity activity = (MainActivity)mActivity;
+        ExoPlayerActivity activity = (ExoPlayerActivity)mActivity;
         Log.d(TAG, "getCastContext().activity = " + activity);
         if (activity == null) {
             return null;
