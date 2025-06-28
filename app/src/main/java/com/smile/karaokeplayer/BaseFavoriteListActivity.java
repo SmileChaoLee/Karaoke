@@ -163,6 +163,8 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     private void returnToPrevious() {
         Log.d(TAG, "returnToPrevious");
+        setResult(Activity.RESULT_OK);   // no bundle data
+        finish();
     }
 
     private Intent createIntentFromSongDataActivity() {

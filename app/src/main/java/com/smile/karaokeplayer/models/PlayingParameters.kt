@@ -25,14 +25,16 @@ class PlayingParameters (
         var currentAudioTrackIndexPlayed: Int, var currentChannelPlayed: Int,
         var currentAudioPosition: Long, var currentVolume: Float, var currentSongIndex: Int,
         var repeatStatus: Int, var isPlayerViewVisible : Boolean,
-        var finishState: Int, var numPlayed: Int, var singleSongPlayingStatus: Int) : Parcelable {
+        var wentToFavorite: Boolean, var finishState: Int, var numPlayed: Int,
+        var singleSongPlayingStatus: Int) : Parcelable {
         constructor() : this(PlayerConstants.PREPARE_MEDIA, false,
                 0, false, false,
                 1, 1, CommonConstants.LeftChannel,
                 CommonConstants.RightChannel, 1, CommonConstants.LeftChannel,
                 0, 1.0f, -1,
                 PlayerConstants.NoRepeatPlaying, true,
-                PlayerConstants.FINISHED_NORMALLY,0, 0)
+                false, PlayerConstants.FINISHED_NORMALLY,
+                0, 0)
         // finishState = 0 --> playing finishes normally
         // finishState = 1 --> playing stopped by user
         // finishState = 2 --> finished by pressing playPreviousSong or PlayNextSong buttons
@@ -44,5 +46,6 @@ class PlayingParameters (
                 playParam.currentAudioTrackIndexPlayed, playParam.currentChannelPlayed,
                 playParam.currentAudioPosition, playParam.currentVolume, playParam.currentSongIndex,
                 playParam.repeatStatus, playParam.isPlayerViewVisible,
-                playParam.finishState, playParam.numPlayed, playParam.singleSongPlayingStatus)
+                playParam.wentToFavorite,playParam.finishState,
+                playParam.numPlayed,playParam.singleSongPlayingStatus)
 }

@@ -81,11 +81,13 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
             Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
             Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
-            // if (!it.isPlaySingleSong || (it.isPlaySingleSong && it.singleSongPlayingStatus == 2)) {
-            if (!it.isPlaySingleSong || it.singleSongPlayingStatus == 2) {
-                // isSingleSongOpened = 2 means playing single song
-                Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
-                presenter.playSongPlayedBeforeActivityCreated()
+            Log.d(TAG, "onStart.wentToFavorite = ${it.wentToFavorite}")
+            if (!it.wentToFavorite) {   // not back from favorite activity
+                if (!it.isPlaySingleSong || it.singleSongPlayingStatus == 2) {
+                    // isSingleSongOpened = 2 means playing single song
+                    Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
+                    presenter.playSongPlayedBeforeActivityCreated()
+                }
             }
         }
     }

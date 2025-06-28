@@ -323,7 +323,8 @@ abstract class BaseActivity : AppCompatActivity(),
                     it.mPresenter.pausePlay()
                     isPlayToPause = true
                 }
-                pIt.preparedStatus = 10   // going to BaseFavoriteListActivity
+                // pIt.preparedStatus = 10   // going to BaseFavoriteListActivity
+                pIt.wentToFavorite = true   // going to BaseFavoriteListActivity
             }
         }
     }
@@ -337,9 +338,12 @@ abstract class BaseActivity : AppCompatActivity(),
             Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
             Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")
             Log.d(TAG, "restorePlayingState.preparedStatus = $preparedStatus")
+            Log.d(TAG, "restorePlayingState.wentToFavorite = $wentToFavorite")
             if (isPlayToPause) currentPlaybackState = PlaybackStateCompat.STATE_PLAYING // restore to playing
             preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
             Log.d(TAG, "restorePlayingState.preparedStatus changed to $preparedStatus")
+            wentToFavorite = false  // set back to default
+            Log.d(TAG, "restorePlayingState.wentToFavorite changed to $wentToFavorite")
         }
         onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
         callingComponentName = null
