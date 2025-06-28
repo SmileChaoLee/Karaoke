@@ -3,7 +3,6 @@ package com.smile.karaokeplayer
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -135,6 +134,7 @@ class MainActivity : ComponentActivity() {
                 val buttonBackground = Color.Transparent
                 val buttonContentColor = Color.Green
                 val buttonContainerColor = Color.Blue
+                val textLineHeight = (Composables.toastFontSize.value + 5.0f).sp
                 Column(modifier = Modifier.fillMaxSize()
                     .background(color = backgroundColor)) {
                     Spacer(modifier = Modifier.fillMaxWidth().weight(verSpacerWeight))
@@ -161,6 +161,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 { Text(text = "ExoPlayer", fontSize = Composables.fontSize) }
                                 Text(//modifier = Modifier.weight(2.0f),
+                                    lineHeight = textLineHeight,
                                     text = getString(R.string.exoDescription),
                                     color = Color.Red, fontSize = Composables.toastFontSize)
                             }
@@ -182,6 +183,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 { Text(text = "VLCPlayer", fontSize = Composables.fontSize) }
                                 Text(//modifier = Modifier.weight(2.0f),
+                                    lineHeight = textLineHeight,
                                     text = getString(R.string.vlcDescription),
                                     color = Color.Red, fontSize = Composables.toastFontSize)
                             }
