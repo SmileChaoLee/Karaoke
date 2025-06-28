@@ -6,6 +6,6 @@
     </item>
     <item
         android:state_enabled="false"
-        android:drawable="@drawable/no_audio_track_sign">
+        android:drawable="@drawable/audio_track">
     </item>
 </selector>

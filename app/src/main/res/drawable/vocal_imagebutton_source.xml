@@ -6,6 +6,6 @@
     </item>
     <item
         android:state_enabled="false"
-        android:drawable="@drawable/no_vocal_sign">
+        android:drawable="@drawable/vocal">
     </item>
 </selector>

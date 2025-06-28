@@ -32,6 +32,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +47,10 @@ import com.smile.karaokeplayer.ui.theme.KaraokePlayerTheme
 import com.smile.karaokeplayer.ui.theme.Yellow3
 import com.smile.karaokeplayer.vlcplayer.VlcPlayerActivity
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -146,16 +153,24 @@ class MainActivity : ComponentActivity() {
                                 fillMaxHeight(),
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Center) {
+                                val exoClicked = remember { mutableStateOf(false) }
                                 Button(
-                                    onClick = { startExoActivity() },
+                                    onClick = {
+                                        showColorWhenClick(exoClicked)
+                                        startExoActivity()
+                                              },
                                     modifier = Modifier//.weight(1.0f)
                                         .width(width = buttonWidth.dp)
                                         .height(height = buttonHeight.dp)
                                         .background(color = buttonBackground),
                                     colors = ButtonColors(
-                                        containerColor = buttonContainerColor,
+                                        containerColor =
+                                            if (!exoClicked.value) buttonContainerColor
+                                            else Color.Cyan,
                                         disabledContainerColor = buttonContainerColor,
-                                        contentColor = buttonContentColor,
+                                        contentColor =
+                                            if (!exoClicked.value) buttonContentColor
+                                            else Color.Red ,
                                         disabledContentColor = buttonContentColor
                                     )
                                 )
@@ -168,16 +183,24 @@ class MainActivity : ComponentActivity() {
                             Column(modifier = Modifier.weight(1.0f),
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.Center) {
+                                val vlcClicked = remember { mutableStateOf(false) }
                                 Button(
-                                    onClick = { startVlcActivity() },
+                                    onClick = {
+                                        showColorWhenClick(vlcClicked)
+                                        startVlcActivity()
+                                              },
                                     modifier = Modifier//.weight(1.0f)
                                         .width(width = buttonWidth.dp)
                                         .height(height = buttonHeight.dp)
                                         .background(color = buttonBackground),
                                     colors = ButtonColors(
-                                        containerColor = buttonContainerColor,
+                                        containerColor =
+                                            if (!vlcClicked.value) buttonContainerColor
+                                            else Color.Cyan,
                                         disabledContainerColor = buttonContainerColor,
-                                        contentColor = buttonContentColor,
+                                        contentColor =
+                                            if (!vlcClicked.value) buttonContentColor
+                                            else Color.Red,
                                         disabledContentColor = buttonContentColor
                                     )
                                 )
@@ -236,6 +259,14 @@ class MainActivity : ComponentActivity() {
     private fun exitApp() {
         Log.d(TAG, "exitApp")
         finish()
+    }
+
+    private fun showColorWhenClick(isClicked: MutableState<Boolean>) {
+        CoroutineScope(Dispatchers.Default).launch {
+            isClicked.value = true
+            delay(500)
+            isClicked.value = false
+        }
     }
 
     private fun startVlcActivity() {
