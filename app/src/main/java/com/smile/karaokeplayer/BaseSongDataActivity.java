@@ -27,6 +27,7 @@ import com.smile.karaokeplayer.models.SongListSQLite;
 import com.smile.smilelibraries.utilities.ScreenUtil;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class BaseSongDataActivity extends AppCompatActivity {
 
@@ -59,14 +60,15 @@ public class BaseSongDataActivity extends AppCompatActivity {
         Intent callingIntent = getIntent();
         Bundle extras = callingIntent.getExtras();
         if (savedInstanceState == null) {
-            crudAction = callingIntent.getStringExtra(CommonConstants.CrudActionString);
+            crudAction = callingIntent.getStringExtra(CommonConstants.CRUD_ACTION);
+            if (crudAction == null) crudAction = "";
             switch (crudAction.toUpperCase()) {
-                case CommonConstants.AddActionString:
+                case CommonConstants.ADD_ACTION:
                     // add one record
                     mSongInfo = new SongInfo();
                     actionButtonString = getString(R.string.addString);
                     break;
-                case CommonConstants.EditActionString:
+                case CommonConstants.EDIT_ACTION:
                     // = "EDIT". Edit one record
                     if (extras != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -77,7 +79,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                         actionButtonString = getString(R.string.saveString);
                     }
                     break;
-                case CommonConstants.DeleteActionString:
+                case CommonConstants.DELETE_ACTION:
                     // = "DELETE". Delete one record
                     if (extras != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -97,7 +99,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         } else {
             // not null, has savedInstanceState
             actionButtonString = savedInstanceState.getString("ActionButtonString");
-            crudAction = savedInstanceState.getString(CommonConstants.CrudActionString);
+            crudAction = savedInstanceState.getString(CommonConstants.CRUD_ACTION);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
                         SongInfo.class);
@@ -185,7 +187,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         ScreenUtil.resizeTextSize(editIncludedPlaylistTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         editIncludedPlaylistCheckBox = findViewById(R.id.editIncludedPlaylistCheckBox);
         ScreenUtil.resizeTextSize(editIncludedPlaylistCheckBox, textFontSize, ScreenUtil.FontSize_Pixel_Type);
-        boolean isChecked = mSongInfo.getIncluded().equals("1");
+        boolean isChecked = Objects.equals(mSongInfo.getIncluded(), "1");
         editIncludedPlaylistCheckBox.setChecked(isChecked);
         editIncludedPlaylistCheckBox.setOnCheckedChangeListener((buttonView, isChecked1) -> {
             editIncludedPlaylistCheckBox.setChecked(isChecked1);
@@ -201,7 +203,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
             SongInfo songInfo;
             long databaseResult = -1;
             switch (crudAction.toUpperCase()) {
-                case CommonConstants.AddActionString:
+                case CommonConstants.ADD_ACTION:
                     // add one record
                     if (isValid) {
                         // check if this file is already in database
@@ -214,7 +216,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                         }
                     }
                     break;
-                case CommonConstants.EditActionString:
+                case CommonConstants.EDIT_ACTION:
                     // = "EDIT". Edit one record
                     if (isValid) {
                         songInfo = songListSQLite.findOneSongByUriString(mSongInfo.getFilePath());
@@ -235,7 +237,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                         }
                     }
                     break;
-                case CommonConstants.DeleteActionString:
+                case CommonConstants.DELETE_ACTION:
                     // = "DELETE". Delete one record
                     databaseResult = songListSQLite.deleteOneSongFromSongList(mSongInfo);
                     break;
@@ -278,7 +280,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         setSongInfoFromInput(false);
 
         outState.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
-        outState.putString(CommonConstants.CrudActionString, crudAction);
+        outState.putString(CommonConstants.CRUD_ACTION, crudAction);
         outState.putString("ActionButtonString", actionButtonString);
 
         super.onSaveInstanceState(outState);
@@ -326,9 +328,19 @@ public class BaseSongDataActivity extends AppCompatActivity {
         mSongInfo.setSongName(title);
         mSongInfo.setFilePath(filePath);
         mSongInfo.setMusicTrackNo(Integer.parseInt(musicTrack));
-        mSongInfo.setMusicChannel(SmileApp.audioChannelReverseMap.get(musicChannel));
+        int channel = CommonConstants.STEREO;
+        Object obj = SmileApp.audioChannelReverseMap.get(musicChannel);
+        if (obj != null) {
+            channel = (int) obj;
+        }
+        mSongInfo.setMusicChannel(channel);
         mSongInfo.setVocalTrackNo(Integer.parseInt(vocalTrack));
-        mSongInfo.setVocalChannel(SmileApp.audioChannelReverseMap.get(vocalChannel));
+        obj = SmileApp.audioChannelReverseMap.get(vocalChannel);
+        channel = CommonConstants.STEREO;
+        if (obj != null) {
+            channel =(int) obj;
+        }
+        mSongInfo.setVocalChannel(channel);
         mSongInfo.setIncluded(included);
 
         if (filePath.isEmpty()) {

@@ -10,7 +10,7 @@ class SongInfo constructor(var id : Int, var songName: String?, var filePath: St
                            var vocalTrackNo : Int, var vocalChannel : Int,
                            var included : String?) : Parcelable{
     constructor() : this(0, "", "", 1,
-        CommonConstants.RightChannel, 1, CommonConstants.LeftChannel,
+        CommonConstants.RIGHT_CHANNEL, 1, CommonConstants.LEFT_CHANNEL,
         "1")
     constructor(s: SongInfo) : this(s.id, s.songName, s.filePath, s.musicTrackNo, s.musicChannel,
             s.vocalTrackNo, s.vocalChannel, s.included) {

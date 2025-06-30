@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaokeplayer.constants.CommonConstants
@@ -51,14 +50,15 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         Log.d(TAG, "onCreate() is called")
         super.onCreate(savedInstanceState)
         arguments?.let {
-            isPlayButton = it.getBoolean(CommonConstants.IsButtonForPlay, true)
+            isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
             Log.d(TAG, "onCreate.isPlayButton = $isPlayButton")
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                SmileApp.FontSize_Scale_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                SmileApp.FontSize_Scale_Type,0.0f)
+            ScreenUtil.FontSize_Pixel_Type, null)
+        textFontSize = ScreenUtil.suitableFontSize(activity,
+            defaultTextFontSize,
+            ScreenUtil.FontSize_Pixel_Type,0.0f)
 
         playSongs = (activity as PlaySongs)
         Log.d(TAG, "onCreate.playSongs = $playSongs")
@@ -126,7 +126,8 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
-            ScreenUtil.resizeTextSize(pathTextView, textFontSize, SmileApp.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(pathTextView, textFontSize,
+                ScreenUtil.FontSize_Pixel_Type)
             val backKeyButton: ImageButton = it.findViewById(R.id.openFileBackKeyButton)
             var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
@@ -192,10 +193,11 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                 activity?.let {activityIt ->
                     val songListSQLite = SongListSQLite(activityIt)
                     getSongs(songListSQLite, "playSelectedButton").let { songsIt ->
-                        if (songsIt.size == 0) {
+                        if (songsIt.isEmpty()) {
                             ScreenUtil.showToast(
                                 activityIt, getString(R.string.noFilesSelectedString), textFontSize,
-                                    SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                ScreenUtil.FontSize_Pixel_Type,
+                                Toast.LENGTH_SHORT)
                         } else {
                             playSongs?.playSelectedSongList(ArrayList(songsIt))
                         }
@@ -213,7 +215,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                     val songListSQLite = SongListSQLite(activityIt)
                     getSongs(songListSQLite, "addToFavoriteButton").also { songsIt ->
                         var toastMsg = getString(R.string.noFilesSelectedString)
-                        if (songsIt.size > 0) {
+                        if (songsIt.isNotEmpty()) {
                             for (song in songsIt) {
                                 song.included = "1"
                                 val numRecords = songListSQLite.recordsOfPlayList()
@@ -224,14 +226,16 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                                     // excess max number of favorites
                                     ScreenUtil.showToast(activity,getString(R.string.excess_max) +
                                             " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                            SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                        ScreenUtil.FontSize_Pixel_Type,
+                                        Toast.LENGTH_SHORT)
                                     break
                                 }
                             }
                             toastMsg = getString(R.string.add_to_favorites)
                         }
                         ScreenUtil.showToast(activity, toastMsg, textFontSize,
-                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            ScreenUtil.FontSize_Pixel_Type,
+                            Toast.LENGTH_SHORT)
                     }
                     songListSQLite.closeDatabase()
                 }
@@ -332,9 +336,9 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         songName = FileDesList.fileList[i].file.name
                         filePath = FileDesList.fileList[i].file.toUri().toString()
                         musicTrackNo = 1    // guess
-                        musicChannel = CommonConstants.StereoChannel
+                        musicChannel = CommonConstants.STEREO
                         vocalTrackNo = 2    // guess
-                        vocalChannel = CommonConstants.StereoChannel
+                        vocalChannel = CommonConstants.STEREO
                         included = "0"
                     }
                     songListSQLite.findOneSongByUriString(song.filePath)?.apply {
@@ -349,7 +353,8 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
                                 " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            ScreenUtil.FontSize_Pixel_Type,
+                            Toast.LENGTH_SHORT)
                         break
                     }
                 }

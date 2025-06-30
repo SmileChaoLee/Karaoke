@@ -39,30 +39,34 @@ import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.scale
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.cast.framework.CastButtonFactory
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.models.MySingleTon
+import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter.BasePresentView
+import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.karaokeplayer.utilities.MyBannerAdView
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
-import androidx.core.view.size
-import androidx.core.view.get
-import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.scale
-import com.smile.smilelibraries.models.ExitAppTimer
 
-private const val TAG: String = "PlayerBaseViewFragment"
+private const val TAG: String = "PlayerBaseFragment"
 
-abstract class PlayerBaseViewFragment : Fragment(),
+abstract class PlayerBaseFragment : Fragment(),
     BasePresentView {
 
     interface PlayBaseFragmentFunc {
@@ -108,6 +112,7 @@ abstract class PlayerBaseViewFragment : Fragment(),
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
+    private var mediaRouteButton: MediaRouteButton? = null
     // private var volumeSeekBarHeightForLandscape = 0
 
     private var bannerAdsLayout: LinearLayout? = null
@@ -153,7 +158,6 @@ abstract class PlayerBaseViewFragment : Fragment(),
     }
 
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
-    abstract fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int)
     abstract fun setMenuItemsVisibility()
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun onPlayServiceDisconnected()
@@ -209,10 +213,9 @@ abstract class PlayerBaseViewFragment : Fragment(),
             return
         }
 
-        // mPresenter = presenter
-        textFontSize = mPresenter.textFontSize
-        fontScale = mPresenter.fontScale
-        toastTextSize = mPresenter.toastTextSize
+        textFontSize = SmileApp.textFontSize
+        fontScale = SmileApp.fontSize
+        toastTextSize = SmileApp.toastTextSize
     }
 
     override fun onCreateView(
@@ -221,7 +224,8 @@ abstract class PlayerBaseViewFragment : Fragment(),
     ): View? {
         Log.d(TAG, "onCreateView() is called")
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_player_base_view, container, false)
+        return inflater.inflate(R.layout.fragment_player_base_view,
+            container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -289,7 +293,8 @@ abstract class PlayerBaseViewFragment : Fragment(),
                 bannerLinearLayout?.also {layoutIt ->
                     layoutIt.visibility = View.VISIBLE // Show Banner Ad
                     myBannerAdView = SetBannerAdView(actIt, null,
-                        layoutIt, SmileApp.googleAdMobBannerID,
+                        layoutIt,
+                        SmileApp.googleAdMobBannerID,
                         SmileApp.facebookBannerID, 0)
                     myBannerAdView?.showBannerAdView(0) // Admob first
                 }
@@ -442,21 +447,21 @@ abstract class PlayerBaseViewFragment : Fragment(),
                 rightChannelMenuItem?.isEnabled = true
                 stereoChannelMenuItem?.isEnabled = true
                 if (playingParam.preparedStatus != 0) {
-                    if (currentChannelPlayed == CommonConstants.LeftChannel) {
+                    if (currentChannelPlayed == CommonConstants.LEFT_CHANNEL) {
                         leftChannelMenuItem?.isCheckable = true
                         leftChannelMenuItem?.isChecked = true
                     } else {
                         leftChannelMenuItem?.isCheckable = false
                         leftChannelMenuItem?.isChecked = false
                     }
-                    if (currentChannelPlayed == CommonConstants.RightChannel) {
+                    if (currentChannelPlayed == CommonConstants.RIGHT_CHANNEL) {
                         rightChannelMenuItem?.isCheckable = true
                         rightChannelMenuItem?.isChecked = true
                     } else {
                         rightChannelMenuItem?.isCheckable = false
                         rightChannelMenuItem?.isChecked = false
                     }
-                    if (currentChannelPlayed == CommonConstants.StereoChannel) {
+                    if (currentChannelPlayed == CommonConstants.STEREO) {
                         stereoChannelMenuItem?.isCheckable = true
                         stereoChannelMenuItem?.isChecked = true
                     } else {
@@ -595,31 +600,49 @@ abstract class PlayerBaseViewFragment : Fragment(),
         setMenuItemsVisibility() // abstract method
     }
 
-    override fun hidePlayerView() {
-        Log.d(TAG, "hidePlayerView() is called")
-        playerViewLinearLayout?.visibility = View.INVISIBLE
-        hideNativeAd()
-        setImageButtonStatus()
-        // must be after statement of playerViewLinearLayout.visibility = View.INVISIBLE
-        controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
-        playBaseFragmentFunc?.baseHidePlayerView()
-        mPresenter.playingParam.isPlayerViewVisible = false
-    }
-    override fun showPlayerView() {
-        Log.d(TAG, "showPlayerView() is called")
-        playerViewLinearLayout?.visibility = View.VISIBLE
-        mPresenter.run {
-            if ( (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) ||
-                    (numberOfVideoTracks == 0) ) {
-                // not playing then show ads or only music is being played, show native ads
-                showNativeAndHideBannerAd()
-            }
+    fun setMediaRouteButtonVisible() {
+        Log.d(TAG, "setMediaRouteButtonVisible")
+        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            return
         }
-        setImageButtonStatus()
-        // must be after statement of playerViewLinearLayout.visibility = View.VISIBLE
-        setTimerToHideSupportAudioControl()   // reset the timer
-        playBaseFragmentFunc?.baseShowPlayerView()
-        mPresenter.playingParam.isPlayerViewVisible = true
+        activity?.let { act ->
+            val castContext = (act.application as SmileApp).castContext
+            Log.d(TAG, "setMediaRouteButtonVisible.castContext" +
+                    " = $castContext")
+            mediaRouteButton?.visibility = if (castContext != null)
+                View.VISIBLE else View.GONE
+            Log.d(TAG, "setMediaRouteButtonVisible.mediaRouteButton?" +
+                    ".isEnabled = ${mediaRouteButton?.isEnabled}")
+        }
+    }
+
+    private fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
+        // MediaRouteButton View
+        Log.d(TAG, "setMediaRouteButtonView")
+        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
+            return
+        }
+        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
+        try {
+            mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
+            setMediaRouteButtonVisible()
+            mediaRouteButton?.let {
+                activity?.applicationContext?.let { ctxIt ->
+                    CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
+                }
+            }
+
+            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
+            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+            val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
+            val mediaRouteButtonDrawable: Drawable =
+                mediaRouteButtonBitmap.scale(imageButtonHeight, imageButtonHeight)
+                    .toDrawable(resources)
+            mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
+        } catch (ex: Exception) {
+            Log.d(TAG, "setMediaRouteButtonView.Exception")
+            ex.printStackTrace()
+        }
     }
 
     private fun setButtonsPositionAndSize(config: Configuration) {
@@ -962,7 +985,7 @@ abstract class PlayerBaseViewFragment : Fragment(),
                             sqlIt.closeDatabase()
                         }
                         ScreenUtil.showToast(it, getString(R.string.add_to_favorites), textFontSize,
-                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -1203,13 +1226,6 @@ abstract class PlayerBaseViewFragment : Fragment(),
         durationTimeTextView?.text = durationString
     }
 
-    override fun showMusicAndVocalIsNotSet() {
-        Log.d(TAG, "showMusicAndVocalIsNotSet is called.")
-        ScreenUtil.showToast(activity, getString(R.string.musicAndVocalNotSet),
-            toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT
-        )
-    }
-
     override fun update_Player_duration_seekbar_progress(progress: Int) {
         player_duration_seekbar?.progress = progress
     }
@@ -1280,6 +1296,94 @@ abstract class PlayerBaseViewFragment : Fragment(),
                     PlayerConstants.PlayerView_Timeout.toLong()
             ) // 10 seconds
         }
+    }
+
+    override fun showMusicAndVocalIsNotSet() {
+        Log.d(TAG, "showMusicAndVocalIsNotSet is called.")
+        ScreenUtil.showToast(activity, getString(R.string.musicAndVocalNotSet),
+            toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT
+        )
+    }
+
+    override fun hidePlayerView() {
+        Log.d(TAG, "hidePlayerView() is called")
+        playerViewLinearLayout?.visibility = View.INVISIBLE
+        hideNativeAd()
+        setImageButtonStatus()
+        // must be after statement of playerViewLinearLayout.visibility = View.INVISIBLE
+        controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
+        playBaseFragmentFunc?.baseHidePlayerView()
+        mPresenter.playingParam.isPlayerViewVisible = false
+    }
+
+    override fun showPlayerView() {
+        Log.d(TAG, "showPlayerView() is called")
+        playerViewLinearLayout?.visibility = View.VISIBLE
+        mPresenter.run {
+            if ( (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) ||
+                (numberOfVideoTracks == 0) ) {
+                // not playing then show ads or only music is being played, show native ads
+                showNativeAndHideBannerAd()
+            }
+        }
+        setImageButtonStatus()
+        // must be after statement of playerViewLinearLayout.visibility = View.VISIBLE
+        setTimerToHideSupportAudioControl()   // reset the timer
+        playBaseFragmentFunc?.baseShowPlayerView()
+        mPresenter.playingParam.isPlayerViewVisible = true
+    }
+
+    override fun showToastNoFilesSelected() {
+        activity?.let {
+            ScreenUtil.showToast(it,
+                it.getString(R.string.noFilesSelectedString),
+                toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT
+            )
+        }
+    }
+
+    override fun showToastNoPrevious() {
+        activity?.let {
+            ScreenUtil.showToast(it,
+                it.getString(R.string.noPreviousSongString),
+                toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT
+            )
+        }
+    }
+
+    override fun showToastNoNext() {
+        activity?.let {
+            ScreenUtil.showToast(it,
+                it.getString(R.string.noNextSongString),
+                toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT
+            )
+        }
+    }
+
+    override fun showToastNotSupported() {
+        activity?.let {
+            ScreenUtil.showToast(it,
+                it.getString(R.string.formatNotSupportedString),
+                toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT
+            )
+        }
+    }
+
+    override fun isActivityFinishing(): Boolean {
+        return activity?.isFinishing ?: true
+    }
+
+    override fun getFavoriteSongs(): ArrayList<SongInfo> {
+        return DatabaseAccessUtil.readSavedSongList(
+            activity, true)
+    }
+
+    override fun getFragment(): Fragment {
+        return this
     }
     // end of implementing PlayerBasePresenter.BasePresentView
 

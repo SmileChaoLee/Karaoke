@@ -17,10 +17,8 @@ import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.interfaces.IMedia;
-
 import java.util.ArrayList;
 
-import com.smile.karaokeplayer.vlcplayer.fragments.VlcPlayerFragment;
 import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService;
 
 public class VlcPlayerPresenter extends PlayerBasePresenter {
@@ -30,19 +28,14 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     public interface VlcPresentView extends BasePresentView {
         void setVideoWindowSize();
     }
-    // private final VlcPresentView mVlcView;
     private final VlcPresentView mPresentView;
-    // private MediaPlayer vlcPlayer;
     // instances of the following members have to be saved when configuration changed
     private ArrayList<Integer> audioTrackIndicesList = new ArrayList<>();
 
-    public VlcPlayerPresenter(VlcPlayerFragment fragment, VlcPresentView presentView) {
-        super(fragment, presentView);
-        // mActivity = fragment.getActivity();
+    public VlcPlayerPresenter(VlcPresentView presentView) {
+        super(presentView);
         mPresentView = presentView;
-        // mVlcView = vlcView;
-        // set volume control stream to STREAM_MUSIC
-        mActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     public VlcPresentView getPresentView() {
@@ -275,7 +268,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             // Log.d(TAG, "getMediaInfoSetAudioSubMenu.getAudioTrack() = " + audioTrackIdPlayed);
             // Log.d(TAG, "getMediaInfoSetAudioSubMenu.audioTrackIdPlayed = " + audioTrackIdPlayed);
             int audioTrackIndex = 1;    // default audio track index
-            int audioChannel = CommonConstants.StereoChannel;
+            int audioChannel = CommonConstants.STEREO;
             if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong() || mPlayingParam.isInSongList()) {
                 audioTrackIndex = mPlayingParam.getCurrentAudioTrackIndexPlayed();
                 audioChannel = mPlayingParam.getCurrentChannelPlayed();

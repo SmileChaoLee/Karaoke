@@ -62,7 +62,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
         init {
             Log.d(TAG, "MyViewHolder() is called")
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
-            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, SmileApp.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
 
             folderImageView = itemView.findViewById(R.id.folderImageView)
             val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams

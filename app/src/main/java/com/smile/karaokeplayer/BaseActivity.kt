@@ -21,10 +21,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.BundleCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.dynamite.DynamiteModule.LoadingException
 import com.smile.karaokeplayer.constants.PlayerConstants
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
+import com.smile.karaokeplayer.fragments.PlayerBaseFragment
 import com.smile.karaokeplayer.fragments.TablayoutFragment
 import com.smile.karaokeplayer.interfaces.PlayMyFavorites
 import com.smile.karaokeplayer.interfaces.PlaySongs
@@ -34,17 +32,17 @@ import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 
 private const val TAG : String = "BaseActivity"
-private const val PlayerFragmentTag = "PlayerFragment"
-private const val TablayoutFragmentTag = "TablayoutFragment"
-private const val IsPlayToPauseState = "IsPlayToPause"
-private const val PlayDataState = "PlayData"
-private const val CallingComponentState = "CallingComponentName"
+private const val PLAYER_FRAGMENT = "PlayerFragment"
+private const val TAB_LAYOUT_FRAGMENT = "TablayoutFragment"
+private const val IS_PLAY_TO_PAUSE = "IsPlayToPause"
+private const val PLAY_DATA = "PlayData"
+private const val CALLING_COMPONENT = "CallingComponent"
 
 abstract class BaseActivity : AppCompatActivity(),
-    PlayerBaseViewFragment.PlayBaseFragmentFunc,
+    PlayerBaseFragment.PlayBaseFragmentFunc,
     PlaySongs, PlayMyFavorites {
 
-    private var playerFragment: PlayerBaseViewFragment? = null
+    private var playerFragment: PlayerBaseFragment? = null
     private lateinit var basePlayViewLayout : LinearLayout
     private var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
@@ -57,9 +55,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
 
-    var castContext: CastContext? = null
-
-    abstract fun getFragment() : PlayerBaseViewFragment
+    abstract fun getFragment() : PlayerBaseFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
@@ -116,20 +112,20 @@ abstract class BaseActivity : AppCompatActivity(),
         }
 
         if (savedInstanceState != null) {
-            isPlayToPause = savedInstanceState.getBoolean(IsPlayToPauseState, false)
+            isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE, false)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, CallingComponentState, ComponentName::class.java)
-            else savedInstanceState.getParcelable(CallingComponentState)
+                BundleCompat.getParcelable(savedInstanceState, CALLING_COMPONENT, ComponentName::class.java)
+            else savedInstanceState.getParcelable(CALLING_COMPONENT)
 
             (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, PlayDataState, Bundle::class.java)
-            else savedInstanceState.getParcelable(PlayDataState))?.also {
+                BundleCompat.getParcelable(savedInstanceState, PLAY_DATA, Bundle::class.java)
+            else savedInstanceState.getParcelable(PLAY_DATA))?.also {
                 playData = it
             }
-            playerFragment = supportFragmentManager.findFragmentByTag(PlayerFragmentTag) as PlayerBaseViewFragment
+            playerFragment = supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT) as PlayerBaseFragment
             Log.d(TAG, "playerFragment = $playerFragment")
-            tablayoutFragment = supportFragmentManager.findFragmentByTag(TablayoutFragmentTag) as TablayoutFragment?
+            tablayoutFragment = supportFragmentManager.findFragmentByTag(TAB_LAYOUT_FRAGMENT) as TablayoutFragment?
             Log.d(TAG, "tablayoutFragment = $tablayoutFragment")
         }
 
@@ -145,7 +141,7 @@ abstract class BaseActivity : AppCompatActivity(),
             tablayoutFragment?.let {
                 if (!it.isInLayout) {
                     Log.d(TAG, "tablayoutFragment.isInLayout() = false")
-                    replace(R.id.tablayoutViewLayout, it, TablayoutFragmentTag)
+                    replace(R.id.tablayoutViewLayout, it, TAB_LAYOUT_FRAGMENT)
                     tablayoutViewLayout.visibility = View.VISIBLE
                     isReplaced = true
                 }
@@ -153,34 +149,12 @@ abstract class BaseActivity : AppCompatActivity(),
             playerFragment?.let {
                 if (!it.isInLayout) {
                     Log.d(TAG, "playerFragment.isInLayout() = false")
-                    replace(R.id.basePlayViewLayout, it, PlayerFragmentTag)
+                    replace(R.id.basePlayViewLayout, it, PLAYER_FRAGMENT)
                     isReplaced = true
                 }
             }
             if (isReplaced) commit()
         }
-
-        // for the chrome cast
-        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
-            try {
-                castContext = CastContext.getSharedInstance(this)
-                Log.d(TAG, "castContext = $castContext")
-            } catch (e: RuntimeException) {
-                castContext = null
-                var cause = e.cause
-                while (cause != null) {
-                    if (cause is LoadingException) {
-                        Log.d(TAG,"onCreate.Failed to get CastContext." +
-                                "Try updating Google Play Services and restart the app.")
-                    }
-                    cause = cause.cause
-                }
-                // Unknown error. We propagate it.
-                Log.d(TAG, "onCreate.Failed to get CastContext. Unknown error.")
-            }
-        }
-        //
 
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -208,9 +182,9 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         Log.d(TAG, "onSaveInstanceState()")
-        outState.putBoolean(IsPlayToPauseState, isPlayToPause)
-        outState.putParcelable(CallingComponentState, callingComponentName)
-        outState.putParcelable(PlayDataState, playData)
+        outState.putBoolean(IS_PLAY_TO_PAUSE, isPlayToPause)
+        outState.putParcelable(CALLING_COMPONENT, callingComponentName)
+        outState.putParcelable(PLAY_DATA, playData)
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
@@ -330,7 +304,6 @@ abstract class BaseActivity : AppCompatActivity(),
             preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
             Log.d(TAG, "restorePlayingState.preparedStatus changed to $preparedStatus")
             wentToFavorite = false  // set back to default
-            Log.d(TAG, "restorePlayingState.wentToFavorite changed to $wentToFavorite")
         }
         onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
         callingComponentName = null

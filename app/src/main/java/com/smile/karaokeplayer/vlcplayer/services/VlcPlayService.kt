@@ -195,9 +195,9 @@ class VlcPlayService : BasePlayService() {
             var leftVolume: Float = volumeTmp
             var rightVolume: Float = volumeTmp
             when (audioChannel) {
-                CommonConstants.LeftChannel -> rightVolume = 0f
-                CommonConstants.RightChannel -> leftVolume = 0f
-                CommonConstants.StereoChannel -> leftVolume = rightVolume
+                CommonConstants.LEFT_CHANNEL -> rightVolume = 0f
+                CommonConstants.RIGHT_CHANNEL -> leftVolume = 0f
+                CommonConstants.STEREO -> leftVolume = rightVolume
             }
             it.currentVolume = volumeTmp
             vlcPlayer?.setVolume((volumeTmp * PlayerConstants.MAX_PROGRESS).toInt())

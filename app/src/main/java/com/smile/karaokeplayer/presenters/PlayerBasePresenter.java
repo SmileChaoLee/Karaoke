@@ -7,30 +7,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment;
 import com.smile.karaokeplayer.models.MySingleTon;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import com.smile.karaokeplayer.models.SongInfo;
-import com.smile.karaokeplayer.R;
 import com.smile.karaokeplayer.services.BasePlayService;
-import com.smile.karaokeplayer.utilities.DatabaseAccessUtil;
-import com.smile.smilelibraries.utilities.ScreenUtil;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 public abstract class PlayerBasePresenter {
 
     private static final String TAG = "PlayerBasePresenter";
     private final BasePresentView mPresentView;
-    protected final Activity mActivity;
-    protected final float mTextFontSize;
-    protected final float mFontScale;
-    protected final float mToastTextSize;
     protected Uri mMediaUri;
     protected int mNumberOfVideoTracks;
     protected int mNumberOfAudioTracks;
@@ -57,7 +50,15 @@ public abstract class PlayerBasePresenter {
         void showPlayerView();
         void setCurrentPlayerToPlayerView();
         BasePlayService getPlayService();
+        void showToastNoFilesSelected();
+        void showToastNoPrevious();
+        void showToastNoNext();
+        void showToastNotSupported();
+        boolean isActivityFinishing();
+        ArrayList<SongInfo> getFavoriteSongs();
+        Fragment getFragment();
     }
+
     public abstract void initializeVariables(Bundle savedInstanceState,
                                              Intent callingIntent,
                                              boolean isAutoPlay);
@@ -70,30 +71,13 @@ public abstract class PlayerBasePresenter {
     public abstract void removeCallbacksAndMessages();
     public abstract void setAudioActionSubMenu();
 
-    public PlayerBasePresenter(PlayerBaseViewFragment fragment, BasePresentView presentView) {
+    public PlayerBasePresenter(BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
-        mActivity = fragment.getActivity();
         mPresentView = presentView;
-        float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(mActivity,
-                ScreenUtil.FontSize_Pixel_Type, null);
-        mTextFontSize = ScreenUtil.suitableFontSize(mActivity, defaultTextFontSize,
-                ScreenUtil.FontSize_Pixel_Type, 0.0f);
-        mFontScale = ScreenUtil.suitableFontScale(mActivity, ScreenUtil.FontSize_Pixel_Type, 0.0f);
-        mToastTextSize = 0.7f * mTextFontSize;
     }
 
     public Activity getActivity() {
-        return mActivity;
-    }
-
-    public float getTextFontSize() {
-        return mTextFontSize;
-    }
-    public float getFontScale() {
-        return mFontScale;
-    }
-    public float getToastTextSize() {
-        return mToastTextSize;
+        return mPresentView.getFragment().getActivity();
     }
     public Uri getMediaUri() {
         return mMediaUri;
@@ -112,7 +96,7 @@ public abstract class PlayerBasePresenter {
     }
 
     public void setPlayingParameters(SongInfo songInfo) {
-        mPlayingParam.setInSongList(songInfo.getIncluded().equals("1"));
+        mPlayingParam.setInSongList(Objects.equals(songInfo.getIncluded(), "1"));
         mPlayingParam.setMusicAudioTrackIndex(songInfo.getMusicTrackNo());
         mPlayingParam.setMusicAudioChannel(songInfo.getMusicChannel());
         mPlayingParam.setVocalAudioTrackIndex(songInfo.getVocalTrackNo());
@@ -143,8 +127,7 @@ public abstract class PlayerBasePresenter {
                 startAutoPlay(false);
             }
         } else {
-            ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noFilesSelectedString)
-                    , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+            mPresentView.showToastNoFilesSelected();
         }
     }
 
@@ -240,8 +223,8 @@ public abstract class PlayerBasePresenter {
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playLeftChannel.playService = " + playService);
         if (playService != null) {
-            Log.d(TAG, "playLeftChannel.CommonConstants.LeftChannel = " + CommonConstants.LeftChannel);
-            mPlayingParam.setCurrentChannelPlayed(CommonConstants.LeftChannel);
+            Log.d(TAG, "playLeftChannel.CommonConstants.LeftChannel = " + CommonConstants.LEFT_CHANNEL);
+            mPlayingParam.setCurrentChannelPlayed(CommonConstants.LEFT_CHANNEL);
             playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
@@ -250,8 +233,8 @@ public abstract class PlayerBasePresenter {
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playRightChannel.playService = " + playService);
         if (playService != null) {
-            Log.d(TAG, "playRightChannel.CommonConstants.RightChannel = " + CommonConstants.RightChannel);
-            mPlayingParam.setCurrentChannelPlayed(CommonConstants.RightChannel);
+            Log.d(TAG, "playRightChannel.CommonConstants.RightChannel = " + CommonConstants.RIGHT_CHANNEL);
+            mPlayingParam.setCurrentChannelPlayed(CommonConstants.RIGHT_CHANNEL);
             playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
@@ -260,38 +243,35 @@ public abstract class PlayerBasePresenter {
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "playStereoChannel.playService = " + playService);
         if (playService != null) {
-            Log.d(TAG, "playStereoChannel.CommonConstants.StereoChannel = " + CommonConstants.StereoChannel);
-            mPlayingParam.setCurrentChannelPlayed(CommonConstants.StereoChannel);
+            Log.d(TAG, "playStereoChannel.CommonConstants.StereoChannel = " + CommonConstants.STEREO);
+            mPlayingParam.setCurrentChannelPlayed(CommonConstants.STEREO);
             playService.setAudioVolume(mPlayingParam.getCurrentVolume());
         }
     }
 
-    public boolean startAutoPlay(boolean isSelfFinished) {
+    public void startAutoPlay(boolean isSelfFinished) {
         Log.d(TAG, "startAutoPlay");
-        boolean stillPlayNext = false;
         mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);    // default value for start playing a video
-        if (mActivity.isFinishing()) {
+        if (mPresentView.isActivityFinishing()) {
             // activity is being destroyed
-            return stillPlayNext;
+            Log.d(TAG, "startAutoPlay.activity is finishing");
+            return;
         }
         BasePlayService playService = mPresentView.getPlayService();
         Log.d(TAG, "startAutoPlay.playService = " + playService);
         if (playService != null) {
             Log.d(TAG, "startAutoPlay.playService.startAutoPlay()");
-            stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
+            boolean stillPlayNext = playService.startAutoPlay(this, isSelfFinished);
             Log.d(TAG, "startAutoPlay.stillPlayNext = " + stillPlayNext);
             if (!stillPlayNext) {    // no more playing the next song
                 mPresentView.showNativeAndHideBannerAd();
             }
         }
         mPresentView.setImageButtonStatus();
-
-        return stillPlayNext;
     }
 
     public boolean setAutoPlayStatusAndAction() {
-        ArrayList<SongInfo> songList = DatabaseAccessUtil.readSavedSongList(mActivity,
-                true);
+        ArrayList<SongInfo> songList = mPresentView.getFavoriteSongs();
         Log.d(TAG, "setAutoPlayStatusAndAction.songList.size() = " + songList.size());
         boolean isAutoPlay = false;
         if (!songList.isEmpty()) {
@@ -325,8 +305,7 @@ public abstract class PlayerBasePresenter {
         if (orderedSongsSize <= 1 ) {
             Log.d(TAG, "playPreviousSong.orderedSongsSize <= 1, only one song in the list");
             // only one file in the play list
-            ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noPreviousSongString)
-                    , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+            mPresentView.showToastNoPrevious();
             return;
         }
         int currentIndex = mPlayingParam.getCurrentSongIndex();
@@ -339,8 +318,7 @@ public abstract class PlayerBasePresenter {
                 if (currentIndex <= 0) {
                     Log.d(TAG, "playPreviousSong.currentIndex <= 0, current is the first one.");
                     // no more previous
-                    ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noPreviousSongString)
-                            , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+                    mPresentView.showToastNoPrevious();
                     return;
                 }
                 // because in startAutoPlay(), the next song will be current index + 1
@@ -373,9 +351,9 @@ public abstract class PlayerBasePresenter {
         if (orderedSongsSize <= 1 ) {
             // only one file in the play list
             Log.d(TAG, "playNextSong.orderedSongsSize <= 1, only one song in the list");
-            ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noNextSongString)
-                    , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
-            return; // no more next
+            // no more next
+            mPresentView.showToastNoNext();
+            return;
         }
         switch (repeatStatus) {
             case PlayerConstants.NoRepeatPlaying:
@@ -383,9 +361,9 @@ public abstract class PlayerBasePresenter {
                 if (currentIndex >= (orderedSongsSize-1)) {
                     Log.d(TAG, "playPreviousSong.currentIndex >= (orderedSongsSize-1)," +
                             " current is the last one.");
-                    ScreenUtil.showToast(mActivity, mActivity.getString(R.string.noNextSongString)
-                            , mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
-                    return; // no more next
+                    // no more next
+                    mPresentView.showToastNoNext();
+                    return;
                 }
                 break;
             case PlayerConstants.RepeatAllSongs:
@@ -405,7 +383,7 @@ public abstract class PlayerBasePresenter {
                 + mPlayingParam.isPlaySingleSong());
         Log.d(TAG, "playSongPlayedBeforeActivityCreated.preparedStatus = "
                 + mPlayingParam.getPreparedStatus());
-        if (mPresentView != null) mPresentView.updateVolumeSeekBarProgress();
+        mPresentView.updateVolumeSeekBarProgress();
         Log.d(TAG, "playSongPlayedBeforeActivityCreated.mMediaUri = " + mMediaUri);
         if (mMediaUri == null || Uri.EMPTY.equals(mMediaUri)) {
             if (mPlayingParam.isPlaySingleSong()) {
@@ -425,8 +403,8 @@ public abstract class PlayerBasePresenter {
             }
         } else {
             int playbackState = mPlayingParam.getCurrentPlaybackState();
-            Log.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = " + playbackState);
-            // if (playbackState != PlaybackStateCompat.STATE_NONE) {
+            Log.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = "
+                    + playbackState);
             if (playbackState != PlayerConstants.PREPARE_MEDIA) {
                 BasePlayService playService = mPresentView.getPlayService();
                 if (playService != null) {
@@ -438,9 +416,7 @@ public abstract class PlayerBasePresenter {
         float currentPosition = mPlayingParam.getCurrentAudioPosition();
         Log.d(TAG, "playSongPlayedBeforeActivityCreated.currentPosition = " + currentPosition);
         onDurationSeekBarProgressChanged((int)currentPosition, true);
-        if (mPresentView != null) {
-            mPresentView.update_Player_duration_seekbar_progress((int)currentPosition);
-        }
+        mPresentView.update_Player_duration_seekbar_progress((int)currentPosition);
     }
 
     public void setRepeatSongStatus() {
@@ -621,12 +597,10 @@ public abstract class PlayerBasePresenter {
                 startAutoPlay(isSelfFinished);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
-                String formatNotSupportedString = mActivity.getString(R.string.formatNotSupportedString);
                 if (mCanShowNotSupportedFormat) {
                     // only show once
                     mCanShowNotSupportedFormat = false;
-                    ScreenUtil.showToast(mActivity, formatNotSupportedString,
-                            mToastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+                    mPresentView.showToastNotSupported();
                 }
                 setMediaUri(null);
                 // remove the song that is unable to be played

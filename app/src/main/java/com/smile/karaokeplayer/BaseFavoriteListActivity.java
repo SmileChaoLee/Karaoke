@@ -41,7 +41,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     private float textFontSize;
     private float toastTextSize;
     private ActivityResultLauncher<Intent> editFavoritesLauncher;
-    private String currentAction = CommonConstants.AddActionString;
+    private String currentAction = CommonConstants.ADD_ACTION;
     private float weightSum = 0.f;
     private LinearLayout favoriteListLinearLayout;
     private LinearLayout favoritesTitleLayout;
@@ -174,18 +174,18 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     private void deleteOneSongFromFavoriteList(SongInfo singleSongInfo) {
         Log.d(TAG, "deleteOneSongFromFavoriteList");
-        currentAction = CommonConstants.DeleteActionString;
+        currentAction = CommonConstants.DELETE_ACTION;
         Intent deleteIntent = createIntentFromSongDataActivity();
-        deleteIntent.putExtra(CommonConstants.CrudActionString, CommonConstants.DeleteActionString);
+        deleteIntent.putExtra(CommonConstants.CRUD_ACTION, CommonConstants.DELETE_ACTION);
         deleteIntent.putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
         editFavoritesLauncher.launch(deleteIntent);
     }
 
     private void editOneSongFromFavoriteList(SongInfo singleSongInfo) {
         Log.d(TAG, "editOneSongFromFavoriteList");
-        currentAction = CommonConstants.EditActionString;
+        currentAction = CommonConstants.EDIT_ACTION;
         Intent editIntent = createIntentFromSongDataActivity();
-        editIntent.putExtra(CommonConstants.CrudActionString, CommonConstants.EditActionString);
+        editIntent.putExtra(CommonConstants.CRUD_ACTION, CommonConstants.EDIT_ACTION);
         editIntent.putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
         editFavoritesLauncher.launch(editIntent);
     }
@@ -247,7 +247,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         }
         Log.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
         positionEdit = -1;  // no edit or delete
-        currentAction = CommonConstants.PlayActionString;
+        currentAction = CommonConstants.PLAY_ACTION;
         /*
         // getCallingActivity() only works from startActivityForResult
         Log.d(TAG, "playSongButtonFunc.getCallingActivity() = " + getCallingActivity());
@@ -282,11 +282,11 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         if (data != null && positionEdit != -1) {
             Log.d(TAG, "updateFavoriteList.positionEdit = " + positionEdit);
             SongInfo songInfo = data.getParcelableExtra(PlayerConstants.SINGLE_SONG_INFO_STATE);
-            if (currentAction.equals(CommonConstants.EditActionString)) {
+            if (currentAction.equals(CommonConstants.EDIT_ACTION)) {
                 // edit
                 MySingleTon.INSTANCE.getSelectedFavorites().set(positionEdit, songInfo);
                 myRecyclerViewAdapter.notifyItemChanged(positionEdit);
-            } else if (currentAction.equals(CommonConstants.DeleteActionString)){
+            } else if (currentAction.equals(CommonConstants.DELETE_ACTION)){
                 // delete
                 MySingleTon.INSTANCE.getSelectedFavorites().remove(positionEdit);
                 myRecyclerViewAdapter.notifyItemRemoved(positionEdit);

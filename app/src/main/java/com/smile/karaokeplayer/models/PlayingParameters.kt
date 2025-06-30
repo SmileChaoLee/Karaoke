@@ -29,8 +29,8 @@ class PlayingParameters (
         var singleSongPlayingStatus: Int) : Parcelable {
         constructor() : this(PlayerConstants.PREPARE_MEDIA, false,
                 0, false, false,
-                1, 1, CommonConstants.LeftChannel,
-                CommonConstants.RightChannel, 1, CommonConstants.LeftChannel,
+                1, 1, CommonConstants.LEFT_CHANNEL,
+                CommonConstants.RIGHT_CHANNEL, 1, CommonConstants.LEFT_CHANNEL,
                 0, 1.0f, -1,
                 PlayerConstants.NoRepeatPlaying, true,
                 false, PlayerConstants.FINISHED_NORMALLY,

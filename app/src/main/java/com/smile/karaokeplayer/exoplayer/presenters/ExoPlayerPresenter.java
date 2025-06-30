@@ -15,9 +15,9 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
 import com.google.android.gms.cast.framework.CastContext;
+import com.smile.karaokeplayer.SmileApp;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
-import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity;
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
 
 import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
@@ -28,7 +28,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     private static final String TAG = "ExoPlayerPresenter";
 
-    private final ExoPlayerFragment mFragment;
     private final ExoPlayerPresentView mPresentView;
     private TrackSelectionParameters mTrackSelectionParameters;
     private int mCurrentItemIndex = -1;
@@ -61,17 +60,12 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         void setCurrentPlayerToPlayerView();
     }
 
-    public ExoPlayerPresenter(ExoPlayerFragment fragment, ExoPlayerPresentView presentView) {
-        super(fragment, presentView);
-        mFragment = fragment;
-        // mActivity = mFragment.getActivity();
+    public ExoPlayerPresenter(ExoPlayerPresentView presentView) {
+        super(presentView);
         mPresentView = presentView;
         Log.d(TAG, "ExoPlayerPresenter is created");
     }
 
-    public ExoPlayerFragment getFragment() {
-        return mFragment;
-    }
     public int getCurrentItemIndex() {
         return mCurrentItemIndex;
     }
@@ -83,13 +77,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     }
 
     public CastContext getCastContext() {
-        // ExoPlayerActivity activity = (ExoPlayerActivity)mActivity;
-        ExoPlayerActivity activity = (ExoPlayerActivity)mActivity;
-        Log.d(TAG, "getCastContext().activity = " + activity);
-        if (activity == null) {
-            return null;
-        }
-        return activity.getCastContext();
+        SmileApp smileApp = (SmileApp) getActivity().getApplication();
+        return smileApp.getCastContext();
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -108,7 +97,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
-            mTrackSelectionParameters = new TrackSelectionParameters.Builder(mActivity).build();
+            mTrackSelectionParameters = new TrackSelectionParameters
+                    .Builder(getActivity()).build();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
@@ -116,7 +106,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             if (audioTrackIndicesList == null) audioTrackIndicesList = new ArrayList<>();
             Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectionParametersState);
             if (parameter != null) mTrackSelectionParameters = TrackSelectionParameters.fromBundle(parameter);
-            else mTrackSelectionParameters = new TrackSelectionParameters.Builder(mActivity).build();
+            else mTrackSelectionParameters = new TrackSelectionParameters
+                    .Builder(getActivity()).build();
         }
     }
 
@@ -275,8 +266,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
                     audioTrackIdPlayed = 1;
                     mPlayingParam.setVocalAudioTrackIndex(audioTrackIdPlayed);
                     mPlayingParam.setMusicAudioTrackIndex(audioTrackIdPlayed);
-                    mPlayingParam.setVocalAudioChannel(CommonConstants.LeftChannel);
-                    mPlayingParam.setMusicAudioChannel(CommonConstants.RightChannel);
+                    mPlayingParam.setVocalAudioChannel(CommonConstants.LEFT_CHANNEL);
+                    mPlayingParam.setMusicAudioChannel(CommonConstants.RIGHT_CHANNEL);
                 }
             }
 

@@ -11,8 +11,6 @@ import android.os.PersistableBundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
-import android.view.ViewTreeObserver
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -36,17 +34,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -68,6 +61,7 @@ class MainActivity : ComponentActivity() {
     private var permissionExternalStorage = false
     private var textFontSize = 0f
     private var toastTextSize = 0f
+    private var fontSize = 0f
     // the following are for VLCPlayer
     private lateinit var vlcLauncher: ActivityResultLauncher<Intent>
     // the following are for ExoPlayer
@@ -81,13 +75,16 @@ class MainActivity : ComponentActivity() {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@MainActivity,
-            SmileApp.FontSize_Scale_Type, null)
+            ScreenUtil.FontSize_Pixel_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(this@MainActivity,
             defaultTextFontSize,
-            SmileApp.FontSize_Scale_Type,0.0f)
+            ScreenUtil.FontSize_Pixel_Type,0.0f)
         toastTextSize = textFontSize * 0.7f
+        fontSize = ScreenUtil.suitableFontScale(this@MainActivity,
+            ScreenUtil.FontSize_Pixel_Type, 0.0f)
         SmileApp.textFontSize = textFontSize
         SmileApp.toastTextSize = toastTextSize
+        SmileApp.fontSize = fontSize
         Composables.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
         Composables.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
@@ -214,7 +211,8 @@ class MainActivity : ComponentActivity() {
             return
         }
         val backgroundColor = Yellow3
-        Column(modifier = Modifier.fillMaxSize()
+        Column(modifier = Modifier
+            .fillMaxSize()
             .background(backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
@@ -325,11 +323,16 @@ class MainActivity : ComponentActivity() {
         Log.d(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
         val backgroundColor = Yellow3
         val textLineHeight = (Composables.toastFontSize.value + 5.0f).sp
-        Column(modifier = Modifier.fillMaxSize()
+        Column(modifier = Modifier
+            .fillMaxSize()
             .background(color = backgroundColor)) {
-            Spacer(modifier = Modifier.fillMaxWidth().weight(verSpacerWeight))
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .weight(verSpacerWeight))
             Row(modifier = Modifier.weight(10.0f - verSpacerWeight * 2.0f)) {
-                Spacer(modifier = Modifier.fillMaxHeight().weight(horSpacerWeight))
+                Spacer(modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(horSpacerWeight))
                 Column(modifier = Modifier
                     .weight(10.0f - horSpacerWeight * 2.0f)) {
                     ExoPlayerButton(modifier = Modifier.weight(1.0f),
@@ -337,9 +340,13 @@ class MainActivity : ComponentActivity() {
                     VlcPlayerButton(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
                 }
-                Spacer(modifier = Modifier.fillMaxHeight().weight(horSpacerWeight))
+                Spacer(modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(horSpacerWeight))
             }
-            Spacer(modifier = Modifier.fillMaxSize().weight(verSpacerWeight))
+            Spacer(modifier = Modifier
+                .fillMaxSize()
+                .weight(verSpacerWeight))
         }
     }
 

@@ -14,6 +14,7 @@ import com.smile.karaokeplayer.models.MySingleTon.orderedSongs
 import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
+import androidx.core.net.toUri
 
 abstract class BasePlayService : Service() {
 
@@ -86,7 +87,8 @@ abstract class BasePlayService : Service() {
         mediaControllerCompat = null
     }
 
-    private fun playSingleSong(presenter: PlayerBasePresenter, songInfo: SongInfo?) {
+    private fun playSingleSong(presenter: PlayerBasePresenter,
+                               songInfo: SongInfo?) {
         Log.d(TAG, "playSingleSong")
         if (songInfo == null) {
             return
@@ -101,7 +103,7 @@ abstract class BasePlayService : Service() {
             val contentResolver: ContentResolver? = presenter.activity?.contentResolver
             contentResolver?.let {
                 for (perm in it.persistedUriPermissions) {
-                    if (perm.uri == Uri.parse(filePath)) {
+                    if (perm.uri == filePath.toUri()) {
                         Log.d(TAG, "playSingleSong.has URI permission")
                         break
                     }
@@ -110,10 +112,10 @@ abstract class BasePlayService : Service() {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        val mUri = Uri.parse(filePath)
+        val mUri = filePath.toUri()
         presenter.mediaUri = mUri
         Log.d(TAG, "playSingleSong.mediaUri = $mUri")
-        if ((mUri == null) || (Uri.EMPTY == mUri)) {
+        if (Uri.EMPTY == mUri) {
             return
         }
         presenter.setPlayingParameters(songInfo)
@@ -130,7 +132,7 @@ abstract class BasePlayService : Service() {
     fun initMediaControllerCompat(presenter: PlayerBasePresenter) {
         // Create a MediaControllerCompat
         Log.d(TAG, "initMediaControllerCompat")
-        presenter.activity?.let {
+        presenter.activity.let {
             Log.d(TAG, "initMediaControllerCompat.activity not null")
             mediaSessionCompat?.apply {
                 mediaControllerCompat = MediaControllerCompat(it, this)

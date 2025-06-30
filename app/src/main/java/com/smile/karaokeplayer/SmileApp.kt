@@ -1,107 +1,103 @@
-package com.smile.karaokeplayer;
+package com.smile.karaokeplayer
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.util.Log;
+import android.content.res.Configuration
+import android.util.Log
+import androidx.multidex.MultiDexApplication
+import com.facebook.ads.AudienceNetworkAds
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.cast.framework.CastContext
+import com.smile.karaokeplayer.constants.CommonConstants
 
-import androidx.annotation.NonNull;
-import androidx.multidex.MultiDexApplication;
-
-import com.facebook.ads.AudienceNetworkAds;
-import com.google.android.gms.ads.MobileAds;
-import com.smile.karaokeplayer.constants.CommonConstants;
-import com.smile.smilelibraries.utilities.ScreenUtil;
-
-import java.util.LinkedHashMap;
-
-public class SmileApp extends MultiDexApplication {
-
-    private static final String TAG = "SmileApp";
-
-    // protected String facebookInterstitialID = "";
-    protected String googleAdMobAppID = "";
-    // protected String googleAdMobInterstitialID = "";
-    protected String testString = "";
-
-    public static int FontSize_Scale_Type = ScreenUtil.FontSize_Pixel_Type;
-    public static String leftChannelString;
-    public static String rightChannelString;
-    public static String stereoChannelString;
-    public static LinkedHashMap<Integer, String> audioChannelMap;
-    public static LinkedHashMap<String, Integer> audioChannelReverseMap;
-
-    public static Resources AppResources;
-    public static Context AppContext;
-    public static String facebookBannerID = "";
-    public static String googleAdMobBannerID = "";
-    public static String googleAdMobNativeID = "";
+class SmileApp : MultiDexApplication() {
+    var googleAdMobAppID = ""
+    var testString = ""
+    var leftChannelString = ""
+    var rightChannelString = ""
+    var stereoChannelString = ""
     // public FacebookInterstitial facebookInterstitial;
     // public AdMobInterstitial adMobInterstitial;
-    public static float textFontSize = 0f;
-    public static float toastTextSize = 0f;
+    var castContext: CastContext? = null
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        AppResources = getResources();
-        AppContext = getApplicationContext();
-
-        leftChannelString = getString(R.string.leftChannelString);
-        rightChannelString = getString(R.string.rightChannelString);
-        stereoChannelString = getString(R.string.stereoChannelString);
-
-        audioChannelMap = new LinkedHashMap<>();
-        audioChannelMap.put(CommonConstants.LeftChannel, leftChannelString);
-        audioChannelMap.put(CommonConstants.RightChannel, rightChannelString);
-        audioChannelMap.put(CommonConstants.StereoChannel, stereoChannelString);
-
-        audioChannelReverseMap = new LinkedHashMap<>();
-        audioChannelReverseMap.put(leftChannelString, CommonConstants.LeftChannel);
-        audioChannelReverseMap.put(rightChannelString, CommonConstants.RightChannel);
-        audioChannelReverseMap.put(stereoChannelString, CommonConstants.StereoChannel);
+    override fun onCreate() {
+        super.onCreate()
+        val appContext = applicationContext
+        leftChannelString = getString(R.string.leftChannelString)
+        rightChannelString = getString(R.string.rightChannelString)
+        stereoChannelString = getString(R.string.stereoChannelString)
+        audioChannelMap.put(CommonConstants.LEFT_CHANNEL, leftChannelString)
+        audioChannelMap.put(CommonConstants.RIGHT_CHANNEL, rightChannelString)
+        audioChannelMap.put(CommonConstants.STEREO, stereoChannelString)
+        audioChannelReverseMap.put(leftChannelString, CommonConstants.LEFT_CHANNEL)
+        audioChannelReverseMap.put(rightChannelString, CommonConstants.RIGHT_CHANNEL)
+        audioChannelReverseMap.put(stereoChannelString, CommonConstants.STEREO)
 
         // for debug mode and for facebook
-        if (com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            testString = "IMG_16_9_APP_INSTALL#";
+        if (BuildConfig.DEBUG) {
+            testString = "IMG_16_9_APP_INSTALL#"
         }
-
-        setGoogleAdMobAndFacebookAudioNetwork();
-
+        setGoogleAdMobAndFacebookAudioNetwork()
         // google
-        MobileAds.initialize(AppContext, initializationStatus -> Log.d(TAG, "Google AdMob was initialized successfully."));
-        // adMobInterstitial = new AdMobInterstitial(AppContext, googleAdMobInterstitialID);
+        MobileAds.initialize(appContext
+        ) { initializationStatus: InitializationStatus? ->
+            Log.d(TAG, "Google AdMob was initialized successfully.")
+        }
+        // adMobInterstitial = new AdMobInterstitial(appContext, googleAdMobInterstitialID);
+        // for the chrome cast
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
+            try {
+                castContext = CastContext.getSharedInstance(this)
+            } catch (e: RuntimeException) {
+                castContext = null
+                Log.e(TAG, "onCreate.Failed initialize CastContext", e)
+            }
+        }
+        Log.d(TAG, "castContext = $castContext")
     }
 
-    private void setGoogleAdMobAndFacebookAudioNetwork() {
-        AudienceNetworkAds.initialize(this);
+    private fun setGoogleAdMobAndFacebookAudioNetwork() {
+        AudienceNetworkAds.initialize(this)
         // facebookInterstitialID = "1712962715503258_1712963252169871";
         // facebookInterstitialID = testString + facebookInterstitialID;
-        // facebookInterstitial = new FacebookInterstitial(AppContext,
+        // facebookInterstitial = new FacebookInterstitial(appContext,
         //         facebookInterstitialID);
-        facebookBannerID = testString + "1712962715503258_2019623008170559";
-        googleAdMobAppID = "ca-app-pub-8354869049759576~5549171584";
+        facebookBannerID = testString + "1712962715503258_2019623008170559"
+        googleAdMobAppID = "ca-app-pub-8354869049759576~5549171584"
         // googleAdMobInterstitialID = "ca-app-pub-8354869049759576/1418354889";
-        googleAdMobBannerID = "ca-app-pub-8354869049759576/8267060571";
-        googleAdMobNativeID = "ca-app-pub-8354869049759576/7985456524";
+        googleAdMobBannerID = "ca-app-pub-8354869049759576/8267060571"
+        googleAdMobNativeID = "ca-app-pub-8354869049759576/7985456524"
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "Configuration changed");
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.d(TAG, "Configuration changed")
     }
 
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        Log.w(TAG, "System is running low on memory");
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Log.w(TAG, "System is running low on memory")
     }
 
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        Log.w(TAG, "onTrimMemory, level: = " + level);
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        Log.w(TAG, "onTrimMemory, level: = $level")
+    }
+
+    companion object {
+        private const val TAG = "SmileApp"
+        @JvmField
+        var textFontSize: Float = 0f
+        @JvmField
+        var toastTextSize: Float = 0f
+        @JvmField
+        var fontSize: Float = 0f
+        @JvmField
+        val audioChannelMap = LinkedHashMap<Int, String>()
+        @JvmField
+        val audioChannelReverseMap = LinkedHashMap<String, Int>()
+        var facebookBannerID = ""
+        var googleAdMobBannerID = ""
+        var googleAdMobNativeID = ""
     }
 }

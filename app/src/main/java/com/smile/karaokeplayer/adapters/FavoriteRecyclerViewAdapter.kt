@@ -61,9 +61,9 @@ class FavoriteRecyclerViewAdapter private constructor(
         init {
             Log.d(TAG, "MyViewHolder() is called")
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
-            ScreenUtil.resizeTextSize(songNameTextView, textFontSize, SmileApp.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(songNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
             songPathTextView = itemView.findViewById(R.id.myListPathTextView)
-            ScreenUtil.resizeTextSize(songPathTextView, textFontSize, SmileApp.FontSize_Scale_Type)
+            ScreenUtil.resizeTextSize(songPathTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
 
             itemView.setOnClickListener {
                 recyclerItemClickListener.onRecyclerItemClick(

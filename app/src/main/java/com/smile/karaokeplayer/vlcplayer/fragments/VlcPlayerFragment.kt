@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.PlayerConstants
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
+import com.smile.karaokeplayer.fragments.PlayerBaseFragment
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
 import com.smile.karaokeplayer.vlcplayer.Presenters.VlcPlayerPresenter
@@ -22,7 +22,7 @@ import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService.LocalBinder
 
 private const val TAG: String = "VlcPlayerFragment"
 
-class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresentView {
+class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentView {
     // private val enableSubtitles = true
     // private val useTextureView = false
     private lateinit var presenter: VlcPlayerPresenter
@@ -31,7 +31,7 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     private var mPlayServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        presenter = VlcPlayerPresenter(this, this)
+        presenter = VlcPlayerPresenter(this)
 
         super.onCreate(savedInstanceState)  // must be after VlcPlayerPresenter(this, this)
         Log.d(TAG, "onCreate() is called")
@@ -127,8 +127,6 @@ class VlcPlayerFragment : PlayerBaseViewFragment(), VlcPlayerPresenter.VlcPresen
     override fun getPlayService(): VlcPlayService? {
         return playService
     }
-
-    override fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {}
 
     override fun setMenuItemsVisibility() {
         val channelMenuItem = mainMenu?.findItem(R.id.channel)

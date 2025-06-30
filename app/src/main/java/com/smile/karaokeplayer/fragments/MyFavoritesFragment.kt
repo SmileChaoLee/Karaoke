@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.BaseFavoriteListActivity
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.FavoriteRecyclerViewAdapter
@@ -56,10 +55,11 @@ class MyFavoritesFragment : Fragment(),
         }
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-                SmileApp.FontSize_Scale_Type, null)
+            ScreenUtil.FontSize_Pixel_Type, null)
         textFontSize = ScreenUtil.suitableFontSize(activity, defaultTextFontSize,
-                SmileApp.FontSize_Scale_Type,0.0f)
-        fontScale = ScreenUtil.suitableFontScale(activity, ScreenUtil.FontSize_Pixel_Type, 0.0f)
+            ScreenUtil.FontSize_Pixel_Type,0.0f)
+        fontScale = ScreenUtil.suitableFontScale(activity,
+            ScreenUtil.FontSize_Pixel_Type, 0.0f)
 
         activity?.let {
             if (it is PlaySongs) playSongs = it
@@ -84,7 +84,8 @@ class MyFavoritesFragment : Fragment(),
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
                                     " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                    SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                ScreenUtil.FontSize_Pixel_Type,
+                                Toast.LENGTH_SHORT)
                         }
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
@@ -173,7 +174,8 @@ class MyFavoritesFragment : Fragment(),
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
                                         " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                        SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                                    ScreenUtil.FontSize_Pixel_Type,
+                                    Toast.LENGTH_SHORT)
                                 break
                             }
                         }
@@ -181,8 +183,10 @@ class MyFavoritesFragment : Fragment(),
                 }
                 if (songs.isEmpty()) {
                     ScreenUtil.showToast(
-                            activity, getString(R.string.noFilesSelectedString), textFontSize,
-                            SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            activity, getString(R.string.noFilesSelectedString),
+                        textFontSize,
+                        ScreenUtil.FontSize_Pixel_Type,
+                        Toast.LENGTH_SHORT)
                 } else {
                     // playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
                     playSongs?.playSelectedSongList(ArrayList(songs))
@@ -213,7 +217,8 @@ class MyFavoritesFragment : Fragment(),
                     } else {
                         ScreenUtil.showToast(
                                 activity, getString(R.string.noFilesSelectedString), textFontSize,
-                                SmileApp.FontSize_Scale_Type, Toast.LENGTH_SHORT)
+                            ScreenUtil.FontSize_Pixel_Type,
+                            Toast.LENGTH_SHORT)
                     }
                 }
             }

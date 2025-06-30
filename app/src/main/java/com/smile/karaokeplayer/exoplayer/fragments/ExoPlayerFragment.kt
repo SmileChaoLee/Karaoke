@@ -2,24 +2,17 @@ package com.smile.karaokeplayer.exoplayer.fragments
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
-import androidx.mediarouter.app.MediaRouteButton
-import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.gms.cast.framework.CastState
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
@@ -27,25 +20,22 @@ import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter.ExoPlayerPresentView
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService.LocalBinder
-import com.smile.karaokeplayer.fragments.PlayerBaseViewFragment
+import com.smile.karaokeplayer.fragments.PlayerBaseFragment
 import com.smile.smilelibraries.utilities.ScreenUtil
-import androidx.core.graphics.scale
-import androidx.core.graphics.drawable.toDrawable
 
 @UnstableApi
-class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
+class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
     companion object {
         private const val TAG: String = "ExoPlayerFragment"
     }
     private lateinit var presenter: ExoPlayerPresenter
     private var playerView: PlayerView? = null
     private var playService: ExoPlayService? = null
-    private var mediaRouteButton: MediaRouteButton? = null
     private var mPlayServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
-        presenter = ExoPlayerPresenter(this, this)
+        presenter = ExoPlayerPresenter(this)
         super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
         var isAutoPlay = false
         arguments?.let {
@@ -100,34 +90,19 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
                 // must be after super.onCreate(savedInstanceState)
                 // player = playService?.exoPlayer
                 Log.d(TAG, "setVideoPlayerView.playService = $playService")
-                Log.d(TAG, "setVideoPlayerView.playService?.currentPlayer = ${playService?.currentPlayer}")
-                player = playService?.currentPlayer
+                Log.d(TAG, "setVideoPlayerView.playService?.exoPlayer = ${playService?.exoPlayer}")
+                player = playService?.exoPlayer
                 requestFocus()
             }
         }
-    }
-
-    fun setMediaRouteButtonVisible() {
-        Log.d(TAG, "setMediaRouteButtonVisible")
-        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            return
-        }
-        val castState = playService?.currentCastState
-        Log.d(TAG, "setMediaRouteButtonVisible.castState = $castState")
-        val deviceAvailable = if (castState != null)  castState != CastState.NO_DEVICES_AVAILABLE else false
-        Log.d(TAG, "setMediaRouteButtonVisible.deviceAvailable = $deviceAvailable")
-        mediaRouteButton?.visibility = if (deviceAvailable) View.VISIBLE else View.GONE
-        // mediaRouteButton?.visibility = View.VISIBLE
-        // mediaRouteButton?.isEnabled = true
-        Log.d(TAG, "setMediaRouteButtonVisible.mediaRouteButton?.isEnabled = ${mediaRouteButton?.isEnabled}")
     }
 
     // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
     override fun setCurrentPlayerToPlayerView() {
         Log.d(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {
-            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
-            player = playService?.currentPlayer
+            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.exoPlayer")
+            player = playService?.exoPlayer
             requestFocus()
         }
     }
@@ -142,46 +117,11 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         return presenter
     }
 
-    override fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
-        // MediaRouteButton View
-        Log.d(TAG, "setMediaRouteButtonView")
-        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            return
-        }
-        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
-        try {
-            mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
-            setMediaRouteButtonVisible()
-            mediaRouteButton?.let {
-                activity?.applicationContext?.let { ctxIt ->
-                    CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
-                }
-            }
-
-            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
-            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-            val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
-            val mediaRouteButtonDrawable: Drawable =
-                mediaRouteButtonBitmap.scale(imageButtonHeight, imageButtonHeight)
-                    .toDrawable(resources)
-            mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
-        } catch (ex: Exception) {
-            Log.d(TAG, "setMediaRouteButtonView.Exception")
-            ex.printStackTrace()
-        }
-    }
-
     override fun setMenuItemsVisibility() {
         val channelMenuItem = mainMenu?.findItem(R.id.channel)
         channelMenuItem?.isVisible = true
         channelMenuItem?.isEnabled = true
     }
-
-    /*
-    override fun setSwitchToVocalImageButtonVisibility() {
-        // do nothing
-    }
-    */
 
     override fun onPlayServiceConnected(service: IBinder) {
         Log.d(TAG, "onPlayServiceConnected")
@@ -190,13 +130,12 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
         // Test code here for ExoPlayService
         playService?.presenter = this.presenter
         playService?.initMediaControllerCompat(this.presenter)
-        playService?.initCastPlayerAndExoPlayer()
+        playService?.initExoPlayerAndListener()
         Log.d(TAG, "onPlayServiceConnected.Video player view")
         // Video player view
         setVideoPlayerView()
         Log.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
-        setMediaRouteButtonVisible()
     }
 
     override fun onPlayServiceDisconnected() {
@@ -245,22 +184,22 @@ class ExoPlayerFragment : PlayerBaseViewFragment(), ExoPlayerPresentView {
     override fun audioChannelButtonListener() {
         mPresenter.playingParam.apply {
             when (currentChannelPlayed) {
-                CommonConstants.LeftChannel -> {
-                    currentChannelPlayed = CommonConstants.RightChannel
+                CommonConstants.LEFT_CHANNEL -> {
+                    currentChannelPlayed = CommonConstants.RIGHT_CHANNEL
                 }
-                CommonConstants.RightChannel -> {
-                    currentChannelPlayed = CommonConstants.StereoChannel
+                CommonConstants.RIGHT_CHANNEL -> {
+                    currentChannelPlayed = CommonConstants.STEREO
                 }
-                CommonConstants.StereoChannel -> {
-                    currentChannelPlayed = CommonConstants.LeftChannel
+                CommonConstants.STEREO -> {
+                    currentChannelPlayed = CommonConstants.LEFT_CHANNEL
                 }
             }
             activity?.let{
                 val str =
                     when (currentChannelPlayed) {
-                        CommonConstants.LeftChannel -> it.getString(R.string.leftChannelString)
-                        CommonConstants.RightChannel -> it.getString(R.string.rightChannelString)
-                        CommonConstants.StereoChannel -> it.getString(R.string.stereoChannelString)
+                        CommonConstants.LEFT_CHANNEL -> it.getString(R.string.leftChannelString)
+                        CommonConstants.RIGHT_CHANNEL -> it.getString(R.string.rightChannelString)
+                        CommonConstants.STEREO -> it.getString(R.string.stereoChannelString)
                         else -> it.getString(R.string.unknown)
                     }
                 ScreenUtil.showToast(it, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
