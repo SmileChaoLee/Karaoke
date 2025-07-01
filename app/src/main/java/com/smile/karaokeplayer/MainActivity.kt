@@ -177,14 +177,6 @@ class MainActivity : ComponentActivity() {
         finish()
     }
 
-    private fun showColorWhenClick(isClicked: MutableState<Boolean>) {
-        CoroutineScope(Dispatchers.Default).launch {
-            isClicked.value = true
-            delay(500)
-            isClicked.value = false
-        }
-    }
-
     private fun startExoActivity() {
         Intent(
             this@MainActivity,
@@ -227,6 +219,7 @@ class MainActivity : ComponentActivity() {
                         buttonWidth: Float,
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
+        Log.d(TAG, "ExoPlayerButton")
         val buttonBackground = Color.Transparent
         val buttonContentColor = Color.Green
         val buttonContainerColor = Color.Blue
@@ -236,8 +229,12 @@ class MainActivity : ComponentActivity() {
             val exoClicked = remember { mutableStateOf(false) }
             Button(
                 onClick = {
-                    showColorWhenClick(exoClicked)
-                    startExoActivity()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        exoClicked.value = true
+                        delay(200)
+                        startExoActivity()
+                        exoClicked.value = false
+                    }
                 },
                 modifier = Modifier//.weight(1.0f)
                     .width(width = buttonWidth.dp)
@@ -267,6 +264,7 @@ class MainActivity : ComponentActivity() {
                         buttonWidth: Float,
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
+        Log.d(TAG, "VlcPlayerButton")
         val buttonBackground = Color.Transparent
         val buttonContentColor = Color.Green
         val buttonContainerColor = Color.Blue
@@ -276,8 +274,12 @@ class MainActivity : ComponentActivity() {
             val vlcClicked = remember { mutableStateOf(false) }
             Button(
                 onClick = {
-                    showColorWhenClick(vlcClicked)
-                    startVlcActivity()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        vlcClicked.value = true
+                        delay(200)
+                        startVlcActivity()
+                        vlcClicked.value = false
+                    }
                 },
                 modifier = Modifier//.weight(1.0f)
                     .width(width = buttonWidth.dp)
