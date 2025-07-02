@@ -14,13 +14,9 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
-import com.google.android.gms.cast.framework.CastContext;
-import com.smile.karaokeplayer.SmileApp;
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
-
-import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment;
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService;
 
 @UnstableApi
@@ -74,11 +70,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     }
     public void setCurrentPlayerToPlayerView() {
         mPresentView.setCurrentPlayerToPlayerView();
-    }
-
-    public CastContext getCastContext() {
-        SmileApp smileApp = (SmileApp) getActivity().getApplication();
-        return smileApp.getCastContext();
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -283,7 +274,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         // build R.id.audioTrack submenu
         mPresentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
         // update the duration on controller UI
-        mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
+        mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
     }
 
     @OptIn(markerClass = UnstableApi.class)

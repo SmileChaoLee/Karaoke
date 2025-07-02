@@ -14,6 +14,8 @@ import com.smile.karaokeplayer.constants.PlayerConstants;
 
 import com.smile.karaokeplayer.exoplayer.services.ExoPlayService;
 
+import java.util.Objects;
+
 @UnstableApi
 public class ExoPlayerListener implements Player.Listener {
 
