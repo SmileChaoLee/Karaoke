@@ -1,12 +1,7 @@
 package com.smile.karaokeplayer.googlecast
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.wifi.WifiManager
-import androidx.annotation.OptIn
+import android.util.Log
 import androidx.core.net.toUri
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
@@ -15,12 +10,10 @@ import com.google.android.gms.common.images.WebImage
 import fi.iki.elonen.NanoHTTPD
 import java.io.IOException
 import java.net.NetworkInterface
-import java.util.Locale
 
 class WebServerAndCast {
     private var webServer: HttpServerForLocal? = null
 
-    @OptIn(UnstableApi::class)
     fun startWebServer(fileName: String) {
         Log.d(TAG, "startWebServer.webServer = $webServer")
         Log.d(TAG, "startWebServer.fileName $fileName")
@@ -39,14 +32,12 @@ class WebServerAndCast {
         }
     }
 
-    @OptIn(UnstableApi::class)
-    fun startWebServerAndCast(context: Context,
-                              castSession: CastSession,
-                              fileName: String) {
+    fun startWebServerAndCast(castSession: CastSession, fileName: String) {
         try {
             startWebServer(fileName)
             // Get device IP address (you'll need a utility function for this)
-            val deviceIpAddress = getDeviceIpAddress(context) // Implement this function
+            // val deviceIpAddress = getDeviceIpAddress(context) // Implement this function
+            val deviceIpAddress = getDeviceIpAddress()
             if (deviceIpAddress != null) {
                 val mediaUrl = "http://$deviceIpAddress:$SERVER_PORT"
                 // Now call your loadRemoteMedia function with this mediaUrl
@@ -63,14 +54,12 @@ class WebServerAndCast {
         }
     }
 
-    @OptIn(UnstableApi::class)
     fun stopWebServer() {
         webServer?.stop()
         webServer = null
         Log.d(TAG, "Web server stopped")
     }
 
-    @OptIn(UnstableApi::class)
     fun loadRemoteMedia(castSession: CastSession,
                         localMediaUrl: String, title: String,
                         studio: String, imageUrl: String?) {
@@ -105,7 +94,6 @@ class WebServerAndCast {
         return webServer?.mediaFileName
     }
 
-    @OptIn(UnstableApi::class)
     fun getMediaUrl(): String {
         val fileName = getFilename()
         if (fileName.isNullOrEmpty()) {
@@ -119,7 +107,6 @@ class WebServerAndCast {
     }
 
     // Helper to get local IP address
-    @OptIn(UnstableApi::class)
     fun getDeviceIpAddress(): String? {
         try {
             val networkInterfaces = NetworkInterface.getNetworkInterfaces()
@@ -144,6 +131,7 @@ class WebServerAndCast {
     }
 
     // Utility to get IP Address (simplified example, needs error handling and network checks)
+    /*
     fun getDeviceIpAddress(context: Context): String? {
         val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE)
                 as WifiManager
@@ -159,12 +147,10 @@ class WebServerAndCast {
                 ipAddress shr 24 and 0xff
             )
     }
+    */
 
     companion object {
         private const val TAG = "WebServerAndCast"
         private const val SERVER_PORT = 8080 // Choose an available port
     }
-
-    // Call startWebServerAndCast(yourLocalMediaFile) when user selects a file
-    // Call stopWebServer() in onDestroy or when casting stops
 }

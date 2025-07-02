@@ -59,10 +59,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         val filePath = mediaUri.path
         Log.d(TAG,"$msgString.filePath = $filePath")
         if (filePath != null) {
-            mContext?.let {
-                webServerAndCast.startWebServerAndCast(
-                    it,p0, filePath)
-            }
+            webServerAndCast.startWebServerAndCast(p0, filePath)
         }
     }
 

@@ -18,9 +18,11 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.BundleCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.media3.common.util.UnstableApi
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseFragment
 import com.smile.karaokeplayer.fragments.TablayoutFragment
@@ -38,6 +40,7 @@ private const val IS_PLAY_TO_PAUSE = "IsPlayToPause"
 private const val PLAY_DATA = "PlayData"
 private const val CALLING_COMPONENT = "CallingComponent"
 
+@UnstableApi
 abstract class BaseActivity : AppCompatActivity(),
     PlayerBaseFragment.PlayBaseFragmentFunc,
     PlaySongs, PlayMyFavorites {
@@ -55,6 +58,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
 
+    @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,11 +66,23 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        // the orientation is always the current one right now before creating or recreating after destroying
-        requestedOrientation = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+        if (savedInstanceState == null) {
+            // the orientation is always portrait when created
+            Log.d(TAG,"onCreate.new created")
+            requestedOrientation = when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        } else {
+            // the orientation keep the one before recreated
+            Log.d(TAG,"onCreate.recreated")
+            requestedOrientation = when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
         }
 
         super.onCreate(savedInstanceState)

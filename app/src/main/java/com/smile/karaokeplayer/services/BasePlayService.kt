@@ -42,7 +42,7 @@ abstract class BasePlayService : Service() {
     var mediaControllerCompat: MediaControllerCompat? = null
     var isCastSessionAvailable = false
     protected var castContext: CastContext? = null
-    protected val webServerAndCast = WebServerAndCast()
+    val webServerAndCast = WebServerAndCast()
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
@@ -75,7 +75,7 @@ abstract class BasePlayService : Service() {
         super.onDestroy()
     }
 
-    protected fun stopCasting() {
+    fun stopCasting() {
         Log.d(TAG, "stopCasting")
         webServerAndCast.stopWebServer()
         castContext?.apply {
