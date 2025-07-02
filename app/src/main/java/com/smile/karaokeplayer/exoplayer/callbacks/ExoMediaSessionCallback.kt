@@ -54,17 +54,27 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         playingParam?.preparedStatus = 1
         val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build()
         playService.setTrackSelectionParameters(trackParameters)
+        var mediaTitle = "Opened Media"
+        uri.path?.let {
+            val lastSlash: Int = it.lastIndexOf('/')
+            mediaTitle = if (lastSlash >= 0) {
+                it.substring(lastSlash + 1)
+            } else {
+                it
+            }
+        }
         // val mediaItem = MediaItem.fromUri(uri)
         val mediaItem = MediaItem.Builder()
             .setUri(uri)
-            .setMediaMetadata(MediaMetadata.Builder().setTitle("Opened Media").build())
-            .setMimeType(MimeTypes.BASE_TYPE_VIDEO) // .setDrmConfiguration(null)
+            .setMediaMetadata(MediaMetadata.Builder().setTitle(mediaTitle).build())
+            .setMimeType(MimeTypes.BASE_TYPE_VIDEO)
+            // .setDrmConfiguration(null)
             .build()
         playService.setMediaItem(mediaItem)
         Log.d(
-            TAG,"onPrepareFromUri().service.exoPlayer.getMediaItemCount() = " +
+            TAG,"onPrepareFromUri().playService.getMediaItemCount() = " +
                 playService.getMediaItemCount())
-        Log.d(TAG, "onPrepareFromUri().service.exoPlayer.prepare()")
+        Log.d(TAG, "onPrepareFromUri().playService.prepare()")
         playService.prepare()
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition

@@ -22,7 +22,8 @@ class CastOptionsProvider : OptionsProvider {
             .build()
 
         val castOptions = CastOptions.Builder()
-            .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+            .setReceiverApplicationId(
+                CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
             .setCastMediaOptions(mediaOptions)
             .build()
         Log.d(TAG, "getCastOptions.CastOptions.castOptions = $castOptions")

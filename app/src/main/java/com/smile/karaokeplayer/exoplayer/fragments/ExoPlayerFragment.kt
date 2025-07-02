@@ -81,7 +81,8 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
             Log.d(TAG, "setVideoPlayerView.playerView = $playerView")
             playerView?.apply {
                 layoutParams = layParams
-                setBackgroundColor(ContextCompat.getColor(it.applicationContext, android.R.color.black))
+                setBackgroundColor(ContextCompat.getColor(it.applicationContext,
+                    android.R.color.black))
                 playerViewLinearLayout?.addView(this)
                 visibility = View.VISIBLE
                 // useArtwork = true
@@ -90,8 +91,7 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
                 // must be after super.onCreate(savedInstanceState)
                 // player = playService?.exoPlayer
                 Log.d(TAG, "setVideoPlayerView.playService = $playService")
-                Log.d(TAG, "setVideoPlayerView.playService?.exoPlayer = ${playService?.exoPlayer}")
-                player = playService?.exoPlayer
+                player = playService?.getCurrentPlayer()
                 requestFocus()
             }
         }
@@ -101,8 +101,8 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
     override fun setCurrentPlayerToPlayerView() {
         Log.d(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {
-            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.exoPlayer")
-            player = playService?.exoPlayer
+            Log.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
+            player = playService?.getCurrentPlayer()
             requestFocus()
         }
     }
@@ -130,7 +130,7 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
         // Test code here for ExoPlayService
         playService?.presenter = this.presenter
         playService?.initMediaControllerCompat(this.presenter)
-        playService?.initExoPlayerAndListener()
+        playService?.initPlayersAndListeners()
         Log.d(TAG, "onPlayServiceConnected.Video player view")
         // Video player view
         setVideoPlayerView()

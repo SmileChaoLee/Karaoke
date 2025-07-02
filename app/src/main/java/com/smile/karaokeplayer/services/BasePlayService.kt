@@ -15,6 +15,9 @@ import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import androidx.core.net.toUri
+import com.google.android.gms.cast.framework.CastContext
+import com.smile.karaokeplayer.SmileApp
+import com.smile.karaokeplayer.googlecast.WebServerAndCast
 
 abstract class BasePlayService : Service() {
 
@@ -37,9 +40,14 @@ abstract class BasePlayService : Service() {
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
+    var isCastSessionAvailable = false
+    protected var castContext: CastContext? = null
+    protected val webServerAndCast = WebServerAndCast()
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
+        castContext = (application as SmileApp).castContext
+        stopCasting()
         initMediaSessionCompat()
         super.onCreate()
     }
@@ -63,7 +71,18 @@ abstract class BasePlayService : Service() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         releaseMediaSessionCompat()
+        stopCasting()
         super.onDestroy()
+    }
+
+    protected fun stopCasting() {
+        Log.d(TAG, "stopCasting")
+        webServerAndCast.stopWebServer()
+        castContext?.apply {
+            // stop casting
+            sessionManager.endCurrentSession(true)
+        }
+        isCastSessionAvailable = false
     }
 
     private fun initMediaSessionCompat() {
@@ -112,10 +131,10 @@ abstract class BasePlayService : Service() {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        val mUri = filePath.toUri()
-        presenter.mediaUri = mUri
-        Log.d(TAG, "playSingleSong.mediaUri = $mUri")
-        if (Uri.EMPTY == mUri) {
+        val tmpUri = filePath.toUri()
+        presenter.mediaUri = tmpUri
+        Log.d(TAG, "playSingleSong.mediaUri = $tmpUri")
+        if (Uri.EMPTY == tmpUri) {
             return
         }
         presenter.setPlayingParameters(songInfo)
@@ -125,7 +144,7 @@ abstract class BasePlayService : Service() {
             // currentPlaybackState = PlaybackStateCompat.STATE_NONE
             currentPlaybackState = PlayerConstants.PREPARE_MEDIA
             preparedStatus = 0
-            playMediaFromUri(mUri, this)
+            playMediaFromUri(tmpUri, this)
         }
     }
 

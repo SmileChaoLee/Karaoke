@@ -33,6 +33,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.ActionMenuView
@@ -44,13 +45,16 @@ import androidx.core.graphics.scale
 import androidx.core.view.get
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.media3.common.util.UnstableApi
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.cast.framework.CastButtonFactory
+import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
+import com.smile.karaokeplayer.googlecast.SetupGoogleCast
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
@@ -66,6 +70,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG: String = "PlayerBaseFragment"
 
+@UnstableApi
 abstract class PlayerBaseFragment : Fragment(),
     BasePresentView {
 
@@ -88,7 +93,6 @@ abstract class PlayerBaseFragment : Fragment(),
             : androidx.appcompat.widget.Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
     private var audioControllerView: LinearLayout? = null
-    // protected var volumeSeekBar: VerticalSeekBar? = null
     private var nonVolumeImageButton: ImageButton? = null
     private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
@@ -106,21 +110,22 @@ abstract class PlayerBaseFragment : Fragment(),
     private var orientationImageButton: ImageButton? = null
     private var repeatImageButton: ImageButton? = null
     private var switchToMusicImageButton: ImageButton? = null
-    // protected var switchToVocalImageButton: ImageButton? = null
     private var switchToVocalImageButton: ImageButton? = null
     private var hideVideoImageButton: ImageButton? = null
     private var actionMenuImageButton: ImageButton? = null
     private var audioChannelImageButton: ImageButton? = null
     private var audioTrackImageButton: ImageButton? = null
+
     private var mediaRouteButton: MediaRouteButton? = null
-    // private var volumeSeekBarHeightForLandscape = 0
+    private var castContext: CastContext? = null
+    private var setupCast: SetupGoogleCast? = null
 
     private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
     private var nativeTemplate: GoogleAdMobNativeTemplate? = null
 
-    private var message_area_LinearLayout: LinearLayout? = null
+    private var messageAreaLinearLayout: LinearLayout? = null
     private var bufferingStringTextView: TextView? = null
     private var animationText: Animation? = null
     private var nativeAdsFrameLayout: FrameLayout? = null
@@ -175,9 +180,6 @@ abstract class PlayerBaseFragment : Fragment(),
             isServiceDestroyed = false
             Log.d(TAG, "onServiceConnected.isAutoPlay = " +
                     "${mPresenter.playingParam.isAutoPlay}")
-            // mPresenter.playingParam.isAutoPlay = false   // bug
-            // mPresenter.autoPlaySongList()
-            // showPlayerView()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -188,6 +190,7 @@ abstract class PlayerBaseFragment : Fragment(),
         }
     }
 
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
@@ -212,10 +215,33 @@ abstract class PlayerBaseFragment : Fragment(),
             playBaseFragmentFunc?.returnToPrevious(false)
             return
         }
-
         textFontSize = SmileApp.textFontSize
         fontScale = SmileApp.fontSize
         toastTextSize = SmileApp.toastTextSize
+
+        activity?.let { actIt ->
+            castContext = (actIt.application as SmileApp).castContext
+            // setupCast = SetupGoogleCast(this@PlayerBaseFragment,
+            //     mPresenter, castContext)
+        }
+
+        /*  // only for exo player now in the ExoPlayerService
+        activity?.let { actIt ->
+            castContext = (actIt.application as SmileApp).castContext
+            Log.d(TAG, "onCreate.castContext = $castContext")
+            castContext?.also { castIt ->
+                castStateListener = MyCastStateListener(this@PlayerBaseFragment)
+                castIt.addCastStateListener(castStateListener!!)
+                Log.d(TAG, "onCreate.castContext.castState = ${castIt.castState}")
+                sessionManager = castIt.sessionManager
+                sessionManagerListener = MySManagerListener(
+                    this@PlayerBaseFragment, mPresenter)
+                sessionManager?.addSessionManagerListener(
+                    sessionManagerListener!!,
+                    CastSession::class.java)
+            }
+        }
+        */
     }
 
     override fun onCreateView(
@@ -301,8 +327,8 @@ abstract class PlayerBaseFragment : Fragment(),
             }
 
             // message area
-            message_area_LinearLayout = findViewById(R.id.message_area_LinearLayout)
-            message_area_LinearLayout?.visibility = View.GONE
+            messageAreaLinearLayout = findViewById(R.id.message_area_LinearLayout)
+            messageAreaLinearLayout?.visibility = View.GONE
             bufferingStringTextView = findViewById(R.id.bufferingStringTextView)
             ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
         }
@@ -549,8 +575,6 @@ abstract class PlayerBaseFragment : Fragment(),
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        // MyBannerAdView.setVisible(bannerLinearLayout
-        //     , nativeAdViewVisibility)
         MyBannerAdView.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
     }
@@ -570,6 +594,7 @@ abstract class PlayerBaseFragment : Fragment(),
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         unbindAndStopPlayService()
+        setupCast?.release()
         super.onDestroy()
     }
 
@@ -600,35 +625,22 @@ abstract class PlayerBaseFragment : Fragment(),
         setMenuItemsVisibility() // abstract method
     }
 
-    fun setMediaRouteButtonVisible() {
+    private fun setMediaRouteButtonVisible() {
         Log.d(TAG, "setMediaRouteButtonVisible")
-        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            return
-        }
-        activity?.let { act ->
-            val castContext = (act.application as SmileApp).castContext
-            Log.d(TAG, "setMediaRouteButtonVisible.castContext" +
-                    " = $castContext")
-            mediaRouteButton?.visibility = if (castContext != null)
-                View.VISIBLE else View.GONE
-            Log.d(TAG, "setMediaRouteButtonVisible.mediaRouteButton?" +
-                    ".isEnabled = ${mediaRouteButton?.isEnabled}")
-        }
+        mediaRouteButton?.visibility =
+            if (castContext != null)
+            View.VISIBLE else View.GONE
     }
 
     private fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
-        // MediaRouteButton View
-        Log.d(TAG, "setMediaRouteButtonView")
-        if (!com.smile.karaokeplayer.BuildConfig.DEBUG) {
-            return
-        }
-        Log.d(TAG, "setMediaRouteButtonView.BuildConfig.DEBUG")
+        Log.d(TAG, "setMediaRouteButtonView.castContext = $castContext")
+        if (castContext == null) return
         try {
             mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
-            setMediaRouteButtonVisible()
             mediaRouteButton?.let {
                 activity?.applicationContext?.let { ctxIt ->
                     CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
+                    setMediaRouteButtonVisible()
                 }
             }
 
@@ -672,12 +684,6 @@ abstract class PlayerBaseFragment : Fragment(),
             // greater than the width of screen
             buttonMarginLeft2 = (screenSizeX - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
         }
-        /*
-        var layoutParams: MarginLayoutParams = volumeSeekBar?.layoutParams as MarginLayoutParams
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(0, 0, 0, 0)
-        */
-
         val volumeButtonFrameLayout: FrameLayout? =
             fragmentView?.findViewById(R.id.volumeButtonFrameLayout)
         var layoutParams : MarginLayoutParams = volumeButtonFrameLayout?.layoutParams as MarginLayoutParams
@@ -731,7 +737,6 @@ abstract class PlayerBaseFragment : Fragment(),
             tempBitmap.scale(imageButtonHeight, imageButtonHeight)
                 .toDrawable(resources)
         actionMenuView?.overflowIcon = iconDrawable // set icon of three dots for ActionMenuView
-        // supportToolbar.setOverflowIcon(iconDrawable);   // set icon of three dots for toolbar
 
         layoutParams = orientationImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
@@ -767,18 +772,6 @@ abstract class PlayerBaseFragment : Fragment(),
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-
-        // reset the heights of volumeBar and supportToolbar
-        // val timesOfVolumeBarForPortrait = 1.5f
-        /*
-        if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // if orientation is portrait, then double the height of volumeBar
-            volumeSeekBar?.layoutParams?.height =
-                (volumeSeekBarHeightForLandscape.toFloat().times(timesOfVolumeBarForPortrait)).toInt()
-        } else {
-            volumeSeekBar?.layoutParams?.height = volumeSeekBarHeightForLandscape
-        }
-        */
         supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height!!
         bannerAdsLayout = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -859,8 +852,6 @@ abstract class PlayerBaseFragment : Fragment(),
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            // MyBannerAdView.setVisible(bannerLinearLayout
-            //     , nativeAdViewVisibility)
             MyBannerAdView.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
@@ -879,33 +870,6 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setOnClickEvents() {
-        /*
-        volumeSeekBar?.visibility = View.INVISIBLE // default is not showing
-        volumeSeekBar?.max = PlayerConstants.MaxProgress
-        volumeSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                volumeSeekBar?.setProgressAndThumb(i)
-                mPresenter.setAudioVolumeInsideVolumeSeekBar(i)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-        })
-        */
-        /*
-        volumeImageButton?.setOnClickListener {
-            volumeSeekBar?.apply {
-                if (visibility != View.VISIBLE) {
-                    visibility = View.VISIBLE
-                    nativeAdsFrameLayout?.visibility = View.GONE
-                } else {
-                    visibility = View.INVISIBLE
-                    nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
-                }
-            }
-            setTimerToHideSupportAndAudioController()   // reset timer
-        }
-        */
         nonVolumeImageButton?.let{ it->
             it.setOnClickListener {
                 // silence the sound
@@ -1083,17 +1047,6 @@ abstract class PlayerBaseFragment : Fragment(),
         })
         supportToolbar?.let {
             it.setOnClickListener { v: View ->
-                /*
-                if (v.visibility == View.VISIBLE) {
-                    // use custom toolbar
-                    hideSupportToolbarAndAudioController()
-                    Log.d(TAG, "supportToolbar.onClick().View.VISIBLE.")
-                } else {
-                    // use custom toolbar
-                    showSupportToolbarAndAudioController(true)
-                    Log.d(TAG, "supportToolbar.onClick().View.INVISIBLE.")
-                }
-                */
                 showSupportToolbarAudioControlSetTimer()
                 // volumeSeekBar?.visibility = View.INVISIBLE
                 Log.d(TAG, "supportToolbar.onClick() is called.")
@@ -1263,14 +1216,14 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun showBufferingMessage() {
         Log.d(TAG, "showBufferingMessage() is called.")
-        message_area_LinearLayout?.visibility = View.VISIBLE
+        messageAreaLinearLayout?.visibility = View.VISIBLE
         bufferingStringTextView?.startAnimation(animationText)
     }
 
     override fun dismissBufferingMessage() {
         Log.d(TAG, "dismissBufferingMessage() is called.")
         animationText?.cancel()
-        message_area_LinearLayout?.visibility = View.GONE
+        messageAreaLinearLayout?.visibility = View.GONE
     }
 
     override fun buildAudioTrackMenuItem(audioTrackNumber: Int) {
