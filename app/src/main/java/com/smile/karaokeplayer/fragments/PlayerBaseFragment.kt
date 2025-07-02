@@ -68,6 +68,7 @@ import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.util.Locale
+import kotlin.coroutines.Continuation
 
 private const val TAG: String = "PlayerBaseFragment"
 
@@ -105,7 +106,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var heartImageButton: ImageButton? = null
 
     private var playingTimeTextView: TextView? = null
-    private var player_duration_seekbar: AppCompatSeekBar? = null
+    private var playerDurationSeekbar: AppCompatSeekBar? = null
     private var durationTimeTextView: TextView? = null
 
     private var orientationImageButton: ImageButton? = null
@@ -143,8 +144,8 @@ abstract class PlayerBaseFragment : Fragment(),
     private var leftChannelMenuItem: MenuItem? = null
     private var rightChannelMenuItem: MenuItem? = null
     private var stereoChannelMenuItem: MenuItem? = null
-
     private var oldMotionEventX = 0.0f
+    private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
 
     private val controllerTimerHandler = Handler(Looper.getMainLooper())
     private val controllerTimerRunnable = Runnable {
@@ -259,6 +260,8 @@ abstract class PlayerBaseFragment : Fragment(),
         Log.d(TAG, "onViewCreated()")
         super.onViewCreated(view, savedInstanceState)
 
+        orgOrientation = resources.configuration.orientation
+
         fragmentView = view
         // Video player view
         fragmentView?.apply {
@@ -274,19 +277,11 @@ abstract class PlayerBaseFragment : Fragment(),
                 setSupportActionBar(supportToolbar)
                 supportActionBar?.setDisplayShowTitleEnabled(false)
             }
-            // it.setActionBar(supportToolbar)
-            // it.actionBar?.setDisplayShowTitleEnabled(false)
         }
 
         actionMenuView = supportToolbar?.findViewById(R.id.actionMenuViewLayout) // main menu
         fragmentView?.apply {
             audioControllerView = findViewById(R.id.audioControllerView)
-            /*
-            volumeSeekBar = findViewById(R.id.volumeSeekBar)
-            volumeSeekBar?.layoutParams?.let {
-                volumeSeekBarHeightForLandscape = it.height
-            }
-            */
             nonVolumeImageButton = findViewById(R.id.nonVolumeImageButton)
             volumeImageButton = findViewById(R.id.volumeImageButton)
             previousMediaImageButton = findViewById(R.id.previousMediaImageButton)
@@ -334,10 +329,6 @@ abstract class PlayerBaseFragment : Fragment(),
             ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
         }
 
-        fragmentView?.apply {
-
-        }
-
         animationText = AlphaAnimation(0.0f, 1.0f)
         animationText?.duration = 500
         animationText?.startOffset = 0
@@ -349,7 +340,7 @@ abstract class PlayerBaseFragment : Fragment(),
             playingTimeTextView = findViewById(R.id.playingTimeTextView)
             playingTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(playingTimeTextView, durationTextSize, ScreenUtil.FontSize_Pixel_Type)
-            player_duration_seekbar = findViewById(R.id.player_duration_seekbar)
+            playerDurationSeekbar = findViewById(R.id.player_duration_seekbar)
             durationTimeTextView = findViewById(R.id.durationTimeTextView)
             durationTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize, ScreenUtil.FontSize_Pixel_Type)
@@ -644,14 +635,15 @@ abstract class PlayerBaseFragment : Fragment(),
                     setMediaRouteButtonVisible()
                 }
             }
-
-            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
-            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-            val mediaRouteButtonBitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
-            val mediaRouteButtonDrawable: Drawable =
-                mediaRouteButtonBitmap.scale(imageButtonHeight, imageButtonHeight)
+            val bitmap = BitmapFactory.decodeResource(resources, R.drawable.cast)
+            val buttonDrawable: Drawable =
+                bitmap.scale(imageButtonHeight, imageButtonHeight)
                     .toDrawable(resources)
-            mediaRouteButton?.setRemoteIndicatorDrawable(mediaRouteButtonDrawable)
+            mediaRouteButton?.setRemoteIndicatorDrawable(buttonDrawable)
+            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
+            layoutParams.height = imageButtonHeight
+            layoutParams.width = imageButtonHeight
+            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
         } catch (ex: Exception) {
             Log.d(TAG, "setMediaRouteButtonView.Exception")
             ex.printStackTrace()
@@ -739,6 +731,11 @@ abstract class PlayerBaseFragment : Fragment(),
                 .toDrawable(resources)
         actionMenuView?.overflowIcon = iconDrawable // set icon of three dots for ActionMenuView
 
+        layoutParams = actionMenuImageButton?.layoutParams as MarginLayoutParams
+        layoutParams.height = imageButtonHeight
+        layoutParams.width = imageButtonHeight
+        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
+
         layoutParams = orientationImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
@@ -759,12 +756,6 @@ abstract class PlayerBaseFragment : Fragment(),
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        setMediaRouteButtonView(buttonMarginLeft2, imageButtonHeight)
-        layoutParams = actionMenuImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-
         layoutParams = audioChannelImageButton?.layoutParams as MarginLayoutParams
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
@@ -773,6 +764,9 @@ abstract class PlayerBaseFragment : Fragment(),
         layoutParams.height = imageButtonHeight
         layoutParams.width = imageButtonHeight
         layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
+
+        setMediaRouteButtonView(buttonMarginLeft2, imageButtonHeight)
+
         supportToolbar?.layoutParams?.height = previousMediaImageButton?.layoutParams?.height!!
         bannerAdsLayout = fragmentView?.findViewById(R.id.bannerAdsLayout)
         val bannerAdsLayoutLP = bannerAdsLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -959,9 +953,9 @@ abstract class PlayerBaseFragment : Fragment(),
 
         orientationImageButton?.let { it->
             it.setOnClickListener {
-                val config = resources.configuration
-                val orientation =
-                    if (config.orientation == Configuration.ORIENTATION_PORTRAIT) Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+                val org = resources.configuration.orientation
+                val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
+                        Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
                 Log.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
                 setScreenOrientation(orientation)
                 disableButtonForSometime(it)
@@ -987,7 +981,13 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         hideVideoImageButton?.let { it->
             it.setOnClickListener {
-                if (playerViewLinearLayout?.visibility==View.VISIBLE) hidePlayerView() else showPlayerView()
+                if (playerViewLinearLayout?.visibility==View.VISIBLE) {
+                    hidePlayerView()
+                    setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+                } else {
+                    showPlayerView()
+                    setScreenOrientation(orgOrientation)
+                }
                 disableButtonForSometime(it)
             }
         }
@@ -1037,7 +1037,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 item?.let { itemIt-> onOptionsItemSelected(itemIt) } == true
             }
         }
-        player_duration_seekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+        playerDurationSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // update the duration on controller UI
                 mPresenter.onDurationSeekBarProgressChanged(progress, fromUser)
@@ -1092,7 +1092,7 @@ abstract class PlayerBaseFragment : Fragment(),
                         }
                         val duration = playService.getMediaDuration()
                         if (duration > 0) {
-                            player_duration_seekbar?.let {
+                            playerDurationSeekbar?.let {
                                 val progress = it.progress + ((distance / screenSizeX) * duration).toInt()
                                 if (progress <= (duration - 2000)) {
                                     // less than 2 seconds before the end
@@ -1170,8 +1170,8 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun update_Player_duration_seekbar(duration: Float) {
         var durationTmp = duration
-        player_duration_seekbar?.progress = 0
-        player_duration_seekbar?.max = durationTmp.toInt()
+        playerDurationSeekbar?.progress = 0
+        playerDurationSeekbar?.max = durationTmp.toInt()
         durationTmp /= 1000.0f // seconds
         val minutes = (durationTmp / 60.0f).toInt() // minutes
         val seconds = durationTmp.toInt() - minutes * 60
@@ -1181,7 +1181,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun update_Player_duration_seekbar_progress(progress: Int) {
-        player_duration_seekbar?.progress = progress
+        playerDurationSeekbar?.progress = progress
     }
 
     override fun updateVolumeSeekBarProgress() {
@@ -1268,6 +1268,7 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
+        orientationImageButton?.isEnabled = false   // disable the button
     }
 
     override fun showPlayerView() {
@@ -1285,6 +1286,7 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
+        orientationImageButton?.isEnabled = true   // enable the button
     }
 
     override fun showToastNoFilesSelected() {
@@ -1342,6 +1344,7 @@ abstract class PlayerBaseFragment : Fragment(),
     // end of implementing PlayerBasePresenter.BasePresentView
 
     private fun setScreenOrientation(orientation: Int) {
+        orgOrientation = resources.configuration.orientation
         activity?.requestedOrientation = when (orientation) {
             Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
