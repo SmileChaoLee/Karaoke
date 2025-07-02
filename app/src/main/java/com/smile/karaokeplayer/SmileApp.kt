@@ -7,7 +7,9 @@ import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.cast.framework.CastContext
+import com.google.android.gms.cast.framework.CastOptions
 import com.smile.karaokeplayer.constants.CommonConstants
+import com.smile.karaokeplayer.googlecast.InitCastContext
 
 class SmileApp : MultiDexApplication() {
     var googleAdMobAppID = ""
@@ -46,12 +48,7 @@ class SmileApp : MultiDexApplication() {
         // for the chrome cast
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
-            try {
-                castContext = CastContext.getSharedInstance(this)
-            } catch (e: RuntimeException) {
-                castContext = null
-                Log.e(TAG, "onCreate.Failed initialize CastContext", e)
-            }
+            castContext = InitCastContext.getInstance(this)
         }
         Log.d(TAG, "castContext = $castContext")
     }
@@ -77,6 +74,11 @@ class SmileApp : MultiDexApplication() {
     override fun onLowMemory() {
         super.onLowMemory()
         Log.w(TAG, "System is running low on memory")
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        castContext == null
     }
 
     override fun onTrimMemory(level: Int) {

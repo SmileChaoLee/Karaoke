@@ -136,9 +136,11 @@ dependencies {
     implementation 'androidx.media3:media3-ui:1.7.1'
     implementation 'androidx.media3:media3-session:1.7.1'
 
-    // implementation 'androidx.media3:media3-cast:1.7.1'
-    implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
+    implementation 'androidx.media3:media3-cast:1.7.1'
+    // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
     implementation 'androidx.mediarouter:mediarouter:1.8.0'
+
+    implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
 
     implementation files('libs/smilelibraries-release.aar')

@@ -67,6 +67,7 @@ import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
+import java.util.Locale
 
 private const val TAG: String = "PlayerBaseFragment"
 
@@ -1163,11 +1164,10 @@ abstract class PlayerBaseFragment : Fragment(),
         pauseMediaImageButton?.visibility = View.VISIBLE
     }
 
-    override fun setPlayingTimeTextView(durationString: String?) {
-        playingTimeTextView?.text = durationString
+    override fun setPlayingTimeTextView(playingTimeString: String?) {
+        playingTimeTextView?.text = playingTimeString
     }
 
-    @SuppressLint("DefaultLocale")
     override fun update_Player_duration_seekbar(duration: Float) {
         var durationTmp = duration
         player_duration_seekbar?.progress = 0
@@ -1175,7 +1175,8 @@ abstract class PlayerBaseFragment : Fragment(),
         durationTmp /= 1000.0f // seconds
         val minutes = (durationTmp / 60.0f).toInt() // minutes
         val seconds = durationTmp.toInt() - minutes * 60
-        val durationString = String.format("%3d:%02d", minutes, seconds)
+        val durationString = String.format(Locale.ENGLISH,"%3d:%02d",
+            minutes, seconds)
         durationTimeTextView?.text = durationString
     }
 

@@ -334,7 +334,10 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         }
         // update the duration on controller UI
         mPresentView.setVideoWindowSize();
-        mPresentView.update_Player_duration_seekbar(vlcPlayer.getLength());
+        // mPresentView.update_Player_duration_seekbar(vlcPlayer.getLength());
+        if (getPlayService() != null) {
+            mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
+        }
     }
 
     @Override

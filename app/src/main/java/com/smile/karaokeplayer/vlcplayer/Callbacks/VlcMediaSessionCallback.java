@@ -111,8 +111,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                 playingParam.setPreparedStatus(1);
             }
         } catch (Exception e) {
-            Log.d(TAG, "onPrepareFromUri.Invalid mediaId");
-            e.printStackTrace();
+            Log.d(TAG, "onPrepareFromUri.Invalid mediaId", e);
         }
     }
 

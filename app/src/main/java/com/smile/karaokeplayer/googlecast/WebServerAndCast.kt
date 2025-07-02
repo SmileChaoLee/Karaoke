@@ -4,18 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.wifi.WifiManager
 import androidx.annotation.OptIn
+import androidx.core.net.toUri
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import com.google.android.gms.cast.framework.CastSession
-import fi.iki.elonen.NanoHTTPD
-import java.io.IOException
-
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
+import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.common.images.WebImage
-import androidx.core.net.toUri
+import fi.iki.elonen.NanoHTTPD
+import java.io.IOException
 import java.net.NetworkInterface
+import java.util.Locale
 
 class WebServerAndCast {
     private var webServer: HttpServerForLocal? = null
@@ -101,9 +101,13 @@ class WebServerAndCast {
         }
     }
 
+    fun getFilename(): String? {
+        return webServer?.mediaFileName
+    }
+
     @OptIn(UnstableApi::class)
     fun getMediaUrl(): String {
-        val fileName = webServer?.mediaFileName
+        val fileName = getFilename()
         if (fileName.isNullOrEmpty()) {
             Log.d(TAG, "getMediaUrl.fileName is null or empty")
             return ""
@@ -140,7 +144,6 @@ class WebServerAndCast {
     }
 
     // Utility to get IP Address (simplified example, needs error handling and network checks)
-    @SuppressLint("DefaultLocale")
     fun getDeviceIpAddress(context: Context): String? {
         val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE)
                 as WifiManager
@@ -148,6 +151,7 @@ class WebServerAndCast {
         val ipAddress = wifiInfo.ipAddress
         return if (ipAddress == 0) null else
             String.format(
+                Locale.ENGLISH,
                 "%d.%d.%d.%d",
                 ipAddress and 0xff,
                 ipAddress shr 8 and 0xff,

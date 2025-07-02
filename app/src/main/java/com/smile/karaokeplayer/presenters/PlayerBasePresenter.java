@@ -35,7 +35,7 @@ public abstract class PlayerBasePresenter {
         void setImageButtonStatus();
         void playButtonOnPauseButtonOff();
         void playButtonOffPauseButtonOn();
-        void setPlayingTimeTextView(String durationString);
+        void setPlayingTimeTextView(String playingTimeString);
         void update_Player_duration_seekbar(float duration);
         void update_Player_duration_seekbar_progress(int progress);
         void updateVolumeSeekBarProgress();
@@ -209,8 +209,8 @@ public abstract class PlayerBasePresenter {
         float positionTime = progress / 1000.0f;   // seconds
         int minutes = (int)(positionTime / 60.0f);    // minutes
         int seconds = (int)positionTime - (minutes * 60);
-        String durationString = String.format(Locale.ENGLISH, "%3d:%02d", minutes, seconds);
-        mPresentView.setPlayingTimeTextView(durationString);
+        String playingTimeString = String.format(Locale.ENGLISH, "%3d:%02d", minutes, seconds);
+        mPresentView.setPlayingTimeTextView(playingTimeString);
         if (fromUser) {
             // setPlayerTime(progress);
             Log.d(TAG, "onDurationSeekBarProgressChanged.playService.setPlayerTime()");
@@ -464,7 +464,7 @@ public abstract class PlayerBasePresenter {
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "pausePlay.playService.pausePlay() ");
-            playService.pausePlay(this);
+            playService.pausePlay();
         }
     }
 
@@ -482,7 +482,7 @@ public abstract class PlayerBasePresenter {
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "stopPlay.playService.stopPlay() ");
-            playService.stopPlay(this);
+            playService.stopPlay();
             mPlayingParam.setFinishState(finishState);
         }
     }
