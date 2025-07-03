@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.util.UnstableApi;
 
 import com.smile.karaokeplayer.constants.CommonConstants;
 import com.smile.karaokeplayer.constants.PlayerConstants;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
+@OptIn(markerClass = UnstableApi.class)
 public abstract class PlayerBasePresenter {
 
     private static final String TAG = "PlayerBasePresenter";
@@ -200,20 +203,25 @@ public abstract class PlayerBasePresenter {
     }
 
     public void onDurationSeekBarProgressChanged(int progress, boolean fromUser) {
+        String msgString = "onDurationSeekBarProgressChanged";
         BasePlayService playService = mPresentView.getPlayService();
-        if (playService == null || !playService.isSeekable()) {
-            Log.d(TAG, "onDurationSeekBarProgressChanged.playService is null or not seekable");
+        if (playService == null) {
+            Log.d(TAG, msgString + ".playService is null");
             return;
         }
-        Log.d(TAG, "onDurationSeekBarProgressChanged.progress = " + progress);
+        if (!playService.isSeekable()) {
+            Log.d(TAG, msgString + ".not seekable");
+            return;
+        }
+        Log.d(TAG, msgString + ".progress = " + progress);
         float positionTime = progress / 1000.0f;   // seconds
         int minutes = (int)(positionTime / 60.0f);    // minutes
         int seconds = (int)positionTime - (minutes * 60);
-        String playingTimeString = String.format(Locale.ENGLISH, "%3d:%02d", minutes, seconds);
+        String playingTimeString = String.format(Locale.ENGLISH,
+                "%3d:%02d", minutes, seconds);
         mPresentView.setPlayingTimeTextView(playingTimeString);
         if (fromUser) {
-            // setPlayerTime(progress);
-            Log.d(TAG, "onDurationSeekBarProgressChanged.playService.setPlayerTime()");
+            Log.d(TAG, msgString + ".playService.setPlayerTime()");
             playService.setPlayerTime(progress);
         }
         mPlayingParam.setCurrentAudioPosition(progress);

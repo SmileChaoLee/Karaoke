@@ -15,10 +15,13 @@ import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import androidx.core.net.toUri
+import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaokeplayer.SmileApp
+import com.smile.karaokeplayer.googlecast.SetupChromeCast
 import com.smile.karaokeplayer.googlecast.WebServerAndCast
 
+@UnstableApi
 abstract class BasePlayService : Service() {
 
     companion object {
@@ -41,13 +44,15 @@ abstract class BasePlayService : Service() {
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
     var isCastSessionAvailable = false
-    protected var castContext: CastContext? = null
     val webServerAndCast = WebServerAndCast()
+    protected var castContext: CastContext? = null
+    private lateinit var setupCast: SetupChromeCast
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
         castContext = (application as SmileApp).castContext
         stopCasting()
+        setupCast = SetupChromeCast(this, castContext)
         initMediaSessionCompat()
         super.onCreate()
     }

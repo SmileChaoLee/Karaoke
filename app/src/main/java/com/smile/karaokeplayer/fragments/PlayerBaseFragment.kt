@@ -54,7 +54,6 @@ import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
-import com.smile.karaokeplayer.googlecast.SetupGoogleCast
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
@@ -68,7 +67,6 @@ import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.util.Locale
-import kotlin.coroutines.Continuation
 
 private const val TAG: String = "PlayerBaseFragment"
 
@@ -120,7 +118,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private var mediaRouteButton: MediaRouteButton? = null
     private var castContext: CastContext? = null
-    private var setupCast: SetupGoogleCast? = null
+    // private var setupCast: SetupGoogleCast? = null
 
     private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
@@ -586,7 +584,7 @@ abstract class PlayerBaseFragment : Fragment(),
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         unbindAndStopPlayService()
-        setupCast?.release()
+        // setupCast?.release()
         super.onDestroy()
     }
 

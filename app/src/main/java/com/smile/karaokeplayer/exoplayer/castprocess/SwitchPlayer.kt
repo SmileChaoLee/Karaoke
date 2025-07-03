@@ -53,8 +53,6 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     playService.setPlayWhenReady(playWhenReady)
                     playService.prepare()
                     playService.presenter!!.setCurrentPlayerToPlayerView()
-                    Log.d(TAG, "${msgString}.castPlayer.currentMediaItem.uri " +
-                            "= ${playService.castPlayer?.currentMediaItem?.localConfiguration?.uri}")
                 }
             }
         }
@@ -72,6 +70,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                 Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
                 castP.stop()    // do not use stopPlay()
                 playService.stopCasting()   // isCastSessionAvailable -> false
+                playService.presenter!!.setCurrentPlayerToPlayerView()
                 castP.currentMediaItem?.let {
                     val mediaUri = it.localConfiguration?.uri
                     Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
@@ -93,7 +92,6 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
                     playService.setPlayWhenReady(playWhenReady)
                     playService.prepare()
-                    playService.presenter!!.setCurrentPlayerToPlayerView()
                 }
             }
         }

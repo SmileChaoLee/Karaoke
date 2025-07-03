@@ -5,7 +5,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import androidx.core.net.toUri
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
@@ -30,11 +29,11 @@ import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.exoplayer.audioProcessors.StereoVolumeAudioProcessor
 import com.smile.karaokeplayer.exoplayer.callbacks.ExoMediaControllerCallback
 import com.smile.karaokeplayer.exoplayer.callbacks.ExoMediaSessionCallback
+import com.smile.karaokeplayer.exoplayer.castprocess.SwitchPlayer
 import com.smile.karaokeplayer.exoplayer.exoRenderersFactory.MyRenderersFactory
 import com.smile.karaokeplayer.exoplayer.listeners.ExoPlayerListener
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.services.BasePlayService
-import java.io.File
 import java.util.Arrays
 
 @UnstableApi
@@ -43,10 +42,12 @@ class ExoPlayService : BasePlayService() {
     var presenter: ExoPlayerPresenter? = null
     var exoPlayer: ExoPlayer? = null
     var castPlayer: CastPlayer? = null
+    // var currPlayer: Player? = null
     private var stereoVolumeAudioProcessor: StereoVolumeAudioProcessor? = null
     private var mediaSessionCallback: ExoMediaSessionCallback? = null
     private var controllerCallback: ExoMediaControllerCallback? = null
     private var exoPlayerListener: ExoPlayerListener? = null
+    private lateinit var switchPlayer: SwitchPlayer
 
     // Binder given to clients.
     private val binder = LocalBinder()
@@ -57,7 +58,8 @@ class ExoPlayService : BasePlayService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate.application = $application")
+        switchPlayer = SwitchPlayer(this)
+        Log.d(TAG, "onCreate.switchPlayer = $switchPlayer")
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -145,124 +147,17 @@ class ExoPlayService : BasePlayService() {
         exoPlayer = null
     }
 
-    private fun transferPlaybackToCast() {
-        val msgString = "transferPlaybackToCast"
-        Log.d(TAG, msgString)
-        if (presenter == null) {
-            Log.d(TAG, "${msgString}.presenter is null")
-            return
-        }
-        castPlayer?.let { castP ->
-            exoPlayer?.let { exoP ->
-                Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
-                exoP.currentMediaItem?.let {
-                    val mediaUri = it.localConfiguration?.uri
-                    Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
-                    val mediaFileName = mediaUri?.path
-                    Log.d(TAG, "${msgString}.mediaFileName = $mediaFileName")
-                    if (mediaUri == null || mediaFileName == null) {
-                        stopCasting()
-                        return
-                    }
-                    val position = exoP.currentPosition
-                    val playWhenReady = exoP.playWhenReady
-                    exoP.stop() // do not use stopPlay()
-
-                    // starting switching to castPlayer
-                    webServerAndCast.startWebServer(mediaFileName)
-                    // must after startWebServer
-                    val localMediaUrl = webServerAndCast.getMediaUrl()
-                    if (localMediaUrl.isEmpty()) {
-                        Log.d(TAG, "${msgString}.localMediaUrl is empty")
-                        stopCasting()
-                        return
-                    }
-                    //
-                    Log.d(TAG, "${msgString}.localMediaUrl = $localMediaUrl")
-                    isCastSessionAvailable = true
-                    /*
-                    val lastSlash: Int = mediaFileName.lastIndexOf('/')
-                    val mediaTitle = if (lastSlash >= 0) {
-                        mediaFileName.substring(lastSlash + 1)
-                    } else {
-                        mediaFileName
-                    }
-                    val mediaMetadata = MediaMetadata.Builder()
-                        .setTitle(mediaTitle)
-                        .setMediaType(MediaMetadata.MEDIA_TYPE_MOVIE)
-                        .build()
-                    val mediaItem = MediaItem.Builder()
-                        .setUri(localMediaUrl)
-                        .setMediaMetadata(mediaMetadata)
-                        .setMimeType(getMimeTypeForFile(mediaFileName))
-                        .build()
-                    castP.setMediaItem(mediaItem, position)
-                    */
-                    val mediaItem =  it.buildUpon().setUri(localMediaUrl).build()
-                    Log.d(TAG, "${msgString}.position = $position")
-                    setMediaItem(mediaItem, position)
-                    presenter!!.playingParam.currentAudioPosition = position
-                    Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
-                    setPlayWhenReady(playWhenReady)
-                    prepare()
-                    presenter!!.setCurrentPlayerToPlayerView()
-                    Log.d(TAG, "${msgString}.castPlayer.currentMediaItem.uri " +
-                            "= ${castPlayer?.currentMediaItem?.localConfiguration?.uri}")
-                }
-            }
-        }
-    }
-
-    private fun transferPlaybackToLocal() {
-        val msgString = "transferPlaybackToLocal"
-        Log.d(TAG, msgString)
-        if (presenter == null) {
-            Log.d(TAG, "${msgString}.presenter is null")
-            return
-        }
-        exoPlayer?.let { exoP ->
-            castPlayer?.let { castP ->
-                Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
-                castP.stop()    // do not use stopPlay()
-                stopCasting()   // isCastSessionAvailable -> false
-                castP.currentMediaItem?.let {
-                    val mediaUri = it.localConfiguration?.uri
-                    Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
-                    val mediaFileName = mediaUri?.path
-                    Log.d(TAG, "${msgString}.mediaFileName = $mediaFileName")
-                    if (mediaUri == null || mediaFileName.isNullOrEmpty()) {
-                        return
-                    }
-                    val position = castP.currentPosition
-                    val playWhenReady = castP.playWhenReady
-
-                    // starting switching to exoPlayer.
-                    // mediaUri need to be set to local uri?
-                    val tempUri = File(mediaFileName).toUri()
-                    Log.d(TAG, "${msgString}.tempUri = $tempUri")
-                    val mediaItem =  it.buildUpon().setUri(tempUri).build()
-                    setMediaItem(mediaItem, position)
-                    presenter!!.playingParam.currentAudioPosition = position
-                    Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
-                    setPlayWhenReady(playWhenReady)
-                    prepare()
-                    presenter!!.setCurrentPlayerToPlayerView()
-                }
-            }
-        }
-    }
-
     private fun initCastPlayer() {
         Log.d(TAG, "initCastPlayer")
         castContext?.let { castIt ->
             val sessionAvailabilityListener = object: SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
                     Log.d(TAG,"onCastSessionAvailable")
-                    transferPlaybackToCast()
+                    switchPlayer.transferPlaybackToCast()
                 }
                 override fun onCastSessionUnavailable() {
                     Log.d(TAG,"onCastSessionUnavailable")
-                    transferPlaybackToLocal()
+                    switchPlayer.transferPlaybackToLocal()
                 }
             }
             castPlayer = CastPlayer(castIt)
@@ -304,34 +199,38 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun selectAudioTrack(trackIndicesCombination: Array<Int>?,
-                         trackSelParam: TrackSelectionParameters): TrackSelectionParameters {
-        Log.d(TAG, "selectAudioTrack")
+                         trackSelParam: TrackSelectionParameters)
+    : TrackSelectionParameters {
+        val msgString = "selectAudioTrack"
+        Log.d(TAG, msgString)
         if (trackIndicesCombination == null) {
-            Log.d(TAG, "selectAudioTrack.trackIndicesCombination = null")
+            Log.d(TAG, "$msgString.trackIndicesCombination = null")
             return trackSelParam
         }
-        val trackSelector: DefaultTrackSelector? = exoPlayer?.trackSelector as DefaultTrackSelector
+        val trackSelector: DefaultTrackSelector? =
+            exoPlayer?.trackSelector as DefaultTrackSelector
         if (trackSelector == null) {
-            Log.d(TAG, "selectAudioTrack.trackSelector = null")
+            Log.d(TAG, "$msgString.trackSelector = null")
             return trackSelParam
         }
         val mappedTrackInfo = trackSelector.currentMappedTrackInfo
         if (mappedTrackInfo == null) {
-            Log.d(TAG, "selectAudioTrack.mappedTrackInfo = null")
+            Log.d(TAG, "$msgString.mappedTrackInfo = null")
             return trackSelParam
         }
         val audioRendererIndex = trackIndicesCombination[0]
-        Log.d(TAG,"selectAudioTrack.audioRendererIndex = $audioRendererIndex")
+        Log.d(TAG,"$msgString.audioRendererIndex = $audioRendererIndex")
         val audioTrackGroupIndex = trackIndicesCombination[1]
-        Log.d(TAG,"selectAudioTrack.audioTrackGroupIndex = $audioTrackGroupIndex")
+        Log.d(TAG,"$msgString.audioTrackGroupIndex = $audioTrackGroupIndex")
         val audioTrackIndex = trackIndicesCombination[2]
-        Log.d(TAG,"selectAudioTrack.audioTrackIndex = $audioTrackIndex")
-        if (mappedTrackInfo.getTrackSupport(audioRendererIndex, audioTrackGroupIndex, audioTrackIndex)
+        Log.d(TAG,"$msgString.audioTrackIndex = $audioTrackIndex")
+        if (mappedTrackInfo.getTrackSupport(audioRendererIndex, audioTrackGroupIndex,
+                audioTrackIndex)
             != C.FORMAT_HANDLED) {
-            Log.d(TAG,"selectAudioTrack.!= C.FORMAT_HANDLED")
+            Log.d(TAG,"$msgString.!= C.FORMAT_HANDLED")
             return trackSelParam
         }
-        Log.d(TAG,"selectAudioTrack.trackSelectorParameters = $trackSelParam")
+        Log.d(TAG,"$msgString.trackSelectorParameters = $trackSelParam")
         val parametersBuilder: TrackSelectionParameters.Builder =
             trackSelParam.buildUpon()
         val trackGroup = mappedTrackInfo.getTrackGroups(audioRendererIndex)[audioTrackGroupIndex]
@@ -342,7 +241,8 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Array<Int>>): Int {
-        Log.d(TAG, "getPlayingMediaInfo()")
+        val msgString = "getPlayingMediaInfo"
+        Log.d(TAG, msgString)
         var mNumberOfVideoTracks = 0
         var numVideoRenderers = 0
         var numAudioRenderers = 0
@@ -353,18 +253,18 @@ class ExoPlayService : BasePlayService() {
         var audioTrackIdPlayed = -1
 
         val videoPlayedFormat: Format? = exoPlayer?.videoFormat
-        Log.d(TAG, "getPlayingMediaInfo.videoPlayedFormat = $videoPlayedFormat")
+        Log.d(TAG, "$msgString.videoPlayedFormat = $videoPlayedFormat")
         videoPlayedFormat?.let {
-            Log.d(TAG, "getPlayingMediaInfo.videoPlayedFormat.id = " + it.id)
+            Log.d(TAG, "$msgString.videoPlayedFormat.id = " + it.id)
         }
         val audioPlayedFormat: Format? = exoPlayer?.audioFormat
-        Log.d(TAG, "getPlayingMediaInfo.audioPlayedFormat = $audioPlayedFormat")
+        Log.d(TAG, "$msgString.audioPlayedFormat = $audioPlayedFormat")
         audioPlayedFormat?.let {
-            Log.d(TAG, "getPlayingMediaInfo.audioPlayedFormat.id = " + it.id)
+            Log.d(TAG, "$msgString.audioPlayedFormat.id = " + it.id)
             val channelsNum = audioPlayedFormat.channelCount
-            Log.d(TAG, "getPlayingMediaInfo.audioPlayedFormat.channelCount = $channelsNum")
-            Log.d(TAG,"getPlayingMediaInfo.audioPlayedFormat.sampleRate = " + audioPlayedFormat.sampleRate)
-            Log.d(TAG,"getPlayingMediaInfo.audioPlayedFormat.pcmEncoding = " + audioPlayedFormat.pcmEncoding)
+            Log.d(TAG, "$msgString.audioPlayedFormat.channelCount = $channelsNum")
+            Log.d(TAG,"$msgString.audioPlayedFormat.sampleRate = " + audioPlayedFormat.sampleRate)
+            Log.d(TAG,"$msgString.audioPlayedFormat.pcmEncoding = " + audioPlayedFormat.pcmEncoding)
         }
 
         var trackSelector: DefaultTrackSelector? = null
@@ -372,14 +272,15 @@ class ExoPlayService : BasePlayService() {
             trackSelector = (it.trackSelector) as DefaultTrackSelector
         }
         if (trackSelector == null) {
-            Log.d(TAG, "getPlayingMediaInfo.trackSelector is null")
+            Log.d(TAG, "$msgString.trackSelector is null")
             return mNumberOfVideoTracks
         }
         trackSelector.let {
             val mappedTrackInfo = it.currentMappedTrackInfo
             mappedTrackInfo?.let { mapIt ->
                 val rendererCount = mapIt.rendererCount
-                Log.d(TAG, "mappedTrackInfo.getRendererCount() = $rendererCount")
+                Log.d(TAG, "$msgString.mappedTrackInfo.getRendererCount() " +
+                        "= $rendererCount")
                 for (rendererIndex in 0 until rendererCount) {
                     Log.d(TAG, "rendererIndex = $rendererIndex")
                     val rendererType = mapIt.getRendererType(rendererIndex)
@@ -390,16 +291,17 @@ class ExoPlayService : BasePlayService() {
                     val trackGroupArray = mapIt.getTrackGroups(rendererIndex)
                     trackGroupArray.let { trackIt ->
                         val arraySize = trackIt.length
-                        Log.d(TAG,"trackGroupArray.length of renderer no ( $rendererIndex ) = $arraySize")
+                        Log.d(TAG,"$msgString.trackGroupArray.length of " +
+                                "renderer no ( $rendererIndex ) = $arraySize")
                         for (groupIndex in 0 until arraySize) {
-                            Log.d(TAG, "trackGroupArray.index = $groupIndex")
+                            Log.d(TAG, "$msgString.trackGroupArray.index = $groupIndex")
                             when (rendererType) {
                                 C.TRACK_TYPE_VIDEO -> numVideoTrackGroups++
                                 C.TRACK_TYPE_AUDIO -> numAudioTrackGroups++
                             }
                             val trackGroup = trackIt[groupIndex]
                             val groupSize = trackGroup.length
-                            Log.d(TAG,"trackGroup.length of trackGroup [ $groupIndex ] = $groupSize")
+                            Log.d(TAG,"$msgString.trackGroup.length of trackGroup [ $groupIndex ] = $groupSize")
                             for (trackIndex in 0 until groupSize) {
                                 val tempFormat = trackGroup.getFormat(trackIndex)
                                 when (rendererType) {
@@ -432,11 +334,11 @@ class ExoPlayService : BasePlayService() {
             }
         }
 
-        Log.d(TAG, "numVideoRenderer = $numVideoRenderers")
-        Log.d(TAG, "numAudioRenderer = $numAudioRenderers")
-        Log.d(TAG, "numVideoTrackGroups = $numVideoTrackGroups")
-        Log.d(TAG, "numAudioTrackGroups = $numAudioTrackGroups")
-        Log.d(TAG, "audioTrackIdPlayed = $audioTrackIdPlayed")
+        Log.d(TAG, "$msgString.numVideoRenderer = $numVideoRenderers")
+        Log.d(TAG, "$msgString.numAudioRenderer = $numAudioRenderers")
+        Log.d(TAG, "$msgString.numVideoTrackGroups = $numVideoTrackGroups")
+        Log.d(TAG, "$msgString.numAudioTrackGroups = $numAudioTrackGroups")
+        Log.d(TAG, "$msgString.audioTrackIdPlayed = $audioTrackIdPlayed")
 
         return mNumberOfVideoTracks
     }
@@ -456,7 +358,7 @@ class ExoPlayService : BasePlayService() {
             exoPlayer?.trackSelectionParameters = trackSelParam
         }
     }
-    private fun setMediaItem(mediaItem: MediaItem, position: Long) {
+    fun setMediaItem(mediaItem: MediaItem, position: Long) {
         if (isCastSessionAvailable) {
             castPlayer?.setMediaItem(mediaItem, position)
         } else {
@@ -622,11 +524,12 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun getMediaDuration(): Long {
-        val duration: Long = if (isCastSessionAvailable) {
+        var duration: Long = if (isCastSessionAvailable) {
             castPlayer?.duration ?: 0
         } else {
             exoPlayer?.duration ?: 0
         }
+        if (duration <= 0) duration = 0
         Log.d(TAG, "getMediaDuration.duration = $duration")
         return duration
     }
@@ -675,7 +578,6 @@ class ExoPlayService : BasePlayService() {
             }
         }
     }
-
 
     companion object {
         private const val TAG = "ExoPlayService"

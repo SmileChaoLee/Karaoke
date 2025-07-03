@@ -24,11 +24,11 @@ class SetupGoogleCast(
 
     private fun setup() {
         fragment.activity?.let { actIt ->
-            Log.d(TAG, "onCreate.castContext = $castContext")
+            Log.d(TAG, "setup.castContext = $castContext")
             castContext?.also { castIt ->
-                castStateListener = MyCastStateListener(fragment)
+                castStateListener = MyCastStateListener()
                 castIt.addCastStateListener(castStateListener!!)
-                Log.d(TAG, "onCreate.castContext.castState = ${castIt.castState}")
+                Log.d(TAG, "setup.castContext.castState = ${castIt.castState}")
                 sessionManager = castIt.sessionManager
                 sessionManagerListener = MySManagerListener(
                     fragment, presenter)
