@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.services.BasePlayService
@@ -20,6 +21,7 @@ import com.smile.karaokeplayer.vlcplayer.Callbacks.VlcMediaSessionCallback
 import com.smile.karaokeplayer.vlcplayer.Listeners.VlcPlayerEventListener
 import com.smile.karaokeplayer.vlcplayer.Presenters.VlcPlayerPresenter
 
+@UnstableApi
 class VlcPlayService : BasePlayService() {
 
     companion object {

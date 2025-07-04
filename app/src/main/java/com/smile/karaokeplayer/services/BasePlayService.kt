@@ -296,6 +296,20 @@ abstract class BasePlayService : Service() {
         } */
     }
 
+    fun startPlayWithParam(presenter: PlayerBasePresenter,
+                  param: PlayingParameters) {
+        val msgStr = "startPlayWithParam"
+        Log.d(TAG, msgStr)
+        val mediaUri = presenter.mediaUri
+        val playbackState = param.currentPlaybackState
+        Log.d(TAG, "${msgStr}.mediaUri = $mediaUri")
+        Log.d(TAG, "${msgStr}.playbackState = $playbackState")
+        if (mediaUri != null && Uri.EMPTY != mediaUri) {
+            param.currentPlaybackState = PlayerConstants.PREPARE_MEDIA
+            playMediaFromUri(mediaUri, param)
+        }
+    }
+
     fun pausePlay() {
         Log.d(TAG, "pausePlay")
         mediaSessionCompat?.controller?.transportControls?.let {

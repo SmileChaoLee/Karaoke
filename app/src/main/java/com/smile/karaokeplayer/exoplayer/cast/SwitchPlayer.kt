@@ -1,4 +1,4 @@
-package com.smile.karaokeplayer.exoplayer.castprocess
+package com.smile.karaokeplayer.exoplayer.cast
 
 import android.util.Log
 import androidx.annotation.OptIn
@@ -17,21 +17,23 @@ class SwitchPlayer(private val playService: ExoPlayService) {
             Log.d(TAG, "${msgString}.presenter is null")
             return
         }
+        val presenter = playService.presenter!!
         playService.castPlayer?.let { castP ->
             playService.exoPlayer?.let { exoP ->
                 Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
-                exoP.currentMediaItem?.let {
-                    val mediaUri = it.localConfiguration?.uri
+                presenter.mediaUri?.let {
+                    val mediaUri = it
                     Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
-                    val mediaFileName = mediaUri?.path
+                    val mediaFileName = mediaUri.path
                     Log.d(TAG, "${msgString}.mediaFileName = $mediaFileName")
-                    if (mediaUri == null || mediaFileName == null) {
+                    if (mediaFileName.isNullOrEmpty()) {
                         playService.stopCasting()
                         return
                     }
-                    val position = exoP.currentPosition
                     val playWhenReady = exoP.playWhenReady
-                    exoP.stop() // do not use stopPlay()
+                    val position = exoP.currentPosition
+                    val playbackState = presenter.playingParam.currentPlaybackState
+                    exoP.stop() // do not use playService.stopPlay()
 
                     // starting switching to castPlayer
                     playService.webServerAndCast.startWebServer(mediaFileName)
@@ -43,16 +45,17 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                         return
                     }
                     //
-                    Log.d(TAG, "${msgString}.localMediaUrl = $localMediaUrl")
                     playService.isCastSessionAvailable = true
-                    val mediaItem =  it.buildUpon().setUri(localMediaUrl).build()
+                    Log.d(TAG, "${msgString}.localMediaUrl = $localMediaUrl")
                     Log.d(TAG, "${msgString}.position = $position")
-                    playService.setMediaItem(mediaItem, position)
-                    playService.presenter!!.playingParam.currentAudioPosition = position
                     Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
+                    presenter.mediaUri = localMediaUrl.toUri()
+                    presenter.playingParam.preparedStatus = 0
+                    presenter.playingParam.currentPlaybackState = playbackState
+                    presenter.playingParam.currentAudioPosition = position
                     playService.setPlayWhenReady(playWhenReady)
-                    playService.prepare()
-                    playService.presenter!!.setCurrentPlayerToPlayerView()
+                    presenter.setCurrentPlayerToPlayerView()
+                    playService.startPlayWithParam(presenter, presenter.playingParam)
                 }
             }
         }
@@ -65,33 +68,36 @@ class SwitchPlayer(private val playService: ExoPlayService) {
             Log.d(TAG, "${msgString}.presenter is null")
             return
         }
+        val presenter = playService.presenter!!
         playService.exoPlayer?.let { exoP ->
             playService.castPlayer?.let { castP ->
                 Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
+                val position = castP.currentPosition
+                val playWhenReady = castP.playWhenReady
+                val playbackState = presenter.playingParam.currentPlaybackState
                 castP.stop()    // do not use stopPlay()
                 playService.stopCasting()   // isCastSessionAvailable -> false
-                playService.presenter!!.setCurrentPlayerToPlayerView()
-                castP.currentMediaItem?.let {
-                    val mediaUri = it.localConfiguration?.uri
+                presenter.setCurrentPlayerToPlayerView()
+                presenter.mediaUri?.let {
+                    val mediaUri = it
                     Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
-                    val mediaFileName = mediaUri?.path
+                    val mediaFileName = mediaUri.path
                     Log.d(TAG, "${msgString}.mediaFileName = $mediaFileName")
-                    if (mediaUri == null || mediaFileName.isNullOrEmpty()) {
+                    if (mediaFileName.isNullOrEmpty()) {
                         return
                     }
-                    val position = castP.currentPosition
-                    val playWhenReady = castP.playWhenReady
-
                     // starting switching to exoPlayer.
                     // mediaUri need to be set to local uri?
                     val tempUri = File(mediaFileName).toUri()
                     Log.d(TAG, "${msgString}.tempUri = $tempUri")
-                    val mediaItem =  it.buildUpon().setUri(tempUri).build()
-                    playService.setMediaItem(mediaItem, position)
-                    playService.presenter!!.playingParam.currentAudioPosition = position
+                    Log.d(TAG, "${msgString}.position = $position")
                     Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
+                    presenter.mediaUri = tempUri
+                    presenter.playingParam.preparedStatus = 0
+                    presenter.playingParam.currentPlaybackState = playbackState
+                    presenter.playingParam.currentAudioPosition = position
                     playService.setPlayWhenReady(playWhenReady)
-                    playService.prepare()
+                    playService.startPlayWithParam(presenter, presenter.playingParam)
                 }
             }
         }
