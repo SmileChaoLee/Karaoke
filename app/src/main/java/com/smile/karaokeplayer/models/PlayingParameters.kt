@@ -6,7 +6,7 @@ import com.smile.karaokeplayer.constants.PlayerConstants
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class PlayingParameters (
+data class PlayingParameters (
         // preparedStatus = 0 --> No media is prepared
         // preparedStatus = 1 --> The  media was just prepared in onPrepareFromUri() in MediaSessionCallback
         // preparedStatus = 2 --> The media is being played, paused, or buffered

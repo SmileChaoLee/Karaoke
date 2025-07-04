@@ -72,7 +72,7 @@ public abstract class PlayerBasePresenter {
     public abstract void switchAudioToVocal();
     public abstract void startDurationSeekBarHandler();
     public abstract void removeCallbacksAndMessages();
-    public abstract void setAudioActionSubMenu();
+    public abstract int[] setAudioActionSubMenu();
 
     public PlayerBasePresenter(BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
@@ -505,38 +505,40 @@ public abstract class PlayerBasePresenter {
     }
 
     public void updateStatusAndUi(PlaybackStateCompat state) {
-        Log.d(TAG, "updateStatusAndUi");
+        String msgStr = "updateStatusAndUi";
+        Log.d(TAG, msgStr + ".playingParam.preparedStatus = " +
+                mPlayingParam.getPreparedStatus());
         int currentState = state.getState();
         mPlayingParam.setCurrentPlaybackState(currentState);
-        Log.d(TAG, "updateStatusAndUi.playingParam.preparedStatus = " +
-                mPlayingParam.getPreparedStatus());
         if (mPlayingParam.isPlaySingleSong() && mPlayingParam.getSingleSongPlayingStatus() == 1) {
-            Log.d(TAG, "updateStatusAndUi.setSingleSongPlayingStatus(2)");
+            Log.d(TAG, msgStr + ".setSingleSongPlayingStatus(2)");
             mPlayingParam.setSingleSongPlayingStatus(2);    // prepared and playing
         }
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             // Only for ExoPlayer
-            Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_BUFFERING");
+            Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_BUFFERING");
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
             return;
         }
         mPresentView.dismissBufferingMessage();
+        int[] trackChannel = setAudioActionSubMenu();
         switch (currentState) {
             case PlaybackStateCompat.STATE_NONE:
                 // 1. initial state
                 // 2. exoPlayer is stopped by user
                 // 3. vlcPlayer finished playing (Event.EndReached)
                 // 4. vlcPlayer is stopped by user
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_NONE");
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_NONE");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    setAudioActionSubMenu();
+                    // setAudioActionSubMenu();
+                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
-                onDurationSeekBarProgressChanged(0, true); // set time to 0 position
+                // set time to 0 position
+                onDurationSeekBarProgressChanged(0, true);
                 mPresentView.update_Player_duration_seekbar_progress(0);
-                Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
@@ -545,11 +547,12 @@ public abstract class PlayerBasePresenter {
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PLAYING");
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_PLAYING");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    setAudioActionSubMenu();
+                    // setAudioActionSubMenu();
+                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPlayingParam.setPreparedStatus(2);  // has been prepared and playing
                 mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
@@ -562,11 +565,12 @@ public abstract class PlayerBasePresenter {
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 // when playing is paused
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_PAUSED");
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_PAUSED");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    setAudioActionSubMenu();
+                    // setAudioActionSubMenu();
+                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPresentView.playButtonOnPauseButtonOff();
                 mPresentView.showNativeAndHideBannerAd();
@@ -574,25 +578,24 @@ public abstract class PlayerBasePresenter {
             case PlaybackStateCompat.STATE_STOPPED:
                 // 1. exoPlayer finished playing
                 // 2. after vlcPlayer finished playing
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_STOPPED");
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_STOPPED");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    setAudioActionSubMenu();
+                    // setAudioActionSubMenu();
+                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPlayingParam.setPreparedStatus(0);
                 BasePlayService playService = mPresentView.getPlayService();
+                Log.d(TAG, msgStr + ".playService = " + playService);
                 if (playService != null) {
-                    Log.d(TAG, "updateStatusAndUi.update_Player_duration_seekbar_progress" +
-                            "((int) playService.getMediaDuration())");
                     mPresentView.update_Player_duration_seekbar_progress(
                             (int) playService.getMediaDuration());
                 }
-                Log.d(TAG, "updateStatusAndUi.mPlayingParam.setCurrentAudioPosition(0)");
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeCallbacksAndMessages();
-                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getFinishState() = " +
+                Log.d(TAG, msgStr + ".mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
                 final boolean isSelfFinished = mPlayingParam.getFinishState()
@@ -600,7 +603,7 @@ public abstract class PlayerBasePresenter {
                 if (isSelfFinished) {
                     mPlayingParam.setNumPlayed(mPlayingParam.getNumPlayed() + 1);
                 }
-                Log.d(TAG, "updateStatusAndUi.mPlayingParam.getNumPlayed() = "
+                Log.d(TAG, msgStr + ".mPlayingParam.getNumPlayed() = "
                         + mPlayingParam.getNumPlayed());
                 startAutoPlay(isSelfFinished);
                 break;
@@ -612,24 +615,21 @@ public abstract class PlayerBasePresenter {
                 }
                 setMediaUri(null);
                 // remove the song that is unable to be played
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
                         + MySingleTon.INSTANCE.getOrderedSongs().size());
                 int currentIndexOfList = mPlayingParam.getCurrentSongIndex();
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_ERROR.currentIndexOfList = "
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.currentIndexOfList = "
                         + currentIndexOfList);
                 if (currentIndexOfList >= 0) {
                     MySingleTon.INSTANCE.getOrderedSongs().remove(currentIndexOfList);
-                    Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_ERROR.orderedSongs.remove("+
-                            currentIndexOfList+")");
                     mPlayingParam.setCurrentSongIndex(--currentIndexOfList);
                 }
-                Log.d(TAG, "updateStatusAndUi.PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
                         + MySingleTon.INSTANCE.getOrderedSongs().size());
-                // nextSongOrShowNativeAndBannerAd(false);
                 startAutoPlay(false);
                 break;
             default:
-                Log.d(TAG, "updateStatusAndUi.other PlaybackStateCompat");
+                Log.d(TAG, msgStr + ".other PlaybackStateCompat");
         }
     }
 

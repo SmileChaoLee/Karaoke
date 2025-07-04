@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import androidx.annotation.NonNull;
 
 import androidx.annotation.OptIn;
@@ -140,38 +140,39 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     @OptIn(markerClass = UnstableApi.class)
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
-        Log.d(TAG, "setAudioTrackAndChannel().numberOfAudioTracks = " + mNumberOfAudioTracks);
+        String msgStr = "setAudioTrackAndChannel";
+        Log.d(TAG, msgStr + ".numberOfAudioTracks = " + mNumberOfAudioTracks);
         if (mNumberOfAudioTracks > 0) {
             // select audio track
-            Log.d(TAG, "setAudioTrackAndChannel().audioTrackIndex = " + audioTrackIndex);
+            Log.d(TAG, msgStr + ".audioTrackIndex = " + audioTrackIndex);
             if (audioTrackIndex<=0) {
-                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
+                Log.d(TAG, msgStr + ".No such audio Track Index = " + audioTrackIndex);
                 return;
             }
             if (audioTrackIndex> mNumberOfAudioTracks) {
-                Log.d(TAG, "No such audio Track Index = " + audioTrackIndex);
+                Log.d(TAG, msgStr + ".No such audio Track Index = " + audioTrackIndex);
                 // set to first track
                 audioTrackIndex = 1;
             }
             int indexInArrayList = audioTrackIndex - 1;
 
             Integer[] trackIndicesCombination = audioTrackIndicesList.get(indexInArrayList);
-            Log.d(TAG, "setAudioTrackAndChannel.getPlayService() = " + getPlayService());
+            Log.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
-                Log.d(TAG, "setAudioTrackAndChannel.getPlayService().selectAudioTrack()");
+                Log.d(TAG, msgStr + ".getPlayService().selectAudioTrack()");
                 mTrackSelectionParameters = getPlayService().selectAudioTrack(trackIndicesCombination,
                         mTrackSelectionParameters);
             }
 
             // set audio track
-            Log.d(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex);
+            Log.d(TAG, msgStr + ".audioTrackIndex = " + audioTrackIndex);
             mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
             // set audio channel
-            Log.d(TAG, "setAudioTrackAndChannel.audioChannel = " + audioChannel);
+            Log.d(TAG, msgStr + ".audioChannel = " + audioChannel);
             mPlayingParam.setCurrentChannelPlayed(audioChannel);
-            Log.d(TAG, "setAudioTrackAndChannel.getPlayService() = " + getPlayService());
+            Log.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
-                Log.d(TAG, "setAudioTrackAndChannel.getPlayService().setAudioVolume");
+                Log.d(TAG, msgStr + ".getPlayService().setAudioVolume");
                 getPlayService().setAudioVolume(mPlayingParam.getCurrentVolume());
             }
         }
@@ -216,16 +217,18 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
-    public void setAudioActionSubMenu() {
-        Log.d(TAG, "setAudioActionSubMenu.getPlayService() = " + getPlayService());
+    public int[] setAudioActionSubMenu() {
+        String msgStr = "setAudioActionSubMenu";
+        Log.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
+        int[] result = new int[] {1, CommonConstants.STEREO};
         if (getPlayService() == null) {
-            return;
+            return result;
         }
         audioTrackIndicesList.clear();
         mNumberOfVideoTracks = getPlayService().getPlayingMediaInfo(audioTrackIndicesList);
         mNumberOfAudioTracks = audioTrackIndicesList.size();
-        Log.d(TAG, "setAudioActionSubMenu.mNumberOfVideoTracks = " + mNumberOfVideoTracks);
-        Log.d(TAG, "setAudioActionSubMenu.mNumberOfAudioTracks = " + mNumberOfAudioTracks);
+        Log.d(TAG, msgStr + ".mNumberOfVideoTracks = " + mNumberOfVideoTracks);
+        Log.d(TAG, msgStr + ".mNumberOfAudioTracks = " + mNumberOfAudioTracks);
 
         if (mNumberOfAudioTracks == 0) {
             mPlayingParam.setCurrentAudioTrackIndexPlayed(PlayerConstants.NoAudioTrack);
@@ -235,16 +238,16 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong() || mPlayingParam.isInSongList()) {
                 audioTrackIdPlayed = mPlayingParam.getCurrentAudioTrackIndexPlayed();
                 audioChannelPlayed = mPlayingParam.getCurrentChannelPlayed();
-                Log.d(TAG, "Auto play or playing single song.");
+                Log.d(TAG, msgStr + ".Auto play or playing single song.");
             } else {
                 // for open media. do not know the music track and vocal track
-                Log.d(TAG, "Do not know the music track and vocal track.");
+                Log.d(TAG, msgStr + ".Do not know the music track and vocal track.");
                 // guess
                 audioTrackIdPlayed = mPlayingParam.getCurrentAudioTrackIndexPlayed();
-                Log.d(TAG, "setAudioActionSubMenu.playingParam.getCurrentAudioTrackIndexPlayed() = " +
+                Log.d(TAG, msgStr + ".playingParam.getCurrentAudioTrackIndexPlayed() = " +
                         audioTrackIdPlayed);
                 audioChannelPlayed = mPlayingParam.getCurrentChannelPlayed();
-                Log.d(TAG, "setAudioActionSubMenu.playingParam.getCurrentChannelPlayed() = " +
+                Log.d(TAG, msgStr + ".playingParam.getCurrentChannelPlayed() = " +
                         audioChannelPlayed);
                 if (mNumberOfAudioTracks >= 2) {
                     // more than 2 audio tracks
@@ -262,19 +265,23 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
                 }
             }
 
-            Log.d(TAG, "audioTrackIdPlayed = " + audioTrackIdPlayed);
-            Log.d(TAG, "audioChannelPlayed = " + audioChannelPlayed);
+            Log.d(TAG, msgStr + ".audioTrackIdPlayed = " + audioTrackIdPlayed);
+            Log.d(TAG, msgStr + ".audioChannelPlayed = " + audioChannelPlayed);
 
-            if (audioTrackIdPlayed < 0) {
+            if (audioTrackIdPlayed <= 0) {
                 audioTrackIdPlayed = 1;
             }
-            setAudioTrackAndChannel(audioTrackIdPlayed, audioChannelPlayed);
+            result[0] = audioTrackIdPlayed;
+            result[1] = audioChannelPlayed;
+            // setAudioTrackAndChannel(audioTrackIdPlayed, audioChannelPlayed);
         }
 
         // build R.id.audioTrack submenu
         mPresentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
         // update the duration on controller UI
         mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
+
+        return result;
     }
 
     @OptIn(markerClass = UnstableApi.class)
