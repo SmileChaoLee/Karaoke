@@ -999,8 +999,12 @@ abstract class PlayerBaseFragment : Fragment(),
         audioTrackImageButton?.let { it->
             it.setOnClickListener {
                 mPresenter.playingParam.apply {
+                    Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
                     currentAudioTrackIndexPlayed++
-                    if (currentAudioTrackIndexPlayed > mPresenter.numberOfAudioTracks) currentAudioTrackIndexPlayed = 1
+                    Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
+                    val numAudioTracks = mPresenter.numberOfAudioTracks
+                    Log.d(TAG, "audioTrackImageButton.numAudioTracks = $numAudioTracks")
+                    if (currentAudioTrackIndexPlayed > numAudioTracks) currentAudioTrackIndexPlayed = 1
                     val str: String? =
                         when (currentAudioTrackIndexPlayed) {
                             1 -> activity?.getString(R.string.audioTrack1String)
@@ -1226,6 +1230,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun buildAudioTrackMenuItem(audioTrackNumber: Int) {
+        Log.d(TAG, "buildAudioTrackMenuItem.audioTrackNumber = $audioTrackNumber")
         // build R.id.audioTrack submenu
         audioTrackMenuItem?.subMenu?.let {
             var index = 0

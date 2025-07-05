@@ -106,7 +106,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                             ", currentAudioPosition = " + currentAudioPosition);
             if (playingParam.getPreparedStatus() == 4) {
                 // just prepared but just came back from background
-                playingParam.setPreparedStatus(5);  // VlcPlayerEventListener
+                playingParam.setPreparedStatus(5);  // VlcPlayerListener
             } else {
                 playingParam.setPreparedStatus(1);
             }

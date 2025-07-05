@@ -4,6 +4,9 @@ import android.net.Uri;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
+
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.PlayingParameters;
 
@@ -11,13 +14,14 @@ import org.videolan.libvlc.MediaPlayer;
 import com.smile.karaokeplayer.vlcplayer.Presenters.VlcPlayerPresenter;
 import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService;
 
-public class VlcPlayerEventListener implements MediaPlayer.EventListener {
-    private static final String TAG = "VlcPlayerEventListener";
+@OptIn(markerClass = UnstableApi.class)
+public class VlcPlayerListener implements MediaPlayer.EventListener {
+    private static final String TAG = "VlcPlayerListener";
     private final VlcPlayService mPlayService;
     private final VlcPlayerPresenter mPresenter;
     private final MediaPlayer mVlcPlayer;
 
-    public VlcPlayerEventListener(VlcPlayerPresenter presenter, VlcPlayService playService) {
+    public VlcPlayerListener(VlcPlayerPresenter presenter, VlcPlayService playService) {
         mPlayService = playService;
         mPresenter = presenter;
         mVlcPlayer = mPlayService.getVlcPlayer();
@@ -106,6 +110,7 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                     Log.d(TAG, "onEvent()-->Stopped--> vlcPlayer is finished playing.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }
+                mPresenter.getAudioSubMenuHandler().removeCallbacksAndMessages(null);
                 break;
             case MediaPlayer.Event.EndReached:
                 // after this event, vlcPlayer will send out Event.Stopped to EventListener
@@ -116,6 +121,7 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                 // Event.Stopper
                 // playingParam.setMediaPrepared(false);
                 // no message has to be sent
+                mPresenter.getAudioSubMenuHandler().removeCallbacksAndMessages(null);
                 break;
             case MediaPlayer.Event.Opening:
                 // Use opening as a buffering because VlcPlayer is always buffering during playing
@@ -133,6 +139,7 @@ public class VlcPlayerEventListener implements MediaPlayer.EventListener {
                 Log.d(TAG, "onEvent()-->EncounteredError.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
                 mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
+                mPresenter.getAudioSubMenuHandler().removeCallbacksAndMessages(null);
                 break;
             default:
                 Log.d(TAG, "onEvent()-->default-->event.type = " + event.type);

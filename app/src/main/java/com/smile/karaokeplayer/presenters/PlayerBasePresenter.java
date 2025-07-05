@@ -29,7 +29,6 @@ public abstract class PlayerBasePresenter {
     private final BasePresentView mPresentView;
     protected Uri mMediaUri;
     protected int mNumberOfVideoTracks;
-    protected int mNumberOfAudioTracks;
     protected PlayingParameters mPlayingParam;
     protected SongInfo mSingleSongInfo;    // when playing single song in songs list
     private boolean mCanShowNotSupportedFormat;
@@ -73,6 +72,7 @@ public abstract class PlayerBasePresenter {
     public abstract void startDurationSeekBarHandler();
     public abstract void removeCallbacksAndMessages();
     public abstract int[] setAudioActionSubMenu();
+    public abstract int getNumberOfAudioTracks();
 
     public PlayerBasePresenter(BasePresentView presentView) {
         Log.d(TAG, "PlayerBasePresenter() constructor is called.");
@@ -87,9 +87,6 @@ public abstract class PlayerBasePresenter {
     }
     public void setMediaUri(Uri mediaUri) {
         this.mMediaUri = mediaUri;
-    }
-    public int getNumberOfAudioTracks() {
-        return mNumberOfAudioTracks;
     }
     public int getNumberOfVideoTracks() {
         return mNumberOfVideoTracks;
@@ -117,8 +114,9 @@ public abstract class PlayerBasePresenter {
                 + MySingleTon.INSTANCE.getOrderedSongs().size());
         mCanShowNotSupportedFormat = true;
         if (!MySingleTon.INSTANCE.getOrderedSongs().isEmpty()) {
-            mPlayingParam.setCurrentSongIndex(-1); // next song that will be played, which the index is 0
+            // next song that will be played, which the index is 0
             // start playing video from list
+            mPlayingParam.setCurrentSongIndex(-1);
             BasePlayService playService = mPresentView.getPlayService();
             Log.d(TAG, "autoPlaySongList.playService = " + playService);
             boolean isPlaying = playService != null && playService.isPlaying();
@@ -146,7 +144,6 @@ public abstract class PlayerBasePresenter {
         Log.d(TAG, "initializeVariablesBase.isAutoPlay = " + isAutoPlay);
         if (savedInstanceState == null) {
             mNumberOfVideoTracks = 0;
-            mNumberOfAudioTracks = 0;
             mMediaUri = null;
             initializePlayingParam();
             mCanShowNotSupportedFormat = false;
@@ -169,7 +166,6 @@ public abstract class PlayerBasePresenter {
         } else {
             // needed to be set
             mNumberOfVideoTracks = savedInstanceState.getInt(PlayerConstants.NumberOfVideoTracksState,0);
-            mNumberOfAudioTracks = savedInstanceState.getInt(PlayerConstants.NumberOfAudioTracksState);
             ArrayList<SongInfo> orderedSongs;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(PlayerConstants.OrderedSongsState, ArrayList.class);
@@ -646,7 +642,6 @@ public abstract class PlayerBasePresenter {
 
     public void saveInstanceState(@NonNull Bundle outState) {
         outState.putInt(PlayerConstants.NumberOfVideoTracksState, mNumberOfVideoTracks);
-        outState.putInt(PlayerConstants.NumberOfAudioTracksState, mNumberOfAudioTracks);
         Log.d(TAG, "saveInstanceState.orderedSongs = " + MySingleTon.INSTANCE.getOrderedSongs());
         ArrayList<SongInfo> orderedSongs = new ArrayList<>(MySingleTon.INSTANCE.getOrderedSongs());
         outState.putSerializable(PlayerConstants.OrderedSongsState, orderedSongs);

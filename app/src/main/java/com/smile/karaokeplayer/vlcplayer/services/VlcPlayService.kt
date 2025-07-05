@@ -18,7 +18,7 @@ import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.util.VLCVideoLayout
 import com.smile.karaokeplayer.vlcplayer.Callbacks.VlcMediaControllerCallback
 import com.smile.karaokeplayer.vlcplayer.Callbacks.VlcMediaSessionCallback
-import com.smile.karaokeplayer.vlcplayer.Listeners.VlcPlayerEventListener
+import com.smile.karaokeplayer.vlcplayer.Listeners.VlcPlayerListener
 import com.smile.karaokeplayer.vlcplayer.Presenters.VlcPlayerPresenter
 
 @UnstableApi
@@ -74,7 +74,7 @@ class VlcPlayService : BasePlayService() {
             libVLC = LibVLC(it.activity)
             vlcPlayer = MediaPlayer(libVLC)
             vlcPlayer?.apply {
-                setEventListener(VlcPlayerEventListener(it, this@VlcPlayService))
+                setEventListener(VlcPlayerListener(it, this@VlcPlayService))
             }
         }
     }

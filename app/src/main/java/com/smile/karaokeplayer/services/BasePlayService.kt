@@ -242,7 +242,8 @@ abstract class BasePlayService : Service() {
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         val numberOfAudioTracks = presenter.numberOfAudioTracks
-        if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
+        // if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
+        if ((mediaUri == null) || (Uri.EMPTY == mediaUri)) {
             return
         }
         Log.d(TAG, "replayMedia.playingParam.preparedStatus = ${playingParam.preparedStatus}")
