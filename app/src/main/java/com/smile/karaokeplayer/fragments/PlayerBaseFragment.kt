@@ -15,6 +15,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -38,6 +39,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.compose.ui.layout.Layout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -194,6 +196,9 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+
+        cleanSongs()
+
         arguments?.let {
             Log.d(TAG, "onCreate.arguments is not null")
         }
@@ -577,6 +582,10 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy() is called.")
+        cleanSongs()
+        // cancel the timer
+        mPresenter.removeCallbacksAndMessages()
+        controllerTimerHandler.removeCallbacksAndMessages(null)
         myBannerAdView?.destroy()
         nativeTemplate?.release()
         // clear the screen on, added on 2021-02-18
@@ -615,6 +624,12 @@ abstract class PlayerBaseFragment : Fragment(),
         setMenuItemsVisibility() // abstract method
     }
 
+    private fun cleanSongs() {
+        MySingleTon.favorites.clear()
+        MySingleTon.selectedFavorites.clear()
+        MySingleTon.orderedSongs.clear()
+    }
+
     private fun setMediaRouteButtonVisible() {
         Log.d(TAG, "setMediaRouteButtonVisible")
         mediaRouteButton?.visibility =
@@ -638,10 +653,9 @@ abstract class PlayerBaseFragment : Fragment(),
                 bitmap.scale(imageButtonHeight, imageButtonHeight)
                     .toDrawable(resources)
             mediaRouteButton?.setRemoteIndicatorDrawable(buttonDrawable)
-            val layoutParams: MarginLayoutParams = mediaRouteButton?.layoutParams as MarginLayoutParams
-            layoutParams.height = imageButtonHeight
-            layoutParams.width = imageButtonHeight
-            layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+            val linearParam = LinearLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
+            linearParam.setMargins(buttonMarginLeft, 0, 0, 0)
+            mediaRouteButton?.layoutParams = linearParam
         } catch (ex: Exception) {
             Log.d(TAG, "setMediaRouteButtonView.Exception")
             ex.printStackTrace()
@@ -650,7 +664,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private fun setButtonsPositionAndSize(config: Configuration) {
         Log.d(TAG, "setButtonsPositionAndSize")
-        var buttonMarginLeft = (60.0f * fontScale).toInt() // 60 pixels = 20dp on Nexus 5
+        var buttonMarginLeft = (50.0f * fontScale).toInt() // 60 pixels = 20dp on Nexus 5
         var buttonMarginLeft2 = buttonMarginLeft
         // val screenSize = ScreenUtil.getScreenSize(activity)
         // Log.d(TAG, "screenSize.x = ${screenSize.x}, screenSize.y = ${screenSize.y}, buttonMarginLeft = $buttonMarginLeft")
@@ -658,8 +672,9 @@ abstract class PlayerBaseFragment : Fragment(),
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
                 (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
-            Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         }
+        if (buttonMarginLeft<0) buttonMarginLeft = 0
+        Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum = 8 // 8 buttons
         val imageButtonHeight = (textFontSize * 1.2f).toInt()
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
@@ -668,6 +683,8 @@ abstract class PlayerBaseFragment : Fragment(),
             // greater than the width of screen
             buttonMarginLeft = (screenSizeX - 10 - buttonNum * imageButtonHeight) / (buttonNum-1)
         }
+        buttonMarginLeft -= 10
+        if (buttonMarginLeft<0) buttonMarginLeft = 0
         Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum2 = 8
         val maxWidth2 = buttonNum2 * imageButtonHeight + (buttonNum2 - 1) * buttonMarginLeft2
@@ -675,93 +692,52 @@ abstract class PlayerBaseFragment : Fragment(),
             // greater than the width of screen
             buttonMarginLeft2 = (screenSizeX - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
         }
+        buttonMarginLeft2 -= 10
+        if (buttonMarginLeft2<0) buttonMarginLeft2 = 0
+        Log.d(TAG, "buttonMarginLeft2 = $buttonMarginLeft2")
+
         val volumeButtonFrameLayout: FrameLayout? =
             fragmentView?.findViewById(R.id.volumeButtonFrameLayout)
-        var layoutParams : MarginLayoutParams = volumeButtonFrameLayout?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(0, 0, 0, 0)
-        layoutParams = nonVolumeImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams = volumeImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams = previousMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+        val linearParam = LinearLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
+        linearParam.setMargins(0, 0, 0, 0)
+        volumeButtonFrameLayout?.layoutParams = linearParam
+
+        val frameParam: FrameLayout.LayoutParams = FrameLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
+        nonVolumeImageButton?.layoutParams = frameParam
+        volumeImageButton?.layoutParams = frameParam
+
+        linearParam.setMargins(buttonMarginLeft, 0, 0, 0)
+        previousMediaImageButton?.layoutParams = linearParam
+
         val playPauseButtonFrameLayout: FrameLayout? =
             fragmentView?.findViewById(R.id.playPauseButtonFrameLayout)
-        layoutParams = playPauseButtonFrameLayout?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-        layoutParams = playMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams = pauseMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams = replayMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-        layoutParams = stopMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-        layoutParams = nextMediaImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-        layoutParams = heartImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
-        layoutParams = actionMenuView?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft, 0, 0, 0)
+        playPauseButtonFrameLayout?.layoutParams = linearParam
+        playMediaImageButton?.layoutParams = frameParam
+        pauseMediaImageButton?.layoutParams = frameParam
+
+        replayMediaImageButton?.layoutParams = linearParam
+        stopMediaImageButton?.layoutParams = linearParam
+        nextMediaImageButton?.layoutParams = linearParam
+        heartImageButton?.layoutParams = linearParam
+        actionMenuView?.layoutParams = linearParam
+
         val tempBitmap = BitmapFactory.decodeResource(resources, R.drawable.circle_and_three_dots)
         val iconDrawable: Drawable =
             tempBitmap.scale(imageButtonHeight, imageButtonHeight)
                 .toDrawable(resources)
         actionMenuView?.overflowIcon = iconDrawable // set icon of three dots for ActionMenuView
+        actionMenuImageButton?.layoutParams = linearParam
 
-        layoutParams = actionMenuImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
+        linearParam.setMargins(0, 0, 0, 0)
+        orientationImageButton?.layoutParams = linearParam
 
-        layoutParams = orientationImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(0, 0, 0, 0)
-        layoutParams = repeatImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        layoutParams = switchToMusicImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        layoutParams = switchToVocalImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        layoutParams = hideVideoImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        layoutParams = audioChannelImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
-        layoutParams = audioTrackImageButton?.layoutParams as MarginLayoutParams
-        layoutParams.height = imageButtonHeight
-        layoutParams.width = imageButtonHeight
-        layoutParams.setMargins(buttonMarginLeft2, 0, 0, 0)
+        linearParam.setMargins(buttonMarginLeft2, 0, 0, 0)
+        repeatImageButton?.layoutParams = linearParam
+        switchToMusicImageButton?.layoutParams = linearParam
+        switchToVocalImageButton?.layoutParams = linearParam
+        hideVideoImageButton?.layoutParams = linearParam
+        audioChannelImageButton?.layoutParams = linearParam
+        audioTrackImageButton?.layoutParams = linearParam
 
         setMediaRouteButtonView(buttonMarginLeft2, imageButtonHeight)
 
@@ -779,7 +755,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 nativeAdLayoutLP.matchConstraintPercentHeight)
 
         // setting the width and the margins for nativeAdTemplateView
-        layoutParams = nativeAdTemplateView?.layoutParams as MarginLayoutParams
+        var layoutParams = nativeAdTemplateView?.layoutParams as MarginLayoutParams
         // 6 buttons and 5 gaps
         layoutParams.width = imageButtonHeight * 6 + buttonMarginLeft * 5
         layoutParams.setMargins(0, 0, 0, 0)
@@ -1004,7 +980,8 @@ abstract class PlayerBaseFragment : Fragment(),
                     Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
                     val numAudioTracks = mPresenter.numberOfAudioTracks
                     Log.d(TAG, "audioTrackImageButton.numAudioTracks = $numAudioTracks")
-                    if (currentAudioTrackIndexPlayed > numAudioTracks) currentAudioTrackIndexPlayed = 1
+                    if (currentAudioTrackIndexPlayed > numAudioTracks)
+                        currentAudioTrackIndexPlayed = 1
                     val str: String? =
                         when (currentAudioTrackIndexPlayed) {
                             1 -> activity?.getString(R.string.audioTrack1String)
@@ -1076,9 +1053,9 @@ abstract class PlayerBaseFragment : Fragment(),
                     MotionEvent.ACTION_MOVE -> run {
                         if (!playService.isSeekable()) return@run
                         mPresenter.playingParam.apply {
-                            if (!(currentPlaybackState == PlaybackStateCompat.STATE_PLAYING
-                                        || currentPlaybackState == PlaybackStateCompat.STATE_PAUSED)) {
-                                Log.d(TAG, "setOnTouchListener.ACTION_MOVE.not playing or paused")
+                            if (currentPlaybackState != PlaybackStateCompat.STATE_PLAYING
+                                        && currentPlaybackState != PlaybackStateCompat.STATE_PAUSED) {
+                                Log.d(TAG, "setOnTouchListener.ACTION_MOVE.not playing and not paused")
                                 return@run
                             }
                         }
@@ -1094,6 +1071,19 @@ abstract class PlayerBaseFragment : Fragment(),
                         }
                         val duration = playService.getMediaDuration()
                         if (duration > 0) {
+                            val currentTime = playService.getCurrentPosition()
+                            val progress = currentTime + ((distance / screenSizeX) * duration).toInt()
+                            if (progress <= (duration - 2000)) {
+                                // less than 2 seconds before the end
+                                playService.setPlayerTime(progress)
+                                mPresenter.playingParam.currentAudioPosition = progress
+                                playerDurationSeekbar?.progress = progress.toInt()
+                                showSupportToolbarAudioControl() // show the player buttons
+                                oldMotionEventX = posX
+                            }
+                        }
+                        /*
+                        if (duration > 0) {
                             playerDurationSeekbar?.let {
                                 val progress = it.progress + ((distance / screenSizeX) * duration).toInt()
                                 if (progress <= (duration - 2000)) {
@@ -1105,6 +1095,7 @@ abstract class PlayerBaseFragment : Fragment(),
                                 }
                             }
                         }
+                        */
                     }
                     MotionEvent.ACTION_OUTSIDE -> {
                         Log.d(TAG, "setOnTouchListener.ACTION_OUTSIDE")
