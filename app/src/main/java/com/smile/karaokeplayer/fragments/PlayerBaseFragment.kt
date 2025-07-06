@@ -683,7 +683,6 @@ abstract class PlayerBaseFragment : Fragment(),
             // greater than the width of screen
             buttonMarginLeft = (screenSizeX - 10 - buttonNum * imageButtonHeight) / (buttonNum-1)
         }
-        buttonMarginLeft -= 10
         if (buttonMarginLeft<0) buttonMarginLeft = 0
         Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum2 = 8
@@ -692,7 +691,6 @@ abstract class PlayerBaseFragment : Fragment(),
             // greater than the width of screen
             buttonMarginLeft2 = (screenSizeX - 10 - buttonNum2 * imageButtonHeight) / (buttonNum2 - 1)
         }
-        buttonMarginLeft2 -= 10
         if (buttonMarginLeft2<0) buttonMarginLeft2 = 0
         Log.d(TAG, "buttonMarginLeft2 = $buttonMarginLeft2")
 
