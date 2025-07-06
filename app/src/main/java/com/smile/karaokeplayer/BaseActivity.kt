@@ -66,7 +66,7 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-
+        cleanSongs()
         if (savedInstanceState == null) {
             // the orientation is always portrait when created
             Log.d(TAG,"onCreate.new created")
@@ -192,8 +192,8 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume()")
         super.onResume()
+        Log.d(TAG, "onResume()")
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -211,11 +211,19 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         Log.d(TAG, "onDestroy()")
         LocalBroadcastManager.getInstance(this).apply {
             unregisterReceiver(baseReceiver)
         }
-        super.onDestroy()
+        cleanSongs()
+    }
+
+    private fun cleanSongs() {
+        Log.d(TAG, "cleanSongs()")
+        MySingleTon.favorites.clear()
+        MySingleTon.selectedFavorites.clear()
+        MySingleTon.orderedSongs.clear()
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
@@ -300,7 +308,6 @@ abstract class BaseActivity : AppCompatActivity(),
                     it.mPresenter.pausePlay()
                     isPlayToPause = true
                 }
-                // pIt.preparedStatus = 10   // going to BaseFavoriteListActivity
                 pIt.wentToFavorite = true   // going to BaseFavoriteListActivity
             }
         }

@@ -15,7 +15,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -39,7 +38,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.compose.ui.layout.Layout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -584,7 +582,7 @@ abstract class PlayerBaseFragment : Fragment(),
         Log.d(TAG, "onDestroy() is called.")
         cleanSongs()
         // cancel the timer
-        mPresenter.removeCallbacksAndMessages()
+        mPresenter.removeMsgFromDurationBarHandler()
         controllerTimerHandler.removeCallbacksAndMessages(null)
         myBannerAdView?.destroy()
         nativeTemplate?.release()
@@ -1044,9 +1042,11 @@ abstract class PlayerBaseFragment : Fragment(),
                     MotionEvent.ACTION_DOWN -> {
                         Log.d(TAG, "setOnTouchListener.ACTION_DOWN.posX = $posX")
                         oldMotionEventX = posX
+                        mPresenter.removeMsgFromDurationBarHandler()
                     }
                     MotionEvent.ACTION_UP -> {
                         Log.d(TAG, "setOnTouchListener.ACTION_UP")
+                        mPresenter.startDurationBarHandler()
                     }
                     MotionEvent.ACTION_MOVE -> run {
                         if (!playService.isSeekable()) return@run
@@ -1062,7 +1062,7 @@ abstract class PlayerBaseFragment : Fragment(),
                             return@run
                         }
                         val distance = posX - oldMotionEventX
-                        // Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
+                        Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
                         if (distance >= -20.0 && distance <= 20.0f) {
                             Log.d(TAG, "setOnTouchListener.ACTION_MOVE.distance is too small")
                             return@run
@@ -1073,11 +1073,11 @@ abstract class PlayerBaseFragment : Fragment(),
                             val progress = currentTime + ((distance / screenSizeX) * duration).toInt()
                             if (progress <= (duration - 2000)) {
                                 // less than 2 seconds before the end
-                                playService.setPlayerTime(progress)
-                                mPresenter.playingParam.currentAudioPosition = progress
-                                playerDurationSeekbar?.progress = progress.toInt()
+                                mPresenter.onDurationSeekBarProgressChanged(progress.toInt(),
+                                    true)
+                                update_Player_duration_seekbar_progress(progress.toInt())
                                 showSupportToolbarAudioControl() // show the player buttons
-                                oldMotionEventX = posX
+                                // oldMotionEventX = posX
                             }
                         }
                         /*

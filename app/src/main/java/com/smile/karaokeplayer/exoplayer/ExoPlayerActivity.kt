@@ -9,6 +9,7 @@ import com.smile.karaokeplayer.exoplayer.fragments.ExoPlayerFragment
 
 private const val TAG : String = "ExoPlayerActivity"
 
+@OptIn(UnstableApi::class)
 class ExoPlayerActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -64,13 +64,11 @@ public abstract class PlayerBasePresenter {
     public abstract void initializeVariables(Bundle savedInstanceState,
                                              Intent callingIntent,
                                              boolean isAutoPlay);
-    public abstract void setAudioVolumeInsideVolumeSeekBar(int i);
-    public abstract int getCurrentProgressForVolumeSeekBar();
     public abstract void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel);
     public abstract void switchAudioToMusic();
     public abstract void switchAudioToVocal();
-    public abstract void startDurationSeekBarHandler();
-    public abstract void removeCallbacksAndMessages();
+    public abstract void startDurationBarHandler();
+    public abstract void removeMsgFromDurationBarHandler();
     public abstract int[] setAudioActionSubMenu();
     public abstract int getNumberOfAudioTracks();
 
@@ -200,6 +198,7 @@ public abstract class PlayerBasePresenter {
 
     public void onDurationSeekBarProgressChanged(int progress, boolean fromUser) {
         String msgString = "onDurationSeekBarProgressChanged";
+        Log.d(TAG, msgString);
         BasePlayService playService = mPresentView.getPlayService();
         if (playService == null) {
             Log.d(TAG, msgString + ".playService is null");
@@ -255,7 +254,6 @@ public abstract class PlayerBasePresenter {
 
     public void startAutoPlay(boolean isSelfFinished) {
         Log.d(TAG, "startAutoPlay");
-        mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);    // default value for start playing a video
         if (mPresentView.isActivityFinishing()) {
             // activity is being destroyed
             Log.d(TAG, "startAutoPlay.activity is finishing");
@@ -299,7 +297,6 @@ public abstract class PlayerBasePresenter {
             stopPlay(PlayerConstants.STOPPED_BY_USER);
         }
         mPlayingParam.setAutoPlay(false);    // must be the last in this block
-        // mPresentView.hidePlayerView();
         mPresentView.setImageButtonStatus();
     }
 
@@ -444,7 +441,6 @@ public abstract class PlayerBasePresenter {
     }
 
     public void startPlay() {
-        Log.d(TAG, "startPlay");
         /*
         int playbackState = mPlayingParam.getCurrentPlaybackState();
         if (playbackState==PlayerConstants.PREPARE_MEDIA
@@ -456,6 +452,7 @@ public abstract class PlayerBasePresenter {
             return;
         }
         */
+        Log.d(TAG, "startPlay");
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
             Log.d(TAG, "startPlay.playService.startPlay() ");
@@ -475,19 +472,20 @@ public abstract class PlayerBasePresenter {
     public void stopPlay(int finishState) {
         Log.d(TAG, "stopPlay.finishState = " + finishState);
         String state;
-        if (finishState == 0) {
+        if (finishState == PlayerConstants.FINISHED_NORMALLY) {
             state = "FINISHED_NORMALLY";
-        } else if (finishState == 1) {
+        } else if (finishState == PlayerConstants.STOPPED_BY_USER) {
             state = "STOPPED_BY_USER";
         } else {
+            // finishState == PlayerConstants.FINISHED_BY_PROGRAM
             state = "FINISHED_BY_PROGRAM";
         }
         Log.d(TAG, "stopPlay.finishState String = " + state);
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
-            Log.d(TAG, "stopPlay.playService.stopPlay() ");
-            playService.stopPlay();
+            Log.d(TAG, "stopPlay.playService.stopPlay()");
             mPlayingParam.setFinishState(finishState);
+            playService.stopPlay();
         }
     }
 
@@ -505,20 +503,22 @@ public abstract class PlayerBasePresenter {
         Log.d(TAG, msgStr + ".playingParam.preparedStatus = " +
                 mPlayingParam.getPreparedStatus());
         int currentState = state.getState();
+        // update the playback state
         mPlayingParam.setCurrentPlaybackState(currentState);
-        if (mPlayingParam.isPlaySingleSong() && mPlayingParam.getSingleSongPlayingStatus() == 1) {
+        if (mPlayingParam.isPlaySingleSong()
+                && mPlayingParam.getSingleSongPlayingStatus() == 1) {
             Log.d(TAG, msgStr + ".setSingleSongPlayingStatus(2)");
             mPlayingParam.setSingleSongPlayingStatus(2);    // prepared and playing
         }
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             // Only for ExoPlayer
             Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_BUFFERING");
+            mPlayingParam.setPreparedStatus(2);
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
             return;
         }
         mPresentView.dismissBufferingMessage();
-        int[] trackChannel = setAudioActionSubMenu();
         switch (currentState) {
             case PlaybackStateCompat.STATE_NONE:
                 // 1. initial state
@@ -529,17 +529,16 @@ public abstract class PlayerBasePresenter {
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    // setAudioActionSubMenu();
+                    int[] trackChannel = setAudioActionSubMenu();
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
+                mPlayingParam.setPreparedStatus(0);
                 // set time to 0 position
                 onDurationSeekBarProgressChanged(0, true);
                 mPresentView.update_Player_duration_seekbar_progress(0);
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
-                removeCallbacksAndMessages();
-                mPlayingParam.setPreparedStatus(0);
-                mPresentView.showNativeAndHideBannerAd();
+                removeMsgFromDurationBarHandler();mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
@@ -548,11 +547,12 @@ public abstract class PlayerBasePresenter {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
                     // setAudioActionSubMenu();
+                    int[] trackChannel = setAudioActionSubMenu();
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPlayingParam.setPreparedStatus(2);  // has been prepared and playing
                 mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-                startDurationSeekBarHandler();   // start updating duration seekbar
+                startDurationBarHandler();   // start updating duration seekbar
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAudioControl();
                 mPresentView.playButtonOffPauseButtonOn();
@@ -566,8 +566,10 @@ public abstract class PlayerBasePresenter {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
                     // setAudioActionSubMenu();
+                    int[] trackChannel = setAudioActionSubMenu();
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
+                mPlayingParam.setPreparedStatus(2);
                 mPresentView.playButtonOnPauseButtonOff();
                 mPresentView.showNativeAndHideBannerAd();
                 break;
@@ -579,6 +581,7 @@ public abstract class PlayerBasePresenter {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
                     // setAudioActionSubMenu();
+                    int[] trackChannel = setAudioActionSubMenu();
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPlayingParam.setPreparedStatus(0);
@@ -590,17 +593,12 @@ public abstract class PlayerBasePresenter {
                 }
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
-                removeCallbacksAndMessages();
+                removeMsgFromDurationBarHandler();
                 Log.d(TAG, msgStr + ".mPlayingParam.getFinishState() = " +
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
-                final boolean isSelfFinished = mPlayingParam.getFinishState()
-                        != PlayerConstants.FINISHED_BY_PROGRAM;
-                if (isSelfFinished) {
-                    mPlayingParam.setNumPlayed(mPlayingParam.getNumPlayed() + 1);
-                }
-                Log.d(TAG, msgStr + ".mPlayingParam.getNumPlayed() = "
-                        + mPlayingParam.getNumPlayed());
+                boolean isSelfFinished =
+                        mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM;
                 startAutoPlay(isSelfFinished);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
@@ -609,6 +607,7 @@ public abstract class PlayerBasePresenter {
                     mCanShowNotSupportedFormat = false;
                     mPresentView.showToastNotSupported();
                 }
+                mPlayingParam.setPreparedStatus(0);
                 setMediaUri(null);
                 // remove the song that is unable to be played
                 Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
@@ -627,6 +626,8 @@ public abstract class PlayerBasePresenter {
             default:
                 Log.d(TAG, msgStr + ".other PlaybackStateCompat");
         }
+        // reset the finish state
+        mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);
     }
 
     protected void adsForOnlyMusic() {

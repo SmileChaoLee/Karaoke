@@ -7,7 +7,9 @@ import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.common.images.WebImage
+import com.smile.karaokeplayer.utilities.MediaTools
 import fi.iki.elonen.NanoHTTPD
+import java.io.File
 import java.io.IOException
 import java.net.NetworkInterface
 
@@ -15,28 +17,23 @@ class WebServerAndCast {
     private var webServer: HttpServerForLocal? = null
 
     fun startWebServer(fileName: String) {
-        Log.d(TAG, "startWebServer.webServer = $webServer")
-        Log.d(TAG, "startWebServer.fileName $fileName")
-        val orgFileName = webServer?.mediaFileName
-        Log.d(TAG, "startWebServer.orgFileName $orgFileName")
-        if (webServer == null || fileName != orgFileName) {
-            webServer = HttpServerForLocal(SERVER_PORT, fileName)
-            Log.d(TAG, "startWebServer.$fileName.on port $SERVER_PORT")
-            webServer?.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
-        } else {
-            // Server already running, maybe update media file or simply cast
-            // if already serving correct file
-            // For simplicity, let's assume you'd restart it or have a more complex logic
-            Log.w(TAG, "Web server already running." +
-                    " Consider restarting or updating served file.")
+        val msgString = "startWebServer"
+        Log.d(TAG, "$msgString.webServer = $webServer")
+        Log.d(TAG, "$msgString.fileName $fileName")
+        if (webServer != null) {
+            Log.d(TAG, "$msgString.webServer is not null, stopping it")
+            webServer?.stop()
+            webServer = null
         }
+        webServer = HttpServerForLocal(SERVER_PORT, fileName)
+        webServer?.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false)
     }
 
     fun startWebServerAndCast(castSession: CastSession, fileName: String) {
+        val msgString = "startWebServerAndCast"
+        Log.d(TAG, msgString)
         try {
             startWebServer(fileName)
-            // Get device IP address (you'll need a utility function for this)
-            // val deviceIpAddress = getDeviceIpAddress(context) // Implement this function
             val deviceIpAddress = getDeviceIpAddress()
             if (deviceIpAddress != null) {
                 val mediaUrl = "http://$deviceIpAddress:$SERVER_PORT"
@@ -44,25 +41,28 @@ class WebServerAndCast {
                 loadRemoteMedia(castSession, mediaUrl,
                     fileName, "Local Media", null)
             } else {
-                Log.e(TAG, "Could not get device IP address")
+                Log.e(TAG, "$msgString.Could not get device IP address")
                 // Handle error: cannot form URL
             }
 
         } catch (e: IOException) {
-            Log.e(TAG, "Error starting web server", e)
+            Log.e(TAG, "$msgString.Error starting web server", e)
             webServer = null
         }
     }
 
     fun stopWebServer() {
+        val msgString = "stopWebServer"
+        Log.d(TAG, msgString)
         webServer?.stop()
         webServer = null
-        Log.d(TAG, "Web server stopped")
     }
 
     fun loadRemoteMedia(castSession: CastSession,
                         localMediaUrl: String, title: String,
                         studio: String, imageUrl: String?) {
+        val msgString = "loadRemoteMedia"
+        Log.d(TAG, msgString)
         castSession.remoteMediaClient?.let { remoteMediaClient ->
             val movieMetadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE)
             movieMetadata.putString(MediaMetadata.KEY_TITLE, title)
@@ -71,10 +71,13 @@ class WebServerAndCast {
                 movieMetadata.addImage(WebImage(it.toUri()))
             }
 
+            // val contentType = NanoHTTPD.getMimeTypeForFile(title)
+            // val contentType = MediaTools.getMimeTypeFromMedia(title)
+            val contentType = webServer?.getMimeType(File(title).extension)
             // Replace with the actual URL to your local media
             val mediaInfo = MediaInfo.Builder(localMediaUrl)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED) // Or STREAM_TYPE_LIVE
-                .setContentType("video/mp4") // Adjust content type as needed
+                .setContentType(contentType)
                 .setMetadata(movieMetadata)
                 .build()
 
@@ -85,7 +88,7 @@ class WebServerAndCast {
 
             remoteMediaClient.load(mediaLoadRequestData)
         } ?: run {
-            Log.w(TAG, "Session is not available")
+            Log.w(TAG, "$msgString.Session is not available")
             // Handle case where session is not active
         }
     }
@@ -95,19 +98,23 @@ class WebServerAndCast {
     }
 
     fun getMediaUrl(): String {
+        val msgString = "getMediaUrl"
+        Log.d(TAG, msgString)
         val fileName = getFilename()
         if (fileName.isNullOrEmpty()) {
-            Log.d(TAG, "getMediaUrl.fileName is null or empty")
+            Log.d(TAG, "$msgString.fileName is null or empty")
             return ""
         }
         val ipAddress = getDeviceIpAddress()
         val tmpUrl = "http://$ipAddress:$SERVER_PORT/$fileName"
-        Log.d(TAG, "getMediaUrl.tmpUrl = $tmpUrl")
+        Log.d(TAG, "$msgString.tmpUrl = $tmpUrl")
         return tmpUrl
     }
 
     // Helper to get local IP address
     fun getDeviceIpAddress(): String? {
+        val msgString = "getDeviceIpAddress"
+        Log.d(TAG, msgString)
         try {
             val networkInterfaces = NetworkInterface.getNetworkInterfaces()
             while (networkInterfaces.hasMoreElements()) {
@@ -151,6 +158,7 @@ class WebServerAndCast {
 
     companion object {
         private const val TAG = "WebServerAndCast"
-        private const val SERVER_PORT = 8080 // Choose an available port
+        // private const val SERVER_PORT = 8080
+        private const val SERVER_PORT = 8888
     }
 }

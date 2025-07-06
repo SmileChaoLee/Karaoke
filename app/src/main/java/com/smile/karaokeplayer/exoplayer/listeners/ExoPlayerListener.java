@@ -13,16 +13,20 @@ import com.smile.karaokeplayer.exoplayer.services.ExoPlayService;
 @UnstableApi
 public class ExoPlayerListener implements Player.Listener {
 
-    private static final String TAG = "ExoPlayerListener";
+    private String mTAG = "ExoPlayerListener";
+    // to be overridden
+    public void setTAG(String tagStr) {
+        mTAG = tagStr;
+    }
     private final ExoPlayService mService;
 
     public ExoPlayerListener(ExoPlayService service) {
         mService = service;
-        Log.d(TAG, "ExoPlayerListener is created.");
+        Log.d(mTAG, mTAG + " is created.");
     }
 
     private void restoreToDeviceSide() {
-        Log.d(TAG, "restoreToDeviceSide");
+        Log.d(mTAG, "restoreToDeviceSide");
         // if casting. if not then wont hurt
         // set "isCastSessionAvailable = false"
         mService.stopCasting();
@@ -33,22 +37,23 @@ public class ExoPlayerListener implements Player.Listener {
 
     @Override
     public synchronized void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
-        Log.d(TAG, "onPlayWhenReadyChanged().playWhenReady = " + playWhenReady
+        String msgStr = "onPlayWhenReadyChanged";
+        Log.d(mTAG, msgStr + "playWhenReady = " + playWhenReady
                         + ", reason = " + reason);
         int state = mService.getPlaybackState();
-        Log.d(TAG, "onPlayWhenReadyChanged().state = " + state);
+        Log.d(mTAG, msgStr + ".state = " + state);
         boolean isPlaying = mService.isPlaying();
-        Log.d(TAG, "onPlayWhenReadyChanged().isPlaying = " + isPlaying);
+        Log.d(mTAG, msgStr + ".isPlaying = " + isPlaying);
         if (playWhenReady) {
             // Start playing
             if (isPlaying) {
-                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PLAYING");
+                Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_PLAYING");
                 mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             }
         } else {
             // Paused
             if (!isPlaying) {
-                Log.d(TAG, "onPlayWhenReadyChanged().PlaybackStateCompat.STATE_PAUSED");
+                Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_PAUSED");
                 mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
             }
         }
@@ -56,53 +61,54 @@ public class ExoPlayerListener implements Player.Listener {
 
     @Override
     public synchronized void onPlaybackStateChanged(int state) {
-        String msgString = "onPlaybackStateChanged";
-        Log.d(TAG, msgString + ".state = " + state);
+        String msgStr = "onPlaybackStateChanged";
+        Log.d(mTAG, msgStr + ".state = " + state);
         boolean playWhenReady = mService.getPlayWhenReady();
-        Log.d(TAG, msgString + ".playWhenReady = " + playWhenReady);
+        Log.d(mTAG, msgStr + ".playWhenReady = " + playWhenReady);
         float duration = mService.getMediaDuration();
-        Log.d(TAG, msgString + ".duration = " + duration);
+        Log.d(mTAG, msgStr + ".duration = " + duration);
         switch (state) {
             case Player.STATE_BUFFERING:
-                Log.d(TAG, msgString + ".Player.STATE_BUFFERING");
+                Log.d(mTAG, msgStr + ".Player.STATE_BUFFERING");
                 mService.setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING);
                 break;
             case Player.STATE_READY:
-                Log.d(TAG, msgString + ".Player.STATE_READY");
+                Log.d(mTAG, msgStr + ".Player.STATE_READY");
                 if (playWhenReady) {
-                    Log.d(TAG, msgString + ".PlaybackStateCompat.STATE_PLAYING");
+                    Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_PLAYING");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
                 } else {
-                    Log.d(TAG, msgString + ".PlaybackStateCompat.STATE_PAUSED");
+                    Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_PAUSED");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
                 }
                 break;
             case Player.STATE_ENDED:
                 // playing is finished and send PlaybackStateCompat.STATE_STOPPED
                 // to MediaControllerCallback
-                Log.d(TAG, msgString + ".Player.STATE_ENDED");
-                Log.d(TAG, msgString + ".PlaybackStateCompat.STATE_STOPPED");
+                Log.d(mTAG, msgStr + ".Player.STATE_ENDED");
+                Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_STOPPED");
                 mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 break;
             case Player.STATE_IDLE:
                 // user stops the playing and send PlaybackStateCompat.STATE_NONE
                 // to MediaControllerCallback
-                // or stopPlay(2) because of playPreviousSong() or playNextSong()
-                Log.d(TAG, msgString + ".Player.STATE_IDLE");
+                // or stopPlay(PlayerConstants.FINISHED_BY_PROGRAM) because of playPreviousSong() or playNextSong()
+                Log.d(mTAG, msgStr + ".Player.STATE_IDLE");
                 if (mService.getPresenter() != null
                         && mService.getPresenter().getPlayingParam().getFinishState()
                         == PlayerConstants.STOPPED_BY_USER) {
                     // stopped by user
-                    Log.d(TAG, msgString + ".PlaybackStateCompat.STATE_NONE");
+                    Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_NONE");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 } else {
                     // finishState = PlayerConstants.FINISHED_BY_PROGRAM (2), stopped by program
-                    Log.d(TAG, msgString + ".PlaybackStateCompat.STATE_STOPPED");
+                    // finishState = PlayerConstants.FINISHED_NORMALLY (0), stopped by program
+                    Log.d(mTAG, msgStr + ".PlaybackStateCompat.STATE_STOPPED");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }
                 break;
             default:
-                Log.d(TAG, msgString + ".Playback state (Default)");
+                Log.d(mTAG, msgStr + ".Playback state (Default)");
                 mService.stopCasting();
                 break;
         }
@@ -110,21 +116,21 @@ public class ExoPlayerListener implements Player.Listener {
 
     @Override
     public synchronized void onIsPlayingChanged(boolean isPlaying) {
-        Log.d(TAG,"onIsPlayingChanged.isPlaying = " + isPlaying);
+        Log.d(mTAG,"onIsPlayingChanged.isPlaying = " + isPlaying);
         float duration = mService.getMediaDuration();
-        Log.d(TAG, "onIsPlayingChanged.duration = " + duration);
+        Log.d(mTAG, "onIsPlayingChanged.duration = " + duration);
     }
 
     @Override
     public void onPlayerErrorChanged(@Nullable PlaybackException error) {
-        Log.d(TAG,"onPlayerErrorChanged().error = " + error);
+        Log.d(mTAG,"onPlayerErrorChanged().error = " + error);
         mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
         restoreToDeviceSide();
     }
 
     @Override
     public synchronized void onPlayerError(@NonNull PlaybackException error) {
-        Log.d(TAG,"onPlayerError().error = " + error);
+        Log.d(mTAG,"onPlayerError().error = " + error);
         mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
         restoreToDeviceSide();
     }

@@ -31,6 +31,7 @@ import com.smile.karaokeplayer.exoplayer.callbacks.ExoMediaControllerCallback
 import com.smile.karaokeplayer.exoplayer.callbacks.ExoMediaSessionCallback
 import com.smile.karaokeplayer.exoplayer.cast.SwitchPlayer
 import com.smile.karaokeplayer.exoplayer.exoRenderersFactory.MyRenderersFactory
+import com.smile.karaokeplayer.exoplayer.listeners.CastPlayerListener
 import com.smile.karaokeplayer.exoplayer.listeners.ExoPlayerListener
 import com.smile.karaokeplayer.exoplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.services.BasePlayService
@@ -47,6 +48,7 @@ class ExoPlayService : BasePlayService() {
     private var mediaSessionCallback: ExoMediaSessionCallback? = null
     private var controllerCallback: ExoMediaControllerCallback? = null
     private var exoPlayerListener: ExoPlayerListener? = null
+    private var castPlayerListener: CastPlayerListener? = null
     private lateinit var switchPlayer: SwitchPlayer
 
     // Binder given to clients.
@@ -73,31 +75,33 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         Log.d(TAG, "onDestroy")
         releasePlayersAndListener()
         mediaControllerCompat?.apply {
             controllerCallback?.let {
-                registerCallback(it)
+                unregisterCallback(it)
             }
         }
-        super.onDestroy()
     }
 
     fun initPlayersAndListeners() {
         Log.d(TAG, "initPlayersAndListeners")
-        initExoPlayerListener()
+        initPlayerListener()
         initExoPlayer()
         initCastPlayer()
     }
 
     private fun releasePlayersAndListener() {
+        Log.d(TAG, "releasePlayersAndListener")
         releaseExoPlayer()
         releaseCastPlayer()
     }
 
-    private fun initExoPlayerListener() {
-        Log.d(TAG, "initExoPlayerListener")
+    private fun initPlayerListener() {
+        Log.d(TAG, "initPlayerListener")
         exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
+        castPlayerListener = CastPlayerListener(this@ExoPlayService)
     }
 
     private fun initExoPlayer() {
@@ -162,8 +166,8 @@ class ExoPlayService : BasePlayService() {
             }
             castPlayer = CastPlayer(castIt)
             castPlayer?.apply {
-                if (exoPlayerListener != null) {
-                    addListener(exoPlayerListener!!)
+                if (castPlayerListener != null) {
+                    addListener(castPlayerListener!!)
                 }
                 setSessionAvailabilityListener(sessionAvailabilityListener)
             }
@@ -173,8 +177,8 @@ class ExoPlayService : BasePlayService() {
     private fun releaseCastPlayer() {
         Log.d(TAG, "releaseCastPlayer")
         castPlayer?.apply {
-            if (exoPlayerListener != null) {
-                removeListener(exoPlayerListener!!)
+            if (castPlayerListener != null) {
+                removeListener(castPlayerListener!!)
             }
             stop()
             release()
@@ -222,64 +226,28 @@ class ExoPlayService : BasePlayService() {
         else exoPlayer?.currentTracks
 
         currentTracks?.let {
-            val audioTrackGroup = it.groups[audioTrackGroupIndex].mediaTrackGroup
-            val override = TrackSelectionOverride(audioTrackGroup, audioTrackIndex)
-            val trackSelectionParam = parametersBuilder.setOverrideForType(override).build()
-            if (isCastSessionAvailable) {
-                Log.d(TAG, "${msgString}.castPlayer?.trackSelectionParameters = trackSelectionParam")
-                castPlayer?.trackSelectionParameters = trackSelectionParam
-            } else {
-                Log.d(TAG, "${msgString}.exoPlayer?.trackSelectionParameters = trackSelectionParam")
-                exoPlayer?.trackSelectionParameters = trackSelectionParam
+            try {
+                val audioTrackGroup = it.groups[audioTrackGroupIndex].mediaTrackGroup
+                val override = TrackSelectionOverride(audioTrackGroup,
+                    audioTrackIndex)
+                val trackSelectionParam = parametersBuilder.setOverrideForType(override)
+                    .build()
+                if (isCastSessionAvailable) {
+                    Log.d(TAG, "${msgString}.castPlayer?.trackSelectionParameters" +
+                            " = trackSelectionParam")
+                    castPlayer?.trackSelectionParameters = trackSelectionParam
+                } else {
+                    Log.d(TAG, "${msgString}.exoPlayer?.trackSelectionParameters" +
+                            " = trackSelectionParam")
+                    exoPlayer?.trackSelectionParameters = trackSelectionParam
+                }
+                return trackSelectionParam
+            } catch (e: Exception) {
+                Log.d(TAG, "$msgString.currentTracks?.Exception", e)
             }
-            return trackSelectionParam
         }
         return trackSelParam
     }
-
-    /*
-    fun selectAudioTrack_OLD(trackIndicesCombination: Array<Int>?,
-                         trackSelParam: TrackSelectionParameters)
-    : TrackSelectionParameters {
-        val msgString = "selectAudioTrack"
-        Log.d(TAG, msgString)
-        if (trackIndicesCombination == null) {
-            Log.d(TAG, "$msgString.trackIndicesCombination = null")
-            return trackSelParam
-        }
-        val trackSelector: DefaultTrackSelector? =
-            exoPlayer?.trackSelector as DefaultTrackSelector
-        if (trackSelector == null) {
-            Log.d(TAG, "$msgString.trackSelector = null")
-            return trackSelParam
-        }
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-        if (mappedTrackInfo == null) {
-            Log.d(TAG, "$msgString.mappedTrackInfo = null")
-            return trackSelParam
-        }
-        val audioRendererIndex = trackIndicesCombination[0]
-        Log.d(TAG,"$msgString.audioRendererIndex = $audioRendererIndex")
-        val audioTrackGroupIndex = trackIndicesCombination[1]
-        Log.d(TAG,"$msgString.audioTrackGroupIndex = $audioTrackGroupIndex")
-        val audioTrackIndex = trackIndicesCombination[2]
-        Log.d(TAG,"$msgString.audioTrackIndex = $audioTrackIndex")
-        if (mappedTrackInfo.getTrackSupport(audioRendererIndex, audioTrackGroupIndex,
-                audioTrackIndex)
-            != C.FORMAT_HANDLED) {
-            Log.d(TAG,"$msgString.!= C.FORMAT_HANDLED")
-            return trackSelParam
-        }
-        Log.d(TAG,"$msgString.trackSelectorParameters = $trackSelParam")
-        val parametersBuilder: TrackSelectionParameters.Builder =
-            trackSelParam.buildUpon()
-        val trackGroup = mappedTrackInfo.getTrackGroups(audioRendererIndex)[audioTrackGroupIndex]
-        val override = TrackSelectionOverride(trackGroup, audioTrackIndex)
-        val trackSelectionParam = parametersBuilder.setOverrideForType(override).build()
-        exoPlayer?.trackSelectionParameters = trackSelectionParam
-        return trackSelectionParam
-    }
-    */
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Array<Int>>): Int {
         val msgString = "getPlayingMediaInfo"
@@ -287,11 +255,23 @@ class ExoPlayService : BasePlayService() {
         var mNumberOfVideoTracks = 0
         var trackIndicesCombination: Array<Int>
 
-        val currentTracks: Tracks? = if (isCastSessionAvailable) castPlayer?.currentTracks
-        else exoPlayer?.currentTracks
-        // val audioGroup = currentTracks?.groups?.find {it.type == C.TRACK_TYPE_AUDIO}
+        var currentTracks: Tracks? = null
+        // Example: Check if connected (this might vary based on your specific implementation)
+        if (isCastSessionAvailable) {
+            if (castPlayer?.isCommandAvailable(Player.COMMAND_GET_TRACKS) == true) {
+                Log.d(TAG, "{msgString}.COMMAND_GET_TRACKS")
+                currentTracks = castPlayer?.currentTracks
+                Log.d(TAG, "{msgString}.tracks = $currentTracks")
+            }
+        } else {
+            currentTracks = exoPlayer?.currentTracks
+        }
+
         val renderIndex = 1 // assumed value
         currentTracks?.let {
+            Log.d(TAG, "{msgString}.currentTracks = $currentTracks")
+            Log.d(TAG, "{msgString}.currentTracks.groups.size" +
+                    " = ${currentTracks.groups.size}")
             for (groupIndex in 0 until it.groups.size) {
                 Log.d(TAG, "${msgString}.groupIndex = $groupIndex")
                 val groupInfo = it.groups[groupIndex]
@@ -325,178 +305,7 @@ class ExoPlayService : BasePlayService() {
         }
         Log.d(TAG, "${msgString}.mNumberOfVideoTracks = $mNumberOfVideoTracks")
         return mNumberOfVideoTracks
-
-        // original
-        /*
-        Log.d(TAG, "${msgString}.trackSelector")
-        var trackSelector: DefaultTrackSelector? = null
-        exoPlayer?.let {
-            trackSelector = (it.trackSelector) as DefaultTrackSelector
-        }
-        if (trackSelector == null) {
-            Log.d(TAG, "$msgString.trackSelector is null")
-            return mNumberOfVideoTracks
-        }
-        trackSelector.let {
-            val mappedTrackInfo = it.currentMappedTrackInfo
-            mappedTrackInfo?.let { mapIt ->
-                val rendererCount = mapIt.rendererCount
-                Log.d(TAG, "$msgString.mappedTrackInfo.getRendererCount() " +
-                        "= $rendererCount")
-                for (rendererIndex in 0 until rendererCount) {
-                    Log.d(TAG, "rendererIndex = $rendererIndex")
-                    val rendererType = mapIt.getRendererType(rendererIndex)
-                    val trackGroupArray = mapIt.getTrackGroups(rendererIndex)
-                    trackGroupArray.let { trackIt ->
-                        val arraySize = trackIt.length
-                        Log.d(TAG,"$msgString.trackGroupArray.length of " +
-                                "renderer no ( $rendererIndex ) = $arraySize")
-                        for (groupIndex in 0 until arraySize) {
-                            Log.d(TAG, "$msgString.trackGroupArray.index = $groupIndex")
-                            val trackGroup = trackIt[groupIndex]
-                            val groupSize = trackGroup.length
-                            Log.d(TAG,"$msgString.trackGroup.length of trackGroup [ $groupIndex ] = $groupSize")
-                            for (trackIndex in 0 until groupSize) {
-                                val tempFormat = trackGroup.getFormat(trackIndex)
-                                when (rendererType) {
-                                    C.TRACK_TYPE_VIDEO -> {
-                                        mNumberOfVideoTracks++
-                                    }
-                                    C.TRACK_TYPE_AUDIO -> {
-                                        Log.d(TAG,"${msgString}.rendererIndex = $rendererIndex")
-                                        Log.d(TAG,"${msgString}.groupIndex = $groupIndex")
-                                        Log.d(TAG,"${msgString}.groupIndex = $trackIndex")
-                                        trackIndicesCombination = Array(3) {0}
-                                        trackIndicesCombination[0] = rendererIndex
-                                        trackIndicesCombination[1] = groupIndex
-                                        trackIndicesCombination[2] = trackIndex
-                                        audioTrackIndicesList.add(trackIndicesCombination)
-                                    }
-                                }
-                                Log.d(TAG, "tempFormat = $tempFormat")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for (index in 0 until audioTrackIndicesList.size) {
-            Log.d(TAG, "${msgString}.index = $index")
-            for (trackIndex in audioTrackIndicesList[index]) {
-                Log.d(TAG, "${msgString}.trackIndex = $trackIndex")
-            }
-        }
-        Log.d(TAG, "${msgString}.mNumberOfVideoTracks = $mNumberOfVideoTracks")
-
-        return mNumberOfVideoTracks
-        */
     }
-
-    /*  // original
-    fun getPlayingMediaInfo_OLD(audioTrackIndicesList: ArrayList<Array<Int>>): Int {
-        val msgString = "getPlayingMediaInfo"
-        Log.d(TAG, msgString)
-        var mNumberOfVideoTracks = 0
-        var numVideoRenderers = 0
-        var numAudioRenderers = 0
-        var numVideoTrackGroups = 0
-        var numAudioTrackGroups = 0
-
-        var trackIndicesCombination: Array<Int>
-        var audioTrackIdPlayed = -1
-
-        val videoPlayedFormat: Format? = exoPlayer?.videoFormat
-        Log.d(TAG, "$msgString.videoPlayedFormat = $videoPlayedFormat")
-        videoPlayedFormat?.let {
-            Log.d(TAG, "$msgString.videoPlayedFormat.id = " + it.id)
-        }
-        val audioPlayedFormat: Format? = exoPlayer?.audioFormat
-        Log.d(TAG, "$msgString.audioPlayedFormat = $audioPlayedFormat")
-        audioPlayedFormat?.let {
-            Log.d(TAG, "$msgString.audioPlayedFormat.id = " + it.id)
-            val channelsNum = audioPlayedFormat.channelCount
-            Log.d(TAG, "$msgString.audioPlayedFormat.channelCount = $channelsNum")
-            Log.d(TAG,"$msgString.audioPlayedFormat.sampleRate = " + audioPlayedFormat.sampleRate)
-            Log.d(TAG,"$msgString.audioPlayedFormat.pcmEncoding = " + audioPlayedFormat.pcmEncoding)
-        }
-
-        var trackSelector: DefaultTrackSelector? = null
-        exoPlayer?.let {
-            trackSelector = (it.trackSelector) as DefaultTrackSelector
-        }
-        if (trackSelector == null) {
-            Log.d(TAG, "$msgString.trackSelector is null")
-            return mNumberOfVideoTracks
-        }
-        trackSelector.let {
-            val mappedTrackInfo = it.currentMappedTrackInfo
-            mappedTrackInfo?.let { mapIt ->
-                val rendererCount = mapIt.rendererCount
-                Log.d(TAG, "$msgString.mappedTrackInfo.getRendererCount() " +
-                        "= $rendererCount")
-                for (rendererIndex in 0 until rendererCount) {
-                    Log.d(TAG, "rendererIndex = $rendererIndex")
-                    val rendererType = mapIt.getRendererType(rendererIndex)
-                    when (rendererType) {
-                        C.TRACK_TYPE_VIDEO -> numVideoRenderers++
-                        C.TRACK_TYPE_AUDIO -> numAudioRenderers++
-                    }
-                    val trackGroupArray = mapIt.getTrackGroups(rendererIndex)
-                    trackGroupArray.let { trackIt ->
-                        val arraySize = trackIt.length
-                        Log.d(TAG,"$msgString.trackGroupArray.length of " +
-                                "renderer no ( $rendererIndex ) = $arraySize")
-                        for (groupIndex in 0 until arraySize) {
-                            Log.d(TAG, "$msgString.trackGroupArray.index = $groupIndex")
-                            when (rendererType) {
-                                C.TRACK_TYPE_VIDEO -> numVideoTrackGroups++
-                                C.TRACK_TYPE_AUDIO -> numAudioTrackGroups++
-                            }
-                            val trackGroup = trackIt[groupIndex]
-                            val groupSize = trackGroup.length
-                            Log.d(TAG,"$msgString.trackGroup.length of trackGroup [ $groupIndex ] = $groupSize")
-                            for (trackIndex in 0 until groupSize) {
-                                val tempFormat = trackGroup.getFormat(trackIndex)
-                                when (rendererType) {
-                                    C.TRACK_TYPE_VIDEO -> {
-                                        /*
-                                        trackIndicesCombination = Array(3) {0}
-                                        trackIndicesCombination[0] = rendererIndex
-                                        trackIndicesCombination[1] = groupIndex
-                                        trackIndicesCombination[2] = trackIndex
-                                        */
-                                        mNumberOfVideoTracks++
-                                    }
-
-                                    C.TRACK_TYPE_AUDIO -> {
-                                        trackIndicesCombination = Array(3) {0}
-                                        trackIndicesCombination[0] = rendererIndex
-                                        trackIndicesCombination[1] = groupIndex
-                                        trackIndicesCombination[2] = trackIndex
-                                        audioTrackIndicesList.add(trackIndicesCombination)
-                                        if (tempFormat == audioPlayedFormat) {
-                                            audioTrackIdPlayed = audioTrackIndicesList.size
-                                        }
-                                    }
-                                }
-                                Log.d(TAG, "tempFormat = $tempFormat")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Log.d(TAG, "$msgString.numVideoRenderer = $numVideoRenderers")
-        Log.d(TAG, "$msgString.numAudioRenderer = $numAudioRenderers")
-        Log.d(TAG, "$msgString.numVideoTrackGroups = $numVideoTrackGroups")
-        Log.d(TAG, "$msgString.numAudioTrackGroups = $numAudioTrackGroups")
-        Log.d(TAG, "$msgString.audioTrackIdPlayed = $audioTrackIdPlayed")
-
-        return mNumberOfVideoTracks
-    }
-    */
 
     // For ExoMediaSessionCallback.kt
     fun getMediaItemCount(): Int? {

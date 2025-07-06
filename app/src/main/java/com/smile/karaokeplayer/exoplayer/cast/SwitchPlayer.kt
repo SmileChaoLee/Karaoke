@@ -53,9 +53,10 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     presenter.playingParam.preparedStatus = 0
                     presenter.playingParam.currentPlaybackState = playbackState
                     presenter.playingParam.currentAudioPosition = position
+                    val playingParam = presenter.playingParam.copy()
                     playService.setPlayWhenReady(playWhenReady)
                     presenter.setCurrentPlayerToPlayerView()
-                    playService.startPlayWithParam(presenter, presenter.playingParam)
+                    playService.startPlayWithParam(presenter, playingParam)
                 }
             }
         }
@@ -96,8 +97,9 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     presenter.playingParam.preparedStatus = 0
                     presenter.playingParam.currentPlaybackState = playbackState
                     presenter.playingParam.currentAudioPosition = position
+                    val playingParam = presenter.playingParam.copy()
                     playService.setPlayWhenReady(playWhenReady)
-                    playService.startPlayWithParam(presenter, presenter.playingParam)
+                    playService.startPlayWithParam(presenter, playingParam)
                 }
             }
         }

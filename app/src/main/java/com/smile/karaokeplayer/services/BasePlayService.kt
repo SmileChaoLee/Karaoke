@@ -69,15 +69,15 @@ abstract class BasePlayService : Service() {
     }
 
     override fun onTrimMemory(level: Int) {
-        Log.d(TAG, "onTrimMemory")
+        Log.d(TAG, "onTrimMemory.level = $level")
         super.onTrimMemory(level)
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         Log.d(TAG, "onDestroy")
         releaseMediaSessionCompat()
         stopCasting()
-        super.onDestroy()
     }
 
     fun stopCasting() {
@@ -85,6 +85,7 @@ abstract class BasePlayService : Service() {
         webServerAndCast.stopWebServer()
         castContext?.apply {
             // stop casting
+            Log.d(TAG, "stopCasting.endCurrentSession")
             sessionManager.endCurrentSession(true)
         }
         isCastSessionAvailable = false
@@ -148,7 +149,8 @@ abstract class BasePlayService : Service() {
             // currentPlaybackState = PlaybackStateCompat.STATE_NONE
             currentPlaybackState = PlayerConstants.PREPARE_MEDIA
             preparedStatus = 0
-            playMediaFromUri(presenter.mediaUri, this)
+            val param = this.copy()
+            playMediaFromUri(presenter.mediaUri, param)
         }
     }
 
@@ -196,13 +198,13 @@ abstract class BasePlayService : Service() {
     }
 
     fun startAutoPlay(presenter: PlayerBasePresenter, isSelfFinished: Boolean): Boolean {
-        val playingParam: PlayingParameters? = presenter.playingParam
+        val playingParam = presenter.playingParam
         val orderedSongsSize = orderedSongs.size
         Log.d(TAG, "startAutoPlay.orderedSongs = $orderedSongsSize")
         var stillPlayNext = true
-        val repeatStatus = playingParam?.repeatStatus
-        val currentSongIndex = playingParam?.currentSongIndex
-        var nextSongIndex = currentSongIndex!! + 1 // preparing the next
+        val repeatStatus = playingParam.repeatStatus
+        val currentSongIndex = playingParam.currentSongIndex
+        var nextSongIndex = currentSongIndex + 1 // preparing the next
         Log.d(TAG, "startAutoPlay.nextSongIndex = $nextSongIndex")
         if (orderedSongsSize == 0) {
             stillPlayNext = false // no more songs
@@ -241,12 +243,13 @@ abstract class BasePlayService : Service() {
         Log.d(TAG, "replayMedia")
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
-        val numberOfAudioTracks = presenter.numberOfAudioTracks
+        // val numberOfAudioTracks = presenter.numberOfAudioTracks
         // if ((mediaUri == null) || (Uri.EMPTY == mediaUri) || (numberOfAudioTracks <= 0)) {
         if ((mediaUri == null) || (Uri.EMPTY == mediaUri)) {
             return
         }
-        Log.d(TAG, "replayMedia.playingParam.preparedStatus = ${playingParam.preparedStatus}")
+        Log.d(TAG, "replayMedia.playingParam.preparedStatus = " +
+                "${playingParam.preparedStatus}")
         playingParam.currentAudioPosition = 0
         if (playingParam.preparedStatus != 0) {
             // song is playing, paused, or finished playing
@@ -255,7 +258,7 @@ abstract class BasePlayService : Service() {
             // but the playing was stopped in the middle of playing then won't send
             // Play.STATE_ENDED event
             // exoPlayer.setPlayWhenReady(false);
-            Log.d(TAG, "replayMedia.specificPlayerReplayMedia(currentAudioPosition)")
+            Log.d(TAG, "replayMedia.specificPlayerReplayMedia")
             specificPlayerReplayMedia(0)
         } else {
             Log.d(TAG, "replayMedia.playMediaFromUri")

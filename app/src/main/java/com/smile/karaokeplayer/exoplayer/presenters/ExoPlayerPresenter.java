@@ -5,12 +5,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import java.util.ArrayList;
 import androidx.annotation.NonNull;
 
 import androidx.annotation.OptIn;
-import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
 import com.smile.karaokeplayer.constants.CommonConstants;
@@ -25,28 +25,39 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     private final ExoPlayerPresentView mPresentView;
     private TrackSelectionParameters mTrackSelectionParameters;
-    private int mCurrentItemIndex = -1;
     // instances of the following members have to be saved when configuration changed
     private ArrayList<Integer[]> audioTrackIndicesList = new ArrayList<>();
     private final Handler durationSeekBarHandler = new Handler(Looper.getMainLooper());
     private final Runnable durationSeekBarRunnable = new Runnable() {
+        final String msgStr = "durationSeekBarRunnable";
         @Override
         public synchronized void run() {
-            Log.d(TAG, "durationSeekBarRunnable.run()");
             durationSeekBarHandler.removeCallbacksAndMessages(null);
-            Log.d(TAG, "durationSeekBarRunnable.run().getPlayService() = " + getPlayService());
+            /*
+            Log.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
                 int playbackState = getPlayService().getPlaybackState();
-                Log.d(TAG, "durationSeekBarRunnable.run().getPlayWhenReady = "
-                        + getPlayService().getPlayWhenReady());
-                Log.d(TAG, "durationSeekBarRunnable.run().playbackState = " + playbackState);
+                Log.d(TAG, msgStr + ".playbackState = " + playbackState);
                 if (getPlayService().getPlayWhenReady()
-                        && playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
-                    Log.d(TAG, "durationSeekBarRunnable.run().update_Player_duration_seekbar_progress");
-                    mPresentView.update_Player_duration_seekbar_progress((int) getPlayService().getCurrentPosition());
+                        && playbackState != Player.STATE_IDLE
+                        && playbackState != Player.STATE_ENDED) {
+                    Log.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
+                    mPresentView.update_Player_duration_seekbar_progress(
+                            (int) getPlayService().getCurrentPosition());
                 }
             }
-            durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 500);
+            */
+            if (getPlayService() != null) {
+                int playbackState = mPlayingParam.getCurrentPlaybackState();
+                Log.d(TAG, msgStr + ".playbackState = " + playbackState);
+                if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
+                    // PlaybackStateCompat.STATE_PLAYING = 3
+                    Log.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
+                    mPresentView.update_Player_duration_seekbar_progress(
+                            (int) getPlayService().getCurrentPosition());
+                }
+            }
+            durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000);
         }
     };
 
@@ -60,12 +71,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         Log.d(TAG, "ExoPlayerPresenter is created");
     }
 
-    public int getCurrentItemIndex() {
-        return mCurrentItemIndex;
-    }
-    public void setCurrentItemIndex(int currentItemIndex) {
-        mCurrentItemIndex = currentItemIndex;
-    }
     public void setCurrentPlayerToPlayerView() {
         mPresentView.setCurrentPlayerToPlayerView();
     }
@@ -101,36 +106,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     public TrackSelectionParameters getTrackSelectionParameters() {
         return mTrackSelectionParameters;
-    }
-
-    @Override
-    public void setAudioVolumeInsideVolumeSeekBar(int i) {
-        Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar");
-        float currentVolume = 1.0f;
-        if (i < PlayerConstants.MAX_PROGRESS) {
-            currentVolume = (float)(1.0f - (Math.log(PlayerConstants.MAX_PROGRESS - i)
-                    / Math.log(PlayerConstants.MAX_PROGRESS)));
-        }
-        Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar.getPlayService()" + getPlayService());
-        if (getPlayService() != null) {
-            Log.d(TAG, "setAudioVolumeInsideVolumeSeekBar.getPlayService().setAudioVolume()");
-            getPlayService().setAudioVolume(currentVolume);
-        }
-    }
-
-    @Override
-    public int getCurrentProgressForVolumeSeekBar() {
-        Log.d(TAG, "getCurrentProgressForVolumeSeekBar");
-        int currentProgress;
-        float currentVolume = mPlayingParam.getCurrentVolume();
-        if ( currentVolume >= 1.0f) {
-            currentProgress = PlayerConstants.MAX_PROGRESS;
-        } else {
-            currentProgress = PlayerConstants.MAX_PROGRESS
-                    - (int)Math.pow(PlayerConstants.MAX_PROGRESS, (1-currentVolume));
-            currentProgress = Math.max(0, currentProgress);
-        }
-        return currentProgress;
     }
 
     @Override
@@ -186,7 +161,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             setAudioTrackAndChannel(audioTrack, audioChannel);
         }
     }
-
     @Override
     public void switchAudioToVocal() {
         Log.d(TAG, "switchAudioToVocal");
@@ -201,13 +175,14 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     }
 
     @Override
-    public synchronized void startDurationSeekBarHandler() {
+    public synchronized void startDurationBarHandler() {
         // start monitor player_duration_seekbar
-        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 200); // delay 200ms
+        // delay 200ms
+        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000);
     }
 
     @Override
-    public void removeCallbacksAndMessages() {
+    public void removeMsgFromDurationBarHandler() {
         durationSeekBarHandler.removeCallbacksAndMessages(null);
     }
 
@@ -230,7 +205,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             mPlayingParam.setCurrentChannelPlayed(PlayerConstants.NoAudioChannel);
         } else {
             int audioChannelPlayed, audioTrackIdPlayed;
-            if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong() || mPlayingParam.isInSongList()) {
+            if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong()
+                    || mPlayingParam.isInSongList()) {
                 audioTrackIdPlayed = mPlayingParam.getCurrentAudioTrackIndexPlayed();
                 audioChannelPlayed = mPlayingParam.getCurrentChannelPlayed();
                 Log.d(TAG, msgStr + ".Auto play or playing single song.");
@@ -253,6 +229,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
                 } else {
                     // only one track
                     audioTrackIdPlayed = 1;
+                    mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIdPlayed);
                     mPlayingParam.setVocalAudioTrackIndex(audioTrackIdPlayed);
                     mPlayingParam.setMusicAudioTrackIndex(audioTrackIdPlayed);
                     mPlayingParam.setVocalAudioChannel(CommonConstants.LEFT_CHANNEL);
@@ -272,7 +249,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         }
 
         // build R.id.audioTrack submenu
-        mPresentView.buildAudioTrackMenuItem(audioTrackIndicesList.size());
+        Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
+        mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         // update the duration on controller UI
         mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
 

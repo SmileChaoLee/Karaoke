@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PersistableBundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -34,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -365,9 +366,27 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        // Log.d(TAG, "onDestroy().Process.killProcess()")
-        // Process.killProcess(Process.myPid())
-        // exitProcess(0);
+    }
+
+    private fun restartApp() {
+        Log.d(TAG, "restartApp()")
+        finish()
+
+        val tmpHandler = Handler(Looper.getMainLooper())
+        val tmpRunnable = Runnable {
+            Log.d(TAG, "restartApp().tmpRunnable()")
+            tmpHandler.removeCallbacksAndMessages(null)
+            val i: Intent? = baseContext.packageManager
+                .getLaunchIntentForPackage(baseContext.packageName)
+            i?.let {
+                Log.d(TAG, "restartApp().startActivity()")
+                startActivity(Intent.makeRestartActivityTask(it.component))
+            }
+            Runtime.getRuntime().exit(0)
+            // exitProcess(0);
+            // android.os.Process.killProcess(android.os.Process.myPid())
+        }
+        tmpHandler.postDelayed(tmpRunnable, 2000)
     }
 
     companion object {

@@ -10,7 +10,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
+import androidx.media3.common.util.UnstableApi
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.constants.PlayerConstants
 import com.smile.karaokeplayer.fragments.PlayerBaseFragment
@@ -22,9 +24,8 @@ import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService.LocalBinder
 
 private const val TAG: String = "VlcPlayerFragment"
 
+@OptIn(UnstableApi::class)
 class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentView {
-    // private val enableSubtitles = true
-    // private val useTextureView = false
     private lateinit var presenter: VlcPlayerPresenter
     private lateinit var videoVLCPlayerView: VLCVideoLayout
     private var playService: VlcPlayService? = null
@@ -40,10 +41,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
             isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
         }
 
-        // must be after super.onCreate(savedInstanceState)
-        // must be before volumeSeekBar settings
-        // presenter.initVLCPlayer() // must be before volumeSeekBar settings
-        // mPresenter.initMediaSessionCompat()
         activity?.let {
             mPlayServiceIntent = Intent(it, VlcPlayService::class.java)
             val callingIntent: Intent? = it.intent
@@ -115,7 +112,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() is called.")
+        Log.d(TAG, "onDestroy")
         playService?.detachPlayerViews()
     }
 
@@ -173,8 +170,9 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
             if (isServiceBound) {
                 Log.d(TAG, "unbindAndStopPlayService.unbindService()")
                 it.unbindService(connection)
-                // playService = null;
+                it.stopService(mPlayServiceIntent)
                 isServiceBound = false
+                isServiceDestroyed = true
             } else {
                 Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
             }

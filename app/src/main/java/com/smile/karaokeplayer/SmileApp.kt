@@ -7,7 +7,6 @@ import com.facebook.ads.AudienceNetworkAds
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.cast.framework.CastOptions
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.googlecast.InitCastContext
 

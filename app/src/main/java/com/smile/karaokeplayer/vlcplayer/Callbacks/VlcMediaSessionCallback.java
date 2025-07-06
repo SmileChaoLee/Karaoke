@@ -8,6 +8,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.media3.common.util.UnstableApi;
+
 import com.smile.karaokeplayer.constants.PlayerConstants;
 import com.smile.karaokeplayer.models.PlayingParameters;
 import org.videolan.libvlc.interfaces.IMedia;
@@ -15,14 +17,13 @@ import org.videolan.libvlc.interfaces.IMedia;
 import com.smile.karaokeplayer.vlcplayer.Presenters.VlcPlayerPresenter;
 import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService;
 
+@UnstableApi
 public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
 
-    private static final String TAG = "VlcMediaSessionCallback";
-    private final VlcPlayerPresenter mPresenter;
+    private static final String TAG = "VlcMedSeCallback";
     private final VlcPlayService mPlayService;
 
-    public VlcMediaSessionCallback(VlcPlayerPresenter presenter, VlcPlayService playService) {
-        mPresenter = presenter;
+    public VlcMediaSessionCallback(VlcPlayService playService) {
         mPlayService = playService;
     }
 
@@ -47,14 +48,15 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
     public synchronized void onPrepareFromUri(Uri uri, Bundle extras) {
         Log.d(TAG, "onPrepareFromUri.uri = " + uri);
         super.onPrepareFromUri(uri, extras);
+        VlcPlayerPresenter presenter = mPlayService.getPresenter();
+        if (presenter == null) return;
 
-        PlayingParameters playingParam = mPresenter.getPlayingParam();
-
+        PlayingParameters playingParam = presenter.getPlayingParam();
         mPlayService.detachPlayerViews();
         final IMedia media = mPlayService.createMedia(uri);
         mPlayService.prepare(media);
-        media.release();
         mPlayService.onPlay();
+        media.release();
         long currentAudioPosition = playingParam.getCurrentAudioPosition();
         float currentVolume = playingParam.getCurrentVolume();
         int playbackState = playingParam.getCurrentPlaybackState();
@@ -71,8 +73,8 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                 Log.d(TAG, "playingParamOrigin.playbackState = " + playbackState);
                 currentAudioPosition = playingParamOrigin.getCurrentAudioPosition();
                 currentVolume = playingParamOrigin.getCurrentVolume();
-                mPresenter.getPlayingParam().setCurrentAudioPosition(currentAudioPosition);
-                mPresenter.getPlayingParam().setCurrentVolume(currentVolume);
+                presenter.getPlayingParam().setCurrentAudioPosition(currentAudioPosition);
+                presenter.getPlayingParam().setCurrentVolume(currentVolume);
             }
         }
 
