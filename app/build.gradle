@@ -29,8 +29,8 @@ android {
         manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
 
         multiDexEnabled true
-        versionCode 880
-        versionName "8.80"
+        versionCode 881
+        versionName "8.81"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
     }

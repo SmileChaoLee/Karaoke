@@ -45,6 +45,8 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 }
                 count++;
             } else {
+                // sent out PlaybackStateCompat.STATE_STOPPED
+                mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 isEndReached = false;
             }
         }
