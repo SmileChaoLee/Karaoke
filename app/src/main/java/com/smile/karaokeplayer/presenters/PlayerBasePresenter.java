@@ -513,7 +513,6 @@ public abstract class PlayerBasePresenter {
         if (currentState == PlaybackStateCompat.STATE_BUFFERING) {
             // Only for ExoPlayer
             Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_BUFFERING");
-            mPlayingParam.setPreparedStatus(2);
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
             return;
@@ -533,15 +532,16 @@ public abstract class PlayerBasePresenter {
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
                 mPlayingParam.setPreparedStatus(0);
-                // set time to 0 position
                 onDurationSeekBarProgressChanged(0, true);
                 mPresentView.update_Player_duration_seekbar_progress(0);
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
-                removeMsgFromDurationBarHandler();mPresentView.showNativeAndHideBannerAd();
+                removeMsgFromDurationBarHandler();
+                mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
+                Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_PLAYING");
                 Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_PLAYING");
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
@@ -569,7 +569,10 @@ public abstract class PlayerBasePresenter {
                     int[] trackChannel = setAudioActionSubMenu();
                     setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
                 }
+                // new add, need to be tested more, especially ExoPlayer
+                // VlcPlayer has already been tested but keep an eye on it
                 mPlayingParam.setPreparedStatus(2);
+                //
                 mPresentView.playButtonOnPauseButtonOff();
                 mPresentView.showNativeAndHideBannerAd();
                 break;

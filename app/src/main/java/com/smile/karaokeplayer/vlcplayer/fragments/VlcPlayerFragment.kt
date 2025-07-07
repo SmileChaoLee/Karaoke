@@ -114,6 +114,9 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         super.onDestroy()
         Log.d(TAG, "onDestroy")
         playService?.detachPlayerViews()
+        if (mPlayServiceIntent != null) {
+            activity?.stopService(mPlayServiceIntent)
+        }
     }
 
     // implement abstract methods of super class
@@ -144,7 +147,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
 
     override fun onPlayServiceDisconnected() {
         Log.d(TAG, "onPlayServiceDisconnected")
-        startAndBindPlayService()
+        activity?.stopService(mPlayServiceIntent)
+        isServiceDestroyed = true
     }
 
     override fun startAndBindPlayService() {
@@ -175,13 +179,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
                 isServiceDestroyed = true
             } else {
                 Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
-            }
-            if (!isServiceDestroyed) {
-                Log.d(TAG, "unbindAndStopPlayService.stopService()")
-                it.stopService(mPlayServiceIntent)
-                isServiceDestroyed = true
-            } else {
-                Log.d(TAG,"unbindAndStopPlayService.PlayService is destroyed or not started")
             }
         }
     }

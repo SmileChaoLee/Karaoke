@@ -116,6 +116,7 @@ class MainActivity : ComponentActivity() {
                 result: ActivityResult ->
             Log.d(TAG, "vlcLauncher.result received")
             loadingMessage.value = ""
+            // restartApp()
         }
 
         exoLauncher = registerForActivityResult(
@@ -123,6 +124,7 @@ class MainActivity : ComponentActivity() {
                 result: ActivityResult ->
             Log.d(TAG, "exoLauncher.result received")
             loadingMessage.value = ""
+            // restartApp()
         }
         setContent {
             Log.d(TAG,"onCreate.setContent")
@@ -142,7 +144,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("BatteryLife")
     private fun askIgnoreOptimizationsBattery() {
         val pm = getSystemService(POWER_SERVICE) as? PowerManager
@@ -371,7 +372,7 @@ class MainActivity : ComponentActivity() {
     private fun restartApp() {
         Log.d(TAG, "restartApp()")
         finish()
-
+        // then restart in 2 seconds
         val tmpHandler = Handler(Looper.getMainLooper())
         val tmpRunnable = Runnable {
             Log.d(TAG, "restartApp().tmpRunnable()")
@@ -382,11 +383,11 @@ class MainActivity : ComponentActivity() {
                 Log.d(TAG, "restartApp().startActivity()")
                 startActivity(Intent.makeRestartActivityTask(it.component))
             }
-            Runtime.getRuntime().exit(0)
+            // Runtime.getRuntime().exit(0)
             // exitProcess(0);
-            // android.os.Process.killProcess(android.os.Process.myPid())
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
-        tmpHandler.postDelayed(tmpRunnable, 2000)
+        tmpHandler.postDelayed(tmpRunnable, 1000)
     }
 
     companion object {

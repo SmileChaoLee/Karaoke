@@ -237,7 +237,7 @@ class MyFavoritesFragment : Fragment(),
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart() is called")
+        Log.d(TAG, "onStart()")
         super.onStart()
     }
 
@@ -251,6 +251,12 @@ class MyFavoritesFragment : Fragment(),
         Log.d(TAG, "onPause()")
         clearFavoriteList()
         super.onPause()
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop()")
+        clearFavoriteList()
+        super.onStop()
     }
 
     override fun onDestroy() {

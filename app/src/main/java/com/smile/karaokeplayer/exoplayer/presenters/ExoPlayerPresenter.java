@@ -252,6 +252,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         // update the duration on controller UI
+        Log.d(TAG, msgStr + ".update_Player_duration_seekbar");
         mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
 
         return result;

@@ -28,7 +28,6 @@ import com.smile.karaokeplayer.fragments.PlayerBaseFragment
 import com.smile.karaokeplayer.fragments.TablayoutFragment
 import com.smile.karaokeplayer.interfaces.PlayMyFavorites
 import com.smile.karaokeplayer.interfaces.PlaySongs
-import com.smile.karaokeplayer.models.FileDesList
 import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.PlayingParameters
 import com.smile.karaokeplayer.models.SongInfo
@@ -66,7 +65,7 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        cleanSongs()
+        MySingleTon.clearSingleton()
         if (savedInstanceState == null) {
             // the orientation is always portrait when created
             Log.d(TAG,"onCreate.new created")
@@ -191,9 +190,24 @@ abstract class BaseActivity : AppCompatActivity(),
         }
     }
 
+    override fun onStart() {
+        Log.d(TAG, "onStart()")
+        super.onStart()
+    }
+
     override fun onResume() {
-        super.onResume()
         Log.d(TAG, "onResume()")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        Log.d(TAG, "onPause()")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop()")
+        super.onStop()
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -216,14 +230,7 @@ abstract class BaseActivity : AppCompatActivity(),
         LocalBroadcastManager.getInstance(this).apply {
             unregisterReceiver(baseReceiver)
         }
-        cleanSongs()
-    }
-
-    private fun cleanSongs() {
-        Log.d(TAG, "cleanSongs()")
-        MySingleTon.favorites.clear()
-        MySingleTon.selectedFavorites.clear()
-        MySingleTon.orderedSongs.clear()
+        MySingleTon.clearSingleton()
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
@@ -269,7 +276,8 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // Implement interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun returnToPrevious(isSingleSong : Boolean) {
-        Log.d(TAG, "returnToPrevious.isSingleSong = $isSingleSong")
+        val msgStr = "returnToPrevious"
+        Log.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")
         if (isSingleSong) {
             playerFragment?.mPresenter?.let {
                 it.pausePlay()
@@ -281,14 +289,10 @@ abstract class BaseActivity : AppCompatActivity(),
                         startActivity(this)
                     }
                 }
-                Log.d(TAG, "returnToPrevious.preparedStatus = ${it.playingParam.preparedStatus}")
+                Log.d(TAG, "${msgStr}.preparedStatus = ${it.playingParam.preparedStatus}")
             }
             return
         }
-        MySingleTon.favorites.clear()
-        MySingleTon.selectedFavorites.clear()
-        MySingleTon.orderedSongs.clear()
-        FileDesList.fileList.clear()
         // exit application
         finish()
     }
@@ -314,18 +318,19 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun restorePlayingState() {
-        Log.d(TAG, "restorePlayingState.return from BaseFavoriteListActivity")
+        val msgStr = "restorePlayingState"
+        Log.d(TAG, "${msgStr}.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             BundleCompat.getParcelable(playData, PlayerConstants.PlayingParamState, PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
-            Log.d(TAG, "restorePlayingState.currentPlaybackState = $currentPlaybackState")
-            Log.d(TAG, "restorePlayingState.currentAudioPosition = $currentAudioPosition")
-            Log.d(TAG, "restorePlayingState.preparedStatus = $preparedStatus")
-            Log.d(TAG, "restorePlayingState.wentToFavorite = $wentToFavorite")
+            Log.d(TAG, "${msgStr}.currentPlaybackState = $currentPlaybackState")
+            Log.d(TAG, "${msgStr}.currentAudioPosition = $currentAudioPosition")
+            Log.d(TAG, "${msgStr}.preparedStatus = $preparedStatus")
+            Log.d(TAG, "${msgStr}.wentToFavorite = $wentToFavorite")
             if (isPlayToPause) currentPlaybackState = PlaybackStateCompat.STATE_PLAYING // restore to playing
             preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
-            Log.d(TAG, "restorePlayingState.preparedStatus changed to $preparedStatus")
+            Log.d(TAG, "${msgStr}.preparedStatus changed to $preparedStatus")
             wentToFavorite = false  // set back to default
         }
         onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
@@ -340,7 +345,8 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // implementing interface PlaySongs
     override fun playSelectedSongList(songs: ArrayList<SongInfo>) {
-        Log.d(TAG, "playSelectedSongList.songs.size" +
+        val msgStr = "playSelectedSongList"
+        Log.d(TAG, "${msgStr}.songs.size" +
                 " = ${songs.size}")
         if (songs.isNotEmpty()) {
             MySingleTon.orderedSongs.clear()

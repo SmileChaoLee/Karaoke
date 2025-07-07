@@ -185,7 +185,6 @@ abstract class PlayerBaseFragment : Fragment(),
         override fun onServiceDisconnected(name: ComponentName) {
             Log.d(TAG, "onServiceDisconnected")
             isServiceBound = false
-            isServiceDestroyed = true
             onPlayServiceDisconnected()
         }
     }
@@ -195,7 +194,7 @@ abstract class PlayerBaseFragment : Fragment(),
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
-        cleanSongs()
+        MySingleTon.clearSingleton()
 
         arguments?.let {
             Log.d(TAG, "onCreate.arguments is not null")
@@ -580,7 +579,8 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy() is called.")
-        cleanSongs()
+        super.onDestroy()
+        MySingleTon.clearSingleton()
         // cancel the timer
         mPresenter.removeMsgFromDurationBarHandler()
         controllerTimerHandler.removeCallbacksAndMessages(null)
@@ -592,7 +592,6 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         unbindAndStopPlayService()
         // setupCast?.release()
-        super.onDestroy()
     }
 
     fun onBackPressed() {
@@ -620,12 +619,6 @@ abstract class PlayerBaseFragment : Fragment(),
             privacyPolicyMenuItem?.isVisible = isVisible
         }
         setMenuItemsVisibility() // abstract method
-    }
-
-    private fun cleanSongs() {
-        MySingleTon.favorites.clear()
-        MySingleTon.selectedFavorites.clear()
-        MySingleTon.orderedSongs.clear()
     }
 
     private fun setMediaRouteButtonVisible() {

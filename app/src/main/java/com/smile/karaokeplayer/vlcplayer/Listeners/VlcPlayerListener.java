@@ -118,7 +118,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                     Log.d(TAG, "onEvent.Stopped.vlcPlayer is finished playing.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }
-                releaseMedia();
+                // releaseMedia();
                 break;
             case MediaPlayer.Event.EndReached:
                 // after this event, vlcPlayer will
@@ -127,7 +127,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                         mPlayService.getMediaDuration());
                 Log.d(TAG, "onEvent.EndReached.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
-                releaseMedia();
+                // releaseMedia();
                 break;
             case MediaPlayer.Event.Opening:
                 // Use opening as a buffering because VlcPlayer is always buffering during playing
@@ -149,7 +149,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 Log.d(TAG, "onEvent()-->EncounteredError.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
                 mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
-                releaseMedia();
+                // releaseMedia();
                 break;
             default:
                 Log.d(TAG, "onEvent.default.event.type = " + event.type);

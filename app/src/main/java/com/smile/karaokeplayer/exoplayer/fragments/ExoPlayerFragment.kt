@@ -69,7 +69,9 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
         playerView?.player = null
-        Log.d(TAG, "onDestroy.presenter.audioSubMenuHandler")
+        if (mPlayServiceIntent != null) {
+            activity?.stopService(mPlayServiceIntent)
+        }
     }
 
     private fun setVideoPlayerView() {
@@ -141,7 +143,8 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
 
     override fun onPlayServiceDisconnected() {
         Log.d(TAG, "onPlayServiceDisconnected")
-        startAndBindPlayService()
+        activity?.stopService(mPlayServiceIntent)
+        isServiceDestroyed = true
     }
 
     override fun startAndBindPlayService() {
@@ -172,13 +175,6 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
                 isServiceDestroyed = true
             } else {
                 Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
-            }
-            if (!isServiceDestroyed) {
-                Log.d(TAG, "unbindAndStopPlayService.stopService()")
-                it.stopService(mPlayServiceIntent)
-                isServiceDestroyed = true
-            } else {
-                Log.d(TAG,"unbindAndStopPlayService.PlayService is destroyed or not started")
             }
         }
     }

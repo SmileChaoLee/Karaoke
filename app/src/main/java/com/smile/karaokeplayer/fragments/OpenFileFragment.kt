@@ -22,9 +22,8 @@ import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaokeplayer.constants.CommonConstants
 import com.smile.karaokeplayer.interfaces.PlaySongs
-import com.smile.karaokeplayer.models.MySingleTon
-import com.smile.karaokeplayer.models.FileDesList
 import com.smile.karaokeplayer.models.FileDescription
+import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -64,11 +63,11 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         Log.d(TAG, "onCreate.playSongs = $playSongs")
 
         // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
-        Log.d(TAG, "onCreate.FileDesList.currentPath = ${FileDesList.currentPath}")
+        Log.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
 
         activity?.applicationContext?.externalCacheDirs?.let {
             Log.d(TAG, "externalCacheDirs = $it, externalCacheDirs.size = ${it.size}")
-            FileDesList.rootPathSet.clear()
+            MySingleTon.rootPathSet.clear()
             for (element in it) {
                 Log.d(TAG, "externalCacheDirs.element = $element")
                 element?.absolutePath?.let { pathIt ->
@@ -76,7 +75,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                         if (indexIt >= 0) {
                             pathIt.substring(0, indexIt).let {subIt ->
                                 Log.d(TAG, "element.substring(0, indexIt) = $subIt")
-                                FileDesList.rootPathSet.add(subIt)
+                                MySingleTon.rootPathSet.add(subIt)
                             }
                         }
                     }
@@ -90,7 +89,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                 intent?.action?.let {
                     if (it == SEARCH_FOLDER_COMPLETED) {
                         Log.d(TAG, "BroadcastReceiver.onReceive.SearchFolder")
-                        pathTextView?.text = FileDesList.currentPath
+                        pathTextView?.text = MySingleTon.currentPath
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
                     }
@@ -106,7 +105,7 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             }
         }
 
-        Log.d(TAG, "onCreate.FileDesList.fileList.size = ${FileDesList.fileList.size}")
+        Log.d(TAG, "onCreate.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
     }
 
     override fun onCreateView(
@@ -134,13 +133,14 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             layoutParams.height = buttonWidth
             backKeyButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
-                if (FileDesList.currentPath == "/") return@setOnClickListener
-                FileDesList.currentPath = if (FileDesList.rootPathSet.contains(FileDesList.currentPath)) "/"
+                if (MySingleTon.currentPath == "/") return@setOnClickListener
+                MySingleTon.currentPath =
+                    if (MySingleTon.rootPathSet.contains(MySingleTon.currentPath)) "/"
                 else {
-                    val index = FileDesList.currentPath.lastIndexOf('/')
-                    if (index >= 0 ) FileDesList.currentPath.substring(0, index) else "/"
+                    val index = MySingleTon.currentPath.lastIndexOf('/')
+                    if (index >= 0 ) MySingleTon.currentPath.substring(0, index) else "/"
                 }
-                if (FileDesList.currentPath.isEmpty()) FileDesList.currentPath = "/"
+                if (MySingleTon.currentPath.isEmpty()) MySingleTon.currentPath = "/"
                 searchCurrentFolder()
             }
             val selectAllButton: ImageButton = it.findViewById(R.id.openFileSelectAllButton)
@@ -149,8 +149,8 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             layoutParams.height = buttonWidth
             selectAllButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until FileDesList.fileList.size) {
-                    FileDesList.fileList[i].run {
+                for (i in 0 until MySingleTon.fileList.size) {
+                    MySingleTon.fileList[i].run {
                         if (!file.isDirectory && !selected) {
                             selected = true
                             myRecyclerViewAdapter?.notifyItemChanged(i)
@@ -164,8 +164,8 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
             layoutParams.height = buttonWidth
             unselectButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until FileDesList.fileList.size) {
-                    FileDesList.fileList[i].run {
+                for (i in 0 until MySingleTon.fileList.size) {
+                    MySingleTon.fileList[i].run {
                         if (!file.isDirectory && selected) {
                             selected = false
                             myRecyclerViewAdapter?.notifyItemChanged(i)
@@ -245,41 +245,53 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         initFilesRecyclerView()
     }
 
+    override fun onStart() {
+        Log.d(TAG, "onStart()")
+        super.onStart()
+    }
+
     override fun onResume() {
         Log.d(TAG, "onResume()")
-        searchCurrentFolder()   // has to be in onResume()
         super.onResume()
+        searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onPause() {
         Log.d(TAG, "onPause()")
-        clearFileList()
         super.onPause()
+        clearFileList()
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop()")
+        super.onStop()
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "onDestroy()")
+        super.onDestroy()
+        clearFileList()
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
                 unregisterReceiver(broadcastReceiver)
             }
         }
-        super.onDestroy()
     }
 
     override fun onRecyclerItemClick(v: View?, position: Int) {
         Log.d(TAG, "onRecyclerItemClick.position = $position")
         if (position < 0) return
-        if (FileDesList.fileList[position].file.isFile) {
-            FileDesList.fileList[position].selected = !FileDesList.fileList[position].selected
+        if (MySingleTon.fileList[position].file.isFile) {
+            MySingleTon.fileList[position].selected = !MySingleTon.fileList[position].selected
             myRecyclerViewAdapter?.notifyItemChanged(position)
             return
         }
-        FileDesList.currentPath = FileDesList.fileList[position].file.path
+        MySingleTon.currentPath = MySingleTon.fileList[position].file.path
         searchCurrentFolder()
     }
 
     fun clearFileList() {
-        FileDesList.fileList.clear()
+        MySingleTon.fileList.clear()
         myRecyclerViewAdapter?.notifyDataSetChanged()
     }
 
@@ -287,10 +299,10 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         Log.d(TAG, "searchCurrentFolder() is called")
         searchCompleted = false
         Thread {
-            val tempList: ArrayList<FileDescription> = ArrayList(FileDesList.maxFiles)
-            FileDesList.currentPath.let {
+            val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
+            MySingleTon.currentPath.let {
                 if (it == "/") {
-                    for (element in FileDesList.rootPathSet) {
+                    for (element in MySingleTon.rootPathSet) {
                         Log.d(TAG, "searchCurrentFolder.element = $element")
                         tempList.add(FileDescription(File(element), false))
                     }
@@ -310,9 +322,9 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                     }
                 }
             }
-            FileDesList.fileList.clear()
-            FileDesList.fileList.addAll(tempList)
-            Log.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${FileDesList.fileList.size}")
+            MySingleTon.fileList.clear()
+            MySingleTon.fileList.addAll(tempList)
+            Log.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
 
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
@@ -328,13 +340,13 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
     private fun getSongs(songListSQLite : SongListSQLite, msg : String) : ArrayList<SongInfo> {
         val songs = ArrayList<SongInfo>().also {songIt ->
             var index = 0
-            for (i in 0 until FileDesList.fileList.size) {
-                if (FileDesList.fileList[i].selected) {
-                    Log.d(TAG, "$msg.file.path = ${FileDesList.fileList[i].file.path}")
-                    Log.d(TAG, "$msg.file.toUri() = ${FileDesList.fileList[i].file.toUri()}")
+            for (i in 0 until MySingleTon.fileList.size) {
+                if (MySingleTon.fileList[i].selected) {
+                    Log.d(TAG, "$msg.file.path = ${MySingleTon.fileList[i].file.path}")
+                    Log.d(TAG, "$msg.file.toUri() = ${MySingleTon.fileList[i].file.toUri()}")
                     var song = SongInfo().apply {
-                        songName = FileDesList.fileList[i].file.name
-                        filePath = FileDesList.fileList[i].file.toUri().toString()
+                        songName = MySingleTon.fileList[i].file.name
+                        filePath = MySingleTon.fileList[i].file.toUri().toString()
                         musicTrackNo = 1    // guess
                         musicChannel = CommonConstants.STEREO
                         vocalTrackNo = 2    // guess
@@ -367,11 +379,11 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
         Log.d(TAG, "initFilesRecyclerView() is called")
         activity?.let {
             val yellow = ContextCompat.getColor(it, R.color.yellow)
-            val transparentLightGray = ContextCompat.getColor(it, R.color.transparentLightGray)
-
+            val transparentLightGray = ContextCompat.getColor(it,
+                R.color.transparentLightGray)
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter.getInstance(
-                this, textFontSize, FileDesList.fileList, yellow, transparentLightGray)
-
+                this, textFontSize, MySingleTon.fileList,
+                yellow, transparentLightGray)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
             filesRecyclerView?.layoutManager = object : LinearLayoutManager(context) {
                 override fun isAutoMeasureEnabled(): Boolean {

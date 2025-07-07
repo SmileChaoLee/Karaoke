@@ -110,14 +110,6 @@ class TablayoutFragment : Fragment() {
             favoriteTab.text = tabText[1]
             it.addTab(favoriteTab)
         }
-        /*
-        val playViewPager2: ViewPager2 = view.findViewById(R.id.fragmentsViewPager2)
-        playViewPager2.adapter = fragmentAdapter
-        Log.d(TAG, "TabLayoutMediator.attach()")
-        TabLayoutMediator(playTabLayout, playViewPager2) { tab, position ->
-            tab.text = tabText[position]
-        }.attach()
-        */
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -135,6 +127,11 @@ class TablayoutFragment : Fragment() {
         MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
     }
 
+    override fun onStart() {
+        Log.d(TAG, "onStart()")
+        super.onStart()
+    }
+
     override fun onResume() {
         Log.d(TAG, "onResume()")
         super.onResume()
@@ -148,6 +145,12 @@ class TablayoutFragment : Fragment() {
         myBannerAdView?.pause()
         bannerLayoutForTab?.visibility = View.GONE
     }
+
+    override fun onStop() {
+        Log.d(TAG, "onStop()")
+        super.onStop()
+    }
+
     override fun onDestroy() {
         Log.d(TAG, "onDestroy()")
         myBannerAdView?.destroy()
