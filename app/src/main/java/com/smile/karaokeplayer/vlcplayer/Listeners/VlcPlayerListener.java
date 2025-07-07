@@ -1,6 +1,8 @@
 package com.smile.karaokeplayer.vlcplayer.Listeners;
 
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
@@ -21,6 +23,32 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
 
     private static final String TAG = "VlcPlayerListener";
     private final VlcPlayService mPlayService;
+
+    private boolean isEndReached = false;
+    private final Handler endReachedHandler = new Handler(Looper.getMainLooper());
+    private final Runnable endReachedRunnable = new Runnable() {
+        final int maxTimes = 3;
+        int count = 0;
+        final String msgStr = "endReachedRunnable";
+        @Override
+        public void run() {
+            endReachedHandler.removeCallbacksAndMessages(null);
+            Log.d(TAG, msgStr + ".count = " + count);
+            if (count < maxTimes) {
+                // still true after 3 seconds, means Event.Stopped was not sent out
+                if (isEndReached) {
+                    Log.d(TAG, msgStr + "Event.EndReached not sent out jet");
+                    // check again 500 ms later
+                    endReachedHandler.postDelayed(this, 500);
+                } else {
+                    Log.d(TAG, msgStr + "Event.EndReached was sent out");
+                }
+                count++;
+            } else {
+                isEndReached = false;
+            }
+        }
+    };
 
     public VlcPlayerListener(VlcPlayService playService) {
         mPlayService = playService;
@@ -118,16 +146,23 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                     Log.d(TAG, "onEvent.Stopped.vlcPlayer is finished playing.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }
-                // releaseMedia();
+                releaseMedia();
+                Log.d(TAG, "onEvent.Stopped.received");
+                endReachedHandler.removeCallbacksAndMessages(null);
+                isEndReached = false;   // Event.Stopped is sent after Event.EndReached
                 break;
             case MediaPlayer.Event.EndReached:
                 // after this event, vlcPlayer will
-                // send out Event.Stopped to EventListener
+                // send out Event.Stopped to EventListener, sometimes may not
                 Log.d(TAG, "onEvent.EndReached.getLength() = " +
                         mPlayService.getMediaDuration());
                 Log.d(TAG, "onEvent.EndReached.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
-                // releaseMedia();
+                releaseMedia();
+                isEndReached = true;
+                // 3 seconds later, check if Event.Event.Stopped is sent out
+                Log.d(TAG, "onEvent.EndReached.checking.isEndReached");
+                endReachedHandler.postDelayed(endReachedRunnable, 3000);
                 break;
             case MediaPlayer.Event.Opening:
                 // Use opening as a buffering because VlcPlayer is always buffering during playing
@@ -146,10 +181,10 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 */
                 break;
             case MediaPlayer.Event.EncounteredError:
-                Log.d(TAG, "onEvent()-->EncounteredError.playingParam.preparedStatus = " +
+                Log.d(TAG, "onEvent.EncounteredError.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
                 mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
-                // releaseMedia();
+                releaseMedia();
                 break;
             default:
                 Log.d(TAG, "onEvent.default.event.type = " + event.type);
