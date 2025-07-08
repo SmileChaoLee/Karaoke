@@ -133,7 +133,7 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
         // Test code here for ExoPlayService
         playService?.presenter = this.presenter
         playService?.initMediaControllerCompat(this.presenter)
-        playService?.initPlayersAndListeners()
+        playService?.initPlayers()
         Log.d(TAG, "onPlayServiceConnected.Video player view")
         // Video player view
         setVideoPlayerView()

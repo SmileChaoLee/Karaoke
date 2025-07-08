@@ -77,7 +77,7 @@ class ExoPlayService : BasePlayService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        releasePlayersAndListener()
+        releasePlayers()
         mediaControllerCompat?.apply {
             controllerCallback?.let {
                 unregisterCallback(it)
@@ -85,23 +85,36 @@ class ExoPlayService : BasePlayService() {
         }
     }
 
-    fun initPlayersAndListeners() {
-        Log.d(TAG, "initPlayersAndListeners")
-        initPlayerListener()
+    fun initPlayers() {
+        Log.d(TAG, "initPlayers")
         initExoPlayer()
         initCastPlayer()
     }
 
-    private fun releasePlayersAndListener() {
-        Log.d(TAG, "releasePlayersAndListener")
+    private fun releasePlayers() {
+        Log.d(TAG, "releasePlayers")
         releaseExoPlayer()
         releaseCastPlayer()
     }
 
-    private fun initPlayerListener() {
-        Log.d(TAG, "initPlayerListener")
-        exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
-        castPlayerListener = CastPlayerListener(this@ExoPlayService)
+    fun addExoPlayerListener() {
+        Log.d(TAG, "addExoPlayerListener")
+        if (exoPlayerListener == null) {
+            exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
+        }
+        exoPlayer?.apply {
+            addListener(exoPlayerListener!!)
+        }
+    }
+
+    fun removeExoPlayerListener() {
+        Log.d(TAG, "removeExoPlayerListener")
+        if (exoPlayerListener != null) {
+            exoPlayer?.apply {
+                removeListener(exoPlayerListener!!)
+            }
+            exoPlayerListener = null
+        }
     }
 
     private fun initExoPlayer() {
@@ -126,9 +139,7 @@ class ExoPlayService : BasePlayService() {
                 .build()
             exoPlayer?.apply {
                 Log.d(TAG,"initExoPlayer.exoPlayer = $this")
-                if (exoPlayerListener != null) {
-                    addListener(exoPlayerListener!!)
-                }
+                addExoPlayerListener()
                 Log.d(TAG,"initExoPlayer.this = $this")
             }
             Log.d(TAG,"initExoPlayer.FfmpegLibrary.isAvailable() = " + FfmpegLibrary.isAvailable())
@@ -142,13 +153,31 @@ class ExoPlayService : BasePlayService() {
     private fun releaseExoPlayer() {
         Log.d(TAG, "releaseExoPlayer")
         exoPlayer?.apply {
-            if (exoPlayerListener != null) {
-                removeListener(exoPlayerListener!!)
-            }
+            removeExoPlayerListener()
             stop()
             release()
         }
         exoPlayer = null
+    }
+
+    fun addCastPlayerListener() {
+        Log.d(TAG, "addCastPlayerListener")
+        if (castPlayerListener == null) {
+            castPlayerListener = CastPlayerListener(this@ExoPlayService)
+        }
+        castPlayer?.apply {
+            addListener(castPlayerListener!!)
+        }
+    }
+
+    fun removeCastPlayerListener() {
+        Log.d(TAG, "removeCastPlayerListener")
+        if (castPlayerListener != null) {
+            castPlayer?.apply {
+                removeListener(castPlayerListener!!)
+            }
+            castPlayerListener = null
+        }
     }
 
     private fun initCastPlayer() {
@@ -166,9 +195,7 @@ class ExoPlayService : BasePlayService() {
             }
             castPlayer = CastPlayer(castIt)
             castPlayer?.apply {
-                if (castPlayerListener != null) {
-                    addListener(castPlayerListener!!)
-                }
+                addCastPlayerListener()
                 setSessionAvailabilityListener(sessionAvailabilityListener)
             }
         }
@@ -177,9 +204,7 @@ class ExoPlayService : BasePlayService() {
     private fun releaseCastPlayer() {
         Log.d(TAG, "releaseCastPlayer")
         castPlayer?.apply {
-            if (castPlayerListener != null) {
-                removeListener(castPlayerListener!!)
-            }
+            removeCastPlayerListener()
             stop()
             release()
         }

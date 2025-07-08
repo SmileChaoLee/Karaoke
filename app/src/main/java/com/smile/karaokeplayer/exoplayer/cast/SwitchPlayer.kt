@@ -21,6 +21,9 @@ class SwitchPlayer(private val playService: ExoPlayService) {
         playService.castPlayer?.let { castP ->
             playService.exoPlayer?.let { exoP ->
                 Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
+                val playWhenReady = exoP.playWhenReady
+                val position = exoP.currentPosition
+                val playbackState = presenter.playingParam.currentPlaybackState
                 presenter.mediaUri?.let {
                     val mediaUri = it
                     Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
@@ -30,11 +33,6 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                         playService.stopCasting()
                         return
                     }
-                    val playWhenReady = exoP.playWhenReady
-                    val position = exoP.currentPosition
-                    val playbackState = presenter.playingParam.currentPlaybackState
-                    exoP.stop() // do not use playService.stopPlay()
-
                     // starting switching to castPlayer
                     playService.webServerAndCast.startWebServer(mediaFileName)
                     // must after startWebServer
@@ -44,8 +42,14 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                         playService.stopCasting()
                         return
                     }
-                    //
                     playService.isCastSessionAvailable = true
+                    // remove all the players listeners
+                    playService.removeExoPlayerListener()
+                    playService.removeCastPlayerListener()
+                    // must after isCastSessionAvailable = true
+                    presenter.setCurrentPlayerToPlayerView()
+
+                    exoP.stop() // do not use playService.stopPlay()
                     Log.d(TAG, "${msgString}.localMediaUrl = $localMediaUrl")
                     Log.d(TAG, "${msgString}.position = $position")
                     Log.d(TAG, "${msgString}.playWhenReady = $playWhenReady")
@@ -55,8 +59,9 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     presenter.playingParam.currentAudioPosition = position
                     val playingParam = presenter.playingParam.copy()
                     playService.setPlayWhenReady(playWhenReady)
-                    presenter.setCurrentPlayerToPlayerView()
                     playService.startPlayWithParam(presenter, playingParam)
+
+                    playService.addCastPlayerListener()
                 }
             }
         }
@@ -70,15 +75,22 @@ class SwitchPlayer(private val playService: ExoPlayService) {
             return
         }
         val presenter = playService.presenter!!
+
+        // remove all the players listeners
+        playService.removeCastPlayerListener()
+        playService.removeExoPlayerListener()
+        playService.stopCasting()   // isCastSessionAvailable -> false
+        // must after stopCasting()
+        presenter.setCurrentPlayerToPlayerView()
+
         playService.exoPlayer?.let { exoP ->
             playService.castPlayer?.let { castP ->
                 Log.d(TAG, "${msgString}.castPlayer and exoPlayer not null")
                 val position = castP.currentPosition
                 val playWhenReady = castP.playWhenReady
                 val playbackState = presenter.playingParam.currentPlaybackState
+
                 castP.stop()    // do not use stopPlay()
-                playService.stopCasting()   // isCastSessionAvailable -> false
-                presenter.setCurrentPlayerToPlayerView()
                 presenter.mediaUri?.let {
                     val mediaUri = it
                     Log.d(TAG, "${msgString}.mediaUri = $mediaUri")
@@ -103,6 +115,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                 }
             }
         }
+        playService.addExoPlayerListener()
     }
 
     companion object {

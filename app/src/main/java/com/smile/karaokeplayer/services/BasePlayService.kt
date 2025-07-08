@@ -18,6 +18,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaokeplayer.SmileApp
+import com.smile.karaokeplayer.exoplayer.cast.SwitchPlayer
 import com.smile.karaokeplayer.googlecast.SetupChromeCast
 import com.smile.karaokeplayer.googlecast.WebServerAndCast
 
@@ -46,13 +47,13 @@ abstract class BasePlayService : Service() {
     var isCastSessionAvailable = false
     val webServerAndCast = WebServerAndCast()
     protected var castContext: CastContext? = null
-    private lateinit var setupCast: SetupChromeCast
+    // private lateinit var setupCast: SetupChromeCast
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
         castContext = (application as SmileApp).castContext
         stopCasting()
-        setupCast = SetupChromeCast(this, castContext)
+        // setupCast = SetupChromeCast(this, castContext)
         initMediaSessionCompat()
         super.onCreate()
     }
@@ -112,24 +113,48 @@ abstract class BasePlayService : Service() {
         mediaControllerCompat = null
     }
 
+    private fun convertUriToHttpUri(medUri: Uri): Uri {
+        val msgStr = "convertUriToHttpUri"
+        Log.d(TAG, msgStr)
+        val mediaFileName = medUri.path
+        Log.d(TAG, "${medUri}.mediaFileName = $mediaFileName")
+        if (mediaFileName.isNullOrEmpty()) {
+            return medUri
+        }
+        // starting local web server
+        webServerAndCast.startWebServer(mediaFileName)
+        // must after startWebServer
+        val localMediaUrl = webServerAndCast.getMediaUrl()
+        Log.d(TAG, "${msgStr}.localMediaUrl = $localMediaUrl")
+        if (localMediaUrl.isEmpty()) {
+            webServerAndCast.stopWebServer()
+            return medUri
+        }
+        return localMediaUrl.toUri()
+    }
+
     private fun playSingleSong(presenter: PlayerBasePresenter,
                                songInfo: SongInfo?) {
-        Log.d(TAG, "playSingleSong")
+        val msgStr = "playSingleSong"
+        Log.d(TAG, msgStr)
         if (songInfo == null) {
             return
         }
         var filePath = songInfo.filePath ?: return
         filePath = filePath.trim { it <= ' ' }
+        Log.d(TAG, "${msgStr}.filePath = $filePath")
         if (filePath == "") {
+            // skip this song
+            Log.d(TAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED ")
+            setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
             return
         }
-        Log.d(TAG, "playSingleSong.filePath = $filePath")
         try {
             val contentResolver: ContentResolver? = presenter.activity?.contentResolver
             contentResolver?.let {
                 for (perm in it.persistedUriPermissions) {
                     if (perm.uri == filePath.toUri()) {
-                        Log.d(TAG, "playSingleSong.has URI permission")
+                        Log.d(TAG, "${msgStr}.has URI permission")
                         break
                     }
                 }
@@ -137,16 +162,28 @@ abstract class BasePlayService : Service() {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        Log.d(TAG, "playSingleSong.filePath.toUri() = ${filePath.toUri()}")
-        if (Uri.EMPTY == filePath.toUri()) {
+        var mediaUri = filePath.toUri()
+        Log.d(TAG, "${msgStr}. = $mediaUri")
+        if (Uri.EMPTY == mediaUri) {
             return
         }
-        presenter.mediaUri = filePath.toUri()
+        //
+        if (isCastSessionAvailable) {
+            val tempMediaUri = convertUriToHttpUri(mediaUri)
+            if (tempMediaUri == mediaUri) {
+                // no change, then skip this song
+                Log.d(TAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED ")
+                setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+                return
+            }
+            mediaUri = tempMediaUri
+        }
+        //
+        presenter.mediaUri = mediaUri
         presenter.setPlayingParameters(songInfo)
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.apply {
             currentAudioPosition = 0
-            // currentPlaybackState = PlaybackStateCompat.STATE_NONE
             currentPlaybackState = PlayerConstants.PREPARE_MEDIA
             preparedStatus = 0
             val param = this.copy()
