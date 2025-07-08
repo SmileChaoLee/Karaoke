@@ -95,11 +95,12 @@ class VlcPlayService : BasePlayService() {
     fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
         Log.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
-            videoVLCPlayerView.requestFocus()
-            Log.d(TAG,"attachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
-            if (!vlcVout.areViewsAttached()) {
+            val isAttached = vlcVout.areViewsAttached()
+            Log.d(TAG,"attachPlayerViews.areViewsAttached = $isAttached")
+            if (!isAttached) {
                 attachViews(videoVLCPlayerView, null, true, false)
             }
+            videoVLCPlayerView.requestFocus()
         }
     }
 

@@ -41,6 +41,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             if (getPlayService() != null) {
                 int playbackState = mPlayingParam.getCurrentPlaybackState();
                 Log.d(TAG, msgStr + ".playbackState = " + playbackState);
+                Log.d(TAG, msgStr + ".getMediaDuration() = " + getPlayService().getMediaDuration());
                 if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
                     // PlaybackStateCompat.STATE_PLAYING = 3
                     Log.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
