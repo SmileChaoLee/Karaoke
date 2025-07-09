@@ -312,29 +312,11 @@ abstract class BasePlayService : Service() {
         Log.d(TAG, "startPlay.mediaUri = $mediaUri")
         Log.d(TAG, "startPlay.playbackState = $playbackState")
         if (mediaUri != null && Uri.EMPTY != mediaUri) {
-            // && (playbackState != PlaybackStateCompat.STATE_PLAYING)) {
-            // no media file opened or playing has been stopped
-            /*
-            if ((playbackState == PlaybackStateCompat.STATE_PAUSED)
-                || (playbackState == PlaybackStateCompat.STATE_REWINDING)
-                || (playbackState == PlaybackStateCompat.STATE_FAST_FORWARDING)
-                || (playbackState == PlaybackStateCompat.STATE_BUFFERING)) {
-                mediaSessionCompat?.controller?.transportControls?.let {
-                    Log.d(TAG, "startPlay.mediaTransportControls.play()")
-                    it.play()
-                }
-            }
-            */
             mediaSessionCompat?.controller?.transportControls?.let {
                 Log.d(TAG, "startPlay.mediaTransportControls.play()")
                 it.play()
             }
-        } /* else {
-            // (playbackState == PlaybackStateCompat.STATE_STOPPED) or
-            // (playbackState == PlaybackStateCompat.STATE_NONE)
-            Log.d(TAG, "startPlay.replayMedia()")
-            replayMedia(presenter)
-        } */
+        }
     }
 
     fun startPlayWithParam(presenter: PlayerBasePresenter,

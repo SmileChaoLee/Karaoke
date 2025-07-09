@@ -59,7 +59,6 @@ public abstract class PlayerBasePresenter {
         boolean isActivityFinishing();
         ArrayList<SongInfo> getFavoriteSongs();
         Fragment getFragment();
-        void isEnableAllButtons(boolean isEnabled);
     }
 
     public abstract void initializeVariables(Bundle savedInstanceState,
@@ -280,8 +279,7 @@ public abstract class PlayerBasePresenter {
         if (!songList.isEmpty()) {
             MySingleTon.INSTANCE.getOrderedSongs().clear();
             MySingleTon.INSTANCE.getOrderedSongs().addAll(songList);
-            isAutoPlay = true;
-            mPlayingParam.setAutoPlay(isAutoPlay);
+            mPlayingParam.setAutoPlay(true);
             autoPlaySongList();
             mPresentView.showPlayerView();
             mPresentView.setImageButtonStatus();
@@ -442,17 +440,6 @@ public abstract class PlayerBasePresenter {
     }
 
     public void startPlay() {
-        /*
-        int playbackState = mPlayingParam.getCurrentPlaybackState();
-        if (playbackState==PlayerConstants.PREPARE_MEDIA
-            || playbackState==PlaybackStateCompat.STATE_NONE
-            || playbackState==PlaybackStateCompat.STATE_STOPPED) {
-            // start playing the first song in the list
-            Log.d(TAG, "startPlay.calling autoPlaySongList()");
-            autoPlaySongList();
-            return;
-        }
-        */
         Log.d(TAG, "startPlay");
         BasePlayService playService = mPresentView.getPlayService();
         if (playService != null) {
@@ -516,11 +503,9 @@ public abstract class PlayerBasePresenter {
             Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_BUFFERING");
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
-            mPresentView.isEnableAllButtons(false);
             return;
         }
         mPresentView.dismissBufferingMessage();
-        mPresentView.isEnableAllButtons(true);
         switch (currentState) {
             case PlaybackStateCompat.STATE_NONE:
                 // 1. initial state

@@ -773,19 +773,19 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
     }
 
-    // called by MainActivity
+    // called by BaseActivity
     fun disableSomeButtonsDueToBecausePopup() {
         Log.d(TAG, "disableSomeButtonsDueToBecausePopup()")
         hideVideoImageButton?.isEnabled = false
         orientationImageButton?.isEnabled = false
     }
-    // called by MainActivity
+    // called by BaseActivity
     fun enableSomeButtonsDueToPopupGone() {
         Log.d(TAG, "enableSomeButtonsDueToPopupGone()")
         hideVideoImageButton?.isEnabled = true
         orientationImageButton?.isEnabled = true
     }
-    // called by MainActivity
+    // called by BaseActivity
     fun setIsCheckAutoPlay() {
         Log.d(TAG, "setIsCheckAutoPlay()")
         autoPlayMenuItem?.let {
@@ -1326,31 +1326,6 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun getFragment(): Fragment {
         return this
     }
-
-    override fun isEnableAllButtons(isEnabled: Boolean) {
-        Log.d(TAG, "isEnableAllButtons")
-        nonVolumeImageButton?.isEnabled = isEnabled
-        volumeImageButton?.isEnabled = isEnabled
-        previousMediaImageButton?.isEnabled = isEnabled
-        playMediaImageButton?.isEnabled = isEnabled
-        pauseMediaImageButton?.isEnabled = isEnabled
-        replayMediaImageButton?.isEnabled = isEnabled
-        stopMediaImageButton?.isEnabled = isEnabled
-        nextMediaImageButton?.isEnabled = isEnabled
-        heartImageButton?.isEnabled = isEnabled
-        actionMenuView?.isEnabled = isEnabled
-        actionMenuImageButton?.isEnabled = isEnabled
-
-        orientationImageButton?.isEnabled = isEnabled
-        repeatImageButton?.isEnabled = isEnabled
-        switchToMusicImageButton?.isEnabled = isEnabled
-        switchToVocalImageButton?.isEnabled = isEnabled
-        hideVideoImageButton?.isEnabled = isEnabled
-        audioChannelImageButton?.isEnabled = isEnabled
-        audioTrackImageButton?.isEnabled = isEnabled
-        mediaRouteButton?.isEnabled = isEnabled
-    }
-
     // end of implementing PlayerBasePresenter.BasePresentView
 
     private fun setScreenOrientation(orientation: Int) {
