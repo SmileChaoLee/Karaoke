@@ -128,7 +128,8 @@ class ExoPlayService : BasePlayService() {
 
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
             val myRenderersFactory =
-                MyRenderersFactory(applicationContext, DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+                MyRenderersFactory(applicationContext,
+                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
             stereoVolumeAudioProcessor = myRenderersFactory.stereoVolumeAudioProcessor
 
             val exoPlayerBuilder = ExoPlayer.Builder(applicationContext, myRenderersFactory)
@@ -181,7 +182,9 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun initCastPlayer() {
-        Log.d(TAG, "initCastPlayer")
+        Log.d(TAG, "initCastPlayer.presenter = $presenter")
+        if (presenter == null) return
+        val tempPresenter = presenter!!
         castContext?.let { castIt ->
             val sessionAvailabilityListener = object: SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
@@ -194,9 +197,10 @@ class ExoPlayService : BasePlayService() {
                 }
             }
             castPlayer = CastPlayer(castIt)
-            castPlayer?.apply {
+            castPlayer?.also {
                 addCastPlayerListener()
-                setSessionAvailabilityListener(sessionAvailabilityListener)
+                it.setSessionAvailabilityListener(sessionAvailabilityListener)
+                it.trackSelectionParameters = tempPresenter.trackSelectionParameters
             }
         }
     }
