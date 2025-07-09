@@ -72,7 +72,11 @@ class VlcPlayService : BasePlayService() {
     fun initVlcPlayer() {
         Log.d(TAG, "initVlcPlayer.presenter = $presenter")
         presenter?.let {
-            libVLC = LibVLC(it.activity)
+            val libVlcOptions = ArrayList<String>()
+            libVlcOptions.add("-vvv")
+            libVlcOptions.add("--aout=opensles")    // must have this to volume control
+            // libVlcOptions.add("--aout=audiotrack") not this
+            libVLC = LibVLC(it.activity, libVlcOptions)
             vlcPlayer = MediaPlayer(libVLC)
             vlcPlayer?.apply {
                 setEventListener(VlcPlayerListener(this@VlcPlayService))
@@ -267,7 +271,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
-        Log.d(TAG, "setAudioVolume")
+        Log.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
             Log.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
             // get current channel
@@ -283,7 +287,6 @@ class VlcPlayService : BasePlayService() {
             vlcPlayer?.volume = (volumeTmp * PlayerConstants.MAX_PROGRESS).toInt()
             return
         }
-        Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
 
     override fun getMediaDuration(): Long {
