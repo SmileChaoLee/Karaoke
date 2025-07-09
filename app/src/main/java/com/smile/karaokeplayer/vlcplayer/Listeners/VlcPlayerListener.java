@@ -56,13 +56,6 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
         mPlayService = playService;
     }
 
-    private void releaseMedia() {
-        if (mPlayService.getVlcPlayer() != null) {
-            Objects.requireNonNull(mPlayService.getVlcPlayer()
-                    .getMedia()).release();
-        }
-    }
-
     @Override
     public synchronized void onEvent(MediaPlayer.Event event) {
         Log.d(TAG, "onEvent");
@@ -148,7 +141,6 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                     Log.d(TAG, "onEvent.Stopped.vlcPlayer is finished playing.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
                 }
-                releaseMedia();
                 Log.d(TAG, "onEvent.Stopped.received");
                 endReachedHandler.removeCallbacksAndMessages(null);
                 isEndReached = false;   // Event.Stopped is sent after Event.EndReached
@@ -160,7 +152,6 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                         mPlayService.getMediaDuration());
                 Log.d(TAG, "onEvent.EndReached.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
-                releaseMedia();
                 isEndReached = true;
                 // 3 seconds later, check if Event.Event.Stopped is sent out
                 Log.d(TAG, "onEvent.EndReached.checking.isEndReached");
@@ -186,7 +177,6 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 Log.d(TAG, "onEvent.EncounteredError.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
                 mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
-                releaseMedia();
                 break;
             default:
                 Log.d(TAG, "onEvent.default.event.type = " + event.type);
