@@ -1326,6 +1326,31 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun getFragment(): Fragment {
         return this
     }
+
+    override fun isEnableAllButtons(isEnabled: Boolean) {
+        Log.d(TAG, "isEnableAllButtons")
+        nonVolumeImageButton?.isEnabled = isEnabled
+        volumeImageButton?.isEnabled = isEnabled
+        previousMediaImageButton?.isEnabled = isEnabled
+        playMediaImageButton?.isEnabled = isEnabled
+        pauseMediaImageButton?.isEnabled = isEnabled
+        replayMediaImageButton?.isEnabled = isEnabled
+        stopMediaImageButton?.isEnabled = isEnabled
+        nextMediaImageButton?.isEnabled = isEnabled
+        heartImageButton?.isEnabled = isEnabled
+        actionMenuView?.isEnabled = isEnabled
+        actionMenuImageButton?.isEnabled = isEnabled
+
+        orientationImageButton?.isEnabled = isEnabled
+        repeatImageButton?.isEnabled = isEnabled
+        switchToMusicImageButton?.isEnabled = isEnabled
+        switchToVocalImageButton?.isEnabled = isEnabled
+        hideVideoImageButton?.isEnabled = isEnabled
+        audioChannelImageButton?.isEnabled = isEnabled
+        audioTrackImageButton?.isEnabled = isEnabled
+        mediaRouteButton?.isEnabled = isEnabled
+    }
+
     // end of implementing PlayerBasePresenter.BasePresentView
 
     private fun setScreenOrientation(orientation: Int) {

@@ -59,6 +59,7 @@ public abstract class PlayerBasePresenter {
         boolean isActivityFinishing();
         ArrayList<SongInfo> getFavoriteSongs();
         Fragment getFragment();
+        void isEnableAllButtons(boolean isEnabled);
     }
 
     public abstract void initializeVariables(Bundle savedInstanceState,
@@ -515,9 +516,11 @@ public abstract class PlayerBasePresenter {
             Log.d(TAG, msgStr + ".PlaybackStateCompat.STATE_BUFFERING");
             mPresentView.hideNativeAd();
             mPresentView.showBufferingMessage();
+            mPresentView.isEnableAllButtons(false);
             return;
         }
         mPresentView.dismissBufferingMessage();
+        mPresentView.isEnableAllButtons(true);
         switch (currentState) {
             case PlaybackStateCompat.STATE_NONE:
                 // 1. initial state

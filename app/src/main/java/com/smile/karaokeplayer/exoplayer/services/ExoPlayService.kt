@@ -418,7 +418,13 @@ class ExoPlayService : BasePlayService() {
     override fun onStop() {
         Log.d(TAG, "onStop")
         if (isCastSessionAvailable) {
-            castPlayer?.stop()
+            // setPlayerTime(getMediaDuration()) will trigger playing from the beginning
+            // castPlayer?.seekTo() will trigger playing from the beginning
+            // after castPlayer?.stop(), everything stopped including listener
+            // so do not use castPlayer?.stop()
+            // use castPlayer?.pause(), then process in listener
+            Log.d(TAG, "onStop.castPlayer?.pause()")
+            castPlayer?.pause()
         } else {
             exoPlayer?.stop()
         }
