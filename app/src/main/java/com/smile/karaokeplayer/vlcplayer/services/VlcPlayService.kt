@@ -115,10 +115,15 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun setVideoWindowSize(videoVLCPlayerView: VLCVideoLayout) {
-        Log.d(TAG,"setVideoWindowSize")
+        val msgStr = "setVideoWindowSize"
+        Log.d(TAG,msgStr)
         presenter?.let {
+            attachPlayerViews(videoVLCPlayerView)   // must be the first statement
+            Log.d(TAG,"${msgStr}.vlcPlayer = $vlcPlayer")
+            Log.d(TAG,"${msgStr}.vlcPlayer.scale = ${vlcPlayer?.scale}")
             vlcPlayer?.scale = 0f
-            it.activity.let { actIt ->
+            Log.d(TAG,"${msgStr}.activity = ${it.activity}")
+            it.activity?.let { actIt ->
                 Log.d(TAG,"setVideoWindowSize.aspectRatio = ${vlcPlayer?.aspectRatio}")
                 val screenSize = ScreenUtil.getScreenSize(actIt)
                 Log.d(TAG,"setVideoWindowSize.screenSize = ${screenSize.x}, ${screenSize.y}")
@@ -132,7 +137,6 @@ class VlcPlayService : BasePlayService() {
                 }
                 Log.d(TAG,"setVideoWindowSize.aspectRatio = ${vlcPlayer?.aspectRatio}")
             }
-            attachPlayerViews(videoVLCPlayerView)
         }
     }
 
@@ -146,12 +150,32 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun getAudioTrack(): Int {
-        return vlcPlayer?.audioTrack ?: -1
+        Log.d(TAG, "getAudioTrack")
+        val tracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
+        Log.d(TAG, "getAudioTrack.tracks")
+        tracks?.also {
+            Log.d(TAG, "getAudioTrack.tracks.size = ${it.size}")
+            for (trackIndex in 0 until it.size) {
+                if (it[trackIndex].selected) {
+                    Log.d(TAG, "getAudioTrack.return trackIndex = $trackIndex")
+                    return trackIndex
+                }
+            }
+        }
+        return -1
     }
 
     fun setAudioTrack(audioTrackId: Int) {
-        // vlcPlayer?.setAudioTrack(audioTrackId)
-        vlcPlayer?.audioTrack = audioTrackId
+        Log.d(TAG, "setAudioTrack")
+        val selectedTracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
+        selectedTracks?.also {
+            if (audioTrackId >= 0 && audioTrackId < it.size) {
+                val track = it[audioTrackId]
+                Log.d(TAG, "setAudioTrack.track = $track")
+                vlcPlayer?.selectTrack(track.id)
+            }
+        }
+
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {
@@ -162,68 +186,41 @@ class VlcPlayService : BasePlayService() {
         }
         val vPlayer = vlcPlayer!!
         var numOfVideoTracks = 0
-        val videoDis = vPlayer.videoTracks
-        var videoTrackId: Int
+        val videoDis = vPlayer.getTracks(IMedia.Track.Type.Video)
+        var videoTrackId: String?
         var videoTrackName: String?
-        if (videoDis != null) {
+        videoDis?.also {
             // because it is null sometimes
-            for (videoDi in videoDis) {
+            for (videoDi in it) {
                 videoTrackId = videoDi.id
+                Log.d(TAG, "${msgStr}.videoTrackId = $videoTrackId")
                 videoTrackName = videoDi.name
                 Log.d(TAG, "${msgStr}.videoTrackName = $videoTrackName")
-                // exclude disabled
-                if (videoTrackId >= 0) {
-                    // enabled video track
-                    numOfVideoTracks++
-                }
+                numOfVideoTracks++
             }
         }
         Log.d(TAG, "${msgStr}.numOfVideoTracks = " + numOfVideoTracks)
 
-        var audioTrackId: Int
+        var audioTrackId: String?
         var audioTrackName: String?
         audioTrackIndicesList.clear()
-        val audioDis = vPlayer.audioTracks
-        if (audioDis != null) {
+        val audioDis = vPlayer.getTracks(IMedia.Track.Type.Audio)
+        audioDis?.also {
             // because it is null sometimes
-            for (audioDi in audioDis) {
-                audioTrackId = audioDi.id
-                audioTrackName = audioDi.name
+            for (tackIndex in 0 until it.size) {
+                val audioTrack: IMedia.AudioTrack = it[tackIndex] as IMedia.AudioTrack
+                // info only
+                val channels = audioTrack.channels
+                Log.d(TAG, "${msgStr}.channels = $channels")
+                //
+                audioTrackId = audioTrack.id
+                Log.d(TAG, "${msgStr}.audioTrackId = $audioTrackId")
+                audioTrackName = audioTrack.name
                 Log.d(TAG, "${msgStr}.audioTrackName = $audioTrackName")
                 // exclude disabled
-                if (audioTrackId >= 0) {
-                    // enabled audio track
-                    audioTrackIndicesList.add(audioTrackId)
-                }
+                audioTrackIndicesList.add(tackIndex)
             }
         }
-
-        /*
-        // the following is just for the info
-        val media = vPlayer.getMedia() // for version above 3.3.0
-        media?.tracks?.let { mt ->
-            val trackCount = mt.size
-            Log.d(TAG, "${msgStr}.trackCount = " + trackCount)
-            for (i in 0..<trackCount) {
-                mt[i]?.let { track ->
-                    Log.d(TAG, "${msgStr}.track.id = " + track.id)
-                    if (track.type == IMedia.Track.Type.Audio) {
-                        // audio
-                        val audioTrack = track as IMedia.AudioTrack
-                        Log.d(TAG,"${msgStr}.audioTrack.channels = "
-                                + audioTrack.channels)
-                    } else if (track.type == IMedia.Track.Type.Video) {
-                        // video
-                        val videoTrack = track as VideoTrack
-                        val height = videoTrack.height
-                        Log.d(TAG, "${msgStr}.videoTrack.height = " + height)
-                        val width = videoTrack.width
-                        Log.d(TAG, "${msgStr}.videoTrack.width = " + width)
-                    }
-                }
-            }
-        }
-        */
 
         return numOfVideoTracks
     }

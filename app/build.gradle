@@ -135,6 +135,7 @@ dependencies {
     implementation 'androidx.media3:media3-ui:1.7.1'
     implementation 'androidx.media3:media3-session:1.7.1'
     implementation 'androidx.media3:media3-cast:1.7.1'
+    implementation 'androidx.mediarouter:mediarouter:1.8.1'
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
 
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
@@ -148,15 +149,13 @@ dependencies {
     implementation files('libs/smilelibraries-release.aar')
     implementation files('libs/NativeTemplatesModels-release.aar')
 
-    implementation 'androidx.mediarouter:mediarouter:1.8.1'
-
     implementation project(':extension-ffmpeg')
     implementation project(':extension-flac')
     implementation project(':extension-opus')
     implementation project(':extension-vp9')
     implementation project(':extension-av1')
 
-    implementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
+    implementation 'org.videolan.android:libvlc-all:4.0.0-eap20'
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
