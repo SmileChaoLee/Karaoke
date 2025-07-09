@@ -130,9 +130,10 @@ dependencies {
 
     implementation 'androidx.media3:media3-exoplayer:1.7.1'
     implementation 'androidx.media3:media3-exoplayer-dash:1.7.1'
+    implementation 'androidx.media3:media3-decoder:1.7.1'
+
     implementation 'androidx.media3:media3-ui:1.7.1'
     implementation 'androidx.media3:media3-session:1.7.1'
-
     implementation 'androidx.media3:media3-cast:1.7.1'
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
 
@@ -140,7 +141,6 @@ dependencies {
     implementation("io.ktor:ktor-server-cio-jvm:3.2.0")  // CIO engine for Ktor
     implementation("io.ktor:ktor-server-content-negotiation-jvm:3.2.0") // For content negotiation if needed
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.2.0") // If you need JSON
-    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // For coroutines
 
     implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
@@ -148,7 +148,7 @@ dependencies {
     implementation files('libs/smilelibraries-release.aar')
     implementation files('libs/NativeTemplatesModels-release.aar')
 
-    implementation 'androidx.mediarouter:mediarouter:1.8.0'
+    implementation 'androidx.mediarouter:mediarouter:1.8.1'
 
     implementation project(':extension-ffmpeg')
     implementation project(':extension-flac')
