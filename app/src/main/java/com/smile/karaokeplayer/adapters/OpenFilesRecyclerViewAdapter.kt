@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.FileDescription
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -16,10 +15,10 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 private const val TAG = "FilesRecyclerVAdapter"
 
 class OpenFilesRecyclerViewAdapter private constructor(
-        private var recyclerItemClickListener : OnRecyclerItemClickListener,
-        private var textFontSize : Float,
-        private var mList : java.util.ArrayList<FileDescription>,
-        private var yellow : Int, private var transparentLightGray : Int)
+    private var recyclerItemClickListener : OnRecyclerItemClickListener,
+    private var textFontSize : Float,
+    private var mList : java.util.ArrayList<FileDescription>,
+    private var textColor : Int, private var transparentLightGray : Int)
 
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
@@ -33,18 +32,19 @@ class OpenFilesRecyclerViewAdapter private constructor(
         fun getInstance(recyclerItemClickListener: OnRecyclerItemClickListener,
                         textFontSize : Float,
                         mList : java.util.ArrayList<FileDescription>,
-                        yellow : Int, transparentLightGray : Int) : OpenFilesRecyclerViewAdapter {
+                        textColor : Int, transparentLightGray : Int)
+        : OpenFilesRecyclerViewAdapter {
 
             Log.d(TAG, "getInstance.viewAdapter = $viewAdapter")
             if (viewAdapter == null) {
                 viewAdapter = OpenFilesRecyclerViewAdapter(recyclerItemClickListener,
-                        textFontSize, mList, yellow, transparentLightGray)
+                        textFontSize, mList, textColor, transparentLightGray)
             } else {
                 viewAdapter?.let {
                     it.recyclerItemClickListener = recyclerItemClickListener
                     it.textFontSize = textFontSize
                     it.mList = mList
-                    it.yellow = yellow
+                    it.textColor = textColor
                     it.transparentLightGray = transparentLightGray
                 }
             }
@@ -92,7 +92,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
         holder.fileNameTextView.apply {
             text = mList[position].file.name
             setTextColor(Color.WHITE)
-            if (mList[position].selected) setTextColor(yellow)
+            if (mList[position].selected) setTextColor(textColor)
         }
 
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK

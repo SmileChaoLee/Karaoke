@@ -327,12 +327,13 @@ class MyFavoritesFragment : Fragment(),
     private fun initFavoriteRecyclerView() {
         Log.d(TAG, "initFavoriteRecyclerView() is called")
         activity?.let {
-            val yellow = ContextCompat.getColor(it, R.color.yellow)
-            val transparentLightGray = ContextCompat.getColor(it, R.color.transparentLightGray)
+            val tColor = ContextCompat.getColor(it, R.color.gnt_green)
+            val transparentLightGray = ContextCompat.getColor(it,
+                R.color.transparentLightGray)
 
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter.getInstance(
                     this, textFontSize, MySingleTon.favorites,
-                    yellow, transparentLightGray)
+                tColor, transparentLightGray)
 
             myListRecyclerView?.adapter = myRecyclerViewAdapter
             myListRecyclerView?.layoutManager = object : LinearLayoutManager(context) {

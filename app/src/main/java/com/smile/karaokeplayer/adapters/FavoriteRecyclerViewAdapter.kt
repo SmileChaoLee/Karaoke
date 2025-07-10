@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaokeplayer.SmileApp
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -15,10 +14,10 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 private const val TAG = "FaRecyclerVAdapter"
 
 class FavoriteRecyclerViewAdapter private constructor(
-        private var recyclerItemClickListener : OnRecyclerItemClickListener,
-        private var textFontSize : Float,
-        private var mList:  java.util.ArrayList<SongInfo>,
-        private var yellow : Int, private var transparentLightGray : Int)
+    private var recyclerItemClickListener : OnRecyclerItemClickListener,
+    private var textFontSize : Float,
+    private var mList:  java.util.ArrayList<SongInfo>,
+    private var textColor : Int, private var transparentLightGray : Int)
 
     : RecyclerView.Adapter<FavoriteRecyclerViewAdapter.MyViewHolder>() {
 
@@ -32,18 +31,19 @@ class FavoriteRecyclerViewAdapter private constructor(
         fun getInstance(recyclerItemClickListener : OnRecyclerItemClickListener,
                         textFontSize : Float,
                         mList : java.util.ArrayList<SongInfo>,
-                        yellow : Int, transparentLightGray : Int) : FavoriteRecyclerViewAdapter {
+                        textColor : Int, transparentLightGray : Int)
+        : FavoriteRecyclerViewAdapter {
 
             Log.d(TAG, "getInstance.viewAdapter = $viewAdapter")
             if (viewAdapter == null) {
                 viewAdapter = FavoriteRecyclerViewAdapter(recyclerItemClickListener,
-                        textFontSize, mList, yellow, transparentLightGray)
+                        textFontSize, mList, textColor, transparentLightGray)
             } else {
                 viewAdapter?.let {
                     it.recyclerItemClickListener = recyclerItemClickListener
                     it.textFontSize = textFontSize
                     it.mList = mList
-                    it.yellow = yellow
+                    it.textColor = textColor
                     it.transparentLightGray = transparentLightGray
                 }
             }
@@ -88,7 +88,7 @@ class FavoriteRecyclerViewAdapter private constructor(
         }
         holder.songPathTextView.apply {
             mList[position].let {
-                if (it.included == "1") setTextColor(yellow)
+                if (it.included == "1") setTextColor(textColor)
                 else setTextColor(Color.WHITE)
                 text = it.filePath?: ""
             }

@@ -378,12 +378,12 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
     private fun initFilesRecyclerView() {
         Log.d(TAG, "initFilesRecyclerView() is called")
         activity?.let {
-            val yellow = ContextCompat.getColor(it, R.color.yellow)
+            val tColor = ContextCompat.getColor(it, R.color.gnt_green)
             val transparentLightGray = ContextCompat.getColor(it,
                 R.color.transparentLightGray)
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter.getInstance(
                 this, textFontSize, MySingleTon.fileList,
-                yellow, transparentLightGray)
+                tColor, transparentLightGray)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
             filesRecyclerView?.layoutManager = object : LinearLayoutManager(context) {
                 override fun isAutoMeasureEnabled(): Boolean {
