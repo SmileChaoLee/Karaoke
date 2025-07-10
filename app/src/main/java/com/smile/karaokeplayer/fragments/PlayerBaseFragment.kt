@@ -943,10 +943,10 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnClickListener {
                 if (playerViewLinearLayout?.visibility==View.VISIBLE) {
                     hidePlayerView()
-                    setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+                    // setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
                 } else {
                     showPlayerView()
-                    setScreenOrientation(orgOrientation)
+                    // setScreenOrientation(orgOrientation)
                 }
                 disableButtonForSometime(it)
             }
@@ -1260,7 +1260,8 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
-        orientationImageButton?.isEnabled = false   // disable the button
+        // orientationImageButton?.isEnabled = false   // no longer needed
+        setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
     }
 
     override fun showPlayerView() {
@@ -1278,7 +1279,8 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
-        orientationImageButton?.isEnabled = true   // enable the button
+        // orientationImageButton?.isEnabled = true // no longer needed
+        setScreenOrientation(orgOrientation)
     }
 
     override fun showToastNoFilesSelected() {

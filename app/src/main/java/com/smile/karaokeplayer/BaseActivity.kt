@@ -48,8 +48,6 @@ abstract class BaseActivity : AppCompatActivity(),
     private lateinit var basePlayViewLayout : LinearLayout
     private var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
-    private lateinit var baseTabLayout : LinearLayout
-    private var weightSum : Float = 0f
     private lateinit var baseReceiver: BroadcastReceiver
     private lateinit var callingIntent : Intent
     private var isPlayToPause : Boolean = false
@@ -111,10 +109,7 @@ abstract class BaseActivity : AppCompatActivity(),
         }
 
         basePlayViewLayout = findViewById(R.id.basePlayViewLayout)
-        baseTabLayout = findViewById(R.id.baseTabLayout)
-        weightSum = baseTabLayout.weightSum
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
-        setTabLayoutViewWeight(resources.configuration.orientation)
 
         callingIntent = intent
         Log.d(TAG,"onCreate.callingIntent = $callingIntent")
@@ -171,7 +166,8 @@ abstract class BaseActivity : AppCompatActivity(),
             if (isReplaced) commit()
         }
 
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
                 playerFragment?.onBackPressed()
@@ -179,7 +175,8 @@ abstract class BaseActivity : AppCompatActivity(),
         })
 
         findViewById<FrameLayout>(R.id.activity_base_layout).apply {
-            viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            viewTreeObserver.addOnGlobalLayoutListener(
+                object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     // Layout has been finished
                     // hove to use removeGlobalOnLayoutListener() method after API 16 or is API 16
@@ -210,7 +207,8 @@ abstract class BaseActivity : AppCompatActivity(),
         super.onStop()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+    override fun onSaveInstanceState(
+        outState: Bundle, outPersistentState: PersistableBundle) {
         Log.d(TAG, "onSaveInstanceState()")
         outState.putBoolean(IS_PLAY_TO_PAUSE, isPlayToPause)
         outState.putParcelable(CALLING_COMPONENT, callingComponentName)
@@ -221,7 +219,6 @@ abstract class BaseActivity : AppCompatActivity(),
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d(TAG, "onConfigurationChanged()")
         super.onConfigurationChanged(newConfig)
-        setTabLayoutViewWeight(newConfig.orientation)
     }
 
     override fun onDestroy() {
@@ -248,8 +245,10 @@ abstract class BaseActivity : AppCompatActivity(),
                     showPlayerView()
                 } else {
                     // PlayerConstants.BackToBaseActivity
-                    if (it.playingParam.isPlayerViewVisible) showPlayerView() else hidePlayerView()
-                    Log.d(TAG, "onReceiveFunc.currentPlaybackState = ${it.playingParam.currentPlaybackState}")
+                    if (it.playingParam.isPlayerViewVisible) showPlayerView()
+                    else hidePlayerView()
+                    Log.d(TAG, "onReceiveFunc.currentPlaybackState = " +
+                            "${it.playingParam.currentPlaybackState}")
                 }
             }
             showSupportToolbarAudioControlSetTimer()
@@ -289,7 +288,8 @@ abstract class BaseActivity : AppCompatActivity(),
                         startActivity(this)
                     }
                 }
-                Log.d(TAG, "${msgStr}.preparedStatus = ${it.playingParam.preparedStatus}")
+                Log.d(TAG, "${msgStr}.preparedStatus = " +
+                        "${it.playingParam.preparedStatus}")
             }
             return
         }
@@ -337,10 +337,6 @@ abstract class BaseActivity : AppCompatActivity(),
         callingComponentName = null
         isPlayToPause = false
     }
-
-    override fun switchToOpenFileFragment() {
-        tablayoutFragment?.switchToOpenFileFragment()
-    }
     // Finishes implementing interface PlayMyFavorites
 
     // implementing interface PlaySongs
@@ -358,6 +354,11 @@ abstract class BaseActivity : AppCompatActivity(),
             }
         }
     }
+
+    override fun switchToPlayerView() {
+        Log.d(TAG, "switchToPlayerView")
+        playerFragment?.showPlayerView()
+    }
     // Finish implementing interface PlaySongs
 
     private fun createViewDependingOnOrientation() {
@@ -365,12 +366,5 @@ abstract class BaseActivity : AppCompatActivity(),
         if (callingIntent.extras == null) {
             playerFragment?.hidePlayerView()
         }
-    }
-
-    private fun setTabLayoutViewWeight(orientation : Int) {
-        Log.d(TAG, "weightSum = $weightSum")
-        val layoutP = tablayoutViewLayout.layoutParams as LinearLayout.LayoutParams
-        layoutP.weight = if (orientation == Configuration.ORIENTATION_LANDSCAPE) weightSum * 0.7f
-        else weightSum * 0.8f
     }
 }

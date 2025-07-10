@@ -157,13 +157,6 @@ class TablayoutFragment : Fragment() {
         super.onDestroy()
     }
 
-    fun switchToOpenFileFragment() {
-        Log.d(TAG, "switchToOpenFileFragment()")
-        playTabLayout?.let {
-            it.selectTab(it.getTabAt(0))
-        }
-    }
-
     fun becomeVisible() {
         playTabLayout?.let {
             Log.d(TAG, "becomeVisible.selectedTabPosition = ${it.selectedTabPosition}")

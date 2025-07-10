@@ -222,14 +222,14 @@ class MyFavoritesFragment : Fragment(),
                     }
                 }
             }
-            val addButton: ImageButton = it.findViewById(R.id.favoriteAddButton)
-            layoutParams = addButton.layoutParams as ViewGroup.MarginLayoutParams
+            val showVideoButton: ImageButton = it.findViewById(R.id.showVideoImageButton)
+            layoutParams = showVideoButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
-            addButton.setOnClickListener {
+            showVideoButton.visibility = View.VISIBLE
+            showVideoButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
-                // Switching to OpenFileFragment
-                playMyFavorites?.switchToOpenFileFragment()
+                playSongs?.switchToPlayerView()
             }
         }
 

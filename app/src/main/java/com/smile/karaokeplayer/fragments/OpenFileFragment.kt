@@ -29,7 +29,8 @@ import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
+class OpenFileFragment : Fragment(),
+    OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
@@ -239,6 +240,15 @@ class OpenFileFragment : Fragment(), OpenFilesRecyclerViewAdapter.OnRecyclerItem
                     }
                     songListSQLite.closeDatabase()
                 }
+            }
+            val showVideoButton: ImageButton = it.findViewById(R.id.showVideoImageButton)
+            layoutParams = showVideoButton.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.width = buttonWidth
+            layoutParams.height = buttonWidth
+            showVideoButton.visibility = View.VISIBLE
+            showVideoButton.setOnClickListener {
+                if (!searchCompleted) return@setOnClickListener // searching
+                playSongs?.switchToPlayerView()
             }
         }
 

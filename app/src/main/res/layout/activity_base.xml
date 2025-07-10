@@ -15,19 +15,10 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/baseTabLayout"
+        android:id="@+id/tablayoutViewLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:weightSum="100">
-        <LinearLayout
-            android:id="@+id/tablayoutViewLayout"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="center|top"
-            android:layout_weight="70">
-        </LinearLayout>
+        android:layout_height="match_parent">
     </LinearLayout>
 
 </FrameLayout >

@@ -61,7 +61,7 @@
             android:adjustViewBounds="true"
             android:src="@drawable/play_media_button_image"
             android:layout_gravity="center"
-            android:layout_marginEnd="30sp">
+            android:layout_marginEnd="20sp">
         </ImageButton>
         <ImageButton
             android:id="@+id/favoriteEditButton"
@@ -75,15 +75,16 @@
             android:layout_marginEnd="20sp">
         </ImageButton>
         <ImageButton
-            android:id="@+id/favoriteAddButton"
+            android:id="@+id/showVideoImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/file_menuitem_background_color"
+            app:tint="@color/black"
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
-            android:src="@drawable/add_image"
+            android:src="@drawable/show_video"
             android:layout_gravity="center"
-            android:visibility="gone">
+            android:visibility="visible">
         </ImageButton>
 
     </LinearLayout>
