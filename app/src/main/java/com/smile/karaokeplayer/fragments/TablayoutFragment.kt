@@ -12,7 +12,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.SmileApp
-import com.smile.karaokeplayer.utilities.MyBannerAdView
+import com.smile.karaokeplayer.utilities.MyBannerTool
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -63,7 +63,7 @@ class TablayoutFragment : Fragment() {
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
+        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
 
         playTabLayout = view.findViewById(R.id.fragmentsTabLayout)
         val tabText = arrayOf(getString(R.string.open_files), getString(R.string.my_favorites))
@@ -124,7 +124,7 @@ class TablayoutFragment : Fragment() {
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
+        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onStart() {
@@ -136,7 +136,7 @@ class TablayoutFragment : Fragment() {
         Log.d(TAG, "onResume()")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerAdView.setVisible(bannerLayoutForTab, View.GONE)
+        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {

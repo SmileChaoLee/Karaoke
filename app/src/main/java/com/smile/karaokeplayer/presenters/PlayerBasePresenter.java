@@ -525,7 +525,7 @@ public abstract class PlayerBasePresenter {
                 mPlayingParam.setCurrentAudioPosition(0);
                 mPresentView.playButtonOnPauseButtonOff();
                 removeMsgFromDurationBarHandler();
-                mPresentView.showNativeAndHideBannerAd();
+                // mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
                 // when playing
@@ -558,7 +558,7 @@ public abstract class PlayerBasePresenter {
                 mPlayingParam.setPreparedStatus(2);
                 //
                 mPresentView.playButtonOnPauseButtonOff();
-                mPresentView.showNativeAndHideBannerAd();
+                // mPresentView.showNativeAndHideBannerAd();
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
                 // 1. exoPlayer finished playing
@@ -613,17 +613,16 @@ public abstract class PlayerBasePresenter {
         }
         // reset the finish state
         mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);
-        Log.d(TAG, msgStr + ".");
+        mPresentView.showNativeAndHideBannerAd();
+        // adsWhenOnlyAudioPlaying();
     }
 
-    protected void adsForOnlyMusic() {
-        Log.d(TAG, "adsForOnlyMusic.getNumberOfVideoTracks() = "
+    private void adsWhenOnlyAudioPlaying() {
+        Log.d(TAG, "adsWhenOnlyAudioPlaying.getNumberOfVideoTracks() = "
                 + getNumberOfVideoTracks());
         if (getNumberOfVideoTracks() == 0) {
             // no video is being played, show native ads
             mPresentView.showNativeAndHideBannerAd();
-        } else {
-            mPresentView.hideNativeAd();
         }
     }
 

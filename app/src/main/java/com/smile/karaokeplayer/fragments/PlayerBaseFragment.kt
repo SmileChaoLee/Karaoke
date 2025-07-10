@@ -60,7 +60,7 @@ import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter
 import com.smile.karaokeplayer.presenters.PlayerBasePresenter.BasePresentView
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
-import com.smile.karaokeplayer.utilities.MyBannerAdView
+import com.smile.karaokeplayer.utilities.MyBannerTool
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
@@ -525,9 +525,7 @@ abstract class PlayerBaseFragment : Fragment(),
         Log.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        // MyBannerAdView.setVisible(bannerLinearLayout
-        //     , nativeAdViewVisibility)
-        MyBannerAdView.setVisible(bannerAdsLayout
+        MyBannerTool.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
         startAndBindPlayService()
     }
@@ -536,7 +534,6 @@ abstract class PlayerBaseFragment : Fragment(),
         Log.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
-        // bannerLinearLayout?.visibility = View.GONE
         bannerAdsLayout?.visibility = View.GONE
     }
 
@@ -567,7 +564,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 myBannerAdView?.showBannerAdView(0) // AdMob first
             }
         }
-        MyBannerAdView.setVisible(bannerAdsLayout
+        MyBannerTool.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
     }
 
@@ -744,7 +741,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 nativeAdLayoutLP.matchConstraintPercentHeight)
 
         // setting the width and the margins for nativeAdTemplateView
-        var layoutParams = nativeAdTemplateView?.layoutParams as MarginLayoutParams
+        val layoutParams = nativeAdTemplateView?.layoutParams as MarginLayoutParams
         // 6 buttons and 5 gaps
         layoutParams.width = imageButtonHeight * 6 + buttonMarginLeft * 5
         layoutParams.setMargins(0, 0, 0, 0)
@@ -810,7 +807,7 @@ abstract class PlayerBaseFragment : Fragment(),
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            MyBannerAdView.setVisible(bannerAdsLayout
+            MyBannerTool.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
     }
@@ -1173,11 +1170,17 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun showNativeAndHideBannerAd() {
+        val msgStr = "showNativeAndHideBannerAd"
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
-            Log.d(TAG, "showNativeAndHideBannerAd.View.VISIBLE")
+            Log.d(TAG, "${msgStr}.View.VISIBLE")
+            val numVideoTracks =  mPresenter.numberOfVideoTracks
+            Log.d(TAG, "${msgStr}.numVideoTracks = $numVideoTracks")
             mPresenter.playingParam.let {
-                if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) {
-                    Log.d(TAG, "showNativeAndHideBannerAd.Not PlaybackStateCompat.STATE_PLAYING")
+                Log.d(TAG, "${msgStr}.playbackState = ${it.currentPlaybackState}")
+                if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING
+                    || numVideoTracks == 0
+                    || playService.isCastSessionAvailable) {
+                    // Not playing, No video tracks, or casting session is available
                     nativeAdViewVisibility = View.VISIBLE
                     nativeTemplate?.showNativeAd()
                     // hide the banner ad
@@ -1185,11 +1188,15 @@ abstract class PlayerBaseFragment : Fragment(),
                     bannerAdsLayout?.visibility = View.GONE
                 } else {
                     hideNativeAd()
+                    MyBannerTool.setVisible(bannerAdsLayout
+                        , nativeAdViewVisibility)
                 }
             }
         } else {
-            Log.d(TAG, "showNativeAndHideBannerAd.View.INVISIBLE")
+            Log.d(TAG, "${msgStr}.View.INVISIBLE")
             // show the banner ad if in the right place
+            MyBannerTool.setVisible(bannerAdsLayout
+                , nativeAdViewVisibility)
         }
     }
 
