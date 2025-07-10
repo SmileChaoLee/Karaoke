@@ -155,7 +155,7 @@ dependencies {
     implementation project(':extension-vp9')
     implementation project(':extension-av1')
 
-    implementation 'org.videolan.android:libvlc-all:4.0.0-eap20'
+    implementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'

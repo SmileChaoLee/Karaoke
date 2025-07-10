@@ -156,7 +156,6 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void startDurationBarHandler() {
-        String msgStr = "startDurationBarHandler";
         // start monitor player_duration_seekbar
         // delay 200ms
         durationBarHandler.postDelayed(durationBarRunnable, 1000);
@@ -164,15 +163,14 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void removeMsgFromDurationBarHandler() {
-        String msgStr = "removeMsgFromDurationBarHandler";
         durationBarHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
-    public int[] setAudioActionSubMenu() {
-        String msgStr = "setAudioActionSubMenu";
+    public void setAudioActionSubMenu() {
+        final String msgStr = "setAudioActionSubMenu";
         Log.d(TAG, msgStr);
-        final int[] result = getPlayingMediaInfo();
+        getPlayingMediaInfo();
         if (audioTrackIndicesList.isEmpty()) {
             final Handler handler = new Handler(Looper.getMainLooper());
             final Runnable runnable = new Runnable() {
@@ -181,29 +179,25 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 public void run() {
                     handler.removeCallbacksAndMessages(null);
                     Log.d(TAG, msgStr + ".runnable.count = " + count);
-                    int[] tempResult = getPlayingMediaInfo();
-                    result[0] = tempResult[0];
-                    result[1] = tempResult[1];
-                    // mPresentView.showNativeAndHideBannerAd();
-                    mPresentView.setVideoWindowSize();
+                    getPlayingMediaInfo();
                     if (audioTrackIndicesList.isEmpty()) {
-                        if (count < 2) {
+                        if (count < 10) {
                             handler.postDelayed(this, 2000); // delay 2 seconds
                             count++;
                         }
                     } else {
                         handler.removeCallbacksAndMessages(null);
                         Log.d(TAG, msgStr + ".audioTrackIndicesList not empty");
+                        mPresentView.setVideoWindowSize();
                     }
                 }
             };
             handler.postDelayed(runnable, 1000); // delay 1 seconds
         }
-        // mPresentView.setVideoWindowSize();
-        return result;
+        mPresentView.setVideoWindowSize();
     }
 
-    public int[] getPlayingMediaInfo() {
+    private void getPlayingMediaInfo() {
         String msgStr = "getPlayingMediaInfo";
         Log.d(TAG, msgStr);
         int[] result = new int[] {1, CommonConstants.STEREO};
@@ -259,14 +253,13 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 result[1] = audioChannel;
             }
         }
+        setAudioTrackAndChannel(result[0], result[1]);
         // update the duration on controller UI
         // build R.id.audioTrack submenu
         Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         mPresentView.setVideoWindowSize();
         mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
-
-        return result;
     }
 
     @Override

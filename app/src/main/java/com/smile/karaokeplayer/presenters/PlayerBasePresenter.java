@@ -69,7 +69,7 @@ public abstract class PlayerBasePresenter {
     public abstract void switchAudioToVocal();
     public abstract void startDurationBarHandler();
     public abstract void removeMsgFromDurationBarHandler();
-    public abstract int[] setAudioActionSubMenu();
+    public abstract void setAudioActionSubMenu();
     public abstract int getNumberOfAudioTracks();
 
     public PlayerBasePresenter(BasePresentView presentView) {
@@ -120,9 +120,10 @@ public abstract class PlayerBasePresenter {
             boolean isPlaying = playService != null && playService.isPlaying();
             Log.d(TAG, "autoPlaySongList.isPlaying = " + isPlaying);
             if (isPlaying && playService.isSeekable()) {
+                Log.d(TAG, "autoPlaySongList.stopPlay(PlayerConstants.FINISHED_BY_PROGRAM)");
                 stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
             } else {
-                // paused, buffering, stopped, finished
+                Log.d(TAG, "autoPlaySongList.startAutoPlay(false)");
                 startAutoPlay(false);
             }
         } else {
@@ -516,8 +517,7 @@ public abstract class PlayerBasePresenter {
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    int[] trackChannel = setAudioActionSubMenu();
-                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
+                    setAudioActionSubMenu();
                 }
                 mPlayingParam.setPreparedStatus(0);
                 onDurationSeekBarProgressChanged(0, true);
@@ -534,9 +534,7 @@ public abstract class PlayerBasePresenter {
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    // setAudioActionSubMenu();
-                    int[] trackChannel = setAudioActionSubMenu();
-                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
+                    setAudioActionSubMenu();
                 }
                 mPlayingParam.setPreparedStatus(2);  // has been prepared and playing
                 mPlayingParam.setCurrentPlaybackState(PlaybackStateCompat.STATE_PLAYING);
@@ -553,9 +551,7 @@ public abstract class PlayerBasePresenter {
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    // setAudioActionSubMenu();
-                    int[] trackChannel = setAudioActionSubMenu();
-                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
+                    setAudioActionSubMenu();
                 }
                 // new add, need to be tested more, especially ExoPlayer
                 // VlcPlayer has already been tested but keep an eye on it
@@ -571,9 +567,7 @@ public abstract class PlayerBasePresenter {
                 if (mPlayingParam.getPreparedStatus() == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
-                    // setAudioActionSubMenu();
-                    int[] trackChannel = setAudioActionSubMenu();
-                    setAudioTrackAndChannel(trackChannel[0], trackChannel[1]);
+                    setAudioActionSubMenu();
                 }
                 mPlayingParam.setPreparedStatus(0);
                 BasePlayService playService = mPresentView.getPlayService();
@@ -619,6 +613,7 @@ public abstract class PlayerBasePresenter {
         }
         // reset the finish state
         mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);
+        Log.d(TAG, msgStr + ".");
     }
 
     protected void adsForOnlyMusic() {

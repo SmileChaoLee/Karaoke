@@ -58,18 +58,17 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
 
     @Override
     public synchronized void onEvent(MediaPlayer.Event event) {
-        Log.d(TAG, "onEvent");
+        Log.d(TAG, "onEvent.event = " + event);
         VlcPlayerPresenter presenter = mPlayService.getPresenter();
         if (presenter == null) {
             Log.d(TAG, "onEvent().presenter = null");
             return;
         }
         final PlayingParameters playingParam = presenter.getPlayingParam();
+        Log.d(TAG, "onEvent.preparedStatus = " + playingParam.getPreparedStatus());
         if (playingParam.getPreparedStatus() == 5) {
-            mPlayService.getCurrentPosition();
+            Log.d(TAG, "onEvent.position = " + mPlayService.getCurrentPosition());
             if (mPlayService.getCurrentPosition() > 0.0) {
-                Log.d(TAG, "onEvent.preparedStatus = " + playingParam.getPreparedStatus());
-                Log.d(TAG, "onEvent.position = " + mPlayService.getCurrentPosition());
                 Log.d(TAG, "onEvent.length = " + mPlayService.getMediaDuration());
                 // just came back from background
                 int playbackState = playingParam.getCurrentPlaybackState();
@@ -105,6 +104,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
             return;
         }
 
+        Log.d(TAG, "onEvent.event.type = " + event.type);
         switch(event.type) {
             case MediaPlayer.Event.Buffering:
                 break;

@@ -187,12 +187,12 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     }
 
     @Override
-    public int[] setAudioActionSubMenu() {
+    public void setAudioActionSubMenu() {
         String msgStr = "setAudioActionSubMenu";
         Log.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
         int[] result = new int[] {1, CommonConstants.STEREO};
         if (getPlayService() == null) {
-            return result;
+            return;
         }
         audioTrackIndicesList.clear();
         mNumberOfVideoTracks = getPlayService().getPlayingMediaInfo(audioTrackIndicesList);
@@ -245,9 +245,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             }
             result[0] = audioTrackIdPlayed;
             result[1] = audioChannelPlayed;
-            // setAudioTrackAndChannel(audioTrackIdPlayed, audioChannelPlayed);
         }
-
+        setAudioTrackAndChannel(result[0], result[1]);
         // build R.id.audioTrack submenu
         Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
@@ -255,7 +254,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         Log.d(TAG, msgStr + ".update_Player_duration_seekbar");
         mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
 
-        return result;
     }
 
     @Override
