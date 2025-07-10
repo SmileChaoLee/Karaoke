@@ -372,7 +372,7 @@ class MainActivity : ComponentActivity() {
     private fun restartApp() {
         Log.d(TAG, "restartApp()")
         finish()
-        // then restart in 2 seconds
+        // then restart in 1 seconds
         val tmpHandler = Handler(Looper.getMainLooper())
         val tmpRunnable = Runnable {
             Log.d(TAG, "restartApp().tmpRunnable()")
@@ -387,7 +387,7 @@ class MainActivity : ComponentActivity() {
             // exitProcess(0);
             android.os.Process.killProcess(android.os.Process.myPid())
         }
-        tmpHandler.postDelayed(tmpRunnable, 2000)
+        tmpHandler.postDelayed(tmpRunnable, 1000)
     }
 
     companion object {
