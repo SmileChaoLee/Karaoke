@@ -117,7 +117,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var audioTrackImageButton: ImageButton? = null
 
     private var mediaRouteButton: MediaRouteButton? = null
-    private var castContext: CastContext? = null
+    protected var castContext: CastContext? = null
     // private var setupCast: SetupGoogleCast? = null
 
     private var bannerAdsLayout: LinearLayout? = null

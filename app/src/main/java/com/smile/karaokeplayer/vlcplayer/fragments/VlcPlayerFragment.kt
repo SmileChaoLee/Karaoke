@@ -48,6 +48,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
 
+        castContext = null  // disable cast for VLC player for now
+
         Log.d(TAG, "onCreate() is finished")
     }
 
