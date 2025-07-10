@@ -115,16 +115,16 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
             Log.d(TAG, "vlcLauncher.result received")
-            loadingMessage.value = ""
-            // restartApp()
+            // loadingMessage.value = ""
+            restartApp()
         }
 
         exoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
             Log.d(TAG, "exoLauncher.result received")
-            loadingMessage.value = ""
-            // restartApp()
+            // loadingMessage.value = ""
+            restartApp()
         }
         setContent {
             Log.d(TAG,"onCreate.setContent")
@@ -372,7 +372,7 @@ class MainActivity : ComponentActivity() {
     private fun restartApp() {
         Log.d(TAG, "restartApp()")
         finish()
-        // then restart in 2 seconds
+        // then restart in 1 seconds
         val tmpHandler = Handler(Looper.getMainLooper())
         val tmpRunnable = Runnable {
             Log.d(TAG, "restartApp().tmpRunnable()")

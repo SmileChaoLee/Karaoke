@@ -88,6 +88,7 @@ class VlcPlayService : BasePlayService() {
         Log.d(TAG, "releaseVlcPlayer.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             stop()
+            media?.release()
             detachViews()
             release()
             vlcPlayer = null
