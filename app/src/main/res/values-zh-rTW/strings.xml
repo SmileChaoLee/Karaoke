@@ -75,10 +75,12 @@
     <string name="exoPlayerName">Exo播放器</string>
     <string name="vlcDescription">1.支援大部份的多煤體格式\n
         2.支援音軌切換\n
-        3.沒有支援聲道切換</string>
+        3.沒有支援聲道切換\n
+        4.沒有支援投射到電視</string>
     <string name="exoDescription">1.支援比較少的多煤體格式\n
         2.支援音軌切換\n
-        3.支援聲道切換</string>
+        3.支援聲道切換\n
+        4.支援投射到電視</string>
     <string name="currentString">目前使用中</string>
     <string name="loadingStr">載入中 …</string>
 </resources>

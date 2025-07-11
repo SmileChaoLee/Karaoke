@@ -45,10 +45,7 @@ class SmileApp : MultiDexApplication() {
         }
         // adMobInterstitial = new AdMobInterstitial(appContext, googleAdMobInterstitialID);
         // for the chrome cast
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "com.smile.karaokeplayer.BuildConfig.DEBUG")
-            castContext = InitCastContext.getInstance(this)
-        }
+        castContext = InitCastContext.getInstance(this)
         Log.d(TAG, "castContext = $castContext")
     }
 

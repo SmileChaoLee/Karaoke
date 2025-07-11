@@ -75,10 +75,12 @@
     <string name="exoPlayerName">ExoPlayer</string>
     <string name="vlcDescription">1.Support most media formats\n
         2.Supports audio track switch\n
-        3.Not supports channel switch</string>
+        3.Not supports channel switch\n
+        4.No Chrome Cast to TV</string>
     <string name="exoDescription">1. Support less media formats\n
         2.Supports audio track switch\n
-        3.Supports channel switch</string>
+        3.Supports channel switch\n
+        4.Supports Chrome Cast to TV</string>
     <string name="currentString">Current</string>
     <string name="loadingStr">Loading …</string>
 </resources>

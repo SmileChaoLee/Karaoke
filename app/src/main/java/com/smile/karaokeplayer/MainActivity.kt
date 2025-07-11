@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity
+import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.karaokeplayer.ui.theme.KaraokePlayerTheme
 import com.smile.karaokeplayer.ui.theme.Yellow3
 import com.smile.karaokeplayer.vlcplayer.VlcPlayerActivity
@@ -314,11 +315,11 @@ class MainActivity : ComponentActivity() {
         val maxWidth = ScreenUtil.pixelToDp(screen.x.toFloat())
         val maxHeight = ScreenUtil.pixelToDp(screen.y.toFloat())
         Log.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
-        var verSpacerWeight = 2.0f
+        var verSpacerWeight = 1.0f
         var horSpacerWeight = 1.0f
         if (resources.configuration.orientation
             == Configuration.ORIENTATION_LANDSCAPE) {
-            verSpacerWeight = 1.0f
+            verSpacerWeight = 0.2f
             horSpacerWeight = 2.5f
         }
         val buttonWidth = maxWidth * (10.0f - horSpacerWeight * 2.0f)
@@ -364,23 +365,34 @@ class MainActivity : ComponentActivity() {
         Log.d(TAG, "onSaveInstanceState()")
     }
 
+    private fun stopCast() {
+        Log.d(TAG, "stopCast")
+        (application as SmileApp).castContext?.apply {
+            // stop casting
+            Log.d(TAG, "stopCasting.endCurrentSession")
+            sessionManager.endCurrentSession(true)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
+        stopCast()
     }
 
     private fun restartApp() {
-        Log.d(TAG, "restartApp()")
+        Log.d(TAG, "restartApp")
+        stopCast()
         finish()
         // then restart in 1 seconds
         val tmpHandler = Handler(Looper.getMainLooper())
         val tmpRunnable = Runnable {
-            Log.d(TAG, "restartApp().tmpRunnable()")
+            Log.d(TAG, "restartApp.tmpRunnable()")
             tmpHandler.removeCallbacksAndMessages(null)
             val i: Intent? = baseContext.packageManager
                 .getLaunchIntentForPackage(baseContext.packageName)
             i?.let {
-                Log.d(TAG, "restartApp().startActivity()")
+                Log.d(TAG, "restartApp.startActivity()")
                 startActivity(Intent.makeRestartActivityTask(it.component))
             }
             // Runtime.getRuntime().exit(0)
