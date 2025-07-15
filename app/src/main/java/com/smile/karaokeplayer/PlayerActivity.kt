@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.smile.karaokeplayer.exoplayer.ExoPlayerActivity
-import com.smile.karaokeplayer.services.BasePlayService
 import com.smile.karaokeplayer.ui.theme.KaraokePlayerTheme
 import com.smile.karaokeplayer.ui.theme.Yellow3
 import com.smile.karaokeplayer.vlcplayer.VlcPlayerActivity
@@ -58,7 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class PlayerActivity : ComponentActivity() {
 
     private var permissionExternalStorage = false
     private var textFontSize = 0f
@@ -76,13 +75,13 @@ class MainActivity : ComponentActivity() {
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@MainActivity,
+        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@PlayerActivity,
             ScreenUtil.FontSize_Pixel_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(this@MainActivity,
+        textFontSize = ScreenUtil.suitableFontSize(this@PlayerActivity,
             defaultTextFontSize,
             ScreenUtil.FontSize_Pixel_Type,0.0f)
         toastTextSize = textFontSize * 0.7f
-        fontSize = ScreenUtil.suitableFontScale(this@MainActivity,
+        fontSize = ScreenUtil.suitableFontScale(this@PlayerActivity,
             ScreenUtil.FontSize_Pixel_Type, 0.0f)
         SmileApp.textFontSize = textFontSize
         SmileApp.toastTextSize = toastTextSize
@@ -182,7 +181,7 @@ class MainActivity : ComponentActivity() {
 
     private fun startExoActivity() {
         Intent(
-            this@MainActivity,
+            this@PlayerActivity,
             ExoPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -192,7 +191,7 @@ class MainActivity : ComponentActivity() {
 
     private fun startVlcActivity() {
         Intent(
-            this@MainActivity,
+            this@PlayerActivity,
             VlcPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -311,7 +310,7 @@ class MainActivity : ComponentActivity() {
     fun CreateMainUI() {
         Log.d(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
-        val screen = ScreenUtil.getScreenSize(this@MainActivity)
+        val screen = ScreenUtil.getScreenSize(this@PlayerActivity)
         val maxWidth = ScreenUtil.pixelToDp(screen.x.toFloat())
         val maxHeight = ScreenUtil.pixelToDp(screen.y.toFloat())
         Log.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
@@ -403,7 +402,7 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val TAG : String = "MainActivity"
+        private const val TAG : String = "PlayerActivity"
         private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
     }
 }
