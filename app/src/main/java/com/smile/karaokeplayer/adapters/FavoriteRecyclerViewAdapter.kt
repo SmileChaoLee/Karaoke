@@ -1,14 +1,17 @@
 package com.smile.karaokeplayer.adapters
 
 import android.graphics.Color
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.ui.unit.TextUnit
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaokeplayer.R
-import com.smile.karaokeplayer.models.SongInfo
+import com.smile.karaokeplayer.models.SongDescription
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG = "FaRecyclerVAdapter"
@@ -16,7 +19,7 @@ private const val TAG = "FaRecyclerVAdapter"
 class FavoriteRecyclerViewAdapter private constructor(
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
     private var textFontSize : Float,
-    private var mList:  java.util.ArrayList<SongInfo>,
+    private var mList:  java.util.ArrayList<SongDescription>,
     private var textColor : Int, private var transparentLightGray : Int)
 
     : RecyclerView.Adapter<FavoriteRecyclerViewAdapter.MyViewHolder>() {
@@ -30,7 +33,7 @@ class FavoriteRecyclerViewAdapter private constructor(
         @JvmStatic
         fun getInstance(recyclerItemClickListener : OnRecyclerItemClickListener,
                         textFontSize : Float,
-                        mList : java.util.ArrayList<SongInfo>,
+                        mList : java.util.ArrayList<SongDescription>,
                         textColor : Int, transparentLightGray : Int)
         : FavoriteRecyclerViewAdapter {
 
@@ -56,14 +59,13 @@ class FavoriteRecyclerViewAdapter private constructor(
                        recyclerItemClickListener : OnRecyclerItemClickListener,
                        textFontSize: Float)
         : RecyclerView.ViewHolder(itemView) {
+        val songVideoImageView: ImageView
         val songNameTextView: TextView
-        val songPathTextView: TextView
         init {
             Log.d(TAG, "MyViewHolder() is called")
+            songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
-            songPathTextView = itemView.findViewById(R.id.myListPathTextView)
-            ScreenUtil.resizeTextSize(songPathTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
 
             itemView.setOnClickListener {
                 recyclerItemClickListener.onRecyclerItemClick(
@@ -82,18 +84,14 @@ class FavoriteRecyclerViewAdapter private constructor(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = mList[position]
+        holder.songVideoImageView.setImageBitmap(item.bm)
+        val songName = item.song.songName?.trim()?: ""
         holder.songNameTextView.apply {
-            text = mList[position].songName
-            visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
+            text = songName.ifEmpty { "No Name" }
+            if (item.song.included == "1") setTextColor(textColor)
+            else setTextColor(Color.WHITE)
         }
-        holder.songPathTextView.apply {
-            mList[position].let {
-                if (it.included == "1") setTextColor(textColor)
-                else setTextColor(Color.WHITE)
-                text = it.filePath?: ""
-            }
-        }
-
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
         else transparentLightGray)
     }

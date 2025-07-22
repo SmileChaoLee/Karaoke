@@ -1,9 +1,12 @@
 package com.smile.karaokeplayer.fragments
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +18,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +31,10 @@ import com.smile.karaokeplayer.models.MySingleTon
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.models.SongListSQLite
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
+import androidx.core.graphics.scale
 
 class OpenFileFragment : Fragment(),
     OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
@@ -45,6 +52,7 @@ class OpenFileFragment : Fragment(),
     private var isPlayButton: Boolean = true
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var searchCompleted = true
+    private lateinit var mediaRetriever: MediaMetadataRetriever
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate() is called")
@@ -53,6 +61,8 @@ class OpenFileFragment : Fragment(),
             isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
             Log.d(TAG, "onCreate.isPlayButton = $isPlayButton")
         }
+
+        mediaRetriever = MediaMetadataRetriever()
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
             ScreenUtil.FontSize_Pixel_Type, null)
@@ -85,6 +95,7 @@ class OpenFileFragment : Fragment(),
         }
 
         object : BroadcastReceiver() {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
@@ -286,6 +297,7 @@ class OpenFileFragment : Fragment(),
                 unregisterReceiver(broadcastReceiver)
             }
         }
+        mediaRetriever.release()
     }
 
     override fun onRecyclerItemClick(v: View?, position: Int) {
@@ -300,14 +312,65 @@ class OpenFileFragment : Fragment(),
         searchCurrentFolder()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun clearFileList() {
         MySingleTon.fileList.clear()
         myRecyclerViewAdapter?.notifyDataSetChanged()
     }
 
     fun searchCurrentFolder() {
-        Log.d(TAG, "searchCurrentFolder() is called")
+        Log.d(TAG, "searchCurrentFolder")
         searchCompleted = false
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
+            MySingleTon.currentPath.let {
+                if (it == "/") {
+                    for (element in MySingleTon.rootPathSet) {
+                        Log.d(TAG, "searchCurrentFolder.element = $element")
+                        tempList.add(FileDescription(File(element),
+                            null, false))
+                    }
+                } else {
+                    val imageWidth = (textFontSize * 3.0f).toInt()
+                    val imageHeight = (textFontSize * 3.0f).toInt()
+                    try {
+                        File(it).listFiles()?.also { fIt ->
+                            Log.d(TAG, "searchCurrentFolder.file.list().size() = ${fIt.size}")
+                            for (f in fIt) {
+                                Log.d(TAG, "searchCurrentFolder.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
+                                var bm: Bitmap? = null
+                                if (!f.isDirectory) {
+                                    try {
+                                        mediaRetriever.setDataSource(f.path)
+                                        bm = mediaRetriever.getFrameAtTime(0,
+                                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                            ?.scale(imageWidth, imageHeight)
+                                    } catch (ex: Exception) {
+                                        Log.e(TAG, "searchCurrentFolder.setDataSource.Exception:",
+                                                ex)
+                                    }
+                                }
+                                tempList.add(FileDescription(f, bm, false))
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        Log.e(TAG, "searchCurrentFolder.Exception", ex )
+                    }
+                }
+            }
+            MySingleTon.fileList.clear()
+            MySingleTon.fileList.addAll(tempList)
+            Log.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+
+            activity?.let {
+                LocalBroadcastManager.getInstance(it).apply {
+                    sendBroadcast(Intent().apply {
+                        action = SEARCH_FOLDER_COMPLETED
+                    })
+                }
+            }
+        }
+        /*
         Thread {
             val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
             MySingleTon.currentPath.let {
@@ -345,6 +408,7 @@ class OpenFileFragment : Fragment(),
             }
 
         }.start()
+        */
     }
 
     private fun getSongs(songListSQLite : SongListSQLite, msg : String) : ArrayList<SongInfo> {

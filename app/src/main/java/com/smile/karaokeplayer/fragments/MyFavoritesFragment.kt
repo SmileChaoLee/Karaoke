@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +28,11 @@ import com.smile.karaokeplayer.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaokeplayer.interfaces.PlayMyFavorites
 import com.smile.karaokeplayer.interfaces.PlaySongs
 import com.smile.karaokeplayer.models.MySingleTon
+import com.smile.karaokeplayer.models.SongDescription
 import com.smile.karaokeplayer.models.SongInfo
 import com.smile.karaokeplayer.utilities.DatabaseAccessUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import java.io.File
 
 class MyFavoritesFragment : Fragment(),
     FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
@@ -47,12 +52,15 @@ class MyFavoritesFragment : Fragment(),
     private lateinit var editSongsActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var searchCompleted = true
+    private lateinit var mediaRetriever: MediaMetadataRetriever
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate() is called")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
+
+        mediaRetriever = MediaMetadataRetriever()
 
         val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
             ScreenUtil.FontSize_Pixel_Type, null)
@@ -130,7 +138,7 @@ class MyFavoritesFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.favorites.size) {
                     MySingleTon.favorites[i].run {
-                        included = "1"
+                        song.included = "1"
                         myRecyclerViewAdapter?.notifyItemChanged(i)
                     }
                 }
@@ -143,7 +151,7 @@ class MyFavoritesFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.favorites.size) {
                     MySingleTon.favorites[i].run {
-                        included = "0"
+                        song.included = "0"
                         myRecyclerViewAdapter?.notifyItemChanged(i)
                     }
                 }
@@ -166,8 +174,8 @@ class MyFavoritesFragment : Fragment(),
                 val songs = ArrayList<SongInfo>().also { songIt ->
                     var index = 0
                     for (i in 0 until MySingleTon.favorites.size) {
-                        if (MySingleTon.favorites[i].included == "1") {
-                            songIt.add(MySingleTon.favorites[i])
+                        if (MySingleTon.favorites[i].song.included == "1") {
+                            songIt.add(MySingleTon.favorites[i].song)
                             index++
                             if (index >= MySingleTon.MAX_SONGS) {
                                 // excess the max
@@ -200,7 +208,7 @@ class MyFavoritesFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 ArrayList<SongInfo>().also {listIt ->
                     for (element in MySingleTon.favorites) {
-                        if (element.included == "1") listIt.add(element)
+                        if (element.song.included == "1") listIt.add(element.song)
                     }
                     if (listIt.isNotEmpty()) {
                         playMyFavorites?.let {playIt ->
@@ -260,18 +268,19 @@ class MyFavoritesFragment : Fragment(),
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
                 unregisterReceiver(broadcastReceiver)
             }
         }
-        super.onDestroy()
+        mediaRetriever.release()
     }
 
     override fun onRecyclerItemClick(v: View?, position: Int) {
         Log.d(TAG, "onRecyclerItemClick.position = $position")
         MySingleTon.favorites[position].apply {
-            included = if (included == "1") "0" else "1"
+            song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.notifyItemChanged(position)
         }
     }
@@ -287,14 +296,29 @@ class MyFavoritesFragment : Fragment(),
         searchCompleted = false
         Thread {
             var excessYn = false
-            val tempList: ArrayList<SongInfo> = ArrayList(MySingleTon.MAX_SONGS)
+            val tempList: ArrayList<SongDescription> = ArrayList(MySingleTon.MAX_SONGS)
             activity?.let {
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
                     var index = 0
+                    val imageWidth = (textFontSize * 3.0f).toInt()
+                    val imageHeight = (textFontSize * 3.0f).toInt()
                     for (element in sqlIt) {
                         Log.d(TAG, "searchFavorites.element.included = ${element.included}")
+                        Log.d(TAG, "searchFavorites.element.filePath = ${element.filePath}")
+                        var bm: Bitmap? = null
+                        try {
+                            val path = File(element.filePath!!).path
+                            Log.d(TAG, "searchFavorites.path = $path")
+                            mediaRetriever.setDataSource(element.filePath)
+                            bm = mediaRetriever.getFrameAtTime(0,
+                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                ?.scale(imageWidth, imageHeight)
+                        } catch (ex: Exception) {
+                            Log.e(TAG, "searchFavorites.setDataSource.Exception:",
+                                ex)
+                        }
                         element.included = "0"
-                        tempList.add(element)
+                        tempList.add(SongDescription(element, bm))
                         index++
                         if (index >= MySingleTon.MAX_SONGS) {
                             // excess the max

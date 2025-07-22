@@ -18,13 +18,31 @@
         android:src="@drawable/folder_open_icon">
     </android.widget.ImageView>
 
-    <TextView android:id="@+id/openFileNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10sp"
-        android:textScaleX="1.0"
-        android:textColor="@android:color/white"
-        android:gravity="center_vertical|start">
-    </TextView>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.widget.ImageView
+            android:id="@+id/videoImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical|start"
+            android:visibility="visible">
+        </android.widget.ImageView>
+        <TextView android:id="@+id/openFileNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:textScaleX="1.0"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center_vertical|start"
+            android:visibility="visible">
+        </TextView>
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,8 +1,11 @@
 package com.smile.karaokeplayer.models
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
 @Parcelize
-class FileDescription(var file: File, var selected: Boolean): Parcelable
+data class FileDescription(var file: File,
+                      var bm: Bitmap?,
+                      var selected: Boolean): Parcelable

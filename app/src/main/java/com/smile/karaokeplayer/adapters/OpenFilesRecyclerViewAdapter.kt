@@ -57,17 +57,22 @@ class OpenFilesRecyclerViewAdapter private constructor(
                        recyclerItemClickListener : OnRecyclerItemClickListener,
                        textFontSize: Float)
         : RecyclerView.ViewHolder(itemView) {
-        val fileNameTextView: TextView
         val folderImageView: ImageView
+        val fileNameTextView: TextView
+        val videoImageView: ImageView
         init {
             Log.d(TAG, "MyViewHolder() is called")
-            fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
-            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
-
             folderImageView = itemView.findViewById(R.id.folderImageView)
             val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = (textFontSize * 1.0f).toInt()
             layoutParams.height = layoutParams.width
+
+            fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
+            fileNameTextView.visibility = View.VISIBLE
+            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+
+            videoImageView = itemView.findViewById(R.id.videoImageView)
+            videoImageView.visibility = View.VISIBLE
 
             itemView.setOnClickListener {
                 recyclerItemClickListener.onRecyclerItemClick(
@@ -86,13 +91,15 @@ class OpenFilesRecyclerViewAdapter private constructor(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = mList[position]
         holder.folderImageView.apply {
-            visibility = if (mList[position].file.isDirectory) View.VISIBLE else View.INVISIBLE
+            visibility = if (item.file.isDirectory) View.VISIBLE else View.INVISIBLE
         }
+        holder.videoImageView.setImageBitmap(item.bm)
         holder.fileNameTextView.apply {
-            text = mList[position].file.name
+            text = item.file.name
             setTextColor(Color.WHITE)
-            if (mList[position].selected) setTextColor(textColor)
+            if (item.selected) setTextColor(textColor)
         }
 
         holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
