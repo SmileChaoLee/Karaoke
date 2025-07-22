@@ -2,6 +2,8 @@ package com.smile.karaokeplayer.googlecast
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.CastOptions
 import com.google.android.gms.cast.framework.OptionsProvider
@@ -11,6 +13,7 @@ import com.google.android.gms.cast.framework.media.NotificationOptions
 import com.smile.karaokeplayer.BaseActivity
 
 class CastOptionsProvider : OptionsProvider {
+    @OptIn(UnstableApi::class)
     override fun getCastOptions(appContext: Context): CastOptions {
         Log.d(TAG, "getCastOptions")
         val notificationOptions = NotificationOptions.Builder()
