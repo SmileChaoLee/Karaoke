@@ -116,7 +116,7 @@ dependencies {
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version
-    implementation platform('androidx.compose:compose-bom:2025.06.01')
+    implementation platform('androidx.compose:compose-bom:2025.07.00')
     // Compose Runtime
     implementation 'androidx.compose.runtime:runtime'
     // Other Compose dependencies you might be using (UI, Material, etc.)
@@ -124,7 +124,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3' // Or material
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.activity:activity-ktx:1.10.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.2'
     implementation 'androidx.activity:activity-compose:1.10.1'
     implementation 'androidx.compose.ui:ui-graphics'
 
@@ -164,7 +164,7 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation platform('androidx.compose:compose-bom:2025.06.01')
+    androidTestImplementation platform('androidx.compose:compose-bom:2025.07.00')
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:rules:1.6.1'
