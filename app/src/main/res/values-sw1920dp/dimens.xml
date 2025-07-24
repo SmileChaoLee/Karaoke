@@ -10,4 +10,5 @@
     <dimen name="duration_pressed_seekbar_thumb_size">84dp</dimen>
     <dimen name="duration_progress_background_width">16dp</dimen>
     <dimen name="MediaRouterThemeTextSize">128dp</dimen>
+    <dimen name="tabMaxWidth">1605dp</dimen>
 </resources>

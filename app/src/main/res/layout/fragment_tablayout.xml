@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparentLightGray"
+        app:tabMaxWidth="@dimen/tabMaxWidth"
         app:tabGravity="center"
         app:tabMode="scrollable"
         app:tabIconTint="@color/yellow"
@@ -34,11 +35,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     </FrameLayout>
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/fragmentsViewPager2"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
-    </androidx.viewpager2.widget.ViewPager2>
 
 </LinearLayout>

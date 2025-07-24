@@ -7,8 +7,9 @@
 
     <style name="TabLayoutTextStyle">
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">@dimen/actionButtonTextSize</item>
         <item name="android:textColor">@android:color/holo_green_light</item>
+        <item name="android:textAllCaps">false</item>
     </style>
     <style name="ComposeAppTheme" parent="android:Theme.Material.Light.NoActionBar"/>
 </resources>

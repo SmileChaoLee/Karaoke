@@ -1,5 +1,6 @@
 package com.smile.karaokeplayer
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -58,31 +59,17 @@ abstract class BaseActivity : AppCompatActivity(),
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         MySingleTon.clearSingleton()
-        if (savedInstanceState == null) {
-            // the orientation is always portrait when created
-            Log.d(TAG,"onCreate.new created")
-            requestedOrientation = when (resources.configuration.orientation) {
-                Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            }
-        } else {
-            // the orientation keep the one before recreated
-            Log.d(TAG,"onCreate.recreated")
-            requestedOrientation = when (resources.configuration.orientation) {
-                Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
-        }
 
         super.onCreate(savedInstanceState)
+        // change orientation to Portrait
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_base)
 
         object : BroadcastReceiver() {

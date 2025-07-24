@@ -3,10 +3,12 @@ package com.smile.karaokeplayer.fragments
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -49,7 +51,7 @@ class TablayoutFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated()")
+        Log.d(TAG, "onViewCreated")
         bannerLayoutForTab = view.findViewById(R.id.bannerLayoutForTab)
         activity?.let {actIt ->
             val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(actIt,
@@ -103,10 +105,10 @@ class TablayoutFragment : Fragment() {
         })
 
         playTabLayout?.let {
-            val openTab: TabLayout.Tab = it.newTab()
+            val openTab = it.newTab()
             openTab.text = tabText[0]
             it.addTab(openTab, true)
-            val favoriteTab: TabLayout.Tab = it.newTab()
+            val favoriteTab = it.newTab()
             favoriteTab.text = tabText[1]
             it.addTab(favoriteTab)
         }
