@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
-            android:focusable="true"
-            android:clickable="true"
+            android:clickable="false"
             android:background="@android:color/transparent"
             android:layout_gravity="center_vertical|start"
             android:visibility="visible">
