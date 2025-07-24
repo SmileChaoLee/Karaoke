@@ -745,6 +745,7 @@ abstract class PlayerBaseFragment : Fragment(),
         // 6 buttons and 5 gaps
         layoutParams.width = imageButtonHeight * 6 + buttonMarginLeft * 5
         layoutParams.setMargins(0, 0, 0, 0)
+        nativeAdTemplateView?.layoutParams = layoutParams
         //
     }
 
