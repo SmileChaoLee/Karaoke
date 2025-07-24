@@ -1,14 +1,12 @@
 package com.smile.karaokeplayer.adapters
 
 import android.graphics.Color
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.unit.TextUnit
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaokeplayer.R
 import com.smile.karaokeplayer.models.SongDescription

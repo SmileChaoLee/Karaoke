@@ -66,6 +66,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
             val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = (textFontSize * 1.0f).toInt()
             layoutParams.height = layoutParams.width
+            folderImageView.layoutParams = layoutParams
 
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
             fileNameTextView.visibility = View.VISIBLE

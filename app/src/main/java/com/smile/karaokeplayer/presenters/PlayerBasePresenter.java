@@ -614,16 +614,6 @@ public abstract class PlayerBasePresenter {
         // reset the finish state
         mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);
         mPresentView.showNativeAndHideBannerAd();
-        // adsWhenOnlyAudioPlaying();
-    }
-
-    private void adsWhenOnlyAudioPlaying() {
-        Log.d(TAG, "adsWhenOnlyAudioPlaying.getNumberOfVideoTracks() = "
-                + getNumberOfVideoTracks());
-        if (getNumberOfVideoTracks() == 0) {
-            // no video is being played, show native ads
-            mPresentView.showNativeAndHideBannerAd();
-        }
     }
 
     public void saveInstanceState(@NonNull Bundle outState) {

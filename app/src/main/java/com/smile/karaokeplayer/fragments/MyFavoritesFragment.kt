@@ -134,6 +134,7 @@ class MyFavoritesFragment : Fragment(),
             var layoutParams: ViewGroup.MarginLayoutParams = selectAllButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            selectAllButton.layoutParams = layoutParams
             selectAllButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.favorites.size) {
@@ -147,6 +148,7 @@ class MyFavoritesFragment : Fragment(),
             layoutParams = unselectButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            unselectButton.layoutParams = layoutParams
             unselectButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.favorites.size) {
@@ -160,6 +162,7 @@ class MyFavoritesFragment : Fragment(),
             layoutParams = refreshButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            refreshButton.layoutParams = layoutParams
             refreshButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 searchFavorites()
@@ -168,6 +171,7 @@ class MyFavoritesFragment : Fragment(),
             layoutParams = playSelectedButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            playSelectedButton.layoutParams = layoutParams
             playSelectedButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 // open the files to play
@@ -204,6 +208,7 @@ class MyFavoritesFragment : Fragment(),
             layoutParams = editButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            editButton.layoutParams = layoutParams
             editButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 ArrayList<SongInfo>().also {listIt ->
@@ -234,6 +239,7 @@ class MyFavoritesFragment : Fragment(),
             layoutParams = showVideoButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            showVideoButton.layoutParams = layoutParams
             showVideoButton.visibility = View.VISIBLE
             showVideoButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching

@@ -143,6 +143,7 @@ class OpenFileFragment : Fragment(),
             var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            backKeyButton.layoutParams = layoutParams
             backKeyButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 if (MySingleTon.currentPath == "/") return@setOnClickListener
@@ -159,6 +160,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = selectAllButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            selectAllButton.layoutParams = layoutParams
             selectAllButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.fileList.size) {
@@ -174,6 +176,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = unselectButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            unselectButton.layoutParams = layoutParams
             unselectButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 for (i in 0 until MySingleTon.fileList.size) {
@@ -189,6 +192,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = refreshButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            refreshButton.layoutParams = layoutParams
             refreshButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 searchCurrentFolder()
@@ -197,6 +201,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = playSelectedButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            playSelectedButton.layoutParams = layoutParams
             playSelectedButton.setImageResource(
                     if (isPlayButton) R.drawable.play_media_button_image else R.drawable.open_files)
             playSelectedButton.setOnClickListener {
@@ -221,6 +226,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = addToFavoriteButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            addToFavoriteButton.layoutParams = layoutParams
             addToFavoriteButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 activity?.let {activityIt ->
@@ -256,6 +262,7 @@ class OpenFileFragment : Fragment(),
             layoutParams = showVideoButton.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
+            showVideoButton.layoutParams = layoutParams
             showVideoButton.visibility = View.VISIBLE
             showVideoButton.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
