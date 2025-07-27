@@ -1,0 +1,8 @@
+package com.smile.karaoke.interfaces
+
+import com.smile.karaoke.models.SongInfo
+
+interface PlaySongs {
+    fun playSelectedSongList(songs : ArrayList<SongInfo>)
+    fun switchToPlayerView()
+}

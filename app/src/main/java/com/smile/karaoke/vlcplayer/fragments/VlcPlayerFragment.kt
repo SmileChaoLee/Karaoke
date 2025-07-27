@@ -1,0 +1,209 @@
+package com.smile.karaoke.vlcplayer.fragments
+
+import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
+import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
+import androidx.media3.common.util.UnstableApi
+import com.smile.karaoke.R
+import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.fragments.PlayerBaseFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
+import org.videolan.libvlc.util.VLCVideoLayout
+import com.smile.karaoke.vlcplayer.Presenters.VlcPlayerPresenter
+import com.smile.karaoke.vlcplayer.services.VlcPlayService
+import com.smile.karaoke.vlcplayer.services.VlcPlayService.LocalBinder
+
+private const val TAG: String = "VlcPlayerFragment"
+
+@OptIn(UnstableApi::class)
+class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentView {
+    private lateinit var presenter: VlcPlayerPresenter
+    private lateinit var videoVLCPlayerView: VLCVideoLayout
+    private var playService: VlcPlayService? = null
+    private var mPlayServiceIntent: Intent? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        presenter = VlcPlayerPresenter(this)
+
+        super.onCreate(savedInstanceState)  // must be after VlcPlayerPresenter(this, this)
+        Log.d(TAG, "onCreate() is called")
+        var isAutoPlay = false
+        arguments?.let {
+            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
+        }
+
+        activity?.let {
+            mPlayServiceIntent = Intent(it, VlcPlayService::class.java)
+            val callingIntent: Intent? = it.intent
+            Log.d(TAG, "onCreate.callingIntent = $callingIntent")
+            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
+        }
+
+        castContext = null  // disable cast for VLC player for now
+
+        Log.d(TAG, "onCreate() is finished")
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated() is called.")
+        // Video player view
+        val layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        layoutParams.gravity = Gravity.CENTER
+        activity?.let {
+            val context = it.applicationContext
+            videoVLCPlayerView = VLCVideoLayout(context)
+            videoVLCPlayerView.layoutParams = layoutParams
+            videoVLCPlayerView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
+            playerViewLinearLayout?.addView(videoVLCPlayerView)
+            videoVLCPlayerView.visibility = View.VISIBLE
+        }
+        Log.d(TAG, "onViewCreated() is finished.")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart")
+        presenter.playingParam.let {
+            Log.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
+            Log.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
+            Log.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
+            Log.d(TAG, "onStart.wentToFavorite = ${it.wentToFavorite}")
+            if (!it.wentToFavorite) {   // not back from favorite activity
+                if (!it.isPlaySingleSong || it.singleSongPlayingStatus == 2) {
+                    // isSingleSongOpened = 2 means playing single song
+                    Log.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
+                    presenter.playSongPlayedBeforeActivityCreated()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop")
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        Log.d(TAG, "onConfigurationChanged() is called.")
+        super.onConfigurationChanged(newConfig)
+        setVideoWindowSize()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy")
+        playService?.detachPlayerViews()
+        if (mPlayServiceIntent != null) {
+            activity?.stopService(mPlayServiceIntent)
+        }
+    }
+
+    // implement abstract methods of super class
+    override fun setCurrentPlayerToPlayerView() {
+        // do nothing for now
+    }
+
+    override fun getPlayService(): VlcPlayService? {
+        return playService
+    }
+
+    override fun setMenuItemsVisibility() {
+        val channelMenuItem = mainMenu?.findItem(R.id.channel)
+        channelMenuItem?.isVisible = true
+        channelMenuItem?.isEnabled = false
+    }
+
+    override fun onPlayServiceConnected(service: IBinder) {
+        Log.d(TAG, "onPlayServiceConnected")
+        val binder = service as LocalBinder
+        playService = binder.getService()
+        // Test code here for ExoPlayService
+        playService?.presenter = this.presenter
+        playService?.initVlcPlayer()
+        playService?.initMediaControllerCompat(this.presenter)
+        presenter.playSongPlayedBeforeActivityCreated()
+    }
+
+    override fun onPlayServiceDisconnected() {
+        Log.d(TAG, "onPlayServiceDisconnected")
+        activity?.stopService(mPlayServiceIntent)
+        isServiceDestroyed = true
+    }
+
+    override fun startAndBindPlayService() {
+        activity?.let {
+            if (isServiceDestroyed) {
+                Log.d(TAG, "startAndBindPlayService.startService()")
+                it.startService(mPlayServiceIntent)
+                isServiceDestroyed = false
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already started")
+            }
+            if (!isServiceBound) {
+                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
+                Log.d(TAG, "startAndBindPlayService.isBound = $result")
+            } else {
+                Log.d(TAG, "startAndBindPlayService.PlayService already bound")
+            }
+        }
+    }
+
+    override fun unbindAndStopPlayService() {
+        activity?.let {
+            if (isServiceBound) {
+                Log.d(TAG, "unbindAndStopPlayService.unbindService()")
+                it.unbindService(connection)
+                it.stopService(mPlayServiceIntent)
+                isServiceBound = false
+                isServiceDestroyed = true
+            } else {
+                Log.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
+            }
+        }
+    }
+
+    override fun getPlayerPresenter() : VlcPlayerPresenter {
+        return presenter
+    }
+
+    override fun audioChannelButtonListener() {
+        // not support yet
+        activity?.let {
+            val str = it.getString(R.string.notSupportedString)
+            ScreenUtil.showToast(it, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT)
+        }
+    }
+    // end of implementing methods of super class
+
+    // Implement VlcPlayerPresenter.VlcPresentView
+    override fun setVideoWindowSize() {
+        Log.d(TAG, "setVideoWindowSize")
+        playService?.apply {
+            setVideoWindowSize(videoVLCPlayerView)
+        }
+    }
+}

@@ -35,12 +35,44 @@ android {
         signingConfig signingConfigs.release
     }
 
+    flavorDimensions += ["karaoke"]
+    productFlavors {
+        create("karaokePlayer") {
+            dimension = "karaoke"
+            applicationId = "com.smile.karaokeplayer"
+        }
+        create("karaokeTvPlayer") {
+            dimension = "karaoke"
+            versionCode 100
+            versionName "1.00"
+            applicationId = "com.smile.karaoketvplayer"
+        }
+    }
+
     sourceSets {
         main {
             java.srcDir("src/main/java")
             resources.srcDir("src/main/rec")
             manifest {
                 srcFile "src/main/AndroidManifest.xml"
+            }
+        }
+        karaokePlayer {
+            java {
+                srcDirs += "src/karaokeplayer/java"
+                // exclude "**/ExoPlaybackPreparer.java"
+            }
+            res.srcDirs += "src/karaokeplayer/res"
+            manifest {
+                srcFile "src/karaokeplayer/AndroidManifest.xml"
+            }
+        }
+
+        karaokeTvPlayer {
+            java.srcDirs += "src/karaoketvplayer/java"
+            res.srcDirs += "src/karaoketvplayer/res"
+            manifest {
+                srcFile "src/karaoketvplayer/AndroidManifest.xml"
             }
         }
     }
@@ -86,8 +118,9 @@ android {
         buildConfig true
         compose true
     }
-    namespace 'com.smile.karaokeplayer'
-    // testNamespace 'com.smile.karaokeplayer.androidTest'
+
+    namespace 'com.smile.karaoke'
+    // testNamespace 'com.smile.karaoke.androidTest'
 }
 
 allprojects {
@@ -173,4 +206,8 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 }
 
-apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.gms.google-services'
+if (!gradle.startParameter.taskRequests.toString().toLowerCase()
+        .contains("karaoketvplayer")) {
+    apply plugin: 'com.google.gms.google-services'
+}
