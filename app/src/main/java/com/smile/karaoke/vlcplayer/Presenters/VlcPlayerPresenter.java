@@ -1,4 +1,4 @@
-package com.smile.karaokeplayer.vlcplayer.Presenters;
+package com.smile.karaoke.vlcplayer.Presenters;
 
 import java.util.ArrayList;
 import android.content.Intent;
@@ -14,10 +14,10 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.smile.karaokeplayer.constants.CommonConstants;
-import com.smile.karaokeplayer.constants.PlayerConstants;
-import com.smile.karaokeplayer.presenters.PlayerBasePresenter;
-import com.smile.karaokeplayer.vlcplayer.services.VlcPlayService;
+import com.smile.karaoke.constants.CommonConstants;
+import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.presenters.PlayerBasePresenter;
+import com.smile.karaoke.vlcplayer.services.VlcPlayService;
 
 @OptIn(markerClass = UnstableApi.class)
 public class VlcPlayerPresenter extends PlayerBasePresenter {
