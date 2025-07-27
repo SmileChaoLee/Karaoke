@@ -24,10 +24,6 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        applicationId = "com.smile.karaokeplayer"
-        manifestPlaceholders["flavorLegacyExternalStorage"] = "true"
-        manifestPlaceholders["google_AdMobAppID"] = "ca-app-pub-8354869049759576~5549171584"
-
         multiDexEnabled true
         versionCode 895
         versionName "8.95"
@@ -142,7 +138,9 @@ dependencies {
     implementation 'com.facebook.android:audience-network-sdk:6.20.0'
     implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-ads:23.6.0'
+    // karaokePlayer has google ads to show
+    // but karaokeTvPlayer does not
+    karaokePlayerImplementation 'com.google.firebase:firebase-ads:23.6.0'
 
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
@@ -193,6 +191,7 @@ dependencies {
     implementation project(':extension-av1')
 
     implementation 'org.videolan.android:libvlc-all:4.0.0-eap1'
+    implementation 'androidx.activity:activity-ktx:1.10.1'
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
@@ -206,8 +205,10 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 }
 
-// apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'
+/*
 if (!gradle.startParameter.taskRequests.toString().toLowerCase()
         .contains("karaoketvplayer")) {
     apply plugin: 'com.google.gms.google-services'
 }
+*/
