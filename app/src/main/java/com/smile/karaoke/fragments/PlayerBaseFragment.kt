@@ -193,9 +193,11 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-
         MySingleTon.clearSingleton()
-
+        if (SmileAppBase.deviceType != CommonConstants.DEVICE_TYPE_PHONE) {
+            Log.d(TAG, "onCreate.deviceType is not phone")
+            orgOrientation = resources.configuration.orientation
+        }
         arguments?.let {
             Log.d(TAG, "onCreate.arguments is not null")
         }
@@ -250,17 +252,15 @@ abstract class PlayerBaseFragment : Fragment(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView() is called")
+        Log.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_player_base_view,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated()")
+        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-
-        orgOrientation = resources.configuration.orientation
 
         fragmentView = view
         // Video player view
@@ -368,7 +368,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        Log.d(TAG, "onCreateOptionsMenu() is called")
+        Log.d(TAG, "onCreateOptionsMenu")
         // Inflate the menu; this adds items to the action bar if it is present.
         // mainMenu = menu;
         // menu.clear() does not work for the issue of onCreateOptionsMenu being called multiple times
@@ -546,7 +546,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        Log.d(TAG, "onConfigurationChanged()")
+        Log.d(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         closeMenu(mainMenu)
         setOrientationImageButton(newConfig.orientation)
@@ -565,13 +565,13 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        Log.d(TAG, "onSaveInstanceState() is called.")
+        Log.d(TAG, "onSaveInstanceState")
         mPresenter.saveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy() is called.")
+        Log.d(TAG, "onDestroy")
         super.onDestroy()
         MySingleTon.clearSingleton()
         // cancel the timer
@@ -588,7 +588,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     fun onBackPressed() {
-        Log.d(TAG, "onBackPressed() is called")
+        Log.d(TAG, "onBackPressed")
         val exitAppTimer = ExitAppTimer.getInstance(1000) // singleton class
         if (exitAppTimer.canExit()) {
             closeFragment()
@@ -711,7 +711,11 @@ abstract class PlayerBaseFragment : Fragment(),
         actionMenuImageButton?.layoutParams = linearParam
 
         linearParam.setMargins(0, 0, 0, 0)
-        orientationImageButton?.layoutParams = linearParam
+        orientationImageButton?.apply {
+            layoutParams = linearParam
+            visibility = if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE)
+                View.VISIBLE else View.GONE
+        }
 
         linearParam.setMargins(buttonMarginLeft2, 0, 0, 0)
         repeatImageButton?.layoutParams = linearParam
@@ -772,29 +776,9 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     fun showSupportToolbarAudioControlSetTimer() {
-        Log.d(TAG, "showSupportToolbarAudioControlSetTimer()")
+        Log.d(TAG, "showSupportToolbarAudioControlSetTimer")
         showSupportToolbarAudioControl()
         setTimerToHideSupportAudioControl()   // reset the timer
-    }
-
-    // called by BaseActivity
-    fun disableSomeButtonsDueToBecausePopup() {
-        Log.d(TAG, "disableSomeButtonsDueToBecausePopup()")
-        hideVideoImageButton?.isEnabled = false
-        orientationImageButton?.isEnabled = false
-    }
-    // called by BaseActivity
-    fun enableSomeButtonsDueToPopupGone() {
-        Log.d(TAG, "enableSomeButtonsDueToPopupGone()")
-        hideVideoImageButton?.isEnabled = true
-        orientationImageButton?.isEnabled = true
-    }
-    // called by BaseActivity
-    fun setIsCheckAutoPlay() {
-        Log.d(TAG, "setIsCheckAutoPlay()")
-        autoPlayMenuItem?.let {
-            it.isChecked = !it.isChecked
-        }
     }
 
     private fun showSupportToolbarAudioControl() {
@@ -1104,7 +1088,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     // implementing PlayerBasePresenter.BasePresentView
     override fun setImageButtonStatus() {
-        Log.d(TAG, "setImageButtonStatus()")
+        Log.d(TAG, "setImageButtonStatus")
         val playingParam = mPresenter.playingParam
         switchToMusicImageButton?.apply {
             isEnabled = true
@@ -1212,13 +1196,13 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun showBufferingMessage() {
-        Log.d(TAG, "showBufferingMessage() is called.")
+        Log.d(TAG, "showBufferingMessage")
         messageAreaLinearLayout?.visibility = View.VISIBLE
         bufferingStringTextView?.startAnimation(animationText)
     }
 
     override fun dismissBufferingMessage() {
-        Log.d(TAG, "dismissBufferingMessage() is called.")
+        Log.d(TAG, "dismissBufferingMessage")
         animationText?.cancel()
         messageAreaLinearLayout?.visibility = View.GONE
     }
@@ -1250,14 +1234,14 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun showMusicAndVocalIsNotSet() {
-        Log.d(TAG, "showMusicAndVocalIsNotSet is called.")
+        Log.d(TAG, "showMusicAndVocalIsNotSet")
         ScreenUtil.showToast(activity, getString(R.string.musicAndVocalNotSet),
             toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT
         )
     }
 
     override fun hidePlayerView() {
-        Log.d(TAG, "hidePlayerView() is called")
+        Log.d(TAG, "hidePlayerView")
         playerViewLinearLayout?.visibility = View.INVISIBLE
         hideNativeAd()
         setImageButtonStatus()
@@ -1265,11 +1249,13 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
-        setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+            setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+        }
     }
 
     override fun showPlayerView() {
-        Log.d(TAG, "showPlayerView() is called")
+        Log.d(TAG, "showPlayerView")
         playerViewLinearLayout?.visibility = View.VISIBLE
         mPresenter.run {
             if ( (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) ||
@@ -1283,8 +1269,10 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
-        // orientationImageButton?.isEnabled = true // no longer needed
-        setScreenOrientation(orgOrientation)
+        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+            Log.d(TAG, "showPlayerView.orgOrientation = $orgOrientation")
+            setScreenOrientation(orgOrientation)
+        }
     }
 
     override fun showToastNoFilesSelected() {
@@ -1343,6 +1331,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private fun setScreenOrientation(orientation: Int) {
         orgOrientation = resources.configuration.orientation
+        Log.d(TAG, "setScreenOrientation.orgOrientation = $orgOrientation")
         activity?.requestedOrientation = when (orientation) {
             Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE

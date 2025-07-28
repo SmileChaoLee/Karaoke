@@ -2,9 +2,14 @@ package com.smile.karaoke
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Point
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -47,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.exoplayer.ExoPlayerActivity
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.ui.theme.Yellow3
@@ -64,6 +70,7 @@ open class PlayerActivity : ComponentActivity() {
         Log.d(mTAG, "setTag.tag = $tag")
         mTAG = tag
     }
+    private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
     private var textFontSize = 0f
     private var toastTextSize = 0f
@@ -75,8 +82,28 @@ open class PlayerActivity : ComponentActivity() {
     //
     private val loadingMessage = mutableStateOf("")
 
+    @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         Log.d(mTAG,"onCreate")
+
+        screenSize = ScreenUtil.getScreenSize(this@PlayerActivity)
+        val smallestWidth = if (screenSize.x < screenSize.y) screenSize.x else screenSize.y
+        val smallestScreenWidthDp = ScreenUtil.pixelToDp(smallestWidth.toFloat())
+        Log.d(mTAG, "onCreate.smallestScreenWidthDp = $smallestScreenWidthDp")
+        SmileAppBase.deviceType = if (smallestScreenWidthDp >= 600) {
+            CommonConstants.DEVICE_TYPE_TABLET
+        } else {
+            CommonConstants.DEVICE_TYPE_PHONE
+        }
+        // More specific check for Android TV
+        // This requires checking UI mode, not just screen width.
+        val uiModeManager = resources.configuration.uiMode
+        val isTv = uiModeManager and Configuration.UI_MODE_TYPE_TELEVISION == Configuration.UI_MODE_TYPE_TELEVISION
+        Log.d(mTAG, "onCreate.isTv = $isTv")
+        if (isTv) {
+            SmileAppBase.deviceType = CommonConstants.DEVICE_TYPE_ANDROID_TV
+        }
 
         val intentAction = intent.action
         Log.d(mTAG, "onCreate.intentAction = $intentAction")
@@ -107,6 +134,22 @@ open class PlayerActivity : ComponentActivity() {
         Composables.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
         Composables.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
+        vlcLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            Log.d(mTAG, "vlcLauncher.result received")
+            // loadingMessage.value = ""
+            restartApp()
+        }
+
+        exoLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            Log.d(mTAG, "exoLauncher.result received")
+            // loadingMessage.value = ""
+            restartApp()
+        }
+
         permissionExternalStorage =
             (ActivityCompat.checkSelfPermission(applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -127,30 +170,38 @@ open class PlayerActivity : ComponentActivity() {
         }
         askIgnoreOptimizationsBattery()
 
-        super.onCreate(savedInstanceState)
-
-        vlcLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-                result: ActivityResult ->
-            Log.d(mTAG, "vlcLauncher.result received")
-            // loadingMessage.value = ""
-            restartApp()
-        }
-
-        exoLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-                result: ActivityResult ->
-            Log.d(mTAG, "exoLauncher.result received")
-            // loadingMessage.value = ""
-            restartApp()
-        }
         setContent {
             Log.d(mTAG,"onCreate.setContent")
+            /*
+            val configuration = LocalConfiguration.current
+            val smallestScreenWidthDp = configuration.smallestScreenWidthDp
+            Log.d(mTAG, "onCreate.setContent.smallestScreenWidthDp = $smallestScreenWidthDp")
+            SmileAppBase.deviceType = if (smallestScreenWidthDp >= 600) {
+                CommonConstants.DEVICE_TYPE_TABLET
+            } else {
+                CommonConstants.DEVICE_TYPE_PHONE
+            }
+            // More specific check for Android TV
+            // This requires checking UI mode, not just screen width.
+            val uiModeManager = configuration.uiMode
+            val isTv = uiModeManager and Configuration.UI_MODE_TYPE_TELEVISION == Configuration.UI_MODE_TYPE_TELEVISION
+            Log.d(mTAG, "onCreate.setContent.isTv = $isTv")
+            if (isTv) {
+                SmileAppBase.deviceType = CommonConstants.DEVICE_TYPE_ANDROID_TV
+            }
+            if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+            */
             KaraokePlayerTheme {
                 Box {
                     DisplayLoading()
                     CreateMainUI()
                 }
+            }
+
+            if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
 
             onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
@@ -191,6 +242,21 @@ open class PlayerActivity : ComponentActivity() {
             exitApp()
         }
     }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork =
+            connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            // Add other network types if needed
+            else -> false
+        }
+    }
+
 
     private fun exitApp() {
         Log.d(mTAG, "exitApp")
@@ -328,9 +394,8 @@ open class PlayerActivity : ComponentActivity() {
     fun CreateMainUI() {
         Log.d(mTAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
-        val screen = ScreenUtil.getScreenSize(this@PlayerActivity)
-        val maxWidth = ScreenUtil.pixelToDp(screen.x.toFloat())
-        val maxHeight = ScreenUtil.pixelToDp(screen.y.toFloat())
+        val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
+        val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
         Log.d(mTAG, "CreateMainUI.maxHeight = $maxHeight")
         var verSpacerWeight = 1.0f
         var horSpacerWeight = 1.0f

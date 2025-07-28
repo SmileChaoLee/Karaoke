@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import com.smile.karaoke.R
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.exoplayer.presenters.ExoPlayerPresenter
@@ -47,6 +48,11 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
             val callingIntent: Intent? = it.intent
             Log.d(TAG, "onCreate.callingIntent = $callingIntent")
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
+        }
+        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_ANDROID_TV) {
+            // disable cast for ExoPlayer for Android TV
+            Log.d(TAG, "onCreate.disable cast for Android TV")
+            castContext = null  // disable cast
         }
     }
 

@@ -33,11 +33,6 @@ class SmileTvApp : SmileAppBase() {
         return null // No ads in this version
     }
 
-    override fun initCastContext() {
-        Log.d(TAG, "initCastContext.do nothing")
-        castContext = null
-    }
-
     companion object {
         private const val TAG = "SmileTvApp"
         private const val NATIVE_AD_ID = "ca-app-pub-8354869049759576/9847001557"

@@ -57,7 +57,6 @@ abstract class BaseActivity : AppCompatActivity(),
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
 
-    // @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
         window?.apply {

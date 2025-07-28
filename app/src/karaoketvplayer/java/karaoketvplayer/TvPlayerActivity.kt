@@ -10,9 +10,4 @@ class TvPlayerActivity: PlayerActivity() {
         Log.d(mTAG, "")
         setTag(mTAG)
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(mTAG, "onCreate.Started")
-    }
 }

@@ -60,11 +60,6 @@ class SmilePhoneApp : SmileAppBase() {
             nativeAdView)
     }
 
-    override fun initCastContext() {
-        castContext = InitCastContext.getInstance(this)
-        Log.d(TAG, "castContext = $castContext")
-    }
-
     companion object {
         private const val TAG = "SmilePhoneApp"
     }

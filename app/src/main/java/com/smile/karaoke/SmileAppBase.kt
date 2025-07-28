@@ -9,6 +9,7 @@ import androidx.multidex.MultiDexApplication
 import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.googlecast.InitCastContext
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
@@ -25,7 +26,6 @@ abstract class SmileAppBase : MultiDexApplication() {
     abstract fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
     : GoogleAdMobNativeTemplate?
-    abstract fun initCastContext()
 
     override fun onCreate() {
         super.onCreate()
@@ -41,7 +41,9 @@ abstract class SmileAppBase : MultiDexApplication() {
         audioChannelReverseMap.put(stereoChannelString, CommonConstants.STEREO)
 
         initAds()
-        initCastContext()
+
+        castContext = InitCastContext.getInstance(this)
+        Log.d(TAG, "castContext = $castContext")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -79,5 +81,6 @@ abstract class SmileAppBase : MultiDexApplication() {
         var facebookBannerID = ""
         var googleAdMobBannerID = ""
         var googleAdMobNativeID = ""
+        var deviceType = CommonConstants.DEVICE_TYPE_PHONE
     }
 }
