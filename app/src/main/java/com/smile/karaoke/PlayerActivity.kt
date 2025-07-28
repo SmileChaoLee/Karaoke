@@ -77,6 +77,19 @@ open class PlayerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(mTAG,"onCreate")
+
+        val intentAction = intent.action
+        Log.d(mTAG, "onCreate.intentAction = $intentAction")
+        val intentCategories = intent.categories
+        Log.d(mTAG, "onCreate.intentCategories = $intentCategories")
+        if (intentCategories != null && intentCategories.isNotEmpty()) {
+            for (category in intentCategories) {
+                Log.d(mTAG, "onCreate.category = $category")
+            }
+        } else {
+            Log.d(mTAG, "No categories in intent")
+        }
+
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }

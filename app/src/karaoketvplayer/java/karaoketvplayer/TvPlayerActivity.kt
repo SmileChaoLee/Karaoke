@@ -13,17 +13,6 @@ class TvPlayerActivity: PlayerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(mTAG, "onCreate.Started")
-        val intentAction = intent.action
-        val intentCategories = intent.categories
-        Log.i(mTAG, "onCreate.intentCategories = $intentCategories")
-        Log.i(mTAG, "onCreate.intentAction = $intentAction")
-        if (intentCategories != null && intentCategories.isNotEmpty()) {
-            for (category in intentCategories) {
-                Log.i(mTAG, "onCreate.category = $category")
-            }
-        } else {
-            Log.i(mTAG, "No categories in intent")
-        }
+        Log.d(mTAG, "onCreate.Started")
     }
 }

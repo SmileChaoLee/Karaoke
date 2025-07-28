@@ -1,10 +1,16 @@
 package com.smile.karaoke
 
+import android.app.Activity
 import android.content.res.Configuration
 import android.util.Log
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.multidex.MultiDexApplication
+import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
 abstract class SmileAppBase : MultiDexApplication() {
     var leftChannelString = ""
@@ -14,6 +20,11 @@ abstract class SmileAppBase : MultiDexApplication() {
     var googleAdMobAppID = ""
 
     abstract fun initAds()
+    abstract fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?)
+    : SetBannerAdView?
+    abstract fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+                                  nativeAdView: TemplateView?)
+    : GoogleAdMobNativeTemplate?
     abstract fun initCastContext()
 
     override fun onCreate() {

@@ -314,11 +314,7 @@ abstract class PlayerBaseFragment : Fragment(),
             activity?.let {actIt ->
                 bannerLinearLayout?.also {layoutIt ->
                     layoutIt.visibility = View.VISIBLE // Show Banner Ad
-                    myBannerAdView = SetBannerAdView(actIt, null,
-                        layoutIt,
-                        SmileAppBase.googleAdMobBannerID,
-                        SmileAppBase.facebookBannerID, 0)
-                    myBannerAdView?.showBannerAdView(0) // Admob first
+                    showBannerAd()
                 }
             }
 
@@ -349,10 +345,12 @@ abstract class PlayerBaseFragment : Fragment(),
                 nativeAdViewVisibility = it.visibility
             }
             nativeAdTemplateView = findViewById(R.id.nativeAdTemplateView)
-            nativeTemplate = GoogleAdMobNativeTemplate(
-                    activity, nativeAdsFrameLayout,
-                SmileAppBase.googleAdMobNativeID, nativeAdTemplateView
-            )
+            activity?.let { actIt ->
+                nativeTemplate = (actIt.application as SmileAppBase)
+                    .geNativeTemplate(actIt,
+                        nativeAdsFrameLayout,
+                        nativeAdTemplateView)
+            }
         }
 
         // must before setImageButtonStatus() and showNativeAndBannerAd
@@ -559,10 +557,7 @@ abstract class PlayerBaseFragment : Fragment(),
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
-                myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileAppBase.googleAdMobBannerID,
-                    SmileAppBase.facebookBannerID, 0)
-                myBannerAdView?.showBannerAdView(0) // AdMob first
+                showBannerAd()
             }
         }
         MyBannerTool.setVisible(bannerAdsLayout
@@ -766,6 +761,16 @@ abstract class PlayerBaseFragment : Fragment(),
         playBaseFragmentFunc?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
     }
 
+    private fun showBannerAd() {
+        Log.d(TAG, "showBannerAd")
+        activity?.let { actIt ->
+            myBannerAdView?.destroy()
+            myBannerAdView = (actIt.application as SmileAppBase)
+                .showBannerAd(actIt, bannerLinearLayout)
+            myBannerAdView?.showBannerAdView(0) // AdMob first
+        }
+    }
+
     fun showSupportToolbarAudioControlSetTimer() {
         Log.d(TAG, "showSupportToolbarAudioControlSetTimer()")
         showSupportToolbarAudioControl()
@@ -945,10 +950,8 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnClickListener {
                 if (playerViewLinearLayout?.visibility==View.VISIBLE) {
                     hidePlayerView()
-                    // setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
                 } else {
                     showPlayerView()
-                    // setScreenOrientation(orgOrientation)
                 }
                 disableButtonForSometime(it)
             }
@@ -1262,7 +1265,6 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
-        // orientationImageButton?.isEnabled = false   // no longer needed
         setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
     }
 

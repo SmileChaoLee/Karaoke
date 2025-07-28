@@ -1,12 +1,10 @@
 package com.smile.karaoke
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -59,7 +57,7 @@ abstract class BaseActivity : AppCompatActivity(),
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
 
-    @SuppressLint("SourceLockedOrientationActivity")
+    // @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
         window?.apply {
@@ -68,8 +66,6 @@ abstract class BaseActivity : AppCompatActivity(),
         MySingleTon.clearSingleton()
 
         super.onCreate(savedInstanceState)
-        // change orientation to Portrait
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_base)
 
         object : BroadcastReceiver() {
@@ -254,13 +250,13 @@ abstract class BaseActivity : AppCompatActivity(),
         tablayoutViewLayout.visibility = View.VISIBLE
         tablayoutFragment?.becomeVisible()
     }
+
     override fun baseShowPlayerView() {
         Log.d(TAG, "baseShowPlayerView()")
         tablayoutViewLayout.visibility = View.GONE
         tablayoutFragment?.becomeInVisible()
     }
 
-    // Implement interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun returnToPrevious(isSingleSong : Boolean) {
         val msgStr = "returnToPrevious"
         Log.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")

@@ -1,31 +1,24 @@
 package karaokeplayer
 
+import android.app.Activity
 import android.util.Log
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.facebook.ads.AudienceNetworkAds
+import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.smile.karaoke.BuildConfig
-import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.googlecast.InitCastContext
+import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
 class SmilePhoneApp : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        leftChannelString = getString(R.string.leftChannelString)
-        rightChannelString = getString(R.string.rightChannelString)
-        stereoChannelString = getString(R.string.stereoChannelString)
-        audioChannelMap.put(CommonConstants.LEFT_CHANNEL, leftChannelString)
-        audioChannelMap.put(CommonConstants.RIGHT_CHANNEL, rightChannelString)
-        audioChannelMap.put(CommonConstants.STEREO, stereoChannelString)
-        audioChannelReverseMap.put(leftChannelString, CommonConstants.LEFT_CHANNEL)
-        audioChannelReverseMap.put(rightChannelString, CommonConstants.RIGHT_CHANNEL)
-        audioChannelReverseMap.put(stereoChannelString, CommonConstants.STEREO)
-
-        initAds()
-        initCastContext()
+        Log.d(TAG, "onCreate")
     }
 
     override fun initAds() {
@@ -48,6 +41,23 @@ class SmilePhoneApp : SmileAppBase() {
         }
         // adMobInterstitial = new AdMobInterstitial(appContext, googleAdMobInterstitialID);
         // for the chrome cast
+    }
+
+    override fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?): SetBannerAdView? {
+        Log.d(TAG, "showBannerAd")
+        return SetBannerAdView(activity, null,
+            bannerLayout,
+            googleAdMobBannerID, facebookBannerID, 0)
+    }
+
+    override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+                                  nativeAdView: TemplateView?)
+    : GoogleAdMobNativeTemplate? {
+        Log.d(TAG, "geNativeTemplate")
+        return GoogleAdMobNativeTemplate(activity,
+            nativeLayout,
+            googleAdMobNativeID,
+            nativeAdView)
     }
 
     override fun initCastContext() {
