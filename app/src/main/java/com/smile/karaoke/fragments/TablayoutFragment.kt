@@ -1,5 +1,7 @@
 package com.smile.karaoke.fragments
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -16,14 +18,7 @@ import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-private const val TAG : String = "TablayoutFragment"
-
 class TablayoutFragment : Fragment() {
-
-    companion object {
-        const val OPEN_FRAGMENT_TAG : String = "OPEN_FILES"
-        const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
-    }
 
     private var toastTextSize: Float = 0f
     private val openFragment = OpenFileFragment()
@@ -56,12 +51,7 @@ class TablayoutFragment : Fragment() {
                 ScreenUtil.FontSize_Pixel_Type, null)
             toastTextSize = 0.7f * ScreenUtil.suitableFontSize(actIt, defaultTextFontSize,
                 ScreenUtil.FontSize_Pixel_Type, 0.0f)
-            bannerLayoutForTab?.also { layoutIt ->
-                myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileAppBase.googleAdMobBannerID,
-                    SmileAppBase.facebookBannerID, 0)
-                myBannerAdView?.showBannerAdView(0) // AdMob first
-            }
+            showBannerAd()
         }
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
 
@@ -115,49 +105,42 @@ class TablayoutFragment : Fragment() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d(TAG, "onConfigurationChanged()")
         super.onConfigurationChanged(newConfig)
-        activity?.let {actIt ->
-            myBannerAdView?.destroy()
-            bannerLayoutForTab?.also {layoutIt ->
-                myBannerAdView = SetBannerAdView(actIt, null,
-                    layoutIt, SmileAppBase.googleAdMobBannerID,
-                    SmileAppBase.facebookBannerID, 0)
-                myBannerAdView?.showBannerAdView(0) // AdMob first
-            }
-        }
+        showBannerAd()
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart()")
+        Log.d(TAG, "onStart")
         super.onStart()
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume()")
+        Log.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause()")
+        Log.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
         bannerLayoutForTab?.visibility = View.GONE
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop()")
+        Log.d(TAG, "onStop")
         super.onStop()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy()")
+        Log.d(TAG, "onDestroy")
         myBannerAdView?.destroy()
         super.onDestroy()
     }
 
     fun becomeVisible() {
+        Log.d(TAG, "becomeVisible")
         playTabLayout?.let {
             Log.d(TAG, "becomeVisible.selectedTabPosition = ${it.selectedTabPosition}")
             if (it.selectedTabPosition==0) openFragment.searchCurrentFolder()
@@ -166,8 +149,24 @@ class TablayoutFragment : Fragment() {
     }
 
     fun becomeInVisible() {
-        Log.d(TAG, "becomeInVisible()")
+        Log.d(TAG, "becomeInVisible")
         openFragment.clearFileList()
         favoriteFragment.clearFavoriteList()
+    }
+
+    private fun showBannerAd() {
+        Log.d(TAG, "showBannerAd")
+        activity?.let { actIt ->
+            myBannerAdView?.destroy()
+            myBannerAdView = (actIt.application as SmileAppBase)
+                .showBannerAd(actIt, bannerLayoutForTab)
+            myBannerAdView?.showBannerAdView(0) // AdMob first
+        }
+    }
+
+    companion object {
+        private const val TAG : String = "TablayoutFragment"
+        private const val OPEN_FRAGMENT_TAG : String = "OPEN_FILES"
+        private const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
     }
 }
