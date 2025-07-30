@@ -27,6 +27,9 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +44,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
@@ -312,6 +318,9 @@ open class PlayerActivity : ComponentActivity() {
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isFocused by interactionSource.collectIsFocusedAsState()
+            val focusRequester = remember { FocusRequester() }
             val exoClicked = remember { mutableStateOf(false) }
             Button(
                 onClick = {
@@ -325,14 +334,17 @@ open class PlayerActivity : ComponentActivity() {
                 modifier = Modifier//.weight(1.0f)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
-                    .background(color = buttonBackground),
+                    .background(color = buttonBackground)
+                    .focusRequester(focusRequester)
+                    .focusable(interactionSource = interactionSource),
                 colors = ButtonColors(
                     containerColor =
                         if (!exoClicked.value) buttonContainerColor
                         else Color.Cyan,
                     disabledContainerColor = buttonContainerColor,
                     contentColor =
-                        if (!exoClicked.value) buttonContentColor
+                        if (!isFocused && !exoClicked.value)
+                            buttonContentColor
                         else Color.Red ,
                     disabledContentColor = buttonContentColor
                 )
@@ -357,6 +369,8 @@ open class PlayerActivity : ComponentActivity() {
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isFocused by interactionSource.collectIsFocusedAsState()
             val vlcClicked = remember { mutableStateOf(false) }
             Button(
                 onClick = {
@@ -370,14 +384,16 @@ open class PlayerActivity : ComponentActivity() {
                 modifier = Modifier//.weight(1.0f)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
-                    .background(color = buttonBackground),
+                    .background(color = buttonBackground)
+                    .focusable(interactionSource = interactionSource),
                 colors = ButtonColors(
                     containerColor =
                         if (!vlcClicked.value) buttonContainerColor
                         else Color.Cyan,
                     disabledContainerColor = buttonContainerColor,
                     contentColor =
-                        if (!vlcClicked.value) buttonContentColor
+                        if (!isFocused && !vlcClicked.value)
+                            buttonContentColor
                         else Color.Red,
                     disabledContentColor = buttonContentColor
                 )
