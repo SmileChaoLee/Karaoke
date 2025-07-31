@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.models.FileDescription
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -61,7 +62,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
         val fileNameTextView: TextView
         val videoImageView: ImageView
         init {
-            Log.d(TAG, "MyViewHolder() is called")
+            Log.d(TAG, "MyViewHolder")
             folderImageView = itemView.findViewById(R.id.folderImageView)
             val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = (textFontSize * 1.0f).toInt()
@@ -75,17 +76,18 @@ class OpenFilesRecyclerViewAdapter private constructor(
             videoImageView = itemView.findViewById(R.id.videoImageView)
             videoImageView.visibility = View.VISIBLE
 
-            itemView.setOnClickListener {
+            itemView.setOnClickListener { view ->
+                Log.d(TAG, "setOnClickListener.position = ${bindingAdapterPosition}")
+                view.requestFocus()
                 recyclerItemClickListener.onRecyclerItemClick(
-                    itemView, bindingAdapterPosition
-                )
+                    view, bindingAdapterPosition)
             }
         }
     }
 
     // Involves populating data into the item through holder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        Log.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
+        Log.d(TAG, "onCreateViewHolder.mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_open_file_item, parent, false)
         return MyViewHolder(fileView, recyclerItemClickListener, textFontSize)
@@ -102,9 +104,17 @@ class OpenFilesRecyclerViewAdapter private constructor(
             setTextColor(Color.WHITE)
             if (item.selected) setTextColor(textColor)
         }
-
-        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
-        else transparentLightGray)
+        holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                v.setBackgroundColor(SmileAppBase.accentColor) // Example
+            } else {
+                v.setBackgroundColor(if (position % 2 == 0) Color.BLACK
+                else transparentLightGray)
+            }
+        }
+        if (position == 0) {
+            holder.itemView.requestFocus()
+        }
     }
 
     override fun getItemCount(): Int {

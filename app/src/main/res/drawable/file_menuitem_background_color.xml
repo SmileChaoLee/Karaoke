@@ -5,6 +5,10 @@
         android:drawable="@color/red">
     </item>
     <item
+        android:state_focused="true"
+        android:drawable="@color/colorAccent">
+    </item>
+    <item
         android:drawable="@android:color/transparent">
     </item>
 </selector>

@@ -2,6 +2,7 @@ package com.smile.karaoke
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.graphics.Color
 import android.util.Log
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -74,6 +75,8 @@ abstract class SmileAppBase : MultiDexApplication() {
         var toastTextSize: Float = 0f
         @JvmField
         var fontSize: Float = 0f
+        @JvmField
+        val accentColor = Color.rgb(0xFF, 0x40, 0x81)
         @JvmField
         val audioChannelMap = LinkedHashMap<Int, String>()
         @JvmField

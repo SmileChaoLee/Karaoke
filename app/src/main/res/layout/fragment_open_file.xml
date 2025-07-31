@@ -26,6 +26,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/back_key"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="10sp">
         </ImageButton>
@@ -37,6 +39,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/select_all"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="10sp">
         </ImageButton>
@@ -49,6 +53,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/unselect"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="10sp">
         </ImageButton>
@@ -60,6 +66,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/refresh"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="10sp">
         </ImageButton>
@@ -71,6 +79,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/play_media_button_image"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="20sp">
         </ImageButton>
@@ -82,6 +92,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/add_image"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:layout_marginEnd="20sp">
         </ImageButton>
@@ -94,6 +106,8 @@
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:src="@drawable/show_video"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_gravity="center"
             android:visibility="visible">
         </ImageButton>
@@ -123,6 +137,9 @@
         android:id="@+id/openFilesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:descendantFocusability ="afterDescendants"
         app:layout_constraintTop_toBottomOf="@+id/openFilePathTextViewLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
