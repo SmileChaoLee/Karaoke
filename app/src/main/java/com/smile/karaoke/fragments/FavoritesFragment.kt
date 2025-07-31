@@ -34,11 +34,11 @@ import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class MyFavoritesFragment : Fragment(),
+class FavoritesFragment : Fragment(),
     FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
 
     companion object {
-        private const val TAG : String = "MyFavoritesFragment"
+        private const val TAG : String = "FavoritesFragment"
         private const val SEARCH_FAVORITES_COMPLETED = "SearchFavorites"
         private const val EXCESS_YN = "ExcessYN"
     }
@@ -287,7 +287,7 @@ class MyFavoritesFragment : Fragment(),
         Log.d(TAG, "onRecyclerItemClick.position = $position")
         MySingleTon.favorites[position].apply {
             song.included = if (song.included == "1") "0" else "1"
-            myRecyclerViewAdapter?.notifyItemChanged(position)
+            myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
     }
 

@@ -312,7 +312,7 @@ class OpenFileFragment : Fragment(),
         if (position < 0) return
         if (MySingleTon.fileList[position].file.isFile) {
             MySingleTon.fileList[position].selected = !MySingleTon.fileList[position].selected
-            myRecyclerViewAdapter?.notifyItemChanged(position)
+            myRecyclerViewAdapter?.myNotifyItemChanged(position)
             return
         }
         MySingleTon.currentPath = MySingleTon.fileList[position].file.path

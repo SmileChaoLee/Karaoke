@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.models.SongDescription
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -25,6 +26,8 @@ class FavoriteRecyclerViewAdapter private constructor(
     interface OnRecyclerItemClickListener {
         fun onRecyclerItemClick(v: View?, position: Int)
     }
+
+    private var positionUpdated: Int = -1
 
     companion object {
         private var viewAdapter : FavoriteRecyclerViewAdapter? = null
@@ -60,14 +63,14 @@ class FavoriteRecyclerViewAdapter private constructor(
         val songVideoImageView: ImageView
         val songNameTextView: TextView
         init {
-            Log.d(TAG, "MyViewHolder() is called")
+            Log.d(TAG, "MyViewHolder")
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
 
-            itemView.setOnClickListener {
+            itemView.setOnClickListener {view ->
                 recyclerItemClickListener.onRecyclerItemClick(
-                    itemView, bindingAdapterPosition
+                    view, bindingAdapterPosition
                 )
             }
         }
@@ -82,6 +85,7 @@ class FavoriteRecyclerViewAdapter private constructor(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        Log.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
         holder.songVideoImageView.setImageBitmap(item.bm)
         val songName = item.song.songName?.trim()?: ""
@@ -90,12 +94,31 @@ class FavoriteRecyclerViewAdapter private constructor(
             if (item.song.included == "1") setTextColor(textColor)
             else setTextColor(Color.WHITE)
         }
-        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
-        else transparentLightGray)
+        holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                v.setBackgroundColor(SmileAppBase.accentColor) // Example
+            } else {
+                v.setBackgroundColor(if (position % 2 == 0) Color.BLACK
+                else transparentLightGray)
+            }
+        }
+        if (position == 0) {
+            holder.itemView.requestFocus()
+        }
+        if(position == positionUpdated) {
+            holder.itemView.requestFocus()
+            positionUpdated = -1
+        }
     }
 
     override fun getItemCount(): Int {
         Log.d(TAG, "getItemCount().mList.size = ${mList.size}")
         return mList.size
+    }
+
+    fun myNotifyItemChanged(position:Int) {
+        Log.d(TAG, "myNotifyItemChanged.position = $position")
+        positionUpdated = position
+        notifyItemChanged(position)
     }
 }

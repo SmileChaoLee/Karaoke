@@ -23,6 +23,8 @@ class OpenFilesRecyclerViewAdapter private constructor(
 
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
+    private var positionUpdated: Int = -1
+
     interface OnRecyclerItemClickListener {
         fun onRecyclerItemClick(v: View?, position: Int)
     }
@@ -94,6 +96,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        Log.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
         holder.folderImageView.apply {
             visibility = if (item.file.isDirectory) View.VISIBLE else View.INVISIBLE
@@ -115,10 +118,20 @@ class OpenFilesRecyclerViewAdapter private constructor(
         if (position == 0) {
             holder.itemView.requestFocus()
         }
+        if(position == positionUpdated) {
+            holder.itemView.requestFocus()
+            positionUpdated = -1
+        }
     }
 
     override fun getItemCount(): Int {
         Log.d(TAG, "getItemCount().favoriteList.size = ${mList.size}")
         return mList.size
+    }
+
+    fun myNotifyItemChanged(position:Int) {
+        Log.d(TAG, "myNotifyItemChanged.position = $position")
+        positionUpdated = position
+        notifyItemChanged(position)
     }
 }

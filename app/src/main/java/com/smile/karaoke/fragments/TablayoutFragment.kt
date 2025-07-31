@@ -1,7 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +20,7 @@ class TablayoutFragment : Fragment() {
 
     private var toastTextSize: Float = 0f
     private val openFragment = OpenFileFragment()
-    private val favoriteFragment = MyFavoritesFragment()
+    private val favoriteFragment = FavoritesFragment()
     private var bannerLayoutForTab: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
     private var playTabLayout: TabLayout? = null
