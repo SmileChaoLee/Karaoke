@@ -8,7 +8,10 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +47,7 @@ class OpenFileFragment : Fragment(),
         private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
     }
 
+    private var fragmentView : View? = null
     private var textFontSize = 0f
     private var playSongs: PlaySongs? = null
     private var pathTextView: TextView? = null
@@ -53,9 +57,10 @@ class OpenFileFragment : Fragment(),
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var searchCompleted = true
     private lateinit var mediaRetriever: MediaMetadataRetriever
+    private var backKeyButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called")
+        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
             isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
@@ -98,12 +103,21 @@ class OpenFileFragment : Fragment(),
             @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
                 Log.d(TAG, "BroadcastReceiver.onReceive")
+                val focusView = activity?.currentFocus
                 intent?.action?.let {
                     if (it == SEARCH_FOLDER_COMPLETED) {
-                        Log.d(TAG, "BroadcastReceiver.onReceive.SearchFolder")
+                        Log.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
                         pathTextView?.text = MySingleTon.currentPath
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
+                        Log.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
+                        if (MySingleTon.fileList.isEmpty()) {
+                            Log.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
+                            val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
+                            val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
+                            Log.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
+                            backKeyButton?.requestFocus()
+                        }
                     }
                 }
             }
@@ -125,26 +139,27 @@ class OpenFileFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView() is called")
+        Log.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_open_file, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.d(TAG, "onViewCreated")
         val buttonWidth = (textFontSize*1.5f).toInt()
-        view.let {
+        fragmentView = view
+        fragmentView?.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
             ScreenUtil.resizeTextSize(pathTextView, textFontSize,
                 ScreenUtil.FontSize_Pixel_Type)
-            val backKeyButton: ImageButton = it.findViewById(R.id.openFileBackKeyButton)
-            var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton.layoutParams as ViewGroup.MarginLayoutParams
+            backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
+            var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton?.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
-            backKeyButton.layoutParams = layoutParams
-            backKeyButton.setOnClickListener {
+            backKeyButton?.layoutParams = layoutParams
+            backKeyButton?.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 if (MySingleTon.currentPath == "/") return@setOnClickListener
                 MySingleTon.currentPath =
@@ -268,36 +283,39 @@ class OpenFileFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchToPlayerView()
             }
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
+            it.requestFocus()
         }
 
         initFilesRecyclerView()
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart()")
         super.onStart()
+        Log.d(TAG, "onStart")
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume()")
         super.onResume()
+        Log.d(TAG, "onResume")
         searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause()")
         super.onPause()
+        Log.d(TAG, "onPause")
         clearFileList()
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop()")
         super.onStop()
+        Log.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy()")
         super.onDestroy()
+        Log.d(TAG, "onDestroy")
         clearFileList()
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {

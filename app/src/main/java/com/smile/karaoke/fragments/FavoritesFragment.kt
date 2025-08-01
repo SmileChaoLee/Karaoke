@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ class FavoritesFragment : Fragment(),
         private const val EXCESS_YN = "ExcessYN"
     }
 
+    private var fragmentView : View? = null
     private var textFontSize = 0f
     private var fontScale = 0f
     private var playSongs: PlaySongs? = null
@@ -53,9 +55,10 @@ class FavoritesFragment : Fragment(),
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var searchCompleted = true
     private lateinit var mediaRetriever: MediaMetadataRetriever
+    private var showVideoButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called")
+        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
@@ -97,6 +100,14 @@ class FavoritesFragment : Fragment(),
                         }
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
+                        if (MySingleTon.favorites.isEmpty()) {
+                            Log.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
+                            // Change the focus
+                            val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
+                            val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
+                            Log.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
+                            showVideoButton?.requestFocus()
+                        }
                     }
                 }
             }
@@ -118,15 +129,16 @@ class FavoritesFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView() is called")
+        Log.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_my_favorites, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated() is called.")
+        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
-        view.let {
+        fragmentView = view
+        fragmentView?.let {
             val buttonWidth = (textFontSize * 1.5f).toInt()
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
@@ -235,46 +247,50 @@ class FavoritesFragment : Fragment(),
                     }
                 }
             }
-            val showVideoButton: ImageButton = it.findViewById(R.id.showVideoImageButton)
-            layoutParams = showVideoButton.layoutParams as ViewGroup.MarginLayoutParams
+            showVideoButton = it.findViewById(R.id.showVideoImageButton)
+            layoutParams = showVideoButton?.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.width = buttonWidth
             layoutParams.height = buttonWidth
-            showVideoButton.layoutParams = layoutParams
-            showVideoButton.visibility = View.VISIBLE
-            showVideoButton.setOnClickListener {
+            showVideoButton?.layoutParams = layoutParams
+            showVideoButton?.visibility = View.VISIBLE
+            showVideoButton?.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchToPlayerView()
             }
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
+            it.requestFocus()
         }
 
         initFavoriteRecyclerView()
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart()")
         super.onStart()
+        Log.d(TAG, "onStart")
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume()")
-        searchFavorites()   // has to be in onResume()
         super.onResume()
+        Log.d(TAG, "onResume")
+        searchFavorites()   // has to be in onResume()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause()")
-        clearFavoriteList()
         super.onPause()
+        Log.d(TAG, "onPause")
+        clearFavoriteList()
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop()")
-        clearFavoriteList()
         super.onStop()
+        Log.d(TAG, "onStop")
+        clearFavoriteList()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "onStop")
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
                 unregisterReceiver(broadcastReceiver)
