@@ -91,7 +91,11 @@ abstract class BaseActivity : AppCompatActivity(),
         }
 
         basePlayViewLayout = findViewById(R.id.basePlayViewLayout)
+        basePlayViewLayout.visibility = View.VISIBLE
+        basePlayViewLayout.isFocusable = true
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
+        tablayoutViewLayout.visibility = View.VISIBLE
+        tablayoutViewLayout.isFocusable = true
 
         callingIntent = intent
         Log.d(TAG,"onCreate.callingIntent = $callingIntent")
@@ -134,7 +138,6 @@ abstract class BaseActivity : AppCompatActivity(),
                 if (!it.isInLayout) {
                     Log.d(TAG, "tablayoutFragment.isInLayout() = false")
                     replace(R.id.tablayoutViewLayout, it, TAB_LAYOUT_FRAGMENT)
-                    tablayoutViewLayout.visibility = View.VISIBLE
                     isReplaced = true
                 }
             }
@@ -246,13 +249,19 @@ abstract class BaseActivity : AppCompatActivity(),
     // implementing interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun baseHidePlayerView() {
         Log.d(TAG, "baseHidePlayerView()")
+        basePlayViewLayout.clearFocus()
+        basePlayViewLayout.visibility = View.GONE
         tablayoutViewLayout.visibility = View.VISIBLE
+        tablayoutViewLayout.requestFocus()
         tablayoutFragment?.becomeVisible()
     }
 
     override fun baseShowPlayerView() {
         Log.d(TAG, "baseShowPlayerView()")
+        tablayoutViewLayout.clearFocus()
         tablayoutViewLayout.visibility = View.GONE
+        basePlayViewLayout.visibility = View.VISIBLE
+        basePlayViewLayout.requestFocus()
         tablayoutFragment?.becomeInVisible()
     }
 

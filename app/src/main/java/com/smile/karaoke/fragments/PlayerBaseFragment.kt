@@ -15,6 +15,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -39,7 +40,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.scale
 import androidx.core.view.get
@@ -93,12 +93,10 @@ abstract class PlayerBaseFragment : Fragment(),
             : androidx.appcompat.widget.Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
     private var audioControllerView: LinearLayout? = null
-    private var nonVolumeImageButton: ImageButton? = null
     private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
     private var playMediaImageButton: ImageButton? = null
     private var replayMediaImageButton: ImageButton? = null
-    private var pauseMediaImageButton: ImageButton? = null
     private var stopMediaImageButton: ImageButton? = null
     private var nextMediaImageButton: ImageButton? = null
     private var heartImageButton: ImageButton? = null
@@ -144,6 +142,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var stereoChannelMenuItem: MenuItem? = null
     private var oldMotionEventX = 0.0f
     private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
+    private var lastFocusView: ImageButton? = null
 
     private val controllerTimerHandler = Handler(Looper.getMainLooper())
     private val controllerTimerRunnable = Runnable {
@@ -161,6 +160,24 @@ abstract class PlayerBaseFragment : Fragment(),
             }
         }
     }
+
+    // for test only
+    private val handler = Handler(Looper.getMainLooper())
+    private val mRunnable: Runnable = object : Runnable {
+        override fun run() {
+            Log.d(TAG, "mRunnable.run()")
+            handler.removeCallbacksAndMessages(null)
+            activity?.let { actIt ->
+                val focusView = actIt.currentFocus
+                Log.d(TAG, "mRunnable.focusView = $focusView")
+            }
+            Log.d(TAG, "fragmentView?.hasFocus() = ${fragmentView?.hasFocus()}")
+            Log.d(TAG, "playerViewLinearLayout?.hasFocus() = ${playerViewLinearLayout?.hasFocus()}")
+            Log.d(TAG, "audioControllerView?.hasFocus() = ${audioControllerView?.hasFocus()}")
+            handler.postDelayed(this, 1000)
+        }
+    }
+    //
 
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setMenuItemsVisibility()
@@ -254,8 +271,15 @@ abstract class PlayerBaseFragment : Fragment(),
     ): View? {
         Log.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_player_base_view,
+        val view = inflater.inflate(R.layout.fragment_player_base_view,
             container, false)
+
+        // Make the root view focusable
+        // Allows it to receive focus when touched
+        view.isFocusableInTouchMode = true
+        view.isFocusable = true
+        view.requestFocus()
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -282,11 +306,9 @@ abstract class PlayerBaseFragment : Fragment(),
         actionMenuView = supportToolbar?.findViewById(R.id.actionMenuViewLayout) // main menu
         fragmentView?.apply {
             audioControllerView = findViewById(R.id.audioControllerView)
-            nonVolumeImageButton = findViewById(R.id.nonVolumeImageButton)
             volumeImageButton = findViewById(R.id.volumeImageButton)
             previousMediaImageButton = findViewById(R.id.previousMediaImageButton)
             playMediaImageButton = findViewById(R.id.playMediaImageButton)
-            pauseMediaImageButton = findViewById(R.id.pauseMediaImageButton)
             mPresenter.playingParam.let {
                 if (it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
                     playButtonOffPauseButtonOn()
@@ -363,7 +385,35 @@ abstract class PlayerBaseFragment : Fragment(),
         setOnClickEvents()
         showNativeAndHideBannerAd()
 
-        Log.d(TAG, "onViewCreated() is finished.")
+        fragmentView?.setOnKeyListener {
+                _, keyCode, event ->
+            Log.d(TAG, "onViewCreated.setOnKeyListener.keyCode = $keyCode, event = $event")
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_UP,
+                KeyEvent.KEYCODE_DPAD_DOWN,
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    if (event?.action == KeyEvent.ACTION_DOWN) {
+                        supportToolbar?.performClick()
+                        // D-pad move started
+                        Log.d(TAG, "setOnKeyListener.D-pad move started: $keyCode")
+                        // Handle your logic here
+                        if (lastFocusView == null) {
+                            hideVideoImageButton?.requestFocus()
+                        } else {
+                            lastFocusView?.requestFocus()
+                        }
+                        return@setOnKeyListener true
+                    }
+                }
+            }
+            return@setOnKeyListener false
+        }
+
+        // for test only
+        handler.postDelayed(mRunnable, 1000) // 1000 ms
+
+        Log.d(TAG, "onViewCreated is finished.")
     }
 
     @Deprecated("Deprecated in Java")
@@ -678,25 +728,13 @@ abstract class PlayerBaseFragment : Fragment(),
         if (buttonMarginLeft2<0) buttonMarginLeft2 = 0
         Log.d(TAG, "buttonMarginLeft2 = $buttonMarginLeft2")
 
-        val volumeButtonFrameLayout: FrameLayout? =
-            fragmentView?.findViewById(R.id.volumeButtonFrameLayout)
         val linearParam = LinearLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
         linearParam.setMargins(0, 0, 0, 0)
-        volumeButtonFrameLayout?.layoutParams = linearParam
-
-        val frameParam: FrameLayout.LayoutParams = FrameLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
-        nonVolumeImageButton?.layoutParams = frameParam
-        volumeImageButton?.layoutParams = frameParam
+        volumeImageButton?.layoutParams = linearParam
 
         linearParam.setMargins(buttonMarginLeft, 0, 0, 0)
         previousMediaImageButton?.layoutParams = linearParam
-
-        val playPauseButtonFrameLayout: FrameLayout? =
-            fragmentView?.findViewById(R.id.playPauseButtonFrameLayout)
-        playPauseButtonFrameLayout?.layoutParams = linearParam
-        playMediaImageButton?.layoutParams = frameParam
-        pauseMediaImageButton?.layoutParams = frameParam
-
+        playMediaImageButton?.layoutParams = linearParam
         replayMediaImageButton?.layoutParams = linearParam
         stopMediaImageButton?.layoutParams = linearParam
         nextMediaImageButton?.layoutParams = linearParam
@@ -801,6 +839,7 @@ abstract class PlayerBaseFragment : Fragment(),
             MyBannerTool.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
+        fragmentView?.requestFocus()
     }
 
     private fun disableButtonForSometime(button: View) {
@@ -816,65 +855,57 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setOnClickEvents() {
-        nonVolumeImageButton?.let{ it->
-            it.setOnClickListener {
-                // silence the sound
-                mPresenter.playingParam.let { pIt->
+        volumeImageButton?.setOnClickListener {
+            Log.d(TAG,"volumeImageButton.onClick")
+            mPresenter.playingParam.let { pIt->
+                Log.d(TAG,"volumeImageButton.onClick.currentVolume = ${pIt.currentVolume}")
+                if (pIt.currentVolume > 0.0f) {
                     pIt.currentVolume = 0.0f
-                    playService?.setAudioVolume(pIt.currentVolume)
-                    it.visibility = View.GONE
-                    volumeImageButton?.visibility = View.VISIBLE
-                    disableButtonForSometime(it)
-                }
-            }
-        }
-        volumeImageButton?.let { it->
-            it.setOnClickListener {
-                // enable the sound
-                mPresenter.playingParam.let { pIt->
+                    volumeImageButton?.setImageResource(R.drawable.volume)
+                } else {
                     pIt.currentVolume = 1.0f
-                    playService?.setAudioVolume(pIt.currentVolume)
-                    it.visibility = View.GONE
-                    nonVolumeImageButton?.visibility = View.VISIBLE
-                    disableButtonForSometime(it)
+                    volumeImageButton?.setImageResource(R.drawable.non_volume)
                 }
+                playService?.setAudioVolume(pIt.currentVolume)
             }
+            disableButtonForSometime(it)
+            lastFocusView = volumeImageButton
+            fragmentView?.requestFocus()
         }
-        previousMediaImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.playPreviousSong()
-                disableButtonForSometime(it)
-            }
+        previousMediaImageButton?.setOnClickListener {
+            mPresenter.playPreviousSong()
+            disableButtonForSometime(it)
+            lastFocusView = previousMediaImageButton
+            fragmentView?.requestFocus()
         }
-        playMediaImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.startPlay()
-                disableButtonForSometime(it)
-            }
-        }
-        pauseMediaImageButton?.let { it->
-            it.setOnClickListener {
+        playMediaImageButton?.setOnClickListener {
+            if (mPresenter.playingParam.currentPlaybackState ==
+                PlaybackStateCompat.STATE_PLAYING) {
                 mPresenter.pausePlay()
-                disableButtonForSometime(it)
+            } else {
+                mPresenter.startPlay()
             }
+            disableButtonForSometime(it)
+            lastFocusView = playMediaImageButton
+            fragmentView?.requestFocus()
         }
-        replayMediaImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.replayMedia()
-                disableButtonForSometime(it)
-            }
+        replayMediaImageButton?.setOnClickListener {
+            mPresenter.replayMedia()
+            disableButtonForSometime(it)
+            lastFocusView = replayMediaImageButton
+            fragmentView?.requestFocus()
         }
-        stopMediaImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER)
-                disableButtonForSometime(it)
-            }
+        stopMediaImageButton?.setOnClickListener {
+            mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER)
+            disableButtonForSometime(it)
+            lastFocusView = stopMediaImageButton
+            fragmentView?.requestFocus()
         }
-        nextMediaImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.playNextSong()
-                disableButtonForSometime(it)
-            }
+        nextMediaImageButton?.setOnClickListener {
+            mPresenter.playNextSong()
+            disableButtonForSometime(it)
+            lastFocusView = nextMediaImageButton
+            fragmentView?.requestFocus()
         }
         heartImageButton?.setOnClickListener { it->
             // add this media file to my favorite
@@ -900,96 +931,100 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             }
             disableButtonForSometime(it)
+            lastFocusView = heartImageButton
+            fragmentView?.requestFocus()
         }
 
-        orientationImageButton?.let { it->
-            it.setOnClickListener {
-                val org = resources.configuration.orientation
-                val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
-                        Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
-                Log.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
-                setScreenOrientation(orientation)
-                disableButtonForSometime(it)
-            }
+        orientationImageButton?.setOnClickListener {
+            val org = resources.configuration.orientation
+            val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
+                    Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
+            Log.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
+            setScreenOrientation(orientation)
+            disableButtonForSometime(it)
+            lastFocusView = orientationImageButton
+            fragmentView?.requestFocus()
         }
-        repeatImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.setRepeatSongStatus()
-                disableButtonForSometime(it)
-            }
+        repeatImageButton?.setOnClickListener {
+            mPresenter.setRepeatSongStatus()
+            disableButtonForSometime(it)
+            lastFocusView = repeatImageButton
+            fragmentView?.requestFocus()
         }
-        switchToMusicImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.switchAudioToMusic()
-                disableButtonForSometime(it)
-            }
+        switchToMusicImageButton?.setOnClickListener {
+            mPresenter.switchAudioToMusic()
+            disableButtonForSometime(it)
+            lastFocusView = switchToMusicImageButton
+            fragmentView?.requestFocus()
         }
-        switchToVocalImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.switchAudioToVocal()
-                disableButtonForSometime(it)
-            }
+        switchToVocalImageButton?.setOnClickListener {
+            mPresenter.switchAudioToVocal()
+            disableButtonForSometime(it)
+            lastFocusView = switchToVocalImageButton
+            fragmentView?.requestFocus()
         }
-        hideVideoImageButton?.let { it->
-            it.setOnClickListener {
-                if (playerViewLinearLayout?.visibility==View.VISIBLE) {
-                    hidePlayerView()
-                } else {
-                    showPlayerView()
-                }
-                disableButtonForSometime(it)
+        hideVideoImageButton?.setOnClickListener {
+            if (playerViewLinearLayout?.visibility==View.VISIBLE) {
+                hidePlayerView()
+            } else {
+                showPlayerView()
             }
-        }
-
-        audioChannelImageButton?.let { it->
-            it.setOnClickListener {
-                audioChannelButtonListener()
-                disableButtonForSometime(it)
-            }
-        }
-        audioTrackImageButton?.let { it->
-            it.setOnClickListener {
-                mPresenter.playingParam.apply {
-                    Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                    currentAudioTrackIndexPlayed++
-                    Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                    val numAudioTracks = mPresenter.numberOfAudioTracks
-                    Log.d(TAG, "audioTrackImageButton.numAudioTracks = $numAudioTracks")
-                    if (currentAudioTrackIndexPlayed > numAudioTracks)
-                        currentAudioTrackIndexPlayed = 1
-                    val str: String? =
-                        when (currentAudioTrackIndexPlayed) {
-                            1 -> activity?.getString(R.string.audioTrack1String)
-                            2 -> activity?.getString(R.string.audioTrack2String)
-                            3 -> activity?.getString(R.string.audioTrack3String)
-                            4 -> activity?.getString(R.string.audioTrack4String)
-                            5 -> activity?.getString(R.string.audioTrack5String)
-                            6 -> activity?.getString(R.string.audioTrack6String)
-                            7 -> activity?.getString(R.string.audioTrack7String)
-                            8 -> activity?.getString(R.string.audioTrack8String)
-                            else -> activity?.getString(R.string.unknown)
-                        }
-                    ScreenUtil.showToast(activity, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
-                        Toast.LENGTH_SHORT)
-                    mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
-                }
-                disableButtonForSometime(it)
-            }
+            disableButtonForSometime(it)
+            lastFocusView = hideVideoImageButton
+            fragmentView?.requestFocus()
         }
 
-        actionMenuImageButton?.let { it->
-            it.setOnClickListener {
-                Log.d(TAG, "actionMenuImageButton.setOnClickListener")
-                actionMenuView?.showOverflowMenu()
-                autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
-                setTimerToHideSupportAudioControl()   // reset the timer
-                disableButtonForSometime(it)
-            }
+        audioChannelImageButton?.setOnClickListener {
+            audioChannelButtonListener()
+            disableButtonForSometime(it)
+            lastFocusView = audioChannelImageButton
+            fragmentView?.requestFocus()
         }
-        actionMenuView?.let {
-            it.setOnMenuItemClickListener { item: MenuItem? ->
-                item?.let { itemIt-> onOptionsItemSelected(itemIt) } == true
+        audioTrackImageButton?.setOnClickListener {
+            mPresenter.playingParam.apply {
+                Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
+                currentAudioTrackIndexPlayed++
+                Log.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
+                val numAudioTracks = mPresenter.numberOfAudioTracks
+                Log.d(TAG, "audioTrackImageButton.numAudioTracks = $numAudioTracks")
+                if (currentAudioTrackIndexPlayed > numAudioTracks)
+                    currentAudioTrackIndexPlayed = 1
+                val str: String? =
+                    when (currentAudioTrackIndexPlayed) {
+                        1 -> activity?.getString(R.string.audioTrack1String)
+                        2 -> activity?.getString(R.string.audioTrack2String)
+                        3 -> activity?.getString(R.string.audioTrack3String)
+                        4 -> activity?.getString(R.string.audioTrack4String)
+                        5 -> activity?.getString(R.string.audioTrack5String)
+                        6 -> activity?.getString(R.string.audioTrack6String)
+                        7 -> activity?.getString(R.string.audioTrack7String)
+                        8 -> activity?.getString(R.string.audioTrack8String)
+                        else -> activity?.getString(R.string.unknown)
+                    }
+                ScreenUtil.showToast(activity, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                    Toast.LENGTH_SHORT)
+                mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
             }
+            disableButtonForSometime(it)
+            lastFocusView = audioTrackImageButton
+            fragmentView?.requestFocus()
+        }
+
+        actionMenuImageButton?.setOnClickListener {
+            Log.d(TAG, "actionMenuImageButton.setOnClickListener")
+            actionMenuView?.showOverflowMenu()
+            autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
+            setTimerToHideSupportAudioControl()   // reset the timer
+            disableButtonForSometime(it)
+            lastFocusView = actionMenuImageButton
+            fragmentView?.requestFocus()
+        }
+        actionMenuView?.setOnMenuItemClickListener { item: MenuItem? ->
+            item?.let { itemIt->
+                onOptionsItemSelected(itemIt)
+                // lastFocusView = actionMenuView
+                fragmentView?.requestFocus()
+            } == true
         }
         playerDurationSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -1013,6 +1048,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
                     supportToolbar?.performClick()
                 }
+                fragmentView?.requestFocus() // request focus for fragment view
             }
             it.setOnTouchListener { _, motionEvent ->
                 val posX = motionEvent.x
@@ -1090,30 +1126,26 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun setImageButtonStatus() {
         Log.d(TAG, "setImageButtonStatus")
         val playingParam = mPresenter.playingParam
+        if (playingParam.currentVolume > 0.0f) volumeImageButton?.setImageResource(R.drawable.non_volume)
+        else volumeImageButton?.setImageResource(R.drawable.volume)
         switchToMusicImageButton?.apply {
             isEnabled = true
             visibility = View.VISIBLE
         }
-        // setSwitchToVocalImageButtonVisibility() // abstract method
         switchToVocalImageButton?.visibility = View.VISIBLE
         setOrientationImageButton(resources.configuration.orientation)
         // repeatImageButton
-        var backgroundColor = R.color.red
         when (playingParam.repeatStatus) {
             PlayerConstants.NoRepeatPlaying -> {
                 // no repeat but show symbol of repeat all song with transparent background
-                repeatImageButton?.setImageResource(R.drawable.repeat_all_white)
-                backgroundColor = R.color.transparentDark
+                repeatImageButton?.setImageResource(R.drawable.repeat_no)
             }
             PlayerConstants.RepeatOneSong ->                 // repeat one song
-                repeatImageButton?.setImageResource(R.drawable.repeat_one_white)
+                repeatImageButton?.setImageResource(R.drawable.repeat_one)
             PlayerConstants.RepeatAllSongs ->                 // repeat all song list
-                repeatImageButton?.setImageResource(R.drawable.repeat_all_white)
+                repeatImageButton?.setImageResource(R.drawable.repeat_all)
         }
         activity?.let {
-            repeatImageButton?.setBackgroundColor(ContextCompat.getColor(
-                    it.applicationContext, backgroundColor)
-            )
             repeatImageButton?.visibility = if (playingParam.isPlaySingleSong) View.GONE else View.VISIBLE
         }
 
@@ -1125,13 +1157,11 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun playButtonOnPauseButtonOff() {
-        playMediaImageButton?.visibility = View.VISIBLE
-        pauseMediaImageButton?.visibility = View.GONE
+        playMediaImageButton?.setImageResource(R.drawable.play_media_button_image)
     }
 
     override fun playButtonOffPauseButtonOn() {
-        playMediaImageButton?.visibility = View.GONE
-        pauseMediaImageButton?.visibility = View.VISIBLE
+        playMediaImageButton?.setImageResource(R.drawable.pause_media_button_image)
     }
 
     override fun setPlayingTimeTextView(playingTimeString: String?) {
@@ -1273,6 +1303,8 @@ abstract class PlayerBaseFragment : Fragment(),
             Log.d(TAG, "showPlayerView.orgOrientation = $orgOrientation")
             setScreenOrientation(orgOrientation)
         }
+        Log.d(TAG, "showPlayerView.fragmentView?.requestFocus()")
+        fragmentView?.requestFocus()
     }
 
     override fun showToastNoFilesSelected() {

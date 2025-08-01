@@ -542,7 +542,6 @@ public abstract class PlayerBasePresenter {
                 // set up a timer for supportToolbar's visibility
                 mPresentView.setTimerToHideSupportAudioControl();
                 mPresentView.playButtonOffPauseButtonOn();
-                // adsForOnlyMusic();
                 mPresentView.hideNativeAd();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
