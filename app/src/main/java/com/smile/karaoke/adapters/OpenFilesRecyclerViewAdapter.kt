@@ -80,7 +80,6 @@ class OpenFilesRecyclerViewAdapter private constructor(
 
             itemView.setOnClickListener { view ->
                 Log.d(TAG, "setOnClickListener.position = ${bindingAdapterPosition}")
-                view.requestFocus()
                 recyclerItemClickListener.onRecyclerItemClick(
                     view, bindingAdapterPosition)
             }
