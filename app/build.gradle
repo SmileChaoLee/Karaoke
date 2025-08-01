@@ -39,8 +39,8 @@ android {
         }
         create("karaokeTvPlayer") {
             dimension = "karaoke"
-            versionCode 100
-            versionName "1.00"
+            versionCode 110
+            versionName "1.10"
             applicationId = "com.smile.karaoketvplayer"
         }
     }
