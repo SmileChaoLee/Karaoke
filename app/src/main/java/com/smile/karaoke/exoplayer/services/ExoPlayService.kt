@@ -129,7 +129,7 @@ class ExoPlayService : BasePlayService() {
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
             val myRenderersFactory =
                 MyRenderersFactory(applicationContext,
-                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
             stereoVolumeAudioProcessor = myRenderersFactory.stereoVolumeAudioProcessor
 
             val exoPlayerBuilder = ExoPlayer.Builder(applicationContext, myRenderersFactory)
