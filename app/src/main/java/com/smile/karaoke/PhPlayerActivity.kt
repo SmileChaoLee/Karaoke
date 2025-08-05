@@ -69,9 +69,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-open class PlayerActivity : ComponentActivity() {
+open class PhPlayerActivity : ComponentActivity() {
 
-    private var mTAG : String = "PlayerActivity"
+    private var mTAG : String = "PhPlayerActivity"
     fun setTag(tag: String) {
         Log.d(mTAG, "setTag.tag = $tag")
         mTAG = tag
@@ -93,7 +93,7 @@ open class PlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d(mTAG,"onCreate")
 
-        screenSize = ScreenUtil.getScreenSize(this@PlayerActivity)
+        screenSize = ScreenUtil.getScreenSize(this@PhPlayerActivity)
         val smallestWidth = if (screenSize.x < screenSize.y) screenSize.x else screenSize.y
         val smallestScreenWidthDp = ScreenUtil.pixelToDp(smallestWidth.toFloat())
         Log.d(mTAG, "onCreate.smallestScreenWidthDp = $smallestScreenWidthDp")
@@ -126,13 +126,13 @@ open class PlayerActivity : ComponentActivity() {
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@PlayerActivity,
+        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@PhPlayerActivity,
             ScreenUtil.FontSize_Pixel_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(this@PlayerActivity,
+        textFontSize = ScreenUtil.suitableFontSize(this@PhPlayerActivity,
             defaultTextFontSize,
             ScreenUtil.FontSize_Pixel_Type,0.0f)
         toastTextSize = textFontSize * 0.7f
-        fontSize = ScreenUtil.suitableFontScale(this@PlayerActivity,
+        fontSize = ScreenUtil.suitableFontScale(this@PhPlayerActivity,
             ScreenUtil.FontSize_Pixel_Type, 0.0f)
         SmileAppBase.textFontSize = textFontSize
         SmileAppBase.toastTextSize = toastTextSize
@@ -271,7 +271,7 @@ open class PlayerActivity : ComponentActivity() {
 
     private fun startExoActivity() {
         Intent(
-            this@PlayerActivity,
+            this@PhPlayerActivity,
             ExoPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -281,7 +281,7 @@ open class PlayerActivity : ComponentActivity() {
 
     private fun startVlcActivity() {
         Intent(
-            this@PlayerActivity,
+            this@PhPlayerActivity,
             VlcPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)

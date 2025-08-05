@@ -1,10 +1,8 @@
-package karaoketvplayer
+package com.smile.karaoke
 
-import android.os.Bundle
 import android.util.Log
-import com.smile.karaoke.PlayerActivity
 
-class TvPlayerActivity: PlayerActivity() {
+class TvPlayerActivity: PhPlayerActivity() {
     private val mTAG : String = "TvPlayerActivity"
     init {
         Log.d(mTAG, "")
