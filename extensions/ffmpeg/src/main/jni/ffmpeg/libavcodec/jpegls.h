@@ -28,15 +28,10 @@
 #ifndef AVCODEC_JPEGLS_H
 #define AVCODEC_JPEGLS_H
 
+#include <limits.h>
 #include "libavutil/common.h"
-#include "avcodec.h"
-#include "internal.h"
 
 #undef near /* This file uses struct member 'near' which in windows.h is defined as empty. */
-
-typedef struct JpeglsContext {
-    AVCodecContext *avctx;
-} JpeglsContext;
 
 typedef struct JLSState {
     int T1, T2, T3;

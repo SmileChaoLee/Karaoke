@@ -20,11 +20,10 @@
 
 #include <string.h>
 
-#include "avcodec.h"
 #include "bsf.h"
+#include "bsf_internal.h"
 
 #include "libavutil/log.h"
-#include "libavutil/mem.h"
 #include "libavutil/opt.h"
 
 enum DumpFreq {
@@ -99,9 +98,9 @@ static const AVClass dump_extradata_class = {
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-const AVBitStreamFilter ff_dump_extradata_bsf = {
-    .name           = "dump_extra",
+const FFBitStreamFilter ff_dump_extradata_bsf = {
+    .p.name         = "dump_extra",
+    .p.priv_class   = &dump_extradata_class,
     .priv_data_size = sizeof(DumpExtradataContext),
-    .priv_class     = &dump_extradata_class,
     .filter         = dump_extradata,
 };

@@ -347,13 +347,13 @@ endef
 fate-swr-resample_nn-fltp-44100-8000: CMP_TARGET = 591.03
 fate-swr-resample_nn-fltp-44100-8000: SIZE_TOLERANCE = 529200 - 20486
 
-fate-swr-resample_nn-fltp-8000-44100: CMP_TARGET = 3163.32
+fate-swr-resample_nn-fltp-8000-44100: CMP_TARGET = 3156.61
 fate-swr-resample_nn-fltp-8000-44100: SIZE_TOLERANCE = 96000 - 20480
 
 fate-swr-resample_nn-s16p-44100-8000: CMP_TARGET = 590.98
 fate-swr-resample_nn-s16p-44100-8000: SIZE_TOLERANCE = 529200 - 20486
 
-fate-swr-resample_nn-s16p-8000-44100: CMP_TARGET = 3163.39
+fate-swr-resample_nn-s16p-8000-44100: CMP_TARGET = 3156.61
 fate-swr-resample_nn-s16p-8000-44100: SIZE_TOLERANCE = 96000 - 20480
 
 define ARESAMPLE_ASYNC
@@ -1089,7 +1089,7 @@ FATE_SWR += $(FATE_SWR_RESAMPLE-yes)
 FATE_SWR_AUDIOCONVERT-$(call FILTERDEMDECENCMUX, AFORMAT AEVAL, WAV, PCM_S16LE, PCM_S16LE, WAV) += fate-swr-audioconvert
 fate-swr-audioconvert: tests/data/asynth-44100-1.wav
 fate-swr-audioconvert: REF = tests/data/asynth-44100-1.wav
-fate-swr-audioconvert: CMD = ffmpeg -i $(TARGET_PATH)/tests/data/asynth-44100-1.wav -af "aformat=fltp,aeval=val(0)+(random(0)-0.5)/33000,aformat=fltp" -f wav -c:a pcm_s16le -
+fate-swr-audioconvert: CMD = ffmpeg -i $(TARGET_PATH)/tests/data/asynth-44100-1.wav -af "aresample,aformat=fltp,aresample,aeval=val(0)+(random(0)-0.5)/33000,aresample,aformat=fltp,aresample" -f wav -c:a pcm_s16le -
 fate-swr-audioconvert: CMP = stddev
 fate-swr-audioconvert: FUZZ = 0
 

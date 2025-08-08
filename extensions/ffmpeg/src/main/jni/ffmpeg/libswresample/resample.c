@@ -27,6 +27,7 @@
  */
 
 #include "libavutil/avassert.h"
+#include "libavutil/cpu.h"
 #include "resample.h"
 
 static inline double eval_poly(const double *coeff, int size, double x) {
@@ -451,9 +452,6 @@ static int set_compensation(ResampleContext *c, int sample_delta, int compensati
 
 static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, AudioData *src, int src_size, int *consumed){
     int i;
-    int av_unused mm_flags = av_get_cpu_flags();
-    int need_emms = c->format == AV_SAMPLE_FMT_S16P && ARCH_X86_32 &&
-                    (mm_flags & (AV_CPU_FLAG_MMX2 | AV_CPU_FLAG_SSE2)) == AV_CPU_FLAG_MMX2;
     int64_t max_src_size = (INT64_MAX/2 / c->phase_count) / c->src_incr;
 
     if (c->compensation_distance)
@@ -463,8 +461,8 @@ static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, A
     *consumed = 0;
 
     if (c->filter_length == 1 && c->phase_count == 1) {
-        int64_t index2= (1LL<<32)*c->frac/c->src_incr + (1LL<<32)*c->index;
-        int64_t incr= (1LL<<32) * c->dst_incr / c->src_incr;
+        int64_t index2= (1LL<<32)*c->frac/c->src_incr + (1LL<<32)*c->index + 1;
+        int64_t incr= (1LL<<32) * c->dst_incr / c->src_incr + 1;
         int new_size = (src_size * (int64_t)c->src_incr - c->frac + c->dst_incr - 1) / c->dst_incr;
 
         dst_size = FFMAX(FFMIN(dst_size, new_size), 0);
@@ -498,9 +496,6 @@ static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, A
                 *consumed = resample_func(c, dst->ch[i], src->ch[i], dst_size, i+1 == dst->ch_count);
         }
     }
-
-    if(need_emms)
-        emms_c();
 
     if (c->compensation_distance) {
         c->compensation_distance -= dst_size;

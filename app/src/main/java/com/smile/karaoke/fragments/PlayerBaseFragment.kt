@@ -161,24 +161,6 @@ abstract class PlayerBaseFragment : Fragment(),
         }
     }
 
-    // for test only
-    private val handler = Handler(Looper.getMainLooper())
-    private val mRunnable: Runnable = object : Runnable {
-        override fun run() {
-            Log.d(TAG, "mRunnable.run()")
-            handler.removeCallbacksAndMessages(null)
-            activity?.let { actIt ->
-                val focusView = actIt.currentFocus
-                Log.d(TAG, "mRunnable.focusView = $focusView")
-            }
-            Log.d(TAG, "fragmentView?.hasFocus() = ${fragmentView?.hasFocus()}")
-            Log.d(TAG, "playerViewLinearLayout?.hasFocus() = ${playerViewLinearLayout?.hasFocus()}")
-            Log.d(TAG, "audioControllerView?.hasFocus() = ${audioControllerView?.hasFocus()}")
-            handler.postDelayed(this, 1000)
-        }
-    }
-    //
-
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setMenuItemsVisibility()
     abstract fun onPlayServiceConnected(service: IBinder)
@@ -409,9 +391,6 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             return@setOnKeyListener false
         }
-
-        // for test only
-        handler.postDelayed(mRunnable, 1000) // 1000 ms
 
         Log.d(TAG, "onViewCreated is finished.")
     }

@@ -204,8 +204,8 @@ static int nvdec_hevc_start_frame(AVCodecContext *avctx,
         ppc->row_height_minus1[i] = pps->row_height[i] - 1;
 
 #if NVDECAPI_CHECK_VERSION(9, 0)
-    if (pps->chroma_qp_offset_list_len_minus1 > FF_ARRAY_ELEMS(ppc->cb_qp_offset_list) ||
-        pps->chroma_qp_offset_list_len_minus1 > FF_ARRAY_ELEMS(ppc->cr_qp_offset_list)) {
+    if (pps->chroma_qp_offset_list_len_minus1 >= FF_ARRAY_ELEMS(ppc->cb_qp_offset_list) ||
+        pps->chroma_qp_offset_list_len_minus1 >= FF_ARRAY_ELEMS(ppc->cr_qp_offset_list)) {
         av_log(avctx, AV_LOG_ERROR, "Too many chroma_qp_offsets\n");
         return AVERROR(ENOSYS);
     }
@@ -273,11 +273,11 @@ static int nvdec_hevc_decode_slice(AVCodecContext *avctx, const uint8_t *buffer,
     NVDECContext *ctx = avctx->internal->hwaccel_priv_data;
     void *tmp;
 
-    tmp = av_fast_realloc(ctx->bitstream, &ctx->bitstream_allocated,
+    tmp = av_fast_realloc(ctx->bitstream_internal, &ctx->bitstream_allocated,
                           ctx->bitstream_len + size + 3);
     if (!tmp)
         return AVERROR(ENOMEM);
-    ctx->bitstream = tmp;
+    ctx->bitstream = ctx->bitstream_internal = tmp;
 
     tmp = av_fast_realloc(ctx->slice_offsets, &ctx->slice_offsets_allocated,
                           (ctx->nb_slices + 1) * sizeof(*ctx->slice_offsets));
@@ -305,6 +305,15 @@ static int nvdec_hevc_frame_params(AVCodecContext *avctx,
 static int nvdec_hevc_decode_init(AVCodecContext *avctx) {
     NVDECContext *ctx = avctx->internal->hwaccel_priv_data;
     ctx->supports_444 = 1;
+
+    if (avctx->profile != FF_PROFILE_HEVC_MAIN &&
+        avctx->profile != FF_PROFILE_HEVC_MAIN_10 &&
+        avctx->profile != FF_PROFILE_HEVC_MAIN_STILL_PICTURE &&
+        avctx->profile != FF_PROFILE_HEVC_REXT) {
+        av_log(avctx, AV_LOG_ERROR, "Unsupported HEVC profile: %d\n", avctx->profile);
+        return AVERROR(ENOTSUP);
+    }
+
     return ff_nvdec_decode_init(avctx);
 }
 

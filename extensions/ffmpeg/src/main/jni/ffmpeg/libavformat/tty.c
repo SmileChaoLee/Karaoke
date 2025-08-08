@@ -53,10 +53,19 @@ static int read_probe(const AVProbeData *p)
 {
     int cnt = 0;
 
-    for (int i = 0; i < p->buf_size; i++)
+    if (!p->buf_size)
+        return 0;
+
+    for (int i = 0; i < 8 && i < p->buf_size; i++)
         cnt += !!isansicode(p->buf[i]);
 
-    return (cnt * 100LL / p->buf_size) * (cnt > 400) *
+    if (cnt != 8)
+        return 0;
+
+    for (int i = 8; i < p->buf_size; i++)
+        cnt += !!isansicode(p->buf[i]);
+
+    return (cnt * 99LL / p->buf_size) * (cnt > 400) *
         !!av_match_ext(p->filename, tty_extensions);
 }
 
@@ -147,6 +156,8 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
     pkt->size = av_get_packet(avctx->pb, pkt, n);
     if (pkt->size < 0)
         return pkt->size;
+    pkt->stream_index = 0;
+    pkt->pts = pkt->pos / s->chars_per_frame;
     pkt->flags |= AV_PKT_FLAG_KEY;
     return 0;
 }
@@ -167,7 +178,7 @@ static const AVClass tty_demuxer_class = {
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_tty_demuxer = {
+const AVInputFormat ff_tty_demuxer = {
     .name           = "tty",
     .long_name      = NULL_IF_CONFIG_SMALL("Tele-typewriter"),
     .priv_data_size = sizeof(TtyDemuxContext),
@@ -176,4 +187,5 @@ AVInputFormat ff_tty_demuxer = {
     .read_packet    = read_packet,
     .extensions     = tty_extensions,
     .priv_class     = &tty_demuxer_class,
+    .flags          = AVFMT_GENERIC_INDEX,
 };

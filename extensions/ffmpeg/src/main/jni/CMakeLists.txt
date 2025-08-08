@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.7.1 FATAL_ERROR)
+# LINT.IfChange
+cmake_minimum_required(VERSION 3.21.0 FATAL_ERROR)
+# LINT.ThenChange(../../../build.gradle)
 
 # Enable C++11 features.
 set(CMAKE_CXX_STANDARD 11)
@@ -41,12 +43,22 @@ include_directories(${ffmpeg_location})
 find_library(android_log_lib log)
 
 add_library(ffmpegJNI
-            SHARED
-            ffmpeg_jni.cc)
+        SHARED
+        ffmpeg_jni.cc)
 
 target_link_libraries(ffmpegJNI
-                      PRIVATE android
-                      PRIVATE swresample
-                      PRIVATE avcodec
-                      PRIVATE avutil
-                      PRIVATE ${android_log_lib})
+        PRIVATE android
+        PRIVATE swresample
+        PRIVATE avcodec
+        PRIVATE avutil
+        PRIVATE ${android_log_lib})
+
+# Additional flags needed for "arm64-v8a" from NDK 23.1.7779620 and above.
+# See https://github.com/google/ExoPlayer/issues/9933#issuecomment-1029775358.
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+    target_link_options(ffmpegJNI PRIVATE "-Wl,-Bsymbolic")
+endif()
+
+# Enable 16 KB ELF alignment.
+target_link_options(ffmpegJNI
+        PRIVATE "-Wl,-z,max-page-size=16384")

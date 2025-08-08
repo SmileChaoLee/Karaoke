@@ -22,8 +22,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/mathematics.h"
 #include "avformat.h"
+#include "demux.h"
 #include "ffmeta.h"
-#include "internal.h"
 #include "libavutil/dict.h"
 
 static int probe(const AVProbeData *p)
@@ -101,19 +101,22 @@ static AVChapter *read_chapter(AVFormatContext *s)
     uint8_t line[256];
     int64_t start, end;
     AVRational tb = {1, 1e9};
+    int ret;
 
     get_line(s->pb, line, sizeof(line));
 
     if (sscanf(line, "TIMEBASE=%d/%d", &tb.num, &tb.den))
         get_line(s->pb, line, sizeof(line));
-    if (!sscanf(line, "START=%"SCNd64, &start)) {
+    ret = sscanf(line, "START=%"SCNd64, &start);
+    if (ret <= 0) {
         av_log(s, AV_LOG_ERROR, "Expected chapter start timestamp, found %s.\n", line);
         start = (s->nb_chapters && s->chapters[s->nb_chapters - 1]->end != AV_NOPTS_VALUE) ?
                  s->chapters[s->nb_chapters - 1]->end : 0;
     } else
         get_line(s->pb, line, sizeof(line));
 
-    if (!sscanf(line, "END=%"SCNd64, &end)) {
+    ret = sscanf(line, "END=%"SCNd64, &end);
+    if (ret <= 0) {
         av_log(s, AV_LOG_ERROR, "Expected chapter end timestamp, found %s.\n", line);
         end = AV_NOPTS_VALUE;
     }
@@ -219,7 +222,7 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return AVERROR_EOF;
 }
 
-AVInputFormat ff_ffmetadata_demuxer = {
+const AVInputFormat ff_ffmetadata_demuxer = {
     .name        = "ffmetadata",
     .long_name   = NULL_IF_CONFIG_SMALL("FFmpeg metadata in text"),
     .read_probe  = probe,

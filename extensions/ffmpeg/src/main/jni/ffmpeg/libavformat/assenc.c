@@ -22,6 +22,7 @@
 #include "libavutil/avstring.h"
 #include "avformat.h"
 #include "internal.h"
+#include "mux.h"
 
 #include "libavutil/opt.h"
 
@@ -77,7 +78,6 @@ static int write_header(AVFormatContext *s)
             avio_printf(s->pb, "[Events]\r\nFormat: %s, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\r\n",
                         ass->ssa_mode ? "Marked" : "Layer");
     }
-    avio_flush(s->pb);
 
     return 0;
 }
@@ -95,7 +95,7 @@ static void purge_dialogues(AVFormatContext *s, int force)
                    ass->expected_readorder, dialogue->readorder);
             ass->expected_readorder = dialogue->readorder;
         }
-        avio_printf(s->pb, "Dialogue: %s\r\n", dialogue->line);
+        avio_print(s->pb, "Dialogue: ", dialogue->line, "\r\n");
         if (dialogue == ass->last_added_dialogue)
             ass->last_added_dialogue = next;
         av_freep(&dialogue->line);
@@ -227,16 +227,16 @@ static const AVClass ass_class = {
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_ass_muxer = {
-    .name           = "ass",
-    .long_name      = NULL_IF_CONFIG_SMALL("SSA (SubStation Alpha) subtitle"),
-    .mime_type      = "text/x-ass",
-    .extensions     = "ass,ssa",
+const FFOutputFormat ff_ass_muxer = {
+    .p.name           = "ass",
+    .p.long_name      = NULL_IF_CONFIG_SMALL("SSA (SubStation Alpha) subtitle"),
+    .p.mime_type      = "text/x-ass",
+    .p.extensions     = "ass,ssa",
+    .p.subtitle_codec = AV_CODEC_ID_ASS,
+    .p.flags          = AVFMT_GLOBALHEADER | AVFMT_NOTIMESTAMPS | AVFMT_TS_NONSTRICT,
+    .p.priv_class     = &ass_class,
     .priv_data_size = sizeof(ASSContext),
-    .subtitle_codec = AV_CODEC_ID_ASS,
     .write_header   = write_header,
     .write_packet   = write_packet,
     .write_trailer  = write_trailer,
-    .flags          = AVFMT_GLOBALHEADER | AVFMT_NOTIMESTAMPS | AVFMT_TS_NONSTRICT,
-    .priv_class     = &ass_class,
 };

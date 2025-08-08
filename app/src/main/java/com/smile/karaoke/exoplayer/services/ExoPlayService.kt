@@ -21,7 +21,7 @@ import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.ext.av1.Gav1Library
-import com.google.android.exoplayer2.ext.ffmpeg.FfmpegLibrary
+import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import com.google.android.exoplayer2.ext.flac.FlacLibrary
 import com.google.android.exoplayer2.ext.opus.OpusLibrary
 import com.google.android.exoplayer2.ext.vp9.VpxLibrary
@@ -129,7 +129,7 @@ class ExoPlayService : BasePlayService() {
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
             val myRenderersFactory =
                 MyRenderersFactory(applicationContext,
-                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
             stereoVolumeAudioProcessor = myRenderersFactory.stereoVolumeAudioProcessor
 
             val exoPlayerBuilder = ExoPlayer.Builder(applicationContext, myRenderersFactory)
