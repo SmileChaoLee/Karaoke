@@ -56,17 +56,20 @@ public final class FfmpegLibrary {
    * @param libraries The names of the FFmpeg native libraries.
    */
   public static void setLibraries(String... libraries) {
+    Log.i(TAG, "setLibraries");
     LOADER.setLibraries(libraries);
   }
 
   /** Returns whether the underlying library is available, loading it if necessary. */
   public static boolean isAvailable() {
+    Log.i(TAG, "isAvailable");
     return LOADER.isAvailable();
   }
 
   /** Returns the version of the underlying library if available, or null otherwise. */
   @Nullable
   public static String getVersion() {
+    Log.i(TAG, "getVersion");
     if (!isAvailable()) {
       return null;
     }
@@ -81,6 +84,7 @@ public final class FfmpegLibrary {
    * the underlying library is not available.
    */
   public static int getInputBufferPaddingSize() {
+    Log.i(TAG, "getInputBufferPaddingSize");
     if (!isAvailable()) {
       return C.LENGTH_UNSET;
     }
@@ -96,17 +100,21 @@ public final class FfmpegLibrary {
    * @param mimeType The MIME type to check.
    */
   public static boolean supportsFormat(String mimeType) {
+    Log.i(TAG, "supportsFormat");
     if (!isAvailable()) {
+      Log.w(TAG, "supportsFormat.Ffmpeg Library is not available.");
       return false;
     }
     @Nullable String codecName = getCodecName(mimeType);
     if (codecName == null) {
+      Log.w(TAG, "supportsFormat.codecName is null");
       return false;
     }
     if (!ffmpegHasDecoder(codecName)) {
       Log.w(TAG, "No " + codecName + " decoder available. Check the FFmpeg build configuration.");
       return false;
     }
+    Log.i(TAG, codecName + " decoder available.");
     return true;
   }
 
@@ -116,6 +124,7 @@ public final class FfmpegLibrary {
    */
   @Nullable
   /* package */ static String getCodecName(String mimeType) {
+    Log.i(TAG, "getCodecName.mimeType = " + mimeType);
     switch (mimeType) {
       case MimeTypes.AUDIO_AAC:
         return "aac";
