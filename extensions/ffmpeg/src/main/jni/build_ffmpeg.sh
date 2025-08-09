@@ -35,16 +35,23 @@ COMMON_OPTIONS="
     --disable-doc
     --disable-programs
     --disable-everything
-    --disable-avdevice
-    --disable-avformat
-    --disable-swscale
-    --disable-postproc
-    --disable-avfilter
-    --disable-symver
-    --enable-swresample
-    --extra-ldexeflags=-pie
     --disable-v4l2-m2m
     --disable-vulkan
+    --enable-avdevice
+    --enable-postproc
+    --enable-avfilter
+    --disable-symver
+    --enable-swresample
+    --enable-avcodec
+    --enable-avformat
+    --enable-swscale
+    --enable-gpl
+    --enable-decoder=mpeg2video
+    --enable-demuxer=mpegvideo
+    --enable-muxer=mpegvideo
+    --enable-decoder=h264
+    --enable-decoder=hevc
+    --extra-ldexeflags=-pie
     "
 TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
 if [[ ! -d "${TOOLCHAIN_PREFIX}" ]]
