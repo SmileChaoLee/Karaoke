@@ -56,26 +56,25 @@ public final class FfmpegLibrary {
    * @param libraries The names of the FFmpeg native libraries.
    */
   public static void setLibraries(String... libraries) {
-    Log.i(TAG, "setLibraries");
     LOADER.setLibraries(libraries);
   }
 
   /** Returns whether the underlying library is available, loading it if necessary. */
   public static boolean isAvailable() {
-    Log.i(TAG, "isAvailable");
     return LOADER.isAvailable();
   }
 
   /** Returns the version of the underlying library if available, or null otherwise. */
   @Nullable
   public static String getVersion() {
-    Log.i(TAG, "getVersion");
     if (!isAvailable()) {
+      Log.i(TAG, "getVersion.Library not available.");
       return null;
     }
     if (version == null) {
       version = ffmpegGetVersion();
     }
+    Log.i(TAG, "getVersion.version = " + version);
     return version;
   }
 
@@ -84,13 +83,14 @@ public final class FfmpegLibrary {
    * the underlying library is not available.
    */
   public static int getInputBufferPaddingSize() {
-    Log.i(TAG, "getInputBufferPaddingSize");
     if (!isAvailable()) {
+      Log.i(TAG, "getInputBufferPaddingSize.Library not available.");
       return C.LENGTH_UNSET;
     }
     if (inputBufferPaddingSize == C.LENGTH_UNSET) {
       inputBufferPaddingSize = ffmpegGetInputBufferPaddingSize();
     }
+    Log.i(TAG, "getInputBufferPaddingSize.inputBufferPaddingSize = " + inputBufferPaddingSize);
     return inputBufferPaddingSize;
   }
 
@@ -100,9 +100,7 @@ public final class FfmpegLibrary {
    * @param mimeType The MIME type to check.
    */
   public static boolean supportsFormat(String mimeType) {
-    Log.i(TAG, "supportsFormat");
     if (!isAvailable()) {
-      Log.w(TAG, "supportsFormat.Ffmpeg Library is not available.");
       return false;
     }
     @Nullable String codecName = getCodecName(mimeType);
@@ -111,10 +109,10 @@ public final class FfmpegLibrary {
       return false;
     }
     if (!ffmpegHasDecoder(codecName)) {
-      Log.w(TAG, "No " + codecName + " decoder available. Check the FFmpeg build configuration.");
+      Log.w(TAG, "supportsFormat.No " + codecName + " decoder available. Check the FFmpeg build configuration.");
       return false;
     }
-    Log.i(TAG, codecName + " decoder available.");
+    Log.i(TAG, "supportsFormat." + codecName + " decoder available.");
     return true;
   }
 
@@ -125,46 +123,79 @@ public final class FfmpegLibrary {
   @Nullable
   /* package */ static String getCodecName(String mimeType) {
     Log.i(TAG, "getCodecName.mimeType = " + mimeType);
+    String codecName;
     switch (mimeType) {
       case MimeTypes.AUDIO_AAC:
-        return "aac";
+        codecName = "aac";
+        break;
       case MimeTypes.AUDIO_MPEG:
       case MimeTypes.AUDIO_MPEG_L1:
       case MimeTypes.AUDIO_MPEG_L2:
-        return "mp3";
+        codecName = "mp3";
+        break;
       case MimeTypes.AUDIO_AC3:
-        return "ac3";
+        codecName = "ac3";
+        break;
       case MimeTypes.AUDIO_E_AC3:
       case MimeTypes.AUDIO_E_AC3_JOC:
-        return "eac3";
+        codecName = "eac3";
+        break;
       case MimeTypes.AUDIO_TRUEHD:
-        return "truehd";
+        codecName = "truehd";
+        break;
       case MimeTypes.AUDIO_DTS:
       case MimeTypes.AUDIO_DTS_HD:
-        return "dca";
+        codecName = "dca";
+        break;
       case MimeTypes.AUDIO_VORBIS:
-        return "vorbis";
+        codecName = "vorbis";
+        break;
       case MimeTypes.AUDIO_OPUS:
-        return "opus";
+        codecName = "opus";
+        break;
       case MimeTypes.AUDIO_AMR_NB:
-        return "amrnb";
+        codecName = "amrnb";
+        break;
       case MimeTypes.AUDIO_AMR_WB:
-        return "amrwb";
+        codecName = "amrwb";
+        break;
       case MimeTypes.AUDIO_FLAC:
-        return "flac";
+        codecName = "flac";
+        break;
       case MimeTypes.AUDIO_ALAC:
-        return "alac";
+        codecName = "alac";
+        break;
       case MimeTypes.AUDIO_MLAW:
-        return "pcm_mulaw";
+        codecName = "pcm_mulaw";
+        break;
       case MimeTypes.AUDIO_ALAW:
-        return "pcm_alaw";
+        codecName = "pcm_alaw";
+        break;
+      case MimeTypes.VIDEO_MPEG:
+        codecName = "mpeg1video";
+        break;
+      case MimeTypes.VIDEO_MPEG2:
+        codecName = "mpeg2video";
+        break;
       case MimeTypes.VIDEO_H264:
-        return "h264";
+        codecName = "h264";
+        break;
       case MimeTypes.VIDEO_H265:
-        return "hevc";
+      case MimeTypes.VIDEO_DOLBY_VISION:
+        codecName = "hevc";
+        break;
+      case MimeTypes.VIDEO_MP4:
+      case MimeTypes.VIDEO_MP42:
+      case MimeTypes.VIDEO_MP43:
+      case MimeTypes.VIDEO_MP4V:
+        codecName = "mpeg4";
+        break;
       default:
-        return null;
+        codecName = null;
+        break;
     }
+    Log.i(TAG, "getCodecName.codecName = " + codecName);
+    return codecName;
   }
 
   private static native String ffmpegGetVersion();

@@ -37,18 +37,27 @@ COMMON_OPTIONS="
     --disable-everything
     --disable-v4l2-m2m
     --disable-vulkan
+    --disable-symver
     --enable-avdevice
     --enable-postproc
     --enable-avfilter
-    --disable-symver
     --enable-swresample
     --enable-avcodec
     --enable-avformat
     --enable-swscale
     --enable-gpl
+    --enable-decoder=mpegvideo
+    --enable-decoder=mpeg1video
     --enable-decoder=mpeg2video
-    --enable-demuxer=mpegvideo
-    --enable-muxer=mpegvideo
+    --enable-decoder=msmpeg4v1
+    --enable-decoder=msmpeg4v2
+    --enable-decoder=msmpeg4
+    --enable-decoder=mpeg4
+    --enable-decoder=flv
+    --enable-protocol=file
+    --enable-parser=mpegvideo,mpeg4video
+    --enable-demuxer=mpeg,mpegts,mpegps,vob,avi,mp4,mov
+    --enable-muxer=mpeg,mpegts,vob,avi,mp4
     --enable-decoder=h264
     --enable-decoder=hevc
     --extra-ldexeflags=-pie
