@@ -39,7 +39,25 @@ foreach(ffmpeg_lib avcodec avdevice avfilter avformat avutil postproc swresample
             ${ffmpeg_lib_file_path})
 endforeach()
 
+set(yuv_location "${CMAKE_CURRENT_SOURCE_DIR}/libyuv")
+set(yuv_binaries "${yuv_location}/android-libs/${ANDROID_ABI}")
+
+foreach(yuv_lib yuv)
+    set(yuv_lib_filename lib${yuv_lib}.so)
+    set(yuv_lib_file_path ${yuv_binaries}/${yuv_lib_filename})
+    add_library(
+            ${yuv_lib}
+            SHARED
+            IMPORTED)
+    set_target_properties(
+            ${yuv_lib} PROPERTIES
+            IMPORTED_LOCATION
+            ${yuv_lib_file_path})
+endforeach()
+
 include_directories(${ffmpeg_location})
+include_directories("${yuv_location}/include")
+
 find_library(android_log_lib log)
 
 add_library(ffmpegJNI
@@ -56,6 +74,7 @@ target_link_libraries(ffmpegJNI
         PRIVATE postproc
         PRIVATE swresample
         PRIVATE swscale
+        PRIVATE yuv
         PRIVATE ${android_log_lib})
 
 # Additional flags needed for "arm64-v8a" from NDK 23.1.7779620 and above.
