@@ -9,19 +9,39 @@ android {
         minSdk sdk_version.min
         consumerProguardFiles 'proguard-rules.txt'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        externalNativeBuild {
+            cmake {
+                targets "opusV2JNI"
+            }
+        }
     }
+
+    // ndkVersion '22.1.7171670'
+    ndkVersion '26.3.11579264'
+    // or
+    // ndkPath "home/chaolee/Android/Sdk/ndk/21.4.7075529"  // Point to your own NDK
+    externalNativeBuild {
+        cmake {
+            path file('../opus/src/main/jni/CMakeLists.txt')
+            version '3.21.0+'
+        }
+    }
+
 
     sourceSets.main {
         jniLibs.srcDir 'src/main/libs'
-        jni.srcDirs = [] // Disable the automatic ndk-build call by Android Studio.
+        // jni.srcDirs = [] // Disable the automatic ndk-build call by Android Studio.
     }
 
-    namespace "com.google.android.exoplayer2.ext.opus"
+    namespace 'androidx.media3.decoder.opus'
 }
 
 dependencies {
     implementation "androidx.annotation:annotation:1.9.1"
-    implementation "com.google.android.exoplayer:exoplayer:2.19.1"
+    implementation 'androidx.media3:media3-common:1.8.0'
+    implementation 'androidx.media3:media3-exoplayer:1.8.0'
+    implementation 'androidx.media3:media3-decoder:1.8.0'
     compileOnly 'org.checkerframework:checker-qual:3.49.5'
     compileOnly 'org.jetbrains.kotlin:kotlin-annotations-jvm:1.9.22'
 }
