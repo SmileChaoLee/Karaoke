@@ -92,7 +92,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
             mTrackSelectionParameters = new TrackSelectionParameters
-                    .Builder(getActivity()).build();
+                    .Builder().build();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
@@ -101,7 +101,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectionParametersState);
             if (parameter != null) mTrackSelectionParameters = TrackSelectionParameters.fromBundle(parameter);
             else mTrackSelectionParameters = new TrackSelectionParameters
-                    .Builder(getActivity()).build();
+                    .Builder().build();
         }
     }
 

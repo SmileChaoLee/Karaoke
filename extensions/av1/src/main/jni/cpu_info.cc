@@ -24,30 +24,30 @@
 #include <cstring>
 
 namespace gav1_jni {
-namespace {
+    namespace {
 
 // Note: The code in this file needs to use the 'long' type because it is the
 // return type of the Standard C Library function strtol(). The linter warnings
 // are suppressed with NOLINT comments since they are integers at runtime.
 
 // Returns the number of online processor cores.
-int GetNumberOfProcessorsOnline() {
-  // See https://developer.android.com/ndk/guides/cpu-features.
-  long num_cpus = sysconf(_SC_NPROCESSORS_ONLN);  // NOLINT
-  if (num_cpus < 0) {
-    return 0;
-  }
-  // It is safe to cast num_cpus to int. sysconf(_SC_NPROCESSORS_ONLN) returns
-  // the return value of get_nprocs(), which is an int.
-  return static_cast<int>(num_cpus);
-}
+        int GetNumberOfProcessorsOnline() {
+            // See https://developer.android.com/ndk/guides/cpu-features.
+            long num_cpus = sysconf(_SC_NPROCESSORS_ONLN);  // NOLINT
+            if (num_cpus < 0) {
+                return 0;
+            }
+            // It is safe to cast num_cpus to int. sysconf(_SC_NPROCESSORS_ONLN) returns
+            // the return value of get_nprocs(), which is an int.
+            return static_cast<int>(num_cpus);
+        }
 
-}  // namespace
+    }  // namespace
 
 // These CPUs support heterogeneous multiprocessing.
 #if defined(__arm__) || defined(__aarch64__)
 
-// A helper function used by GetNumberOfPerformanceCoresOnline().
+    // A helper function used by GetNumberOfPerformanceCoresOnline().
 //
 // Returns the cpuinfo_max_freq value (in kHz) of the given CPU. Returns 0 on
 // failure.
@@ -159,9 +159,9 @@ int GetNumberOfPerformanceCoresOnline() {
 #else
 
 // Assume symmetric multiprocessing.
-int GetNumberOfPerformanceCoresOnline() {
-  return GetNumberOfProcessorsOnline();
-}
+    int GetNumberOfPerformanceCoresOnline() {
+        return GetNumberOfProcessorsOnline();
+    }
 
 #endif
 

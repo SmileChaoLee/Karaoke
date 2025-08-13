@@ -21,7 +21,7 @@ namespace gav1_jni {
 // Returns the number of performance cores that are available for AV1 decoding.
 // This is a heuristic that works on most common android devices. Returns 0 on
 // error or if the number of performance cores cannot be determined.
-int GetNumberOfPerformanceCoresOnline();
+    int GetNumberOfPerformanceCoresOnline();
 
 }  // namespace gav1_jni
 

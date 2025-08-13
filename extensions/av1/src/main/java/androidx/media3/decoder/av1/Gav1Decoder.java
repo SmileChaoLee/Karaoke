@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.av1;
+package androidx.media3.decoder.av1;
 
 import static androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE;
 import static java.lang.Runtime.getRuntime;
@@ -21,21 +21,25 @@ import static java.lang.Runtime.getRuntime;
 import android.view.Surface;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.decoder.DecoderInputBuffer;
-import com.google.android.exoplayer2.decoder.SimpleDecoder;
-import com.google.android.exoplayer2.decoder.VideoDecoderOutputBuffer;
-import com.google.android.exoplayer2.util.Util;
+import androidx.media3.common.C;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.common.util.Util;
+import androidx.media3.decoder.DecoderInputBuffer;
+import androidx.media3.decoder.SimpleDecoder;
+import androidx.media3.decoder.VideoDecoderOutputBuffer;
 import java.nio.ByteBuffer;
 
 /** Gav1 decoder. */
 @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
+@UnstableApi
 public final class Gav1Decoder
-    extends SimpleDecoder<DecoderInputBuffer, VideoDecoderOutputBuffer, Gav1DecoderException> {
+        extends SimpleDecoder<DecoderInputBuffer, VideoDecoderOutputBuffer, Gav1DecoderException> {
 
+  // LINT.IfChange
   private static final int GAV1_ERROR = 0;
   private static final int GAV1_OK = 1;
   private static final int GAV1_DECODE_ONLY = 2;
+  // LINT.ThenChange(../../../../../jni/gav1_jni.cc)
 
   private final long gav1DecoderContext;
 
@@ -53,8 +57,8 @@ public final class Gav1Decoder
    * @throws Gav1DecoderException Thrown if an exception occurs when initializing the decoder.
    */
   public Gav1Decoder(
-      int numInputBuffers, int numOutputBuffers, int initialInputBufferSize, int threads)
-      throws Gav1DecoderException {
+          int numInputBuffers, int numOutputBuffers, int initialInputBufferSize, int threads)
+          throws Gav1DecoderException {
     super(new DecoderInputBuffer[numInputBuffers], new VideoDecoderOutputBuffer[numOutputBuffers]);
     if (!Gav1Library.isAvailable()) {
       throw new Gav1DecoderException("Failed to load decoder native library.");
@@ -72,7 +76,7 @@ public final class Gav1Decoder
     gav1DecoderContext = gav1Init(threads);
     if (gav1DecoderContext == GAV1_ERROR || gav1CheckError(gav1DecoderContext) == GAV1_ERROR) {
       throw new Gav1DecoderException(
-          "Failed to initialize decoder. Error: " + gav1GetErrorMessage(gav1DecoderContext));
+              "Failed to initialize decoder. Error: " + gav1GetErrorMessage(gav1DecoderContext));
     }
     setInitialInputBufferSize(initialInputBufferSize);
   }
@@ -95,15 +99,15 @@ public final class Gav1Decoder
   @Override
   @Nullable
   protected Gav1DecoderException decode(
-      DecoderInputBuffer inputBuffer, VideoDecoderOutputBuffer outputBuffer, boolean reset) {
+          DecoderInputBuffer inputBuffer, VideoDecoderOutputBuffer outputBuffer, boolean reset) {
     ByteBuffer inputData = Util.castNonNull(inputBuffer.data);
     int inputSize = inputData.limit();
     if (gav1Decode(gav1DecoderContext, inputData, inputSize) == GAV1_ERROR) {
       return new Gav1DecoderException(
-          "gav1Decode error: " + gav1GetErrorMessage(gav1DecoderContext));
+              "gav1Decode error: " + gav1GetErrorMessage(gav1DecoderContext));
     }
 
-    boolean decodeOnly = inputBuffer.isDecodeOnly();
+    boolean decodeOnly = !isAtLeastOutputStartTimeUs(inputBuffer.timeUs);
     if (!decodeOnly) {
       outputBuffer.init(inputBuffer.timeUs, outputMode, /* supplementalData= */ null);
     }
@@ -112,10 +116,10 @@ public final class Gav1Decoder
     int getFrameResult = gav1GetFrame(gav1DecoderContext, outputBuffer, decodeOnly);
     if (getFrameResult == GAV1_ERROR) {
       return new Gav1DecoderException(
-          "gav1GetFrame error: " + gav1GetErrorMessage(gav1DecoderContext));
+              "gav1GetFrame error: " + gav1GetErrorMessage(gav1DecoderContext));
     }
     if (getFrameResult == GAV1_DECODE_ONLY) {
-      outputBuffer.addFlag(C.BUFFER_FLAG_DECODE_ONLY);
+      outputBuffer.shouldBeSkipped = true;
     }
     if (!decodeOnly) {
       outputBuffer.format = inputBuffer.format;
@@ -136,13 +140,13 @@ public final class Gav1Decoder
   }
 
   @Override
-  protected void releaseOutputBuffer(VideoDecoderOutputBuffer buffer) {
-    // Decode only frames do not acquire a reference on the internal decoder buffer and thus do not
+  protected void releaseOutputBuffer(VideoDecoderOutputBuffer outputBuffer) {
+    // Skipped frames do not acquire a reference on the internal decoder buffer and thus do not
     // require a call to gav1ReleaseFrame.
-    if (buffer.mode == C.VIDEO_OUTPUT_MODE_SURFACE_YUV && !buffer.isDecodeOnly()) {
-      gav1ReleaseFrame(gav1DecoderContext, buffer);
+    if (outputBuffer.mode == C.VIDEO_OUTPUT_MODE_SURFACE_YUV && !outputBuffer.shouldBeSkipped) {
+      gav1ReleaseFrame(gav1DecoderContext, outputBuffer);
     }
-    super.releaseOutputBuffer(buffer);
+    super.releaseOutputBuffer(outputBuffer);
   }
 
   /**
@@ -164,13 +168,13 @@ public final class Gav1Decoder
    *     fails.
    */
   public void renderToSurface(VideoDecoderOutputBuffer outputBuffer, Surface surface)
-      throws Gav1DecoderException {
+          throws Gav1DecoderException {
     if (outputBuffer.mode != C.VIDEO_OUTPUT_MODE_SURFACE_YUV) {
       throw new Gav1DecoderException("Invalid output mode.");
     }
     if (gav1RenderFrame(gav1DecoderContext, surface, outputBuffer) == GAV1_ERROR) {
       throw new Gav1DecoderException(
-          "Buffer render error: " + gav1GetErrorMessage(gav1DecoderContext));
+              "Buffer render error: " + gav1GetErrorMessage(gav1DecoderContext));
     }
   }
 
@@ -208,7 +212,7 @@ public final class Gav1Decoder
    *     is decode-only, {@link #GAV1_ERROR} if an error occurred.
    */
   private native int gav1GetFrame(
-      long context, VideoDecoderOutputBuffer outputBuffer, boolean decodeOnly);
+          long context, VideoDecoderOutputBuffer outputBuffer, boolean decodeOnly);
 
   /**
    * Renders the frame to the surface. Used with {@link C#VIDEO_OUTPUT_MODE_SURFACE_YUV} only.
@@ -219,7 +223,7 @@ public final class Gav1Decoder
    * @return {@link #GAV1_OK} if successful, {@link #GAV1_ERROR} if an error occurred.
    */
   private native int gav1RenderFrame(
-      long context, Surface surface, VideoDecoderOutputBuffer outputBuffer);
+          long context, Surface surface, VideoDecoderOutputBuffer outputBuffer);
 
   /**
    * Releases the frame. Used with {@link C#VIDEO_OUTPUT_MODE_SURFACE_YUV} only.

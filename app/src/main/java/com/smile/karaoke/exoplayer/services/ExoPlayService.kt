@@ -19,7 +19,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.ext.av1.Gav1Library
+import androidx.media3.decoder.av1.Gav1Library
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import com.google.android.exoplayer2.ext.flac.FlacLibrary
