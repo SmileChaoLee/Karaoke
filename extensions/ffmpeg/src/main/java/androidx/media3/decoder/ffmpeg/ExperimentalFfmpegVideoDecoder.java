@@ -98,6 +98,7 @@ import java.util.List;
      */
     @Nullable
     private static byte[] getExtraData(String mimeType, List<byte[]> initializationData) {
+        Log.d(TAG, "getExtraData.mimeType = " + mimeType);
         int size = 0;
         for (int i = 0; i < initializationData.size(); i++) {
             size += initializationData.get(i).length;
@@ -115,7 +116,9 @@ import java.util.List;
 
     @Override
     public String getName() {
-        return "ffmpeg" + FfmpegLibrary.getVersion() + "-" + codecName;
+        String name = "ffmpeg" + FfmpegLibrary.getVersion() + "-" + codecName;
+        Log.d(TAG, "getName: " + name);
+        return name;
     }
 
     /**
@@ -124,16 +127,19 @@ import java.util.List;
      * @param outputMode The output mode.
      */
     public void setOutputMode(@C.VideoOutputMode int outputMode) {
+        Log.d(TAG, "setOutputMode.outputMode = " + outputMode);
         this.outputMode = outputMode;
     }
 
     @Override
     protected DecoderInputBuffer createInputBuffer() {
+        Log.d(TAG, "createInputBuffer");
         return new DecoderInputBuffer(DecoderInputBuffer.BUFFER_REPLACEMENT_MODE_DIRECT);
     }
 
     @Override
     protected VideoDecoderOutputBuffer createOutputBuffer() {
+        Log.d(TAG, "createOutputBuffer");
         return new VideoDecoderOutputBuffer(this::releaseOutputBuffer);
     }
 
@@ -141,11 +147,11 @@ import java.util.List;
     @Nullable
     protected FfmpegDecoderException decode(
             DecoderInputBuffer inputBuffer, VideoDecoderOutputBuffer outputBuffer, boolean reset) {
+        Log.d(TAG, "FfmpegDecoderException.reset = " + reset);
         if (reset) {
-
             nativeContext = ffmpegReset(nativeContext);
             if (nativeContext == 0) {
-                return new FfmpegDecoderException("Error resetting (see logcat).");
+                return new FfmpegDecoderException("FfmpegDecoderException.Error resetting (see logcat).");
             }
         }
 
@@ -196,6 +202,7 @@ import java.util.List;
     @Override
     public void release() {
         super.release();
+        Log.d(TAG, "release");
         ffmpegRelease(nativeContext);
         nativeContext = 0;
     }
@@ -211,6 +218,7 @@ import java.util.List;
      */
     public void renderToSurface(VideoDecoderOutputBuffer outputBuffer, Surface surface)
             throws FfmpegDecoderException {
+        Log.d(TAG, "renderToSurface");
         if (outputBuffer.mode != C.VIDEO_OUTPUT_MODE_SURFACE_YUV) {
             throw new FfmpegDecoderException("Invalid output mode.");
         }
@@ -223,8 +231,11 @@ import java.util.List;
         }
     }
 
-    private native long ffmpegInitialize(String codecName, @Nullable byte[] extraData, int threads,
-                                         int degree);
+    private native long ffmpegInitialize(
+            String codecName,
+            @Nullable byte[] extraData,
+            int threads,
+            int degree);
 
     private native long ffmpegReset(long context);
 

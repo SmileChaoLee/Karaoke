@@ -11,9 +11,9 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.MimeTypes
 import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.exoplayer.fragments.ExoPlayerFragment
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.exoplayer.presenters.ExoPlayerPresenter
 import com.smile.karaoke.exoplayer.services.ExoPlayService
@@ -52,8 +52,13 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         Log.d(TAG, "onPrepareFromUri().Uri = $uri")
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.preparedStatus = 1
-        val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build()
-        playService.setTrackSelectionParameters(trackParameters)
+        // val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build() // deprecated
+        // val trackParameters = TrackSelectionParameters.Builder().build()
+        // playService.setTrackSelectionParameters(trackParameters)
+        Log.d(TAG, "removeVideoPlayerView")
+        presenter.presentView.removeVideoPlayerView()
+        Log.d(TAG, "setVideoPlayerView")
+        presenter.presentView.setVideoPlayerView()
         var mediaTitle = "Opened Media"
         uri.path?.let {
             val lastSlash: Int = it.lastIndexOf('/')

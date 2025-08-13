@@ -74,13 +74,15 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-        playerView?.player = null
         if (mPlayServiceIntent != null) {
             activity?.stopService(mPlayServiceIntent)
         }
+        playerView?.player = null
+        playerView = null
     }
 
-    private fun setVideoPlayerView() {
+    // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
+    override fun setVideoPlayerView() {
         Log.d(TAG, "setVideoPlayerView")
         val layParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT)
@@ -106,7 +108,15 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresentView {
         }
     }
 
-    // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
+    override fun removeVideoPlayerView() {
+        Log.d(TAG, "removeVideoPlayerView")
+        playerView?.apply {
+            playerViewLinearLayout?.removeView(this)
+            player = null
+        }
+        playerView = null
+    }
+
     override fun setCurrentPlayerToPlayerView() {
         Log.d(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {

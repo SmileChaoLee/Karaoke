@@ -15,17 +15,27 @@
  */
 package androidx.media3.decoder.ffmpeg;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static androidx.media3.common.util.Assertions.checkNotNull;
+import static androidx.media3.exoplayer.DecoderReuseEvaluation.DISCARD_REASON_DRM_SESSION_CHANGED;
 import static androidx.media3.exoplayer.DecoderReuseEvaluation.DISCARD_REASON_MIME_TYPE_CHANGED;
+import static androidx.media3.exoplayer.DecoderReuseEvaluation.DISCARD_REASON_OPERATING_RATE_CHANGED;
+import static androidx.media3.exoplayer.DecoderReuseEvaluation.DISCARD_REASON_WORKAROUND;
 import static androidx.media3.exoplayer.DecoderReuseEvaluation.REUSE_RESULT_NO;
 import static androidx.media3.exoplayer.DecoderReuseEvaluation.REUSE_RESULT_YES_WITHOUT_RECONFIGURATION;
+import static androidx.media3.exoplayer.DecoderReuseEvaluation.REUSE_RESULT_YES_WITH_FLUSH;
+import static androidx.media3.exoplayer.DecoderReuseEvaluation.REUSE_RESULT_YES_WITH_RECONFIGURATION;
 import static java.lang.Runtime.getRuntime;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.Surface;
+
 import androidx.annotation.Nullable;
 import androidx.media3.common.C;
 import androidx.media3.common.Format;
 import androidx.media3.common.MimeTypes;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.util.Assertions;
 import androidx.media3.common.util.TraceUtil;
 import androidx.media3.common.util.UnstableApi;
@@ -35,7 +45,11 @@ import androidx.media3.decoder.Decoder;
 import androidx.media3.decoder.DecoderInputBuffer;
 import androidx.media3.decoder.VideoDecoderOutputBuffer;
 import androidx.media3.exoplayer.DecoderReuseEvaluation;
+import androidx.media3.exoplayer.ExoPlaybackException;
+import androidx.media3.exoplayer.FormatHolder;
 import androidx.media3.exoplayer.RendererCapabilities;
+import androidx.media3.exoplayer.mediacodec.MediaCodecAdapter;
+import androidx.media3.exoplayer.mediacodec.MediaCodecInfo;
 import androidx.media3.exoplayer.video.DecoderVideoRenderer;
 import androidx.media3.exoplayer.video.VideoRendererEventListener;
 import java.util.Objects;
@@ -49,7 +63,7 @@ import java.util.Objects;
 @UnstableApi
 public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer {
 
-    private static final String TAG = "ExperimentalFfmpegVideoRenderer";
+    private static final String TAG = "FfmpegVideoRenderer";
 
     private static final int DEFAULT_NUM_OF_INPUT_BUFFERS = 4;
     private static final int DEFAULT_NUM_OF_OUTPUT_BUFFERS = 4;
@@ -120,6 +134,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
             int numInputBuffers,
             int numOutputBuffers) {
         super(allowedJoiningTimeMs, eventHandler, eventListener, maxDroppedFramesToNotify);
+        Log.d(TAG, "ExperimentalFfmpegVideoRenderer");
         this.threads = threads;
         this.numInputBuffers = numInputBuffers;
         this.numOutputBuffers = numOutputBuffers;
@@ -132,6 +147,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
 
     @Override
     public @RendererCapabilities.Capabilities int supportsFormat(Format format) {
+        Log.d(TAG, "supportsFormat.format=" + format);
         String mimeType = Assertions.checkNotNull(format.sampleMimeType);
         if (!FfmpegLibrary.isAvailable() || !MimeTypes.isVideo(mimeType)) {
             return RendererCapabilities.create(C.FORMAT_UNSUPPORTED_TYPE);
@@ -151,6 +167,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
     protected Decoder<DecoderInputBuffer, VideoDecoderOutputBuffer, FfmpegDecoderException>
     createDecoder(Format format, @Nullable CryptoConfig cryptoConfig)
             throws FfmpegDecoderException {
+        Log.d(TAG, "createDecoder.format=" + format);
         TraceUtil.beginSection("createFfmpegVideoDecoder");
         int initialInputBufferSize =
                 format.maxInputSize != Format.NO_VALUE ? format.maxInputSize : DEFAULT_INPUT_BUFFER_SIZE;
@@ -167,6 +184,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
     @Override
     protected void renderOutputBufferToSurface(VideoDecoderOutputBuffer outputBuffer, Surface surface)
             throws FfmpegDecoderException {
+        Log.d(TAG, "renderOutputBufferToSurface");
         if (decoder == null) {
             throw new FfmpegDecoderException(
                     "Failed to render output buffer to surface: decoder is not initialized.");
@@ -177,6 +195,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
 
     @Override
     protected void setDecoderOutputMode(@C.VideoOutputMode int outputMode) {
+        Log.d(TAG, "renderOutputBufferToSurface.decoder = " + decoder);
         if (decoder != null) {
             decoder.setOutputMode(outputMode);
         }
@@ -185,6 +204,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
     @Override
     protected DecoderReuseEvaluation canReuseDecoder(
             String decoderName, Format oldFormat, Format newFormat) {
+        Log.d(TAG, "canReuseDecoder.decoderName = " + decoderName);
         boolean sameMimeType = Objects.equals(oldFormat.sampleMimeType, newFormat.sampleMimeType);
         // TODO: Ability to reuse the decoder may be MIME type dependent.
         return new DecoderReuseEvaluation(

@@ -75,7 +75,7 @@
     <string name="vlcDescription">1.Support most media formats\n
         2.Supports audio track switch\n
         3.Not supports channel switch\n
-        4.Not supports Chrome Cast to TV</string>
+        4.No Chrome Cast to TV</string>
     <string name="exoDescription">1. Support less media formats\n
         2.Supports audio track switch\n
         3.Supports channel switch\n

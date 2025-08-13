@@ -14,7 +14,6 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
@@ -22,6 +21,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.ext.av1.Gav1Library
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import com.google.android.exoplayer2.ext.flac.FlacLibrary
 import com.google.android.exoplayer2.ext.opus.OpusLibrary
 import com.google.android.exoplayer2.ext.vp9.VpxLibrary
@@ -120,11 +120,11 @@ class ExoPlayService : BasePlayService() {
     private fun initExoPlayer() {
         Log.d(TAG, "initExoPlayer.presenter = $presenter")
         presenter?.let {
-            val trackSelectionParameters = it.trackSelectionParameters
+            val trackSelectionParams = it.trackSelectionParameters
             val trackSelector =
                 DefaultTrackSelector(applicationContext, AdaptiveTrackSelection.Factory())
             Log.d(TAG,"initExoPlayer.trackSelector = $trackSelector")
-            trackSelector.setParameters(trackSelectionParameters!!)
+            trackSelector.setParameters(trackSelectionParams!!)
 
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
             val myRenderersFactory =
@@ -142,6 +142,8 @@ class ExoPlayService : BasePlayService() {
                 Log.d(TAG,"initExoPlayer.exoPlayer = $this")
                 addExoPlayerListener()
                 Log.d(TAG,"initExoPlayer.this = $this")
+                // trackSelectionParameters = TrackSelectionParameters.Builder().build()
+                trackSelectionParameters = trackSelectionParams
             }
             Log.d(TAG,"initExoPlayer.FfmpegLibrary.isAvailable() = " + FfmpegLibrary.isAvailable())
             Log.d(TAG, "initExoPlayer.VpxLibrary.isAvailable() = " + VpxLibrary.isAvailable())
@@ -344,6 +346,7 @@ class ExoPlayService : BasePlayService() {
             exoPlayer?.mediaItemCount
         }
     }
+    /*
     fun setTrackSelectionParameters(trackSelParam: TrackSelectionParameters) {
         if (isCastSessionAvailable) {
             castPlayer?.trackSelectionParameters = trackSelParam
@@ -351,6 +354,7 @@ class ExoPlayService : BasePlayService() {
             exoPlayer?.trackSelectionParameters = trackSelParam
         }
     }
+    */
     fun setMediaItem(mediaItem: MediaItem, position: Long) {
         if (isCastSessionAvailable) {
             castPlayer?.setMediaItem(mediaItem, position)

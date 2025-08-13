@@ -1,6 +1,7 @@
 package com.smile.karaoke.exoplayer.exoRenderersFactory;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,7 +11,6 @@ import androidx.media3.common.audio.AudioProcessor;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.audio.AudioSink;
 import androidx.media3.exoplayer.audio.DefaultAudioSink;
-
 import com.smile.karaoke.exoplayer.audioProcessors.StereoVolumeAudioProcessor;
 
 @UnstableApi
@@ -29,6 +29,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON);   // default is using extension
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);     // do not use extension
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER);
+        Log.d(TAG, "MyRenderersFactory.created");
     }
 
     public StereoVolumeAudioProcessor getStereoVolumeAudioProcessor() {
@@ -40,6 +41,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
     protected AudioSink buildAudioSink(@NonNull Context context,
                                        boolean enableFloatOutput,
                                        boolean enableAudioTrackPlaybackParams) {
+        Log.d(TAG, "buildAudioSink");
         return new DefaultAudioSink.Builder(context)
                 // .setAudioCapabilities(AudioCapabilities.DEFAULT_AUDIO_CAPABILITIES)
                 .setAudioProcessors(audioProcessors)

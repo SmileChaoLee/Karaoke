@@ -17,6 +17,8 @@ package androidx.media3.decoder.ffmpeg;
 
 import static androidx.media3.common.util.Assertions.checkNotNull;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.media3.common.C;
 import androidx.media3.common.Format;
@@ -34,6 +36,7 @@ import java.util.List;
 /* package */ @UnstableApi final class FfmpegAudioDecoder
         extends SimpleDecoder<DecoderInputBuffer, SimpleDecoderOutputBuffer, FfmpegDecoderException> {
 
+  private static final String TAG = "FfmpegAudioDecoder";
   private static final int INITIAL_OUTPUT_BUFFER_SIZE_16BIT = 65535;
   private static final int INITIAL_OUTPUT_BUFFER_SIZE_32BIT = INITIAL_OUTPUT_BUFFER_SIZE_16BIT * 2;
 
@@ -58,6 +61,7 @@ import java.util.List;
           boolean outputFloat)
           throws FfmpegDecoderException {
     super(new DecoderInputBuffer[numInputBuffers], new SimpleDecoderOutputBuffer[numOutputBuffers]);
+    Log.d(TAG, "FfmpegAudioDecoder.for " + format.sampleMimeType);
     if (!FfmpegLibrary.isAvailable()) {
       throw new FfmpegDecoderException("Failed to load decoder native libraries.");
     }
@@ -77,11 +81,14 @@ import java.util.List;
 
   @Override
   public String getName() {
-    return "ffmpeg" + FfmpegLibrary.getVersion() + "-" + codecName;
+    String name = "ffmpeg" + FfmpegLibrary.getVersion() + "-" + codecName;
+    Log.d(TAG, "getName.name = " + name);
+    return name;
   }
 
   @Override
   protected DecoderInputBuffer createInputBuffer() {
+    Log.d(TAG, "createInputBuffer");
     return new DecoderInputBuffer(
             DecoderInputBuffer.BUFFER_REPLACEMENT_MODE_DIRECT,
             FfmpegLibrary.getInputBufferPaddingSize());
@@ -89,11 +96,13 @@ import java.util.List;
 
   @Override
   protected SimpleDecoderOutputBuffer createOutputBuffer() {
+    Log.d(TAG, "createOutputBuffer");
     return new SimpleDecoderOutputBuffer(this::releaseOutputBuffer);
   }
 
   @Override
   protected FfmpegDecoderException createUnexpectedDecodeException(Throwable error) {
+    Log.d(TAG, "createUnexpectedDecodeException");
     return new FfmpegDecoderException("Unexpected decode error", error);
   }
 
@@ -101,6 +110,7 @@ import java.util.List;
   @Nullable
   protected FfmpegDecoderException decode(
           DecoderInputBuffer inputBuffer, SimpleDecoderOutputBuffer outputBuffer, boolean reset) {
+    Log.d(TAG, "FfmpegDecoderException");
     if (reset) {
       nativeContext = ffmpegReset(nativeContext, extraData);
       if (nativeContext == 0) {
@@ -152,12 +162,14 @@ import java.util.List;
   private ByteBuffer growOutputBuffer(SimpleDecoderOutputBuffer outputBuffer, int requiredSize) {
     // Use it for new buffer so that hopefully we won't need to reallocate again
     outputBufferSize = requiredSize;
+    Log.d(TAG, "growOutputBuffer.requiredSize = " + requiredSize);
     return outputBuffer.grow(requiredSize);
   }
 
   @Override
   public void release() {
     super.release();
+    Log.d(TAG, "release");
     ffmpegRelease(nativeContext);
     nativeContext = 0;
   }
@@ -183,6 +195,7 @@ import java.util.List;
    */
   @Nullable
   private static byte[] getExtraData(String mimeType, List<byte[]> initializationData) {
+    Log.d(TAG, "getExtraData.mimeType = " + mimeType);
     switch (mimeType) {
       case MimeTypes.AUDIO_AAC:
       case MimeTypes.AUDIO_OPUS:
@@ -203,6 +216,7 @@ import java.util.List;
     // an ALAC atom. See:
     // https://ffmpeg.org/doxygen/0.6/alac_8c.html
     // https://github.com/macosforge/alac/blob/master/ALACMagicCookieDescription.txt
+    Log.d(TAG, "getAlacExtraData");
     byte[] magicCookie = initializationData.get(0);
     int alacAtomLength = 12 + magicCookie.length;
     ByteBuffer alacAtom = ByteBuffer.allocate(alacAtomLength);
@@ -214,6 +228,7 @@ import java.util.List;
   }
 
   private static byte[] getVorbisExtraData(List<byte[]> initializationData) {
+    Log.d(TAG, "getAlacExtraData");
     byte[] header0 = initializationData.get(0);
     byte[] header1 = initializationData.get(1);
     byte[] extraData = new byte[header0.length + header1.length + 6];

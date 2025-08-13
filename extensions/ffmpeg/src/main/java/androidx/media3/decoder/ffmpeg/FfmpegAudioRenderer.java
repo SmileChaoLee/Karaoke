@@ -20,6 +20,8 @@ import static androidx.media3.exoplayer.audio.AudioSink.SINK_FORMAT_SUPPORTED_WI
 import static androidx.media3.exoplayer.audio.AudioSink.SINK_FORMAT_UNSUPPORTED;
 
 import android.os.Handler;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.media3.common.C;
 import androidx.media3.common.Format;
@@ -92,6 +94,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
 
   @Override
   protected @C.FormatSupport int supportsFormatInternal(Format format) {
+    Log.d(TAG, "supportsFormatInternal.format = " + format);
     String mimeType = Assertions.checkNotNull(format.sampleMimeType);
     if (!FfmpegLibrary.isAvailable() || !MimeTypes.isAudio(mimeType)) {
       return C.FORMAT_UNSUPPORTED_TYPE;
@@ -119,6 +122,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
   @Override
   protected FfmpegAudioDecoder createDecoder(Format format, @Nullable CryptoConfig cryptoConfig)
           throws FfmpegDecoderException {
+    Log.d(TAG, "createDecoder.format = " + format);
     TraceUtil.beginSection("createFfmpegAudioDecoder");
     int initialInputBufferSize =
             format.maxInputSize != Format.NO_VALUE ? format.maxInputSize : DEFAULT_INPUT_BUFFER_SIZE;
@@ -136,6 +140,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
    */
   @Override
   protected Format getOutputFormat(FfmpegAudioDecoder decoder) {
+    Log.d(TAG, "getOutputFormat");
     Assertions.checkNotNull(decoder);
     return new Format.Builder()
             .setSampleMimeType(MimeTypes.AUDIO_RAW)
@@ -155,6 +160,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
   }
 
   private boolean shouldOutputFloat(Format inputFormat) {
+    Log.d(TAG, "shouldOutputFloat");
     if (!sinkSupportsFormat(inputFormat, C.ENCODING_PCM_16BIT)) {
       // We have no choice because the sink doesn't support 16-bit integer PCM.
       return true;

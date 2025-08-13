@@ -62,7 +62,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     };
 
     public interface ExoPlayerPresentView extends BasePresentView {
-        void setCurrentPlayerToPlayerView();
+        void setVideoPlayerView();
+        void removeVideoPlayerView();
     }
 
     public ExoPlayerPresenter(ExoPlayerPresentView presentView) {
@@ -71,8 +72,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         Log.d(TAG, "ExoPlayerPresenter is created");
     }
 
-    public void setCurrentPlayerToPlayerView() {
-        mPresentView.setCurrentPlayerToPlayerView();
+    public ExoPlayerPresentView getPresentView() {
+        return mPresentView;
     }
 
     public ExoPlayService getPlayService() {

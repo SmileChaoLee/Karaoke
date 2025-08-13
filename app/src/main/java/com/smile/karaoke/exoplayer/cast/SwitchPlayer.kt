@@ -47,7 +47,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                     playService.removeExoPlayerListener()
                     playService.removeCastPlayerListener()
                     // must after isCastSessionAvailable = true
-                    presenter.setCurrentPlayerToPlayerView()
+                    presenter.presentView.setCurrentPlayerToPlayerView()
 
                     exoP.stop() // do not use playService.stopPlay()
                     Log.d(TAG, "${msgString}.localMediaUrl = $localMediaUrl")
@@ -81,7 +81,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
         playService.removeExoPlayerListener()
         playService.stopCasting()   // isCastSessionAvailable -> false
         // must after stopCasting()
-        presenter.setCurrentPlayerToPlayerView()
+        presenter.presentView.setCurrentPlayerToPlayerView()
 
         playService.exoPlayer?.let { exoP ->
             playService.castPlayer?.let { castP ->
