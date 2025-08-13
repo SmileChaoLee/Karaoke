@@ -24,7 +24,7 @@ import androidx.media3.decoder.av1.Gav1Library
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import androidx.media3.decoder.flac.FlacLibrary
 import androidx.media3.decoder.opus.OpusLibrary
-import com.google.android.exoplayer2.ext.vp9.VpxLibrary
+import androidx.media3.decoder.vp9.VpxLibrary
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.exoplayer.audioProcessors.StereoVolumeAudioProcessor
 import com.smile.karaoke.exoplayer.callbacks.ExoMediaControllerCallback

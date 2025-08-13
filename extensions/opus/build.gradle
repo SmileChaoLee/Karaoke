@@ -10,6 +10,9 @@ android {
         consumerProguardFiles 'proguard-rules.txt'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
+        ndk {
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        }
         externalNativeBuild {
             cmake {
                 targets "opusV2JNI"
@@ -26,12 +29,6 @@ android {
             path file('../opus/src/main/jni/CMakeLists.txt')
             version '3.21.0+'
         }
-    }
-
-
-    sourceSets.main {
-        jniLibs.srcDir 'src/main/libs'
-        // jni.srcDirs = [] // Disable the automatic ndk-build call by Android Studio.
     }
 
     namespace 'androidx.media3.decoder.opus'
