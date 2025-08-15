@@ -83,4 +83,5 @@
         4.支援投射到電視</string>
     <string name="currentString">目前使用中</string>
     <string name="loadingStr">載入中 …</string>
+    <string name="softDecoderFirstStr">軟解碼優先</string>
 </resources>

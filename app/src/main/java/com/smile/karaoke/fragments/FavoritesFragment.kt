@@ -56,6 +56,7 @@ class FavoritesFragment : Fragment(),
     private var searchCompleted = true
     private lateinit var mediaRetriever: MediaMetadataRetriever
     private var showVideoButton: ImageButton? = null
+    private var switchDecoderButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -170,14 +171,18 @@ class FavoritesFragment : Fragment(),
                     }
                 }
             }
-            val refreshButton: ImageButton = it.findViewById(R.id.favoriteRefreshButton)
-            layoutParams = refreshButton.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = buttonWidth
-            layoutParams.height = buttonWidth
-            refreshButton.layoutParams = layoutParams
-            refreshButton.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                searchFavorites()
+            switchDecoderButton = it.findViewById(R.id.favoriteSwitchDecoderButton)
+            setupSwitchDecoderButton()
+            switchDecoderButton?.let {switchIt ->
+                layoutParams = switchIt.layoutParams as ViewGroup.MarginLayoutParams
+                layoutParams.width = buttonWidth
+                layoutParams.height = buttonWidth
+                switchIt.layoutParams = layoutParams
+                switchIt.setOnClickListener {
+                    if (!searchCompleted) return@setOnClickListener // searching
+                    playSongs?.switchBetweenSoftAndHardDecoder()
+                    setupSwitchDecoderButton()
+                }
             }
             val playSelectedButton: ImageButton = it.findViewById(R.id.favoritePlaySelectedButton)
             layoutParams = playSelectedButton.layoutParams as ViewGroup.MarginLayoutParams
@@ -212,7 +217,6 @@ class FavoritesFragment : Fragment(),
                         ScreenUtil.FontSize_Pixel_Type,
                         Toast.LENGTH_SHORT)
                 } else {
-                    // playSongs?.choosePlayerToPlaySelectedSongs(ArrayList(songs))
                     playSongs?.playSelectedSongList(ArrayList(songs))
                 }
             }
@@ -273,6 +277,7 @@ class FavoritesFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume")
+        setupSwitchDecoderButton()
         searchFavorites()   // has to be in onResume()
     }
 
@@ -371,7 +376,7 @@ class FavoritesFragment : Fragment(),
     }
 
     private fun initFavoriteRecyclerView() {
-        Log.d(TAG, "initFavoriteRecyclerView() is called")
+        Log.d(TAG, "initFavoriteRecyclerView")
         activity?.let {
             val tColor = ContextCompat.getColor(it, R.color.gnt_green)
             val transparentLightGray = ContextCompat.getColor(it,
@@ -386,6 +391,18 @@ class FavoritesFragment : Fragment(),
                 override fun isAutoMeasureEnabled(): Boolean {
                     return false
                 }
+            }
+        }
+    }
+
+    fun setupSwitchDecoderButton() {
+        Log.d(TAG, "setupSwitchDecoderButton")
+        switchDecoderButton?.apply {
+            playSongs?.let {
+                setImageResource(
+                    if (it.isSoftDecoderFirst()) R.drawable.soft_decoder
+                    else R.drawable.hard_decoder
+                )
             }
         }
     }

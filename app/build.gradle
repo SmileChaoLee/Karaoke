@@ -33,14 +33,14 @@ android {
     productFlavors {
         create("karaokePlayer") {
             dimension = "karaoke"
-            versionCode 910
-            versionName "9.10"
+            versionCode 920
+            versionName "9.20"
             applicationId = "com.smile.karaokeplayer"
         }
         create("karaokeTvPlayer") {
             dimension = "karaoke"
-            versionCode 125
-            versionName "1.25"
+            versionCode 130
+            versionName "1.30"
             applicationId = "com.smile.karaoketvplayer"
         }
     }

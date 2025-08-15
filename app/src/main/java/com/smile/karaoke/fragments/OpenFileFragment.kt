@@ -8,8 +8,6 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -58,6 +56,7 @@ class OpenFileFragment : Fragment(),
     private var searchCompleted = true
     private lateinit var mediaRetriever: MediaMetadataRetriever
     private var backKeyButton: ImageButton? = null
+    private var switchDecoderButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -203,14 +202,18 @@ class OpenFileFragment : Fragment(),
                     }
                 }
             }
-            val refreshButton: ImageButton = it.findViewById(R.id.openFileRefreshButton)
-            layoutParams = refreshButton.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = buttonWidth
-            layoutParams.height = buttonWidth
-            refreshButton.layoutParams = layoutParams
-            refreshButton.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                searchCurrentFolder()
+            switchDecoderButton = it.findViewById(R.id.openFileSwitchDecoderButton)
+            setupSwitchDecoderButton()
+            switchDecoderButton?.let {switchIt ->
+                layoutParams = switchIt.layoutParams as ViewGroup.MarginLayoutParams
+                layoutParams.width = buttonWidth
+                layoutParams.height = buttonWidth
+                switchIt.layoutParams = layoutParams
+                switchIt.setOnClickListener {
+                    if (!searchCompleted) return@setOnClickListener // searching
+                    playSongs?.switchBetweenSoftAndHardDecoder()
+                    setupSwitchDecoderButton()
+                }
             }
             val playSelectedButton: ImageButton = it.findViewById(R.id.openFilePlaySelectedButton)
             layoutParams = playSelectedButton.layoutParams as ViewGroup.MarginLayoutParams
@@ -299,6 +302,7 @@ class OpenFileFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume")
+        setupSwitchDecoderButton()
         searchCurrentFolder()   // has to be in onResume()
     }
 
@@ -488,6 +492,18 @@ class OpenFileFragment : Fragment(),
                 override fun isAutoMeasureEnabled(): Boolean {
                     return false
                 }
+            }
+        }
+    }
+
+    fun setupSwitchDecoderButton() {
+        Log.d(TAG, "setupSwitchDecoderButton")
+        switchDecoderButton?.apply {
+            playSongs?.let {
+                setImageResource(
+                    if (it.isSoftDecoderFirst()) R.drawable.soft_decoder
+                    else R.drawable.hard_decoder
+                )
             }
         }
     }

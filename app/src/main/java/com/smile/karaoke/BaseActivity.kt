@@ -350,6 +350,21 @@ abstract class BaseActivity : AppCompatActivity(),
         Log.d(TAG, "switchToPlayerView")
         playerFragment?.showPlayerView()
     }
+
+    override fun isSoftDecoderFirst(): Boolean {
+        playerFragment?.let {
+            return it.mPresenter.playingParam.softDecoderFirst
+        }
+        return false
+    }
+
+    override fun switchBetweenSoftAndHardDecoder() {
+        Log.d(TAG, "switchBetweenSoftAndHardDecoder")
+        playerFragment?.let {
+            it.mPresenter.playingParam.softDecoderFirst = !it.mPresenter.playingParam.softDecoderFirst
+            it.playService?.switchDecoder()
+        }
+    }
     // Finish implementing interface PlaySongs
 
     private fun createViewDependingOnOrientation() {

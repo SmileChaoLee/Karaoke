@@ -14,17 +14,17 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.extractor.DefaultExtractorsFactory
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.decoder.av1.Gav1Library
 import androidx.media3.decoder.ffmpeg.FfmpegLibrary
 import androidx.media3.decoder.flac.FlacLibrary
 import androidx.media3.decoder.opus.OpusLibrary
 import androidx.media3.decoder.vp9.VpxLibrary
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.extractor.DefaultExtractorsFactory
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.exoplayer.audioProcessors.StereoVolumeAudioProcessor
 import com.smile.karaoke.exoplayer.callbacks.ExoMediaControllerCallback
@@ -127,9 +127,13 @@ class ExoPlayService : BasePlayService() {
             trackSelector.setParameters(trackSelectionParams!!)
 
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
+            Log.d(TAG,"initExoPlayer.useSoftDecoder = ${it.playingParam.softDecoderFirst}")
             val myRenderersFactory =
                 MyRenderersFactory(applicationContext,
-                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+                    if (it.playingParam.softDecoderFirst)
+                        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                    else DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+                )
             stereoVolumeAudioProcessor = myRenderersFactory.stereoVolumeAudioProcessor
 
             val exoPlayerBuilder = ExoPlayer.Builder(applicationContext, myRenderersFactory)
@@ -579,6 +583,22 @@ class ExoPlayService : BasePlayService() {
                 prepare()
                 playWhenReady = true
             }
+        }
+    }
+
+    override fun switchDecoder() {
+        Log.d(TAG, "switchDecoder")
+        presenter?.let {
+            // it.playingParam.finishState = PlayerConstants.STOPPED_BY_USER
+            // stopPlay()
+            Log.d(TAG, "switchDecoder.useSoftDecoder switch to ${it.playingParam.softDecoderFirst}")
+            exoPlayer?.release()
+            exoPlayer = null
+            // recreate exoplayer
+            initExoPlayer()
+            // go to playMediaFromUri(mediaUri, playingParam) for replay
+            it.playingParam.preparedStatus = 0
+            replayMedia(it) // regardless to the playback state
         }
     }
 

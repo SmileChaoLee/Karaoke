@@ -141,8 +141,13 @@ class TablayoutFragment : Fragment() {
         Log.d(TAG, "becomeVisible")
         playTabLayout?.let {
             Log.d(TAG, "becomeVisible.selectedTabPosition = ${it.selectedTabPosition}")
-            if (it.selectedTabPosition==0) openFragment.searchCurrentFolder()
-            else favoriteFragment.searchFavorites()
+            if (it.selectedTabPosition==0) {
+                openFragment.setupSwitchDecoderButton()
+                openFragment.searchCurrentFolder()
+            } else {
+                favoriteFragment.setupSwitchDecoderButton()
+                favoriteFragment.searchFavorites()
+            }
         }
     }
 

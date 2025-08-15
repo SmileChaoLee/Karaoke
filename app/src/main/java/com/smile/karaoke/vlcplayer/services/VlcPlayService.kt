@@ -299,4 +299,8 @@ class VlcPlayService : BasePlayService() {
             }
         }
     }
+
+    override fun switchDecoder() {
+        // do nothing for now
+    }
 }

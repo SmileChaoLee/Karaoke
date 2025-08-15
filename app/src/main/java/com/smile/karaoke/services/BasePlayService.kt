@@ -39,6 +39,7 @@ abstract class BasePlayService : Service() {
     abstract fun getCurrentPosition(): Long
     abstract fun getPlaybackState(): Int
     abstract fun specificPlayerReplayMedia(currentAudioPosition: Long)
+    abstract fun switchDecoder()
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null

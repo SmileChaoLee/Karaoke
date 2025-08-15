@@ -132,6 +132,7 @@ abstract class PlayerBaseFragment : Fragment(),
     protected var mainMenu: Menu? = null
 
     // submenu of file
+    private var softdecoderFirstMenuItem: MenuItem? = null
     private var autoPlayMenuItem: MenuItem? = null
     private var audioMenuItem: MenuItem? = null
     // submenu of audio
@@ -414,6 +415,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
         // submenu of file
         mainMenu?.let {
+            softdecoderFirstMenuItem = it.findItem(R.id.softDecoderFirst)
             autoPlayMenuItem = it.findItem(R.id.autoPlay)
             audioMenuItem = it.findItem(R.id.audio)
             // submenu of audio
@@ -437,7 +439,12 @@ abstract class PlayerBaseFragment : Fragment(),
             item.subMenu?.clearHeader()
         }
         val id = item.itemId
-        if (id == R.id.autoPlay) {
+        if (id == R.id.softDecoderFirst) {
+            // setting if use soft decoder
+            playingParam.softDecoderFirst = !playingParam.softDecoderFirst
+            softdecoderFirstMenuItem?.isChecked = playingParam.softDecoderFirst
+            playService?.switchDecoder()
+        } else if (id == R.id.autoPlay) {
             autoPlayMenuItem?.let {
                 // print the original check status
                 Log.d(TAG, "autoPlayMenuItem?.isChecked = ${it.isChecked}")
@@ -630,6 +637,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     fun setMainMenu() {
         Log.d(TAG, "setMainMenu")
+        softdecoderFirstMenuItem?.isVisible = true    // always visible
         mPresenter.playingParam.let {
             val isVisible = !it.isPlaySingleSong
             autoPlayMenuItem?.isVisible = isVisible
@@ -992,6 +1000,7 @@ abstract class PlayerBaseFragment : Fragment(),
         actionMenuImageButton?.setOnClickListener {
             Log.d(TAG, "actionMenuImageButton.setOnClickListener")
             actionMenuView?.showOverflowMenu()
+            softdecoderFirstMenuItem?.isChecked = mPresenter.playingParam.softDecoderFirst
             autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
             setTimerToHideSupportAudioControl()   // reset the timer
             disableButtonForSometime(it)
