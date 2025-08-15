@@ -1,7 +1,0 @@
-Executable : /home/chaolee/Android/Sdk/cmake/3.18.1/bin/ninja
-arguments : 
--C
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/6y42u5r5/armeabi-v7a
-ffmpegJNI
-jvmArgs : 
-

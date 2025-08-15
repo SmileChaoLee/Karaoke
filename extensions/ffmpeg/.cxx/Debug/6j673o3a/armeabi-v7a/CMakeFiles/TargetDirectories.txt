@@ -1,3 +1,0 @@
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/Debug/6j673o3a/armeabi-v7a/CMakeFiles/rebuild_cache.dir
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/Debug/6j673o3a/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/Debug/6j673o3a/armeabi-v7a/CMakeFiles/ffmpegJNI.dir

@@ -1,3 +1,0 @@
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/6y42u5r5/x86/CMakeFiles/rebuild_cache.dir
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/6y42u5r5/x86/CMakeFiles/edit_cache.dir
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/.cxx/RelWithDebInfo/6y42u5r5/x86/CMakeFiles/ffmpegJNI.dir

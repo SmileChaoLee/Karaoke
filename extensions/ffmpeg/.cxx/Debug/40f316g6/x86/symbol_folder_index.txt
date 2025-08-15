@@ -1,1 +1,0 @@
-/home/chaolee/AndroidStudioProjects/KaraokePlayer/extensions/ffmpeg/build/intermediates/cxx/Debug/40f316g6/obj/x86
