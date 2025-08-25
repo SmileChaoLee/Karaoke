@@ -1,4 +1,4 @@
-package com.smile.karaoke.googlecast
+package com.smile.karaoke.chromecast
 
 import android.net.Uri
 import android.util.Log
@@ -18,7 +18,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
     private val mFragment: PlayerBaseFragment
     private val mPresenter: PlayerBasePresenter
     private var mContext: FragmentActivity?
-    private val toastTextSize = SmileAppBase.toastTextSize
+    private val toastTextSize = SmileAppBase.Companion.toastTextSize
     private val webServerAndCast = WebServerAndCast()
 
     constructor(fragment: PlayerBaseFragment, presenter: PlayerBasePresenter) {

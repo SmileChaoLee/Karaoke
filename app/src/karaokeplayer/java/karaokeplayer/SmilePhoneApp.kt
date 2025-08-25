@@ -10,7 +10,6 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.SmileAppBase
-import com.smile.karaoke.googlecast.InitCastContext
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 

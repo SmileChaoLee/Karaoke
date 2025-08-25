@@ -10,7 +10,7 @@ import androidx.multidex.MultiDexApplication
 import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.googlecast.InitCastContext
+import com.smile.karaoke.chromecast.InitCastContext
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 

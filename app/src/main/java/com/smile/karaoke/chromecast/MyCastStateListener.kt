@@ -1,4 +1,4 @@
-package com.smile.karaoke.googlecast
+package com.smile.karaoke.chromecast
 
 import android.annotation.SuppressLint
 import android.util.Log

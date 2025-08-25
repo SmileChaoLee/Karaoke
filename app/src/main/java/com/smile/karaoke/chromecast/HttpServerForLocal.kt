@@ -1,4 +1,4 @@
-package com.smile.karaoke.googlecast
+package com.smile.karaoke.chromecast
 
 import fi.iki.elonen.NanoHTTPD
 import java.io.File

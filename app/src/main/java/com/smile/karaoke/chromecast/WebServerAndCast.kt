@@ -1,4 +1,4 @@
-package com.smile.karaoke.googlecast
+package com.smile.karaoke.chromecast
 
 import android.util.Log
 import androidx.core.net.toUri
