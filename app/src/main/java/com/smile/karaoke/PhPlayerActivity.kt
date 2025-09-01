@@ -335,8 +335,8 @@ open class PhPlayerActivity : ComponentActivity() {
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground)
-                    .focusRequester(focusRequester)
-                    .focusable(interactionSource = interactionSource),
+                    .focusRequester(focusRequester),
+                interactionSource = interactionSource,
                 colors = ButtonColors(
                     containerColor =
                         if (!exoClicked.value) buttonContainerColor
@@ -384,8 +384,8 @@ open class PhPlayerActivity : ComponentActivity() {
                 modifier = Modifier//.weight(1.0f)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
-                    .background(color = buttonBackground)
-                    .focusable(interactionSource = interactionSource),
+                    .background(color = buttonBackground),
+                interactionSource = interactionSource,
                 colors = ButtonColors(
                     containerColor =
                         if (!vlcClicked.value) buttonContainerColor
