@@ -44,6 +44,7 @@ for abi in ${ABI_LIST}; do
     -G "Unix Makefiles" \
     -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake -DANDROID_ABI=${abi} -DCMAKE_ANDROID_ARCH_ABI=${abi} \
     -DANDROID_NDK=${NDK_PATH} \
+    -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
     -DANDROID_PLATFORM=${ANDROID_ABI} \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=ON \
