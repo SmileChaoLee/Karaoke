@@ -73,10 +73,7 @@ class VlcPlayService : BasePlayService() {
     fun initVlcPlayer() {
         Log.d(TAG, "initVlcPlayer.presenter = $presenter")
         presenter?.let {
-            val options = ArrayList<String>()
-            // options.add("-vvv") // verbose mode
-            options.add("--aout=android_audiotrack")
-            libVLC = LibVLC(it.activity, options)
+            libVLC = LibVLC(it.activity)
             vlcPlayer = MediaPlayer(libVLC)
             vlcPlayer?.apply {
                 setEventListener(VlcPlayerListener(this@VlcPlayService))
@@ -153,11 +150,30 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun getAudioTrack(): Int {
-        return vlcPlayer?.audioTrack ?: -1
+        Log.d(TAG, "getAudioTrack")
+        val tracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
+        Log.d(TAG, "getAudioTrack.tracks.size = ${tracks?.size}")
+        tracks?.also {
+            for (trackIndex in 0 until it.size) {
+                if (it[trackIndex].selected) {
+                    Log.d(TAG, "getAudioTrack.return trackIndex = $trackIndex")
+                    return trackIndex
+                }
+            }
+        }
+        return -1
     }
 
     fun setAudioTrack(audioTrackId: Int) {
-        vlcPlayer?.audioTrack = audioTrackId
+        Log.d(TAG, "setAudioTrack")
+        val selectedTracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
+        selectedTracks?.also {
+            if (audioTrackId >= 0 && audioTrackId < it.size) {
+                val track = it[audioTrackId]
+                Log.d(TAG, "setAudioTrack.track = $track")
+                vlcPlayer?.selectTrack(track.id)
+            }
+        }
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {
@@ -168,39 +184,39 @@ class VlcPlayService : BasePlayService() {
         }
         val vPlayer = vlcPlayer!!
         var numOfVideoTracks = 0
-        val videoDis = vPlayer.videoTracks
-        var videoTrackId: Int
+        val videoDis = vPlayer.getTracks(IMedia.Track.Type.Video)
+        var videoTrackId: String?
         var videoTrackName: String?
-        if (videoDis != null) {
+        videoDis?.also {
             // because it is null sometimes
-            for (videoDi in videoDis) {
+            for (videoDi in it) {
                 videoTrackId = videoDi.id
+                Log.d(TAG, "${msgStr}.videoTrackId = $videoTrackId")
                 videoTrackName = videoDi.name
                 Log.d(TAG, "${msgStr}.videoTrackName = $videoTrackName")
-                // exclude disabled
-                if (videoTrackId >= 0) {
-                    // enabled video track
-                    numOfVideoTracks++
-                }
+                numOfVideoTracks++
             }
         }
         Log.d(TAG, "${msgStr}.numOfVideoTracks = " + numOfVideoTracks)
 
-        var audioTrackId: Int
+        var audioTrackId: String?
         var audioTrackName: String?
         audioTrackIndicesList.clear()
-        val audioDis = vPlayer.audioTracks
-        if (audioDis != null) {
+        val audioDis = vPlayer.getTracks(IMedia.Track.Type.Audio)
+        audioDis?.also {
             // because it is null sometimes
-            for (audioDi in audioDis) {
-                audioTrackId = audioDi.id
-                audioTrackName = audioDi.name
+            for (tackIndex in 0 until it.size) {
+                val audioTrack: IMedia.AudioTrack = it[tackIndex] as IMedia.AudioTrack
+                // info only
+                val channels = audioTrack.channels
+                Log.d(TAG, "${msgStr}.channels = $channels")
+                //
+                audioTrackId = audioTrack.id
+                Log.d(TAG, "${msgStr}.audioTrackId = $audioTrackId")
+                audioTrackName = audioTrack.name
                 Log.d(TAG, "${msgStr}.audioTrackName = $audioTrackName")
                 // exclude disabled
-                if (audioTrackId >= 0) {
-                    // enabled audio track
-                    audioTrackIndicesList.add(audioTrackId)
-                }
+                audioTrackIndicesList.add(tackIndex)
             }
         }
 
@@ -269,6 +285,7 @@ class VlcPlayService : BasePlayService() {
             vlcPlayer?.volume = (volumeTmp * PlayerConstants.MAX_PROGRESS).toInt()
             return
         }
+        Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
 
     override fun getMediaDuration(): Long {
