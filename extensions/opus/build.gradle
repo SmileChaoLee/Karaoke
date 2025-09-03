@@ -10,20 +10,20 @@ android {
         consumerProguardFiles 'proguard-rules.txt'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
+        // for cmake's variant configurations
+        externalNativeBuild {
+            // cmake here is for the variant configurations
+            cmake {
+                targets "opusV2JNI" // deprecated, no need when use CmakeLists.txt
+            }
+        }
+        // NDK configurations within defaultConfig
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         }
-        externalNativeBuild {
-            cmake {
-                targets "opusV2JNI"
-            }
-        }
     }
 
-    // ndkVersion '22.1.7171670'
-    ndkVersion '26.3.11579264'
-    // or
-    // ndkPath "home/chaolee/Android/Sdk/ndk/21.4.7075529"  // Point to your own NDK
+    ndkVersion '27.3.13750724'
     externalNativeBuild {
         cmake {
             path file('../opus/src/main/jni/CMakeLists.txt')
