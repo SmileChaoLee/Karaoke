@@ -116,7 +116,6 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private var mediaRouteButton: MediaRouteButton? = null
     protected var castContext: CastContext? = null
-    // private var setupCast: SetupGoogleCast? = null
 
     private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
@@ -225,27 +224,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
         activity?.let { actIt ->
             castContext = (actIt.application as SmileAppBase).castContext
-            // setupCast = SetupGoogleCast(this@PlayerBaseFragment,
-            //     mPresenter, castContext)
         }
-
-        /*  // only for exo player now in the ExoPlayerService
-        activity?.let { actIt ->
-            castContext = (actIt.application as SmileAppBase).castContext
-            Log.d(TAG, "onCreate.castContext = $castContext")
-            castContext?.also { castIt ->
-                castStateListener = MyCastStateListener(this@PlayerBaseFragment)
-                castIt.addCastStateListener(castStateListener!!)
-                Log.d(TAG, "onCreate.castContext.castState = ${castIt.castState}")
-                sessionManager = castIt.sessionManager
-                sessionManagerListener = MySManagerListener(
-                    this@PlayerBaseFragment, mPresenter)
-                sessionManager?.addSessionManagerListener(
-                    sessionManagerListener!!,
-                    CastSession::class.java)
-            }
-        }
-        */
     }
 
     override fun onCreateView(
