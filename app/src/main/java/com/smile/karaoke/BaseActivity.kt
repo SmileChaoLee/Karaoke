@@ -1,14 +1,19 @@
 package com.smile.karaoke
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
@@ -19,7 +24,8 @@ import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.BundleCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.PlayerConstants
@@ -30,6 +36,7 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -37,12 +44,14 @@ private const val TAB_LAYOUT_FRAGMENT = "TablayoutFragment"
 private const val IS_PLAY_TO_PAUSE = "IsPlayToPause"
 private const val PLAY_DATA = "PlayData"
 private const val CALLING_COMPONENT = "CallingComponent"
+private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
 
 @UnstableApi
 abstract class BaseActivity : AppCompatActivity(),
     PlayerBaseFragment.PlayBaseFragmentFunc,
     PlaySongs, PlayMyFavorites {
 
+    private var permissionExternalStorage = false
     private var playerFragment: PlayerBaseFragment? = null
     private lateinit var basePlayViewLayout : LinearLayout
     private var tablayoutFragment : TablayoutFragment? = null
@@ -62,9 +71,23 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        MySingleTon.clearSingleton()
 
         super.onCreate(savedInstanceState)
+
+        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@BaseActivity,
+            ScreenUtil.FontSize_Pixel_Type, null)
+        val textFontSize = ScreenUtil.suitableFontSize(this@BaseActivity,
+            defaultTextFontSize,
+            ScreenUtil.FontSize_Pixel_Type,0.0f)
+        val toastTextSize = textFontSize * 0.7f
+        val fontSize = ScreenUtil.suitableFontScale(this@BaseActivity,
+            ScreenUtil.FontSize_Pixel_Type, 0.0f)
+        SmileAppBase.textFontSize = textFontSize
+        SmileAppBase.toastTextSize = toastTextSize
+        SmileAppBase.fontSize = fontSize
+
+        MySingleTon.clearSingleton()
+
         setContentView(R.layout.activity_base)
 
         object : BroadcastReceiver() {
@@ -111,11 +134,11 @@ abstract class BaseActivity : AppCompatActivity(),
             isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE, false)
 
             callingComponentName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, CALLING_COMPONENT, ComponentName::class.java)
+                savedInstanceState.getParcelable(CALLING_COMPONENT, ComponentName::class.java)
             else savedInstanceState.getParcelable(CALLING_COMPONENT)
 
             (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                BundleCompat.getParcelable(savedInstanceState, PLAY_DATA, Bundle::class.java)
+                savedInstanceState.getParcelable(PLAY_DATA, Bundle::class.java)
             else savedInstanceState.getParcelable(PLAY_DATA))?.also {
                 playData = it
             }
@@ -159,6 +182,27 @@ abstract class BaseActivity : AppCompatActivity(),
             }
         })
 
+        // Asking user's permissions
+        permissionExternalStorage =
+            (ActivityCompat.checkSelfPermission(applicationContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED)
+        if (!permissionExternalStorage) {
+            val permissions : Array<String> =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.READ_MEDIA_AUDIO)
+                } else {
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            ActivityCompat.requestPermissions(this,
+                permissions,
+                PERMISSION_WRITE_EXTERNAL_CODE
+            )
+        }
+        askIgnoreOptimizationsBattery()
+
         findViewById<FrameLayout>(R.id.activity_base_layout).apply {
             viewTreeObserver.addOnGlobalLayoutListener(
                 object : OnGlobalLayoutListener {
@@ -169,6 +213,18 @@ abstract class BaseActivity : AppCompatActivity(),
                     createViewDependingOnOrientation()
                 }
             })
+        }
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun askIgnoreOptimizationsBattery() {
+        val pm = getSystemService(POWER_SERVICE) as? PowerManager
+        if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
+            val intent = Intent()
+            val pName = packageName
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = "package:$pName".toUri()
+            startActivity(intent)
         }
     }
 
@@ -313,7 +369,7 @@ abstract class BaseActivity : AppCompatActivity(),
         Log.d(TAG, "${msgStr}.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            BundleCompat.getParcelable(playData, PlayerConstants.PlayingParamState, PlayingParameters::class.java)
+            playData.getParcelable(PlayerConstants.PlayingParamState, PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
             Log.d(TAG, "${msgStr}.currentPlaybackState = $currentPlaybackState")
             Log.d(TAG, "${msgStr}.currentAudioPosition = $currentAudioPosition")

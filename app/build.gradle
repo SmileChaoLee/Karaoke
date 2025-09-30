@@ -24,6 +24,9 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
+        versionCode 930
+        versionName "9.30"
+
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
@@ -31,17 +34,13 @@ android {
 
     flavorDimensions += ["karaoke"]
     productFlavors {
-        create("karaokePlayer") {
+        create("karaokeplayer") {
             dimension = "karaoke"
-            versionCode 920
-            versionName "9.20"
             applicationId = "com.smile.karaokeplayer"
         }
-        create("karaokeTvPlayer") {
+        create("videoplayer") {
             dimension = "karaoke"
-            versionCode 130
-            versionName "1.30"
-            applicationId = "com.smile.karaoketvplayer"
+            applicationId = "com.smile.videoplayer"
         }
     }
 
@@ -53,10 +52,9 @@ android {
                 srcFile "src/main/AndroidManifest.xml"
             }
         }
-        karaokePlayer {
+        karaokeplayer {
             java {
                 srcDirs += "src/karaokeplayer/java"
-                // exclude "**/ExoPlaybackPreparer.java"
             }
             res.srcDirs += "src/karaokeplayer/res"
             manifest {
@@ -64,11 +62,11 @@ android {
             }
         }
 
-        karaokeTvPlayer {
-            java.srcDirs += "src/karaoketvplayer/java"
-            res.srcDirs += "src/karaoketvplayer/res"
+        videoplayer {
+            java.srcDirs += "src/videoplayer/java"
+            res.srcDirs += "src/videoplayer/res"
             manifest {
-                srcFile "src/karaoketvplayer/AndroidManifest.xml"
+                srcFile "src/videoplayer/AndroidManifest.xml"
             }
         }
     }
@@ -129,8 +127,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'androidx.core:core-ktx:1.16.0'
-    implementation 'androidx.media:media:1.7.0'
+    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.media:media:1.7.1'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -140,34 +138,39 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-ads:23.6.0'
 
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version
-    implementation platform('androidx.compose:compose-bom:2025.08.01')
+    implementation platform('androidx.compose:compose-bom:2025.09.01')
     // Compose Runtime
     implementation 'androidx.compose.runtime:runtime'
     // Other Compose dependencies you might be using (UI, Material, etc.)
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.material3:material3' // Or material
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.activity:activity-ktx:1.10.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.3'
-    implementation 'androidx.activity:activity-compose:1.10.1'
+    implementation 'androidx.activity:activity-ktx:1.11.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.4'
+    implementation 'androidx.activity:activity-compose:1.11.0'
     implementation 'androidx.compose.ui:ui-graphics'
 
-    implementation 'androidx.media3:media3-exoplayer:1.8.0'
-    implementation 'androidx.media3:media3-exoplayer-dash:1.8.0'
-    implementation 'androidx.media3:media3-decoder:1.8.0'
-
-    implementation 'androidx.media3:media3-ui:1.8.0'
-    implementation 'androidx.media3:media3-session:1.8.0'
-    implementation 'androidx.media3:media3-cast:1.8.0'
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
-
     implementation "com.android.billingclient:billing-ktx:8.0.0"
+
+    implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.0'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+
+    implementation files('libs/smilelibraries-release.aar')
+    implementation files('libs/NativeTemplatesModels-release.aar')
+
+    karaokeplayerImplementation 'androidx.media3:media3-exoplayer:1.8.0'
+    karaokeplayerImplementation 'androidx.media3:media3-exoplayer-dash:1.8.0'
+    karaokeplayerImplementation 'androidx.media3:media3-decoder:1.8.0'
+    karaokeplayerImplementation 'androidx.media3:media3-ui:1.8.0'
+    karaokeplayerImplementation 'androidx.media3:media3-session:1.8.0'
+    karaokeplayerImplementation 'androidx.media3:media3-cast:1.8.0'
 
     /*
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
@@ -176,25 +179,18 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.2.0") // If you need JSON
     */
 
-    implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.0'
-    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    karaokeplayerImplementation project(':extension-ffmpeg')
+    karaokeplayerImplementation project(':extension-flac')
+    karaokeplayerImplementation project(':extension-opus')
+    // karaokeplayerImplementation project(':extension-vp9')
+    karaokeplayerImplementation project(':extension-av1')
 
-    implementation files('libs/smilelibraries-release.aar')
-    implementation files('libs/NativeTemplatesModels-release.aar')
-
-    implementation project(':extension-ffmpeg')
-    implementation project(':extension-flac')
-    implementation project(':extension-opus')
-    implementation project(':extension-vp9')
-    implementation project(':extension-av1')
-
-    implementation 'org.videolan.android:libvlc-all:4.0.0-eap21'
-    implementation 'androidx.activity:activity-ktx:1.10.1'
+    videoplayerImplementation 'org.videolan.android:libvlc-all:4.0.0-eap22'
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation platform('androidx.compose:compose-bom:2025.08.01')
+    androidTestImplementation platform('androidx.compose:compose-bom:2025.09.01')
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test:rules:1.7.0'
