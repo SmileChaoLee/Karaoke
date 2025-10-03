@@ -181,6 +181,7 @@ class VlcPlayService : BasePlayService() {
         Log.d(TAG, msgStr)
         if (vlcPlayer == null) {
             Log.d(TAG, "${msgStr}.vlcPlayer is null")
+            return 0
         }
         val vPlayer = vlcPlayer!!
         var numOfVideoTracks = 0

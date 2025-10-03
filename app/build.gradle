@@ -42,6 +42,10 @@ android {
             dimension = "karaoke"
             applicationId = "com.smile.videoplayer"
         }
+        create("karaoketvplayer") {
+            dimension = "karaoke"
+            applicationId = "com.smile.karaoketvplayer"
+        }
     }
 
     sourceSets {
@@ -67,6 +71,14 @@ android {
             res.srcDirs += "src/videoplayer/res"
             manifest {
                 srcFile "src/videoplayer/AndroidManifest.xml"
+            }
+        }
+
+        karaoketvplayer {
+            java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java", "src/videoplayer/java"]
+            res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
+            manifest {
+                srcFile "src/karaoketvplayer/AndroidManifest.xml"
             }
         }
     }
@@ -170,7 +182,7 @@ dependencies {
     karaokeplayerImplementation 'androidx.media3:media3-decoder:1.8.0'
     karaokeplayerImplementation 'androidx.media3:media3-ui:1.8.0'
     karaokeplayerImplementation 'androidx.media3:media3-session:1.8.0'
-    karaokeplayerImplementation 'androidx.media3:media3-cast:1.8.0'
+    implementation 'androidx.media3:media3-cast:1.8.0'  // for exoplayer and vlcplayer
 
     /*
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
