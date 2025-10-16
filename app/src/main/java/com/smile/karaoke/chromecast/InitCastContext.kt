@@ -1,8 +1,8 @@
 package com.smile.karaoke.chromecast
 
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.cast.framework.CastContext
+import com.smile.karaoke.utilities.LogUtil
 
 object InitCastContext {
     private const val TAG = "InitCastContext"
@@ -10,7 +10,7 @@ object InitCastContext {
         try {
             return CastContext.getSharedInstance(context)
         } catch (e: RuntimeException) {
-            Log.e(TAG, "getInstance.Failed initialize CastContext", e)
+            LogUtil.e(TAG, "getInstance.Failed initialize CastContext", e)
             return null
         }
     }

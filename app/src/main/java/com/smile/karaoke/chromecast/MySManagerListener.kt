@@ -1,7 +1,6 @@
 package com.smile.karaoke.chromecast
 
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
@@ -10,6 +9,7 @@ import com.google.android.gms.cast.framework.SessionManagerListener
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.presenters.PlayerBasePresenter
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
@@ -29,7 +29,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionStarting(p0: CastSession) {
         val msgString = "onSessionStarting"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Not yet connected
         ScreenUtil.showToast(
             mContext, msgString,
@@ -41,7 +41,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionStarted(p0: CastSession, p1: String) {
         val msgString = "onSessionStarted"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         ScreenUtil.showToast(
             mContext, msgString,
             toastTextSize,
@@ -54,10 +54,10 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         mPresenter.pausePlay()
         //
         val mediaUri: Uri? = mPresenter.mediaUri
-        Log.d(TAG,"$msgString.mediaUri = $mediaUri")
+        LogUtil.d(TAG,"$msgString.mediaUri = $mediaUri")
         if (mediaUri == null) return
         val filePath = mediaUri.path
-        Log.d(TAG,"$msgString.filePath = $filePath")
+        LogUtil.d(TAG,"$msgString.filePath = $filePath")
         if (filePath != null) {
             webServerAndCast.startWebServerAndCast(p0, filePath)
         }
@@ -65,7 +65,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionStartFailed(p0: CastSession, p1: Int) {
         val msgString = "onSessionStartFailed"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Handle start failure
         ScreenUtil.showToast(
             mContext, msgString,
@@ -77,7 +77,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionEnding(p0: CastSession) {
         val msgString = "onSessionEnding"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Session is about to end
         ScreenUtil.showToast(
             mContext, msgString,
@@ -89,7 +89,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionEnded(p0: CastSession, p1: Int) {
         val msgString = "onSessionEnded"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         ScreenUtil.showToast(
             mContext, msgString,
             toastTextSize,
@@ -106,7 +106,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionResuming(p0: CastSession, p1: String) {
         val msgString = "onSessionResuming"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Resuming a previous session
         ScreenUtil.showToast(
             mContext, msgString,
@@ -118,7 +118,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionResumed(p0: CastSession, p1: Boolean) {
         val msgString = "onSessionResumed"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         ScreenUtil.showToast(
             mContext, msgString,
             toastTextSize,
@@ -131,7 +131,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionResumeFailed(p0: CastSession, p1: Int) {
         val msgString = "onSessionResumeFailed"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Handle resume failure
         ScreenUtil.showToast(
             mContext, msgString,
@@ -143,7 +143,7 @@ class MySManagerListener : SessionManagerListener<CastSession> {
 
     override fun onSessionSuspended(p0: CastSession, p1: Int) {
         val msgString = "onSessionSuspended"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         // Session is temporarily suspended (e.g., another app started casting)
         ScreenUtil.showToast(
             mContext, msgString,

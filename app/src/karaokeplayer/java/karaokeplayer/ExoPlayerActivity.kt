@@ -1,10 +1,10 @@
 package karaokeplayer
 
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.BaseActivity
+import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.fragments.ExoPlayerFragment
 
 private const val TAG : String = "ExoPlayerActivity"
@@ -13,7 +13,7 @@ private const val TAG : String = "ExoPlayerActivity"
 class ExoPlayerActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 

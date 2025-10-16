@@ -1,12 +1,12 @@
 package com.smile.karaoke.chromecast
 
-import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.common.images.WebImage
+import com.smile.karaoke.utilities.LogUtil
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.IOException
@@ -17,10 +17,10 @@ class WebServerAndCast {
 
     fun startWebServer(fileName: String) {
         val msgString = "startWebServer"
-        Log.d(TAG, "$msgString.webServer = $webServer")
-        Log.d(TAG, "$msgString.fileName $fileName")
+        LogUtil.d(TAG, "$msgString.webServer = $webServer")
+        LogUtil.d(TAG, "$msgString.fileName $fileName")
         if (webServer != null) {
-            Log.d(TAG, "$msgString.webServer is not null, stopping it")
+            LogUtil.d(TAG, "$msgString.webServer is not null, stopping it")
             webServer?.stop()
             webServer = null
         }
@@ -30,7 +30,7 @@ class WebServerAndCast {
 
     fun startWebServerAndCast(castSession: CastSession, fileName: String) {
         val msgString = "startWebServerAndCast"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         try {
             startWebServer(fileName)
             val deviceIpAddress = getDeviceIpAddress()
@@ -40,19 +40,19 @@ class WebServerAndCast {
                 loadRemoteMedia(castSession, mediaUrl,
                     fileName, "Local Media", null)
             } else {
-                Log.e(TAG, "$msgString.Could not get device IP address")
+                LogUtil.e(TAG, "$msgString.Could not get device IP address")
                 // Handle error: cannot form URL
             }
 
         } catch (e: IOException) {
-            Log.e(TAG, "$msgString.Error starting web server", e)
+            LogUtil.e(TAG, "$msgString.Error starting web server", e)
             webServer = null
         }
     }
 
     fun stopWebServer() {
         val msgString = "stopWebServer"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         webServer?.stop()
         webServer = null
     }
@@ -61,7 +61,7 @@ class WebServerAndCast {
                         localMediaUrl: String, title: String,
                         studio: String, imageUrl: String?) {
         val msgString = "loadRemoteMedia"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         castSession.remoteMediaClient?.let { remoteMediaClient ->
             val movieMetadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE)
             movieMetadata.putString(MediaMetadata.KEY_TITLE, title)
@@ -87,7 +87,7 @@ class WebServerAndCast {
 
             remoteMediaClient.load(mediaLoadRequestData)
         } ?: run {
-            Log.w(TAG, "$msgString.Session is not available")
+            LogUtil.w(TAG, "$msgString.Session is not available")
             // Handle case where session is not active
         }
     }
@@ -98,22 +98,22 @@ class WebServerAndCast {
 
     fun getMediaUrl(): String {
         val msgString = "getMediaUrl"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         val fileName = getFilename()
         if (fileName.isNullOrEmpty()) {
-            Log.d(TAG, "$msgString.fileName is null or empty")
+            LogUtil.d(TAG, "$msgString.fileName is null or empty")
             return ""
         }
         val ipAddress = getDeviceIpAddress()
         val tmpUrl = "http://$ipAddress:$SERVER_PORT/$fileName"
-        Log.d(TAG, "$msgString.tmpUrl = $tmpUrl")
+        LogUtil.d(TAG, "$msgString.tmpUrl = $tmpUrl")
         return tmpUrl
     }
 
     // Helper to get local IP address
     fun getDeviceIpAddress(): String? {
         val msgString = "getDeviceIpAddress"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         try {
             val networkInterfaces = NetworkInterface.getNetworkInterfaces()
             while (networkInterfaces.hasMoreElements()) {
@@ -131,7 +131,7 @@ class WebServerAndCast {
                 }
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "getLocalIpAddress.Error getting IP address", ex)
+            LogUtil.e(TAG, "getLocalIpAddress.Error getting IP address", ex)
         }
         return null
     }

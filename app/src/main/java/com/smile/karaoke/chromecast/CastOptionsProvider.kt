@@ -1,7 +1,6 @@
 package com.smile.karaoke.chromecast
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.CastMediaControlIntent
@@ -11,11 +10,12 @@ import com.google.android.gms.cast.framework.SessionProvider
 import com.google.android.gms.cast.framework.media.CastMediaOptions
 import com.google.android.gms.cast.framework.media.NotificationOptions
 import com.smile.karaoke.BaseActivity
+import com.smile.karaoke.utilities.LogUtil
 
 class CastOptionsProvider : OptionsProvider {
     @OptIn(UnstableApi::class)
     override fun getCastOptions(appContext: Context): CastOptions {
-        Log.d(TAG, "getCastOptions")
+        LogUtil.d(TAG, "getCastOptions")
         val notificationOptions = NotificationOptions.Builder()
             .setTargetActivityClassName(BaseActivity::class.java.name)
             .build()
@@ -29,13 +29,13 @@ class CastOptionsProvider : OptionsProvider {
                 CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
             .setCastMediaOptions(mediaOptions)
             .build()
-        Log.d(TAG, "getCastOptions.CastOptions.castOptions = $castOptions")
+        LogUtil.d(TAG, "getCastOptions.CastOptions.castOptions = $castOptions")
 
         return castOptions
     }
 
     override fun getAdditionalSessionProviders(context: Context): List<SessionProvider>? {
-        Log.d(TAG, "getAdditionalSessionProviders")
+        LogUtil.d(TAG, "getAdditionalSessionProviders")
         return null
     }
 

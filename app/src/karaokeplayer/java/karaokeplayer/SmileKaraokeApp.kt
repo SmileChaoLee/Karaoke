@@ -1,7 +1,6 @@
 package karaokeplayer
 
 import android.app.Activity
-import android.util.Log
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.facebook.ads.AudienceNetworkAds
@@ -10,6 +9,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.SmileAppBase
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
@@ -17,7 +17,7 @@ class SmileKaraokeApp : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
+        LogUtil.i(TAG, "onCreate")
     }
 
     override fun initAds() {
@@ -36,14 +36,14 @@ class SmileKaraokeApp : SmileAppBase() {
         // google
         MobileAds.initialize(applicationContext
         ) { initializationStatus: InitializationStatus? ->
-            Log.d(TAG, "Google AdMob was initialized successfully.")
+            LogUtil.d(TAG, "Google AdMob was initialized successfully.")
         }
         // adMobInterstitial = new AdMobInterstitial(appContext, googleAdMobInterstitialID);
         // for the chrome cast
     }
 
     override fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?): SetBannerAdView? {
-        Log.d(TAG, "showBannerAd")
+        LogUtil.d(TAG, "showBannerAd")
         return SetBannerAdView(activity, null,
             bannerLayout,
             googleAdMobBannerID, facebookBannerID, 0)
@@ -52,7 +52,7 @@ class SmileKaraokeApp : SmileAppBase() {
     override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
     : GoogleAdMobNativeTemplate? {
-        Log.d(TAG, "geNativeTemplate")
+        LogUtil.d(TAG, "geNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
             googleAdMobNativeID,
@@ -60,6 +60,6 @@ class SmileKaraokeApp : SmileAppBase() {
     }
 
     companion object {
-        private const val TAG = "SmilePhoneApp"
+        private const val TAG = "SmileKaraokeApp"
     }
 }

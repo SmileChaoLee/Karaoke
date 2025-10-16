@@ -1,12 +1,12 @@
 package karaokeplayer.listeners
 
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.services.ExoPlayService
 
 @OptIn(UnstableApi::class)
@@ -16,7 +16,7 @@ class CastPlayerListener(private val playService: ExoPlayService)
     private val mTAG = "CastPlayerListener"
     init {
         setTAG(mTAG)
-        Log.d(mTAG, "CastPlayerListener is created")
+        LogUtil.d(mTAG, "CastPlayerListener is created")
     }
 
     override fun onPlayerPaused() {
@@ -24,20 +24,20 @@ class CastPlayerListener(private val playService: ExoPlayService)
         val msgStr = "onPlaybackStateChanged"
         val finishState = playService.presenter?.playingParam?.finishState
             ?: PlayerConstants.FINISHED_NORMALLY
-        Log.d(mTAG, "${msgStr}.finishState = $finishState")
+        LogUtil.d(mTAG, "${msgStr}.finishState = $finishState")
         when(finishState) {
             PlayerConstants.STOPPED_BY_USER -> {
                 // stopped by PlayerConstants.STOPPED_BY_USER
                 // use castPlay.pause() in playService.stop() for carPlayer
                 // then no playing next song
-                Log.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_NONE")
+                LogUtil.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_NONE")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE)
             }
             else -> {
                 // stopped by PlayerConstants.FINISHED_BY_PROGRAM
                 // use castPlay.pause() in playService.stop() for carPlayer
                 // then playing next song
-                Log.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED")
+                LogUtil.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
             }
         }
@@ -46,11 +46,11 @@ class CastPlayerListener(private val playService: ExoPlayService)
     override fun onTracksChanged(tracks: Tracks) {
         super.onTracksChanged(tracks)
         val msgStr = "onTracksChanged"
-        Log.d(mTAG, msgStr)
+        LogUtil.d(mTAG, msgStr)
         if (playService.castPlayer == null) return
         val cPlayer = playService.castPlayer!!
         val currentTracks: Tracks? = cPlayer.currentTracks
-        Log.d(mTAG, "${msgStr}.currentTacks = $currentTracks")
+        LogUtil.d(mTAG, "${msgStr}.currentTacks = $currentTracks")
     }
 
     override fun onEvents(player: Player, events: Player.Events) {
@@ -58,9 +58,9 @@ class CastPlayerListener(private val playService: ExoPlayService)
         if (events.contains(Player.EVENT_TRACKS_CHANGED)
             || events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED)) {
             val tracks = player.currentTracks
-            Log.d(mTAG, "${msgStr}.onEvents.tracks = $tracks")
+            LogUtil.d(mTAG, "${msgStr}.onEvents.tracks = $tracks")
             tracks.apply {
-                Log.d(mTAG, "${msgStr}.onEvents.tracks.groups.size" +
+                LogUtil.d(mTAG, "${msgStr}.onEvents.tracks.groups.size" +
                         " = ${tracks.groups.size}")
             }
             // Now you can safely access currentTracks

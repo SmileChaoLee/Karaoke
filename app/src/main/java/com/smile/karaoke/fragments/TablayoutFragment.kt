@@ -2,7 +2,6 @@ package com.smile.karaoke.fragments
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -26,7 +26,7 @@ class TablayoutFragment : Fragment() {
     private var playTabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate() is called.")
+        LogUtil.i(TAG, "onCreate() is called.")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
@@ -36,13 +36,13 @@ class TablayoutFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView()")
+        LogUtil.i(TAG, "onCreateView()")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tablayout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated")
+        LogUtil.i(TAG, "onViewCreated")
         bannerLayoutForTab = view.findViewById(R.id.bannerLayoutForTab)
         activity?.let {actIt ->
             val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(actIt,
@@ -60,32 +60,32 @@ class TablayoutFragment : Fragment() {
                 tab?.let {
                     when (it.position) {
                         0-> {
-                            Log.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
+                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
                                 replace(R.id.tablayout_container, openFragment, OPEN_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         1-> {
-                            Log.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
                                 replace(R.id.tablayout_container, favoriteFragment, FAVORITE_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         else->{
-                            Log.d(TAG, "OnTabSelectedListener.onTabSelected.others")
+                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.others")
                         }
                     }
                 }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                Log.d(TAG, "OnTabSelectedListener.onTabUnselected")
+                LogUtil.d(TAG, "OnTabSelectedListener.onTabUnselected")
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                Log.d(TAG, "OnTabSelectedListener.onTabReselected")
+                LogUtil.d(TAG, "OnTabSelectedListener.onTabReselected")
             }
 
         })
@@ -101,46 +101,46 @@ class TablayoutFragment : Fragment() {
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        Log.d(TAG, "onConfigurationChanged()")
+        LogUtil.i(TAG, "onConfigurationChanged()")
         super.onConfigurationChanged(newConfig)
         showBannerAd()
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart")
+        LogUtil.i(TAG, "onStart")
         super.onStart()
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume")
+        LogUtil.i(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause")
+        LogUtil.i(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
         bannerLayoutForTab?.visibility = View.GONE
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop")
+        LogUtil.i(TAG, "onStop")
         super.onStop()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
+        LogUtil.i(TAG, "onDestroy")
         myBannerAdView?.destroy()
         super.onDestroy()
     }
 
     fun becomeVisible() {
-        Log.d(TAG, "becomeVisible")
+        LogUtil.i(TAG, "becomeVisible")
         playTabLayout?.let {
-            Log.d(TAG, "becomeVisible.selectedTabPosition = ${it.selectedTabPosition}")
+            LogUtil.d(TAG, "becomeVisible.selectedTabPosition = ${it.selectedTabPosition}")
             if (it.selectedTabPosition==0) {
                 openFragment.setupSwitchDecoderButton()
                 openFragment.searchCurrentFolder()
@@ -152,13 +152,13 @@ class TablayoutFragment : Fragment() {
     }
 
     fun becomeInVisible() {
-        Log.d(TAG, "becomeInVisible")
+        LogUtil.i(TAG, "becomeInVisible")
         openFragment.clearFileList()
         favoriteFragment.clearFavoriteList()
     }
 
     private fun showBannerAd() {
-        Log.d(TAG, "showBannerAd")
+        LogUtil.d(TAG, "showBannerAd")
         activity?.let { actIt ->
             myBannerAdView?.destroy()
             myBannerAdView = (actIt.application as SmileAppBase)

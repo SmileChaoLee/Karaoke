@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,6 +23,7 @@ import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.PlayerConstants;
 import com.smile.karaoke.models.SongInfo;
 import com.smile.karaoke.models.SongListSQLite;
+import com.smile.karaoke.utilities.LogUtil;
 import com.smile.smilelibraries.utilities.ScreenUtil;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate() is called.");
+        LogUtil.d(TAG, "onCreate() is called.");
 
         float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this, ScreenUtil.FontSize_Pixel_Type, null);
         float textFontSize = ScreenUtil.suitableFontSize(this, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
@@ -95,7 +95,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                     returnToPreviousWithResult(Activity.RESULT_CANCELED);
                     return;
             }
-            Log.d(TAG, "savedInstanceState is null.");
+            LogUtil.d(TAG, "savedInstanceState is null.");
         } else {
             // not null, has savedInstanceState
             actionButtonString = savedInstanceState.getString("ActionButtonString");
@@ -104,7 +104,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
                 mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
                         SongInfo.class);
             } else mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
-            Log.d(TAG, "savedInstanceState is not null.");
+            LogUtil.d(TAG, "savedInstanceState is not null.");
         }
 
         if (crudAction == null) {
@@ -256,7 +256,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Log.d(TAG, "getOnBackPressedDispatcher.handleOnBackPressed");
+                LogUtil.d(TAG, "getOnBackPressedDispatcher.handleOnBackPressed");
                 returnToPreviousWithResult(Activity.RESULT_CANCELED);
             }
         });
@@ -265,18 +265,18 @@ public class BaseSongDataActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        LogUtil.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        LogUtil.d(TAG, "onPause");
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
+        LogUtil.d(TAG, "onSaveInstanceState");
         setSongInfoFromInput(false);
 
         outState.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
@@ -289,12 +289,12 @@ public class BaseSongDataActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
+        LogUtil.d(TAG, "onDestroy");
         mSongInfo = null;
     }
 
     private void returnToPreviousWithResult(int isOK) {
-        Log.d(TAG, "returnToPreviousWithResult");
+        LogUtil.d(TAG, "returnToPreviousWithResult");
         Intent returnIntent = new Intent();
         Bundle extras = new Bundle();
         extras.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
@@ -305,7 +305,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
     }
 
     private boolean setSongInfoFromInput(boolean hasMessage) {
-        Log.d(TAG, "setSongInfoFromInput");
+        LogUtil.d(TAG, "setSongInfoFromInput");
         boolean isValid = true;
 
         String title = "";

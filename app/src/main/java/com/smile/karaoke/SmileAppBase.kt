@@ -3,7 +3,6 @@ package com.smile.karaoke
 import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.Color
-import android.util.Log
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.multidex.MultiDexApplication
@@ -11,6 +10,7 @@ import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.chromecast.InitCastContext
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
@@ -30,7 +30,7 @@ abstract class SmileAppBase : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         leftChannelString = getString(R.string.leftChannelString)
         rightChannelString = getString(R.string.rightChannelString)
         stereoChannelString = getString(R.string.stereoChannelString)
@@ -44,17 +44,17 @@ abstract class SmileAppBase : MultiDexApplication() {
         initAds()
 
         castContext = InitCastContext.getInstance(this)
-        Log.d(TAG, "castContext = $castContext")
+        LogUtil.d(TAG, "castContext = $castContext")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        Log.d(TAG, "Configuration changed")
+        LogUtil.d(TAG, "Configuration changed")
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        Log.w(TAG, "System is running low on memory")
+        LogUtil.w(TAG, "System is running low on memory")
     }
 
     override fun onTerminate() {
@@ -64,7 +64,7 @@ abstract class SmileAppBase : MultiDexApplication() {
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        Log.w(TAG, "onTrimMemory, level: = $level")
+        LogUtil.w(TAG, "onTrimMemory, level: = $level")
     }
 
     companion object {

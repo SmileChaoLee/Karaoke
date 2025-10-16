@@ -1,7 +1,6 @@
 package com.smile.karaoke.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.models.SongDescription
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG = "FaRecyclerVAdapter"
@@ -38,7 +38,7 @@ class FavoriteRecyclerViewAdapter private constructor(
                         textColor : Int, transparentLightGray : Int)
         : FavoriteRecyclerViewAdapter {
 
-            Log.d(TAG, "getInstance.viewAdapter = $viewAdapter")
+            LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter")
             if (viewAdapter == null) {
                 viewAdapter = FavoriteRecyclerViewAdapter(recyclerItemClickListener,
                         textFontSize, mList, textColor, transparentLightGray)
@@ -63,7 +63,7 @@ class FavoriteRecyclerViewAdapter private constructor(
         val songVideoImageView: ImageView
         val songNameTextView: TextView
         init {
-            Log.d(TAG, "MyViewHolder")
+            LogUtil.d(TAG, "MyViewHolder")
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
@@ -78,14 +78,14 @@ class FavoriteRecyclerViewAdapter private constructor(
 
     // Involves populating data into the item through holder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        Log.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
+        LogUtil.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_my_favorites_item, parent, false)
         return MyViewHolder(fileView, recyclerItemClickListener, textFontSize)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder.position = $position")
+        LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
         holder.songVideoImageView.setImageBitmap(item.bm)
         val songName = item.song.songName?.trim()?: ""
@@ -112,12 +112,12 @@ class FavoriteRecyclerViewAdapter private constructor(
     }
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount().mList.size = ${mList.size}")
+        LogUtil.d(TAG, "getItemCount().mList.size = ${mList.size}")
         return mList.size
     }
 
     fun myNotifyItemChanged(position:Int) {
-        Log.d(TAG, "myNotifyItemChanged.position = $position")
+        LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
         notifyItemChanged(position)
     }

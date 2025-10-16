@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.C
@@ -35,6 +34,7 @@ import karaokeplayer.listeners.CastPlayerListener
 import karaokeplayer.listeners.ExoPlayerListener
 import karaokeplayer.presenters.ExoPlayerPresenter
 import com.smile.karaoke.services.BasePlayService
+import com.smile.karaoke.utilities.LogUtil
 import java.util.Arrays
 
 @UnstableApi
@@ -61,22 +61,22 @@ class ExoPlayService : BasePlayService() {
     override fun onCreate() {
         super.onCreate()
         switchPlayer = SwitchPlayer(this)
-        Log.d(TAG, "onCreate.switchPlayer = $switchPlayer")
+        LogUtil.i(TAG, "onCreate.switchPlayer = $switchPlayer")
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        Log.d(TAG, "onBind.binder = $binder")
+        LogUtil.i(TAG, "onBind.binder = $binder")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "onUnbind.intent = $intent")
+        LogUtil.i(TAG, "onUnbind.intent = $intent")
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy")
+        LogUtil.i(TAG, "onDestroy")
         releasePlayers()
         mediaControllerCompat?.apply {
             controllerCallback?.let {
@@ -86,19 +86,19 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun initPlayers() {
-        Log.d(TAG, "initPlayers")
+        LogUtil.i(TAG, "initPlayers")
         initExoPlayer()
         initCastPlayer()
     }
 
     private fun releasePlayers() {
-        Log.d(TAG, "releasePlayers")
+        LogUtil.i(TAG, "releasePlayers")
         releaseExoPlayer()
         releaseCastPlayer()
     }
 
     fun addExoPlayerListener() {
-        Log.d(TAG, "addExoPlayerListener")
+        LogUtil.i(TAG, "addExoPlayerListener")
         if (exoPlayerListener == null) {
             exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
         }
@@ -108,7 +108,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun removeExoPlayerListener() {
-        Log.d(TAG, "removeExoPlayerListener")
+        LogUtil.i(TAG, "removeExoPlayerListener")
         if (exoPlayerListener != null) {
             exoPlayer?.apply {
                 removeListener(exoPlayerListener!!)
@@ -118,16 +118,16 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun initExoPlayer() {
-        Log.d(TAG, "initExoPlayer.presenter = $presenter")
+        LogUtil.i(TAG, "initExoPlayer.presenter = $presenter")
         presenter?.let {
             val trackSelectionParams = it.trackSelectionParameters
             val trackSelector =
                 DefaultTrackSelector(applicationContext, AdaptiveTrackSelection.Factory())
-            Log.d(TAG,"initExoPlayer.trackSelector = $trackSelector")
+            LogUtil.d(TAG,"initExoPlayer.trackSelector = $trackSelector")
             trackSelector.setParameters(trackSelectionParams!!)
 
             // EXTENSION_RENDERER_MODE_OFF, EXTENSION_RENDERER_MODE_ON, EXTENSION_RENDERER_MODE_PREFER
-            Log.d(TAG,"initExoPlayer.useSoftDecoder = ${it.playingParam.softDecoderFirst}")
+            LogUtil.d(TAG,"initExoPlayer.useSoftDecoder = ${it.playingParam.softDecoderFirst}")
             val myRenderersFactory =
                 MyRenderersFactory(
                     applicationContext,
@@ -144,22 +144,22 @@ class ExoPlayService : BasePlayService() {
                 .setMediaSourceFactory(DefaultMediaSourceFactory(applicationContext, extractorsFactory))
                 .build()
             exoPlayer?.apply {
-                Log.d(TAG,"initExoPlayer.exoPlayer = $this")
+                LogUtil.d(TAG,"initExoPlayer.exoPlayer = $this")
                 addExoPlayerListener()
-                Log.d(TAG,"initExoPlayer.this = $this")
+                LogUtil.d(TAG,"initExoPlayer.this = $this")
                 // trackSelectionParameters = TrackSelectionParameters.Builder().build()
                 trackSelectionParameters = trackSelectionParams
             }
-            Log.d(TAG,"initExoPlayer.FfmpegLibrary.isAvailable() = " + FfmpegLibrary.isAvailable())
-            // Log.d(TAG, "initExoPlayer.VpxLibrary.isAvailable() = " + VpxLibrary.isAvailable())
-            Log.d(TAG, "initExoPlayer.FlacLibrary.isAvailable() = " + FlacLibrary.isAvailable())
-            Log.d(TAG, "initExoPlayer.OpusLibrary.isAvailable() = " + OpusLibrary.isAvailable())
-            Log.d(TAG, "initExoPlayer.Gav1Library.isAvailable() = " + Gav1Library.isAvailable())
+            LogUtil.d(TAG,"initExoPlayer.FfmpegLibrary.isAvailable() = " + FfmpegLibrary.isAvailable())
+            // LogUtil.d(TAG, "initExoPlayer.VpxLibrary.isAvailable() = " + VpxLibrary.isAvailable())
+            LogUtil.d(TAG, "initExoPlayer.FlacLibrary.isAvailable() = " + FlacLibrary.isAvailable())
+            LogUtil.d(TAG, "initExoPlayer.OpusLibrary.isAvailable() = " + OpusLibrary.isAvailable())
+            LogUtil.d(TAG, "initExoPlayer.Gav1Library.isAvailable() = " + Gav1Library.isAvailable())
         }
     }
 
     private fun releaseExoPlayer() {
-        Log.d(TAG, "releaseExoPlayer")
+        LogUtil.i(TAG, "releaseExoPlayer")
         exoPlayer?.apply {
             removeExoPlayerListener()
             stop()
@@ -169,7 +169,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun addCastPlayerListener() {
-        Log.d(TAG, "addCastPlayerListener")
+        LogUtil.i(TAG, "addCastPlayerListener")
         if (castPlayerListener == null) {
             castPlayerListener = CastPlayerListener(this@ExoPlayService)
         }
@@ -179,7 +179,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun removeCastPlayerListener() {
-        Log.d(TAG, "removeCastPlayerListener")
+        LogUtil.i(TAG, "removeCastPlayerListener")
         if (castPlayerListener != null) {
             castPlayer?.apply {
                 removeListener(castPlayerListener!!)
@@ -189,17 +189,17 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun initCastPlayer() {
-        Log.d(TAG, "initCastPlayer.presenter = $presenter")
+        LogUtil.i(TAG, "initCastPlayer.presenter = $presenter")
         if (presenter == null) return
         val tempPresenter = presenter!!
         castContext?.let { castIt ->
             val sessionAvailabilityListener = object: SessionAvailabilityListener {
                 override fun onCastSessionAvailable() {
-                    Log.d(TAG,"onCastSessionAvailable")
+                    LogUtil.d(TAG,"onCastSessionAvailable")
                     switchPlayer.transferPlaybackToCast()
                 }
                 override fun onCastSessionUnavailable() {
-                    Log.d(TAG,"onCastSessionUnavailable")
+                    LogUtil.d(TAG,"onCastSessionUnavailable")
                     switchPlayer.transferPlaybackToLocal()
                 }
             }
@@ -213,7 +213,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun releaseCastPlayer() {
-        Log.d(TAG, "releaseCastPlayer")
+        LogUtil.i(TAG, "releaseCastPlayer")
         castPlayer?.apply {
             removeCastPlayerListener()
             stop()
@@ -223,7 +223,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getCurrentPlayer(): Player? {
-        Log.d(TAG, "getCurrentPlayer.isCastSessionAvailable = $isCastSessionAvailable")
+        LogUtil.i(TAG, "getCurrentPlayer.isCastSessionAvailable = $isCastSessionAvailable")
         return if (isCastSessionAvailable) {
             castPlayer
         } else {
@@ -243,17 +243,17 @@ class ExoPlayService : BasePlayService() {
                              trackSelParam: TrackSelectionParameters)
             : TrackSelectionParameters {
         val msgString = "selectAudioTrack"
-        Log.d(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         if (trackIndicesCombination == null) {
-            Log.d(TAG, "$msgString.trackIndicesCombination = null")
+            LogUtil.d(TAG, "$msgString.trackIndicesCombination = null")
             return trackSelParam
         }
         val audioRendererIndex = trackIndicesCombination[0]
-        Log.d(TAG, "$msgString.audioRendererIndex = $audioRendererIndex")
+        LogUtil.d(TAG, "$msgString.audioRendererIndex = $audioRendererIndex")
         val audioTrackGroupIndex = trackIndicesCombination[1]
-        Log.d(TAG, "$msgString.audioTrackGroupIndex = $audioTrackGroupIndex")
+        LogUtil.d(TAG, "$msgString.audioTrackGroupIndex = $audioTrackGroupIndex")
         val audioTrackIndex = trackIndicesCombination[2]
-        Log.d(TAG, "$msgString.audioTrackIndex = $audioTrackIndex")
+        LogUtil.d(TAG, "$msgString.audioTrackIndex = $audioTrackIndex")
 
         val parametersBuilder: TrackSelectionParameters.Builder =
             trackSelParam.buildUpon()
@@ -269,17 +269,17 @@ class ExoPlayService : BasePlayService() {
                 val trackSelectionParam = parametersBuilder.setOverrideForType(override)
                     .build()
                 if (isCastSessionAvailable) {
-                    Log.d(TAG, "${msgString}.castPlayer?.trackSelectionParameters" +
+                    LogUtil.d(TAG, "${msgString}.castPlayer?.trackSelectionParameters" +
                             " = trackSelectionParam")
                     castPlayer?.trackSelectionParameters = trackSelectionParam
                 } else {
-                    Log.d(TAG, "${msgString}.exoPlayer?.trackSelectionParameters" +
+                    LogUtil.d(TAG, "${msgString}.exoPlayer?.trackSelectionParameters" +
                             " = trackSelectionParam")
                     exoPlayer?.trackSelectionParameters = trackSelectionParam
                 }
                 return trackSelectionParam
             } catch (e: Exception) {
-                Log.d(TAG, "$msgString.currentTracks?.Exception", e)
+                LogUtil.e(TAG, "$msgString.currentTracks?.Exception", e)
             }
         }
         return trackSelParam
@@ -287,7 +287,7 @@ class ExoPlayService : BasePlayService() {
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Array<Int>>): Int {
         val msgString = "getPlayingMediaInfo"
-        Log.d(TAG, msgString)
+        LogUtil.i(TAG, msgString)
         var mNumberOfVideoTracks = 0
         var trackIndicesCombination: Array<Int>
 
@@ -295,9 +295,9 @@ class ExoPlayService : BasePlayService() {
         // Example: Check if connected (this might vary based on your specific implementation)
         if (isCastSessionAvailable) {
             if (castPlayer?.isCommandAvailable(Player.COMMAND_GET_TRACKS) == true) {
-                Log.d(TAG, "{msgString}.COMMAND_GET_TRACKS")
+                LogUtil.d(TAG, "{msgString}.COMMAND_GET_TRACKS")
                 currentTracks = castPlayer?.currentTracks
-                Log.d(TAG, "{msgString}.tracks = $currentTracks")
+                LogUtil.d(TAG, "{msgString}.tracks = $currentTracks")
             }
         } else {
             currentTracks = exoPlayer?.currentTracks
@@ -305,21 +305,21 @@ class ExoPlayService : BasePlayService() {
 
         val renderIndex = 1 // assumed value
         currentTracks?.let {
-            Log.d(TAG, "{msgString}.currentTracks = $currentTracks")
-            Log.d(TAG, "{msgString}.currentTracks.groups.size" +
+            LogUtil.d(TAG, "{msgString}.currentTracks = $currentTracks")
+            LogUtil.d(TAG, "{msgString}.currentTracks.groups.size" +
                     " = ${currentTracks.groups.size}")
             for (groupIndex in 0 until it.groups.size) {
-                Log.d(TAG, "${msgString}.groupIndex = $groupIndex")
+                LogUtil.d(TAG, "${msgString}.groupIndex = $groupIndex")
                 val groupInfo = it.groups[groupIndex]
                 if (groupInfo.type == C.TRACK_TYPE_AUDIO) {
-                    Log.d(TAG, "${msgString}.Audio Track Group")
+                    LogUtil.d(TAG, "${msgString}.Audio Track Group")
                     for (trackIndex in 0 until groupInfo.length) {
-                        Log.d(TAG, "${msgString}.Audio Track Group.trackIndex = $trackIndex")
+                        LogUtil.d(TAG, "${msgString}.Audio Track Group.trackIndex = $trackIndex")
                         val format = groupInfo.getTrackFormat(trackIndex)
                         val isSelected = groupInfo.isTrackSelected(trackIndex)
                         // More accurately, if it *can* be selected
                         val isSupported = groupInfo.isTrackSupported(trackIndex)
-                        Log.d(TAG, "${msgString}.Track: $trackIndex, Language: ${format.language}," +
+                        LogUtil.d(TAG, "${msgString}.Track: $trackIndex, Language: ${format.language}," +
                                 " Label: ${format.label}, Selected: $isSelected, Supported: $isSupported")
                         trackIndicesCombination = Array(3) {0}
                         trackIndicesCombination[0] = renderIndex  // rendererIndex for only one render
@@ -328,18 +328,18 @@ class ExoPlayService : BasePlayService() {
                         audioTrackIndicesList.add(trackIndicesCombination)
                     }
                 } else if (groupInfo.type == C.TRACK_TYPE_VIDEO) {
-                    Log.d(TAG, "${msgString}.Video Track Group")
+                    LogUtil.d(TAG, "${msgString}.Video Track Group")
                     mNumberOfVideoTracks++
                 }
             }
         }
         for (index in 0 until audioTrackIndicesList.size) {
-            Log.d(TAG, "${msgString}.index = $index")
+            LogUtil.d(TAG, "${msgString}.index = $index")
             for (trackIndex in audioTrackIndicesList[index]) {
-                Log.d(TAG, "${msgString}trackIndex = $trackIndex")
+                LogUtil.d(TAG, "${msgString}trackIndex = $trackIndex")
             }
         }
-        Log.d(TAG, "${msgString}.mNumberOfVideoTracks = $mNumberOfVideoTracks")
+        LogUtil.d(TAG, "${msgString}.mNumberOfVideoTracks = $mNumberOfVideoTracks")
         return mNumberOfVideoTracks
     }
 
@@ -385,16 +385,16 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onPlay() {
-        Log.d(TAG, "onPlay.isCastSessionAvailable = $isCastSessionAvailable")
+        LogUtil.i(TAG, "onPlay.isCastSessionAvailable = $isCastSessionAvailable")
         if (isCastSessionAvailable) {
             castPlayer?.apply {
                 presenter?.let {
                     if ((it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE
                                 || it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_STOPPED)) {
                         // stopped by user (Player.STATE_IDLE)
-                        Log.d(TAG, "onPlay.currentPlaybackState = PlaybackStateCompat.STATE_NONE")
+                        LogUtil.d(TAG, "onPlay.currentPlaybackState = PlaybackStateCompat.STATE_NONE")
                         // or Playing was finished (Player.STATE_ENDED)
-                        Log.d(TAG, "or PlaybackStateCompat.STATE_STOPPED")
+                        LogUtil.d(TAG, "or PlaybackStateCompat.STATE_STOPPED")
                         // prepare() or
                         replayMedia(it)
                     } else {
@@ -408,9 +408,9 @@ class ExoPlayService : BasePlayService() {
                     if ((it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE
                                 || it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_STOPPED)) {
                         // stopped by user (Player.STATE_IDLE)
-                        Log.d(TAG, "onPlay.currentPlaybackState = PlaybackStateCompat.STATE_NONE")
+                        LogUtil.d(TAG, "onPlay.currentPlaybackState = PlaybackStateCompat.STATE_NONE")
                         // or Playing was finished (Player.STATE_ENDED)
-                        Log.d(TAG, "or PlaybackStateCompat.STATE_STOPPED")
+                        LogUtil.d(TAG, "or PlaybackStateCompat.STATE_STOPPED")
                         // prepare() or
                         replayMedia(it)
                     } else {
@@ -421,7 +421,7 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onPause() {
-        Log.d(TAG, "onPause")
+        LogUtil.i(TAG, "onPause")
         if (isCastSessionAvailable) {
             castPlayer?.pause()
         } else {
@@ -429,14 +429,14 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onStop() {
-        Log.d(TAG, "onStop")
+        LogUtil.i(TAG, "onStop")
         if (isCastSessionAvailable) {
             // setPlayerTime(getMediaDuration()) will trigger playing from the beginning
             // castPlayer?.seekTo() will trigger playing from the beginning
             // after castPlayer?.stop(), everything stopped including listener
             // so do not use castPlayer?.stop()
             // use castPlayer?.pause(), then process in listener
-            Log.d(TAG, "onStop.castPlayer?.pause()")
+            LogUtil.d(TAG, "onStop.castPlayer?.pause()")
             castPlayer?.pause()
         } else {
             exoPlayer?.stop()
@@ -444,13 +444,13 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun initMediaCallback() {
-        Log.d(TAG, "initMediaCallback.presenter = $presenter")
+        LogUtil.i(TAG, "initMediaCallback.presenter = $presenter")
         presenter?.let {
             mediaSessionCallback = ExoMediaSessionCallback(it, this@ExoPlayService)
-            Log.d(TAG,"initMediaCallback.mediaSessionCallback = $mediaSessionCallback")
+            LogUtil.d(TAG,"initMediaCallback.mediaSessionCallback = $mediaSessionCallback")
             mediaSessionCompat?.setCallback(mediaSessionCallback)
             controllerCallback = ExoMediaControllerCallback(it)
-            Log.d(TAG,"initMediaCallback.controllerCallback = $controllerCallback")
+            LogUtil.d(TAG,"initMediaCallback.controllerCallback = $controllerCallback")
             mediaControllerCompat?.registerCallback(controllerCallback!!)
         }
     }
@@ -464,7 +464,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun setPlayerTime(progress: Long) {
-        Log.d(TAG, "setPlayerTime")
+        LogUtil.d(TAG, "setPlayerTime")
         if (isCastSessionAvailable) {
             castPlayer?.seekTo(progress)
         } else {
@@ -473,20 +473,20 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun isSeekable(): Boolean {
-        Log.d(TAG, "isSeekable")
+        LogUtil.d(TAG, "isSeekable")
         val seekAble: Boolean = if (isCastSessionAvailable) {
             castPlayer?.isCurrentMediaItemSeekable ?: false
         } else {
             exoPlayer?.isCurrentMediaItemSeekable ?: false
         }
-        Log.d(TAG, "isSeekable.seekAble = $seekAble")
+        LogUtil.d(TAG, "isSeekable.seekAble = $seekAble")
         return seekAble
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
-        Log.d(TAG, "setAudioVolume")
+        LogUtil.i(TAG, "setAudioVolume")
         presenter?.playingParam?.let {
-            Log.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
+            LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
             // get current channel
             val currentChannelPlayed = it.currentChannelPlayed
             var useAudioProcessor = false
@@ -515,10 +515,10 @@ class ExoPlayService : BasePlayService() {
                     volume = volumeInput
                 }
             }
-            Log.d(TAG, "setAudioVolume.useAudioProcessor = $useAudioProcessor")
+            LogUtil.d(TAG, "setAudioVolume.useAudioProcessor = $useAudioProcessor")
             if (!useAudioProcessor) {
                 // exoPlayer?.volume = volumeTmp
-                Log.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+                LogUtil.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
                 if (isCastSessionAvailable) {
                     castPlayer?.volume = volumeTmp
                 } else {
@@ -528,7 +528,7 @@ class ExoPlayService : BasePlayService() {
             it.currentVolume = volumeTmp    // update presenter?.playingParam
             return
         }
-        Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")
+        LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
 
     override fun getMediaDuration(): Long {
@@ -538,7 +538,7 @@ class ExoPlayService : BasePlayService() {
             exoPlayer?.duration ?: 0
         }
         if (duration <= 0) duration = 0
-        Log.d(TAG, "getMediaDuration.duration = $duration")
+        LogUtil.d(TAG, "getMediaDuration.duration = $duration")
         return duration
     }
 
@@ -548,7 +548,7 @@ class ExoPlayService : BasePlayService() {
         } else {
             exoPlayer?.currentPosition ?: 0
         }
-        Log.d(TAG, "getCurrentPosition.currPosition = $currPosition")
+        LogUtil.d(TAG, "getCurrentPosition.currPosition = $currPosition")
         return currPosition
     }
 
@@ -558,7 +558,7 @@ class ExoPlayService : BasePlayService() {
         } else {
             exoPlayer?.playbackState ?: Player.STATE_IDLE
         }
-        Log.d(TAG, "getCurrentPosition.state = $state")
+        LogUtil.d(TAG, "getCurrentPosition.state = $state")
         return state
     }
 
@@ -569,17 +569,17 @@ class ExoPlayService : BasePlayService() {
         // but the playing was stopped in the middle of playing then won't send
         // Play.STATE_ENDED event
         // currentPlayer.setPlayWhenReady(false)
-        Log.d(TAG, "specificPlayerReplayMedia")
+        LogUtil.i(TAG, "specificPlayerReplayMedia")
         if (isCastSessionAvailable) {
             castPlayer?.apply {
-                Log.d(TAG,"specificPlayerReplayMedia.castPlayer.seekTo.")
+                LogUtil.d(TAG,"specificPlayerReplayMedia.castPlayer.seekTo.")
                 seekTo(currentAudioPosition)
                 prepare()
                 playWhenReady = true
             }
         } else {
             exoPlayer?.apply {
-                Log.d(TAG,"specificPlayerReplayMedia.exoPlayer.seekTo.")
+                LogUtil.d(TAG,"specificPlayerReplayMedia.exoPlayer.seekTo.")
                 seekTo(currentAudioPosition)
                 prepare()
                 playWhenReady = true
@@ -588,11 +588,11 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun switchDecoder() {
-        Log.d(TAG, "switchDecoder")
+        LogUtil.i(TAG, "switchDecoder")
         presenter?.let {
             // it.playingParam.finishState = PlayerConstants.STOPPED_BY_USER
             // stopPlay()
-            Log.d(TAG, "switchDecoder.useSoftDecoder switch to ${it.playingParam.softDecoderFirst}")
+            LogUtil.d(TAG, "switchDecoder.useSoftDecoder switch to ${it.playingParam.softDecoderFirst}")
             exoPlayer?.release()
             exoPlayer = null
             // recreate exoplayer

@@ -1,6 +1,5 @@
 package com.smile.karaoke.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.R
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "SelectedFavoriteAdapter"
@@ -39,7 +39,7 @@ class SelectedFavoriteAdapter (
                         textFontSize: Float,
                         yellow2Color: Int, yellow3Color: Int) : SelectedFavoriteAdapter {
 
-            Log.d(TAG, "getInstance.viewAdapter = $viewAdapter, mList.size = ${mList.size}")
+            LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter, mList.size = ${mList.size}")
             if (viewAdapter == null) {
                 viewAdapter = SelectedFavoriteAdapter(itemClickListener, songListSQLite,
                         mList, textFontSize, yellow2Color, yellow3Color)
@@ -71,7 +71,7 @@ class SelectedFavoriteAdapter (
         var inPlaylist: Boolean = true
 
         init {
-            Log.d(TAG, "MyViewHolder() is called")
+            LogUtil.d(TAG, "MyViewHolder() is called")
             val itemTextSize = textFontSize * 0.6f
             val buttonTextSize = textFontSize * 0.8f
 
@@ -122,33 +122,33 @@ class SelectedFavoriteAdapter (
             // the following is still needed to be test (have to reduce the usage of memory)
             // if (!com.smile.karaokeplayer.BuildConfig.DEBUG) playSongButton.setVisibility(View.GONE);
             editSongButton.setOnClickListener {
-                Log.d(TAG, "editSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                LogUtil.d(TAG, "editSongButton.bindingAdapterPosition = $bindingAdapterPosition")
                 itemClickListener.editSongButtonFunc(bindingAdapterPosition)
             }
             deleteSongButton.setOnClickListener {
-                Log.d(TAG, "deleteSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                LogUtil.d(TAG, "deleteSongButton.bindingAdapterPosition = $bindingAdapterPosition")
                 itemClickListener.deleteSongButtonFunc(bindingAdapterPosition)
             }
             playSongButton.setOnClickListener {
-                Log.d(TAG, "playSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                LogUtil.d(TAG, "playSongButton.bindingAdapterPosition = $bindingAdapterPosition")
                 itemClickListener.playSongButtonFunc(bindingAdapterPosition)
             }
             itemView.setOnClickListener {
-                Log.d(TAG, "itemView.bindingAdapterPosition = $bindingAdapterPosition")
+                LogUtil.d(TAG, "itemView.bindingAdapterPosition = $bindingAdapterPosition")
                 itemClickListener.onRecyclerItemClick(itemView, bindingAdapterPosition)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        Log.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
+        LogUtil.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.activity_favorite_list_item, parent, false)
         return MyViewHolder(fileView, itemClickListener, textFontSize)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder().position = $position")
+        LogUtil.d(TAG, "onBindViewHolder().position = $position")
         val singleSongInfo = mList[position]
         holder.apply {
             titleNameTextView.text = singleSongInfo.songName
@@ -174,7 +174,7 @@ class SelectedFavoriteAdapter (
     }
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount().mList.size = ${mList.size}")
+        LogUtil.d(TAG, "getItemCount().mList.size = ${mList.size}")
         return mList.size
     }
 }

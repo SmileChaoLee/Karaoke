@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.graphics.scale
+import com.smile.karaoke.utilities.LogUtil
 
 class OpenFileFragment : Fragment(),
     OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
@@ -59,11 +59,11 @@ class OpenFileFragment : Fragment(),
     private var switchDecoderButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
             isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
-            Log.d(TAG, "onCreate.isPlayButton = $isPlayButton")
+            LogUtil.d(TAG, "onCreate.isPlayButton = $isPlayButton")
         }
 
         mediaRetriever = MediaMetadataRetriever()
@@ -75,21 +75,21 @@ class OpenFileFragment : Fragment(),
             ScreenUtil.FontSize_Pixel_Type,0.0f)
 
         playSongs = (activity as PlaySongs)
-        Log.d(TAG, "onCreate.playSongs = $playSongs")
+        LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
 
         // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
-        Log.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
+        LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
 
         activity?.applicationContext?.externalCacheDirs?.let {
-            Log.d(TAG, "externalCacheDirs = $it, externalCacheDirs.size = ${it.size}")
+            LogUtil.d(TAG, "externalCacheDirs = $it, externalCacheDirs.size = ${it.size}")
             MySingleTon.rootPathSet.clear()
             for (element in it) {
-                Log.d(TAG, "externalCacheDirs.element = $element")
+                LogUtil.d(TAG, "externalCacheDirs.element = $element")
                 element?.absolutePath?.let { pathIt ->
                     pathIt.indexOf("/Android/data").let {indexIt ->
                         if (indexIt >= 0) {
                             pathIt.substring(0, indexIt).let {subIt ->
-                                Log.d(TAG, "element.substring(0, indexIt) = $subIt")
+                                LogUtil.d(TAG, "element.substring(0, indexIt) = $subIt")
                                 MySingleTon.rootPathSet.add(subIt)
                             }
                         }
@@ -101,20 +101,20 @@ class OpenFileFragment : Fragment(),
         object : BroadcastReceiver() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "BroadcastReceiver.onReceive")
+                LogUtil.i(TAG, "BroadcastReceiver.onReceive")
                 val focusView = activity?.currentFocus
                 intent?.action?.let {
                     if (it == SEARCH_FOLDER_COMPLETED) {
-                        Log.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
+                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
                         pathTextView?.text = MySingleTon.currentPath
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
-                        Log.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
+                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
                         if (MySingleTon.fileList.isEmpty()) {
-                            Log.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
+                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                             val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                            Log.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
+                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
                             backKeyButton?.requestFocus()
                         }
                     }
@@ -123,14 +123,14 @@ class OpenFileFragment : Fragment(),
         }.also { broadcastReceiver = it }
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
-                Log.d(TAG, "LocalBroadcastManager.registerReceiver")
+                LogUtil.d(TAG, "LocalBroadcastManager.registerReceiver")
                 registerReceiver(broadcastReceiver, IntentFilter().apply {
                     addAction(SEARCH_FOLDER_COMPLETED)
                 })
             }
         }
 
-        Log.d(TAG, "onCreate.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+        LogUtil.i(TAG, "onCreate.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
     }
 
     override fun onCreateView(
@@ -138,13 +138,13 @@ class OpenFileFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView")
+        LogUtil.i(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_open_file, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+        LogUtil.i(TAG, "onViewCreated")
         val buttonWidth = (textFontSize*1.5f).toInt()
         fragmentView = view
         fragmentView?.let {
@@ -255,7 +255,7 @@ class OpenFileFragment : Fragment(),
                             for (song in songsIt) {
                                 song.included = "1"
                                 val numRecords = songListSQLite.recordsOfPlayList()
-                                Log.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
+                                LogUtil.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
                                 if (numRecords < MySingleTon.MAX_SONGS) {
                                     songListSQLite.addSongToSongList(song)
                                 } else {
@@ -296,30 +296,30 @@ class OpenFileFragment : Fragment(),
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
+        LogUtil.i(TAG, "onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
+        LogUtil.i(TAG, "onResume")
         setupSwitchDecoderButton()
         searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause")
+        LogUtil.i(TAG, "onPause")
         clearFileList()
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop")
+        LogUtil.i(TAG, "onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy")
+        LogUtil.i(TAG, "onDestroy")
         clearFileList()
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
@@ -330,7 +330,7 @@ class OpenFileFragment : Fragment(),
     }
 
     override fun onRecyclerItemClick(v: View?, position: Int) {
-        Log.d(TAG, "onRecyclerItemClick.position = $position")
+        LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
         if (position < 0) return
         if (MySingleTon.fileList[position].file.isFile) {
             MySingleTon.fileList[position].selected = !MySingleTon.fileList[position].selected
@@ -348,14 +348,14 @@ class OpenFileFragment : Fragment(),
     }
 
     fun searchCurrentFolder() {
-        Log.d(TAG, "searchCurrentFolder")
+        LogUtil.i(TAG, "searchCurrentFolder")
         searchCompleted = false
         lifecycleScope.launch(Dispatchers.IO) {
             val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
             MySingleTon.currentPath.let {
                 if (it == "/") {
                     for (element in MySingleTon.rootPathSet) {
-                        Log.d(TAG, "searchCurrentFolder.element = $element")
+                        LogUtil.d(TAG, "searchCurrentFolder.element = $element")
                         tempList.add(FileDescription(File(element),
                             null, false))
                     }
@@ -364,9 +364,9 @@ class OpenFileFragment : Fragment(),
                     val imageHeight = (textFontSize * 3.0f).toInt()
                     try {
                         File(it).listFiles()?.also { fIt ->
-                            Log.d(TAG, "searchCurrentFolder.file.list().size() = ${fIt.size}")
+                            LogUtil.d(TAG, "searchCurrentFolder.file.list().size() = ${fIt.size}")
                             for (f in fIt) {
-                                Log.d(TAG, "searchCurrentFolder.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
+                                LogUtil.d(TAG, "searchCurrentFolder.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
                                 var bm: Bitmap? = null
                                 if (!f.isDirectory) {
                                     try {
@@ -375,7 +375,7 @@ class OpenFileFragment : Fragment(),
                                             MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                                             ?.scale(imageWidth, imageHeight)
                                     } catch (ex: Exception) {
-                                        Log.e(TAG, "searchCurrentFolder.setDataSource.Exception:",
+                                        LogUtil.e(TAG, "searchCurrentFolder.setDataSource.Exception:",
                                                 ex)
                                     }
                                 }
@@ -383,13 +383,13 @@ class OpenFileFragment : Fragment(),
                             }
                         }
                     } catch (ex: Exception) {
-                        Log.e(TAG, "searchCurrentFolder.Exception", ex )
+                        LogUtil.e(TAG, "searchCurrentFolder.Exception", ex )
                     }
                 }
             }
             MySingleTon.fileList.clear()
             MySingleTon.fileList.addAll(tempList)
-            Log.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
 
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
@@ -405,28 +405,28 @@ class OpenFileFragment : Fragment(),
             MySingleTon.currentPath.let {
                 if (it == "/") {
                     for (element in MySingleTon.rootPathSet) {
-                        Log.d(TAG, "searchCurrentFolder.element = $element")
+                        LogUtil.d(TAG, "searchCurrentFolder.element = $element")
                         tempList.add(FileDescription(File(element), false))
                     }
                 } else {
                     try {
                         File(it).listFiles()?.also { fIt ->
-                            Log.d(TAG, "file.list().size() = ${fIt.size}")
+                            LogUtil.d(TAG, "file.list().size() = ${fIt.size}")
                             for (f in fIt) {
-                                Log.d(TAG, "isDirectory = ${f.isDirectory}, f.path = ${f.path}")
+                                LogUtil.d(TAG, "isDirectory = ${f.isDirectory}, f.path = ${f.path}")
                                 // if (f.canRead()) {
                                 tempList.add(FileDescription(f, false))
                                 // }
                             }
                         }
                     } catch (ex: Exception) {
-                        Log.d(TAG, "${ex.message}")
+                        LogUtil.d(TAG, "${ex.message}")
                     }
                 }
             }
             MySingleTon.fileList.clear()
             MySingleTon.fileList.addAll(tempList)
-            Log.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
 
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
@@ -445,8 +445,8 @@ class OpenFileFragment : Fragment(),
             var index = 0
             for (i in 0 until MySingleTon.fileList.size) {
                 if (MySingleTon.fileList[i].selected) {
-                    Log.d(TAG, "$msg.file.path = ${MySingleTon.fileList[i].file.path}")
-                    Log.d(TAG, "$msg.file.toUri() = ${MySingleTon.fileList[i].file.toUri()}")
+                    LogUtil.d(TAG, "$msg.file.path = ${MySingleTon.fileList[i].file.path}")
+                    LogUtil.d(TAG, "$msg.file.toUri() = ${MySingleTon.fileList[i].file.toUri()}")
                     var song = SongInfo().apply {
                         songName = MySingleTon.fileList[i].file.name
                         filePath = MySingleTon.fileList[i].file.toUri().toString()
@@ -457,7 +457,7 @@ class OpenFileFragment : Fragment(),
                         included = "0"
                     }
                     songListSQLite.findOneSongByUriString(song.filePath)?.apply {
-                        Log.d(TAG, "$msg.found")
+                        LogUtil.d(TAG, "$msg.found")
                         included = "1"
                         song = this
                     }
@@ -479,7 +479,7 @@ class OpenFileFragment : Fragment(),
     }
 
     private fun initFilesRecyclerView() {
-        Log.d(TAG, "initFilesRecyclerView() is called")
+        LogUtil.i(TAG, "initFilesRecyclerView() is called")
         activity?.let {
             val tColor = ContextCompat.getColor(it, R.color.gnt_green)
             val transparentLightGray = ContextCompat.getColor(it,
@@ -497,7 +497,7 @@ class OpenFileFragment : Fragment(),
     }
 
     fun setupSwitchDecoderButton() {
-        Log.d(TAG, "setupSwitchDecoderButton")
+        LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             playSongs?.let {
                 setImageResource(

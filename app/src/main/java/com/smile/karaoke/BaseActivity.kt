@@ -36,6 +36,7 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "BaseActivity"
@@ -67,7 +68,7 @@ abstract class BaseActivity : AppCompatActivity(),
     abstract fun getFragment() : PlayerBaseFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG,"onCreate")
+        LogUtil.i(TAG,"onCreate")
         settingBeforeCreate()
         MySingleTon.clearSingleton()
         super.onCreate(savedInstanceState)
@@ -75,10 +76,10 @@ abstract class BaseActivity : AppCompatActivity(),
 
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "onCreate.BroadcastReceiver.onReceive")
+                LogUtil.i(TAG, "onCreate.BroadcastReceiver.onReceive")
                 intent?.action?.let {
                     if (it == PlayerConstants.PlaySingleSongAction) {
-                        Log.d(TAG, "onReceive.PlaySingleSongAction")
+                        LogUtil.d(TAG, "onReceive.PlaySingleSongAction")
                         intent.putExtra(PlayerConstants.SingleSongVolume,
                                 playerFragment?.mPresenter?.playingParam?.currentVolume)
                         onReceiveFunc(isSingleSong = true, needPlay = true, intent = intent, pData = null)
@@ -89,7 +90,7 @@ abstract class BaseActivity : AppCompatActivity(),
         }.also { baseReceiver = it }
 
         LocalBroadcastManager.getInstance(this).apply {
-            Log.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
+            LogUtil.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
             registerReceiver(baseReceiver, IntentFilter().apply {
                 addAction(PlayerConstants.PlaySingleSongAction)
                 addAction(PlayerConstants.BackToBaseActivity)
@@ -104,13 +105,13 @@ abstract class BaseActivity : AppCompatActivity(),
         tablayoutViewLayout.isFocusable = true
 
         callingIntent = intent
-        Log.d(TAG,"onCreate.callingIntent = $callingIntent")
-        Log.d(TAG,"onCreate.savedInstanceState = $savedInstanceState")
+        LogUtil.d(TAG,"onCreate.callingIntent = $callingIntent")
+        LogUtil.d(TAG,"onCreate.savedInstanceState = $savedInstanceState")
 
         if (callingIntent.extras == null) {
-            Log.d(TAG, "callingIntent.extras is null")
+            LogUtil.d(TAG, "callingIntent.extras is null")
         } else {
-            Log.d(TAG, "callingIntent.extras is not null")
+            LogUtil.d(TAG, "callingIntent.extras is not null")
         }
 
         if (savedInstanceState != null) {
@@ -126,9 +127,9 @@ abstract class BaseActivity : AppCompatActivity(),
                 playData = it
             }
             playerFragment = supportFragmentManager.findFragmentByTag(PLAYER_FRAGMENT) as PlayerBaseFragment
-            Log.d(TAG, "playerFragment = $playerFragment")
+            LogUtil.d(TAG, "playerFragment = $playerFragment")
             tablayoutFragment = supportFragmentManager.findFragmentByTag(TAB_LAYOUT_FRAGMENT) as TablayoutFragment?
-            Log.d(TAG, "tablayoutFragment = $tablayoutFragment")
+            LogUtil.d(TAG, "tablayoutFragment = $tablayoutFragment")
         }
 
         if (playerFragment == null) {
@@ -142,14 +143,14 @@ abstract class BaseActivity : AppCompatActivity(),
             var isReplaced = false
             tablayoutFragment?.let {
                 if (!it.isInLayout) {
-                    Log.d(TAG, "tablayoutFragment.isInLayout() = false")
+                    LogUtil.d(TAG, "tablayoutFragment.isInLayout() = false")
                     replace(R.id.tablayoutViewLayout, it, TAB_LAYOUT_FRAGMENT)
                     isReplaced = true
                 }
             }
             playerFragment?.let {
                 if (!it.isInLayout) {
-                    Log.d(TAG, "playerFragment.isInLayout() = false")
+                    LogUtil.d(TAG, "playerFragment.isInLayout() = false")
                     replace(R.id.basePlayViewLayout, it, PLAYER_FRAGMENT)
                     isReplaced = true
                 }
@@ -160,7 +161,7 @@ abstract class BaseActivity : AppCompatActivity(),
         onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Log.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
+                LogUtil.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
                 playerFragment?.onBackPressed()
             }
         })
@@ -212,28 +213,28 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onStart() {
-        Log.d(TAG, "onStart()")
+        LogUtil.i(TAG, "onStart()")
         super.onStart()
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume()")
+        LogUtil.i(TAG, "onResume()")
         super.onResume()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause()")
+        LogUtil.i(TAG, "onPause()")
         super.onPause()
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop()")
+        LogUtil.i(TAG, "onStop()")
         super.onStop()
     }
 
     override fun onSaveInstanceState(
         outState: Bundle, outPersistentState: PersistableBundle) {
-        Log.d(TAG, "onSaveInstanceState()")
+        LogUtil.i(TAG, "onSaveInstanceState()")
         outState.putBoolean(IS_PLAY_TO_PAUSE, isPlayToPause)
         outState.putParcelable(CALLING_COMPONENT, callingComponentName)
         outState.putParcelable(PLAY_DATA, playData)
@@ -241,14 +242,14 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        Log.d(TAG, "onConfigurationChanged()")
+        LogUtil.i(TAG, "onConfigurationChanged()")
         settingBeforeCreate()
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy()")
+        LogUtil.i(TAG, "onDestroy()")
         LocalBroadcastManager.getInstance(this).apply {
             unregisterReceiver(baseReceiver)
         }
@@ -274,14 +275,14 @@ abstract class BaseActivity : AppCompatActivity(),
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
                       intent : Intent?, pData : Bundle?) {
-        Log.d(TAG, "onReceiveFunc.needPlay = $needPlay")
+        LogUtil.i(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
             mPresenter.let{
                 it.initializeVariables(pData, intent,
                     it.playingParam.isAutoPlay)
                 if (needPlay) it.playSongPlayedBeforeActivityCreated()
                 setMainMenu()
-                Log.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
+                LogUtil.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
                 if (isSingleSong) {
                     it.playingParam.singleSongPlayingStatus = 1  // start playing single song
                     showPlayerView()
@@ -289,14 +290,14 @@ abstract class BaseActivity : AppCompatActivity(),
                     // PlayerConstants.BackToBaseActivity
                     if (it.playingParam.isPlayerViewVisible) showPlayerView()
                     else hidePlayerView()
-                    Log.d(TAG, "onReceiveFunc.currentPlaybackState = " +
+                    LogUtil.d(TAG, "onReceiveFunc.currentPlaybackState = " +
                             "${it.playingParam.currentPlaybackState}")
                 }
             }
             showSupportToolbarAudioControlSetTimer()
         }
         Intent().apply {
-            Log.d(TAG, "onReceiveFunc.componentName = $componentName")
+            LogUtil.d(TAG, "onReceiveFunc.componentName = $componentName")
             component = componentName
             addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(this)
@@ -305,7 +306,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // implementing interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun baseHidePlayerView() {
-        Log.d(TAG, "baseHidePlayerView()")
+        LogUtil.i(TAG, "baseHidePlayerView()")
         basePlayViewLayout.clearFocus()
         basePlayViewLayout.visibility = View.GONE
         tablayoutViewLayout.visibility = View.VISIBLE
@@ -314,7 +315,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun baseShowPlayerView() {
-        Log.d(TAG, "baseShowPlayerView()")
+        LogUtil.i(TAG, "baseShowPlayerView()")
         tablayoutViewLayout.clearFocus()
         tablayoutViewLayout.visibility = View.GONE
         basePlayViewLayout.visibility = View.VISIBLE
@@ -324,7 +325,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun returnToPrevious(isSingleSong : Boolean) {
         val msgStr = "returnToPrevious"
-        Log.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")
+        LogUtil.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")
         if (isSingleSong) {
             playerFragment?.mPresenter?.let {
                 it.pausePlay()
@@ -336,7 +337,7 @@ abstract class BaseActivity : AppCompatActivity(),
                         startActivity(this)
                     }
                 }
-                Log.d(TAG, "${msgStr}.preparedStatus = " +
+                LogUtil.d(TAG, "${msgStr}.preparedStatus = " +
                         "${it.playingParam.preparedStatus}")
             }
             return
@@ -348,7 +349,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // implementing interface PlayMyFavorites
     override fun onSavePlayingState(compName : ComponentName?) {
-        Log.d(TAG, "onSavePlayingState.compName = $compName")
+        LogUtil.i(TAG, "onSavePlayingState.compName = $compName")
         callingComponentName = compName
         playerFragment?.let {
             playData.clear()
@@ -367,18 +368,18 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun restorePlayingState() {
         val msgStr = "restorePlayingState"
-        Log.d(TAG, "${msgStr}.return from BaseFavoriteListActivity")
+        LogUtil.i(TAG, "${msgStr}.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             playData.getParcelable(PlayerConstants.PlayingParamState, PlayingParameters::class.java)
         else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
-            Log.d(TAG, "${msgStr}.currentPlaybackState = $currentPlaybackState")
-            Log.d(TAG, "${msgStr}.currentAudioPosition = $currentAudioPosition")
-            Log.d(TAG, "${msgStr}.preparedStatus = $preparedStatus")
-            Log.d(TAG, "${msgStr}.wentToFavorite = $wentToFavorite")
+            LogUtil.d(TAG, "${msgStr}.currentPlaybackState = $currentPlaybackState")
+            LogUtil.d(TAG, "${msgStr}.currentAudioPosition = $currentAudioPosition")
+            LogUtil.d(TAG, "${msgStr}.preparedStatus = $preparedStatus")
+            LogUtil.d(TAG, "${msgStr}.wentToFavorite = $wentToFavorite")
             if (isPlayToPause) currentPlaybackState = PlaybackStateCompat.STATE_PLAYING // restore to playing
             preparedStatus = 4  // come Back From Favorite, simulate onStart() of PlayerBaseViewFragment
-            Log.d(TAG, "${msgStr}.preparedStatus changed to $preparedStatus")
+            LogUtil.d(TAG, "${msgStr}.preparedStatus changed to $preparedStatus")
             wentToFavorite = false  // set back to default
         }
         onReceiveFunc(isSingleSong = false, needPlay = true, intent = null, pData = playData)
@@ -390,7 +391,7 @@ abstract class BaseActivity : AppCompatActivity(),
     // implementing interface PlaySongs
     override fun playSelectedSongList(songs: ArrayList<SongInfo>) {
         val msgStr = "playSelectedSongList"
-        Log.d(TAG, "${msgStr}.songs.size" +
+        LogUtil.i(TAG, "${msgStr}.songs.size" +
                 " = ${songs.size}")
         if (songs.isNotEmpty()) {
             MySingleTon.orderedSongs.clear()
@@ -404,7 +405,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun switchToPlayerView() {
-        Log.d(TAG, "switchToPlayerView")
+        LogUtil.i(TAG, "switchToPlayerView")
         playerFragment?.showPlayerView()
     }
 
@@ -416,7 +417,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun switchBetweenSoftAndHardDecoder() {
-        Log.d(TAG, "switchBetweenSoftAndHardDecoder")
+        LogUtil.i(TAG, "switchBetweenSoftAndHardDecoder")
         playerFragment?.let {
             it.mPresenter.playingParam.softDecoderFirst = !it.mPresenter.playingParam.softDecoderFirst
             it.playService?.switchDecoder()
@@ -425,7 +426,7 @@ abstract class BaseActivity : AppCompatActivity(),
     // Finish implementing interface PlaySongs
 
     private fun createViewDependingOnOrientation() {
-        Log.d(TAG, "createViewDependingOnOrientation")
+        LogUtil.i(TAG, "createViewDependingOnOrientation")
         if (callingIntent.extras == null) {
             playerFragment?.hidePlayerView()
         }

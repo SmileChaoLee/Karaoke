@@ -14,6 +14,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.models.PlayingParameters
+import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.presenters.ExoPlayerPresenter
 import karaokeplayer.services.ExoPlayService
 
@@ -30,33 +31,33 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
     @Synchronized
     override fun onCommand(command: String?, extras: Bundle?, cb: ResultReceiver?) {
         super.onCommand(command, extras, cb)
-        Log.d(TAG, "onCommand()")
+        LogUtil.d(TAG, "onCommand()")
     }
 
     @Synchronized
     override fun onPrepare() {
         super.onPrepare()
-        Log.d(TAG, "onPrepare()")
+        LogUtil.d(TAG, "onPrepare()")
     }
 
     @Synchronized
     override fun onPrepareFromMediaId(mediaId: String?, extras: Bundle?) {
         super.onPrepareFromMediaId(mediaId, extras)
-        Log.d(TAG, "onPrepareFromMediaId()")
+        LogUtil.d(TAG, "onPrepareFromMediaId()")
     }
 
     @OptIn(UnstableApi::class)
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
-        Log.d(TAG, "onPrepareFromUri().Uri = $uri")
+        LogUtil.d(TAG, "onPrepareFromUri().Uri = $uri")
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.preparedStatus = 1
         // val trackParameters = TrackSelectionParameters.Builder(playService.applicationContext).build() // deprecated
         // val trackParameters = TrackSelectionParameters.Builder().build()
         // playService.setTrackSelectionParameters(trackParameters)
-        Log.d(TAG, "removeVideoPlayerView")
+        LogUtil.d(TAG, "removeVideoPlayerView")
         presenter.presentView.removeVideoPlayerView()
-        Log.d(TAG, "setVideoPlayerView")
+        LogUtil.d(TAG, "setVideoPlayerView")
         presenter.presentView.setVideoPlayerView()
         var mediaTitle = "Opened Media"
         uri.path?.let {
@@ -75,20 +76,20 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
             // .setDrmConfiguration(null)
             .build()
         playService.setMediaItem(mediaItem)
-        Log.d(
+        LogUtil.d(
             TAG,"onPrepareFromUri().playService.getMediaItemCount() = " +
                 playService.getMediaItemCount())
-        Log.d(TAG, "onPrepareFromUri().playService.prepare()")
+        LogUtil.d(TAG, "onPrepareFromUri().playService.prepare()")
         playService.prepare()
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition
         var currentPlaybackState = playingParam?.currentPlaybackState
-        Log.d(
+        LogUtil.d(
             TAG, "onPrepareFromUri().currentVolume = " + currentVolume +
                 ", currentAudioPosition= " + currentAudioPosition + ", currentPlaybackState = " +
                 currentPlaybackState)
         extras?.let {
-            Log.d(TAG, "onPrepareFromUri().extras is not null.")
+            LogUtil.d(TAG, "onPrepareFromUri().extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(PlayerConstants.PlayingParamOrigin,
                     PlayingParameters::class.java)
@@ -96,7 +97,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
             playingParamOrigin?.let { playIt ->
                 currentPlaybackState = playIt.currentPlaybackState
                 currentAudioPosition = playIt.currentAudioPosition
-                Log.d(
+                LogUtil.d(
                     TAG,
                     "onPrepareFromUri().not null.currentVolume = " + currentVolume +
                             ", currentAudioPosition= " + currentAudioPosition + ", currentPlaybackState = " +
@@ -109,26 +110,26 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
 
         when (currentPlaybackState) {
             PlaybackStateCompat.STATE_PAUSED -> {
-                Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
+                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
                 playService.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_STOPPED -> {
                 // playing was finished
-                Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
+                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
                 playService.setPlayWhenReady(false)
             }
             PlaybackStateCompat.STATE_PLAYING -> {
-                Log.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
+                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
                 playService.setPlayWhenReady(true)  // start playing when ready
             }
             PlayerConstants.PREPARE_MEDIA -> {
-                Log.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
+                LogUtil.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
                 playService.setPlayWhenReady(true)  // start playing when ready
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
                 // stopped by user
-                Log.d(TAG,"onPrepareFromUr().PlaybackStateCompat.STATE_NONE or default")
+                LogUtil.d(TAG,"onPrepareFromUr().PlaybackStateCompat.STATE_NONE or default")
                 playService.setPlayWhenReady(false)
             }
         }
@@ -137,45 +138,45 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
     @Synchronized
     override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
         super.onPlayFromMediaId(mediaId, extras)
-        Log.d(TAG, "onPlayFromMediaId()")
+        LogUtil.d(TAG, "onPlayFromMediaId()")
     }
 
     @Synchronized
     override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
         super.onPlayFromUri(uri, extras)
-        Log.d(TAG, "onPlayFromUri()")
+        LogUtil.d(TAG, "onPlayFromUri()")
     }
 
     @Synchronized
     override fun onPlay() {
         super.onPlay()
-        Log.d(TAG, "onPlay()")
+        LogUtil.d(TAG, "onPlay()")
         playService.onPlay()
     }
 
     @Synchronized
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause()")
+        LogUtil.d(TAG, "onPause()")
         playService.onPause()
     }
 
     @Synchronized
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop()")
+        LogUtil.d(TAG, "onStop()")
         playService.onStop()
     }
 
     @Synchronized
     override fun onFastForward() {
         super.onFastForward()
-        Log.d(TAG, "onFastForward()")
+        LogUtil.d(TAG, "onFastForward()")
     }
 
     @Synchronized
     override fun onRewind() {
         super.onRewind()
-        Log.d(TAG, "onRewind()")
+        LogUtil.d(TAG, "onRewind()")
     }
 }

@@ -3,7 +3,7 @@ package karaokeplayer.utilities
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import com.smile.karaoke.utilities.LogUtil
 import java.lang.Exception
 import java.util.ArrayList
 
@@ -30,7 +30,7 @@ object ContentUriAccessUtil {
         val clipData = data.clipData
         if ( clipData != null) {
             // multiple files
-            Log.d(TAG, "getUrisList.multiple files")
+            LogUtil.d(TAG, "getUrisList.multiple files")
             for (i in 0 until clipData.itemCount) {
                 clipData.getItemAt(i).uri?.let{
                     if (!Uri.EMPTY.equals(it) && getPermissionForContentUri(context, it)) {
@@ -43,7 +43,7 @@ object ContentUriAccessUtil {
             data.data?.let {
                 if (!Uri.EMPTY.equals(it) && getPermissionForContentUri(context, it)) {
                     urisList.add(it)
-                    Log.d(TAG, "getUrisList.single file.it = $it")
+                    LogUtil.d(TAG, "getUrisList.single file.it = $it")
                 }
             }
         }

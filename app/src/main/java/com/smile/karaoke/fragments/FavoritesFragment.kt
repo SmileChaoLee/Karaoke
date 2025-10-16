@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +31,7 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseAccessUtil
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
@@ -59,7 +59,7 @@ class FavoritesFragment : Fragment(),
     private var switchDecoderButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
@@ -75,9 +75,9 @@ class FavoritesFragment : Fragment(),
 
         activity?.let {
             if (it is PlaySongs) playSongs = it
-            Log.d(TAG, "onCreate.playSongs = $playSongs")
+            LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
             if (it is PlayMyFavorites) playMyFavorites = it
-            Log.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
+            LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
         }
 
         editSongsActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
@@ -88,10 +88,10 @@ class FavoritesFragment : Fragment(),
         object : BroadcastReceiver() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.d(TAG, "BroadcastReceiver.onReceive")
+                LogUtil.i(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
                     if (it == SEARCH_FAVORITES_COMPLETED) {
-                        Log.d(TAG, "BroadcastReceiver.onReceive.SearchFavorites")
+                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.SearchFavorites")
                         if (intent.getBooleanExtra(EXCESS_YN, false)) {
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
@@ -102,11 +102,11 @@ class FavoritesFragment : Fragment(),
                         myRecyclerViewAdapter?.notifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
                         if (MySingleTon.favorites.isEmpty()) {
-                            Log.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
+                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
                             // Change the focus
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                             val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                            Log.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
+                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
                             showVideoButton?.requestFocus()
                         }
                     }
@@ -115,14 +115,14 @@ class FavoritesFragment : Fragment(),
         }.also { broadcastReceiver = it }
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
-                Log.d(TAG, "LocalBroadcastManager.registerReceiver")
+                LogUtil.d(TAG, "LocalBroadcastManager.registerReceiver")
                 registerReceiver(broadcastReceiver, IntentFilter().apply {
                     addAction(SEARCH_FAVORITES_COMPLETED)
                 })
             }
         }
 
-        Log.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleTon.favorites.size}")
+        LogUtil.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleTon.favorites.size}")
     }
 
     override fun onCreateView(
@@ -130,12 +130,12 @@ class FavoritesFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView")
+        LogUtil.i(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_my_favorites, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated")
+        LogUtil.i(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         fragmentView = view
@@ -234,7 +234,7 @@ class FavoritesFragment : Fragment(),
                     if (listIt.isNotEmpty()) {
                         playMyFavorites?.let {playIt ->
                             intentForFavoriteListActivity().apply {
-                                Log.d(TAG, "editButton.listIt.size = ${listIt.size}")
+                                LogUtil.d(TAG, "editButton.listIt.size = ${listIt.size}")
                                 playIt.onSavePlayingState(component)
                                 // putExtra(PlayerConstants.MyFavoriteListState, listIt)
                                 MySingleTon.selectedFavorites.clear()
@@ -271,31 +271,31 @@ class FavoritesFragment : Fragment(),
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
+        LogUtil.i(TAG, "onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
+        LogUtil.i(TAG, "onResume")
         setupSwitchDecoderButton()
         searchFavorites()   // has to be in onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause")
+        LogUtil.i(TAG, "onPause")
         clearFavoriteList()
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop")
+        LogUtil.i(TAG, "onStop")
         clearFavoriteList()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onStop")
+        LogUtil.i(TAG, "onStop")
         activity?.let {
             LocalBroadcastManager.getInstance(it).apply {
                 unregisterReceiver(broadcastReceiver)
@@ -305,7 +305,7 @@ class FavoritesFragment : Fragment(),
     }
 
     override fun onRecyclerItemClick(v: View?, position: Int) {
-        Log.d(TAG, "onRecyclerItemClick.position = $position")
+        LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
         MySingleTon.favorites[position].apply {
             song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
@@ -319,7 +319,7 @@ class FavoritesFragment : Fragment(),
     }
 
     fun searchFavorites() {
-        Log.d(TAG, "searchFavorites")
+        LogUtil.i(TAG, "searchFavorites")
         searchCompleted = false
         Thread {
             var excessYn = false
@@ -330,18 +330,18 @@ class FavoritesFragment : Fragment(),
                     val imageWidth = (textFontSize * 3.0f).toInt()
                     val imageHeight = (textFontSize * 3.0f).toInt()
                     for (element in sqlIt) {
-                        Log.d(TAG, "searchFavorites.element.included = ${element.included}")
-                        Log.d(TAG, "searchFavorites.element.filePath = ${element.filePath}")
+                        LogUtil.d(TAG, "searchFavorites.element.included = ${element.included}")
+                        LogUtil.d(TAG, "searchFavorites.element.filePath = ${element.filePath}")
                         var bm: Bitmap? = null
                         try {
                             val path = File(element.filePath!!).path
-                            Log.d(TAG, "searchFavorites.path = $path")
+                            LogUtil.d(TAG, "searchFavorites.path = $path")
                             mediaRetriever.setDataSource(element.filePath)
                             bm = mediaRetriever.getFrameAtTime(0,
                                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                                 ?.scale(imageWidth, imageHeight)
                         } catch (ex: Exception) {
-                            Log.e(TAG, "searchFavorites.setDataSource.Exception:",
+                            LogUtil.e(TAG, "searchFavorites.setDataSource.Exception:",
                                 ex)
                         }
                         element.included = "0"
@@ -357,7 +357,7 @@ class FavoritesFragment : Fragment(),
             }
             MySingleTon.favorites.clear()
             MySingleTon.favorites.addAll(tempList)
-            Log.d(TAG, "searchFavorites.MySingleTon.favorites.size = ${MySingleTon.favorites.size}")
+            LogUtil.d(TAG, "searchFavorites.MySingleTon.favorites.size = ${MySingleTon.favorites.size}")
 
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
@@ -376,7 +376,7 @@ class FavoritesFragment : Fragment(),
     }
 
     private fun initFavoriteRecyclerView() {
-        Log.d(TAG, "initFavoriteRecyclerView")
+        LogUtil.i(TAG, "initFavoriteRecyclerView")
         activity?.let {
             val tColor = ContextCompat.getColor(it, R.color.gnt_green)
             val transparentLightGray = ContextCompat.getColor(it,
@@ -396,7 +396,7 @@ class FavoritesFragment : Fragment(),
     }
 
     fun setupSwitchDecoderButton() {
-        Log.d(TAG, "setupSwitchDecoderButton")
+        LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             playSongs?.let {
                 setImageResource(

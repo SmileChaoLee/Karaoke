@@ -6,6 +6,8 @@ import androidx.media3.common.C;
 import androidx.media3.common.audio.BaseAudioProcessor;
 import androidx.media3.common.util.UnstableApi;
 
+import com.smile.karaoke.utilities.LogUtil;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -55,9 +57,9 @@ public class StereoVolumeAudioProcessor extends BaseAudioProcessor {
     public boolean configure(int sampleRateHz, int channelCount, @C.Encoding int encoding)
             throws UnhandledFormatException {
 
-        Log.d(TAG, "StereoVolumeAudioProcessor.configure() --> sampleRateHz = " + sampleRateHz);
-        Log.d(TAG, "StereoVolumeAudioProcessor.configure() --> channelCount = " + channelCount);
-        Log.d(TAG, "StereoVolumeAudioProcessor.configure() --> encoding = " + encoding);
+        LogUtil.d(TAG, "StereoVolumeAudioProcessor.configure() --> sampleRateHz = " + sampleRateHz);
+        LogUtil.d(TAG, "StereoVolumeAudioProcessor.configure() --> channelCount = " + channelCount);
+        LogUtil.d(TAG, "StereoVolumeAudioProcessor.configure() --> encoding = " + encoding);
 
         boolean isSetConfig = setInputFormat(sampleRateHz, channelCount, encoding);
 
@@ -69,7 +71,7 @@ public class StereoVolumeAudioProcessor extends BaseAudioProcessor {
     public void queueInput(ByteBuffer inputBuffer) {
 
         if (!isActive()) {
-            Log.d(TAG, "queueInput() --> Exception because of isActive() = " + isActive());
+            LogUtil.d(TAG, "queueInput() --> Exception because of isActive() = " + isActive());
             throw new IllegalStateException();
         }
 
@@ -166,8 +168,7 @@ public class StereoVolumeAudioProcessor extends BaseAudioProcessor {
                             }
                         }
                     } catch (Exception ex) {
-                        Log.d(TAG, "queueInputStereo() --> Exception: ");
-                        ex.printStackTrace();
+                        LogUtil.e(TAG, "queueInputStereo() --> Exception: ", ex);
                         reset();
                     }
                 }
