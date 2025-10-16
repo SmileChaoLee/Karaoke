@@ -255,7 +255,7 @@ abstract class BaseActivity : AppCompatActivity(),
         MySingleTon.clearSingleton()
     }
 
-    protected fun settingBeforeCreate() {
+    private fun settingBeforeCreate() {
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
