@@ -68,26 +68,9 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
-        window?.apply {
-            addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
-
-        super.onCreate(savedInstanceState)
-
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@BaseActivity,
-            ScreenUtil.FontSize_Pixel_Type, null)
-        val textFontSize = ScreenUtil.suitableFontSize(this@BaseActivity,
-            defaultTextFontSize,
-            ScreenUtil.FontSize_Pixel_Type,0.0f)
-        val toastTextSize = textFontSize * 0.7f
-        val fontSize = ScreenUtil.suitableFontScale(this@BaseActivity,
-            ScreenUtil.FontSize_Pixel_Type, 0.0f)
-        SmileAppBase.textFontSize = textFontSize
-        SmileAppBase.toastTextSize = toastTextSize
-        SmileAppBase.fontSize = fontSize
-
+        settingBeforeCreate()
         MySingleTon.clearSingleton()
-
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
 
         object : BroadcastReceiver() {
@@ -259,6 +242,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d(TAG, "onConfigurationChanged()")
+        settingBeforeCreate()
         super.onConfigurationChanged(newConfig)
     }
 
@@ -269,6 +253,23 @@ abstract class BaseActivity : AppCompatActivity(),
             unregisterReceiver(baseReceiver)
         }
         MySingleTon.clearSingleton()
+    }
+
+    protected fun settingBeforeCreate() {
+        window?.apply {
+            addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@BaseActivity,
+            ScreenUtil.FontSize_Pixel_Type, null)
+        var textFontSize = ScreenUtil.suitableFontSize(this@BaseActivity,
+            defaultTextFontSize,
+            ScreenUtil.FontSize_Pixel_Type,0.0f)
+        val toastTextSize = textFontSize * 0.7f
+        val fontSize = ScreenUtil.suitableFontScale(this@BaseActivity,
+            ScreenUtil.FontSize_Pixel_Type, 0.0f)
+        SmileAppBase.textFontSize = textFontSize
+        SmileAppBase.toastTextSize = toastTextSize
+        SmileAppBase.fontSize = fontSize
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,

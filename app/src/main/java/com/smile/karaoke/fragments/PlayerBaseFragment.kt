@@ -131,7 +131,7 @@ abstract class PlayerBaseFragment : Fragment(),
     protected var mainMenu: Menu? = null
 
     // submenu of file
-    private var softdecoderFirstMenuItem: MenuItem? = null
+    private var softDecoderFirstMenuItem: MenuItem? = null
     private var autoPlayMenuItem: MenuItem? = null
     private var audioMenuItem: MenuItem? = null
     // submenu of audio
@@ -394,7 +394,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
         // submenu of file
         mainMenu?.let {
-            softdecoderFirstMenuItem = it.findItem(R.id.softDecoderFirst)
+            softDecoderFirstMenuItem = it.findItem(R.id.softDecoderFirst)
             autoPlayMenuItem = it.findItem(R.id.autoPlay)
             audioMenuItem = it.findItem(R.id.audio)
             // submenu of audio
@@ -421,7 +421,7 @@ abstract class PlayerBaseFragment : Fragment(),
         if (id == R.id.softDecoderFirst) {
             // setting if use soft decoder
             playingParam.softDecoderFirst = !playingParam.softDecoderFirst
-            softdecoderFirstMenuItem?.isChecked = playingParam.softDecoderFirst
+            softDecoderFirstMenuItem?.isChecked = playingParam.softDecoderFirst
             playService?.switchDecoder()
         } else if (id == R.id.autoPlay) {
             autoPlayMenuItem?.let {
@@ -562,7 +562,6 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d(TAG, "onConfigurationChanged")
-        super.onConfigurationChanged(newConfig)
         closeMenu(mainMenu)
         setOrientationImageButton(newConfig.orientation)
         setButtonsPositionAndSize(newConfig)
@@ -577,6 +576,8 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         MyBannerTool.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
+
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -616,7 +617,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     fun setMainMenu() {
         Log.d(TAG, "setMainMenu")
-        softdecoderFirstMenuItem?.isVisible = true    // always visible
+        softDecoderFirstMenuItem?.isVisible = true    // always visible
         mPresenter.playingParam.let {
             val isVisible = !it.isPlaySingleSong
             autoPlayMenuItem?.isVisible = isVisible
@@ -676,7 +677,10 @@ abstract class PlayerBaseFragment : Fragment(),
         if (buttonMarginLeft<0) buttonMarginLeft = 0
         Log.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum = 8 // 8 buttons
-        val imageButtonHeight = (textFontSize * 1.2f).toInt()
+        var imageButtonHeight = (textFontSize * 1.2f).toInt()
+        // added to avoid crashing on some devices
+        if (imageButtonHeight <= 0 ) imageButtonHeight = (24.0f * 1.2f).toInt()
+        //
         val maxWidth = buttonNum * imageButtonHeight + (buttonNum - 1) * buttonMarginLeft
         if (maxWidth > screenSizeX) {
             Log.d(TAG, "maxWidth > screenSize.x")
@@ -979,7 +983,7 @@ abstract class PlayerBaseFragment : Fragment(),
         actionMenuImageButton?.setOnClickListener {
             Log.d(TAG, "actionMenuImageButton.setOnClickListener")
             actionMenuView?.showOverflowMenu()
-            softdecoderFirstMenuItem?.isChecked = mPresenter.playingParam.softDecoderFirst
+            softDecoderFirstMenuItem?.isChecked = mPresenter.playingParam.softDecoderFirst
             autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
             setTimerToHideSupportAudioControl()   // reset the timer
             disableButtonForSometime(it)
