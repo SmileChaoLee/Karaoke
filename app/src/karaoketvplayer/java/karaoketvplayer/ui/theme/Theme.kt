@@ -1,4 +1,4 @@
-package com.smile.karaoke.ui.theme
+package karaoketvplayer.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
