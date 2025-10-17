@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
-object Composables {
-    private const val TAG = "Composables"
+object KaraokeComposable {
+
     var fontSize = 24.sp
         set(value) {
             if (field != value) {

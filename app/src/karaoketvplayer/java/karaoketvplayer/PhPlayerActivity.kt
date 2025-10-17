@@ -17,7 +17,6 @@ import android.os.Looper
 import android.os.PersistableBundle
 import android.os.PowerManager
 import android.provider.Settings
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -61,6 +60,9 @@ import androidx.core.net.toUri
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.utilities.DeviceTypeUtil
+import com.smile.karaoke.utilities.FontUtil
+import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.ExoPlayerActivity
 import karaoketvplayer.ui.theme.KaraokePlayerTheme
 import karaoketvplayer.ui.theme.Yellow3
@@ -75,7 +77,7 @@ open class PhPlayerActivity : ComponentActivity() {
 
     private var mTAG : String = "PhPlayerActivity"
     fun setTag(tag: String) {
-        Log.d(mTAG, "setTag.tag = $tag")
+        LogUtil.d(mTAG, "setTag.tag = $tag")
         mTAG = tag
     }
     private var screenSize = Point(0, 0)
@@ -92,70 +94,50 @@ open class PhPlayerActivity : ComponentActivity() {
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.d(mTAG,"onCreate")
         super.onCreate(savedInstanceState)
-        Log.d(mTAG,"onCreate")
-
-        screenSize = ScreenUtil.getScreenSize(this@PhPlayerActivity)
-        val smallestWidth = if (screenSize.x < screenSize.y) screenSize.x else screenSize.y
-        val smallestScreenWidthDp = ScreenUtil.pixelToDp(smallestWidth.toFloat())
-        Log.d(mTAG, "onCreate.smallestScreenWidthDp = $smallestScreenWidthDp")
-        SmileAppBase.deviceType = if (smallestScreenWidthDp >= 600) {
-            CommonConstants.DEVICE_TYPE_TABLET
-        } else {
-            CommonConstants.DEVICE_TYPE_PHONE
-        }
-        // More specific check for Android TV
-        // This requires checking UI mode, not just screen width.
-        val uiModeManager = resources.configuration.uiMode
-        val isTv = uiModeManager and Configuration.UI_MODE_TYPE_TELEVISION == Configuration.UI_MODE_TYPE_TELEVISION
-        Log.d(mTAG, "onCreate.isTv = $isTv")
-        if (isTv) {
-            SmileAppBase.deviceType = CommonConstants.DEVICE_TYPE_ANDROID_TV
-        }
-
-        val intentAction = intent.action
-        Log.d(mTAG, "onCreate.intentAction = $intentAction")
-        val intentCategories = intent.categories
-        Log.d(mTAG, "onCreate.intentCategories = $intentCategories")
-        if (intentCategories != null && intentCategories.isNotEmpty()) {
-            for (category in intentCategories) {
-                Log.d(mTAG, "onCreate.category = $category")
-            }
-        } else {
-            Log.d(mTAG, "No categories in intent")
-        }
-
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@PhPlayerActivity,
-            ScreenUtil.FontSize_Pixel_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(this@PhPlayerActivity,
-            defaultTextFontSize,
-            ScreenUtil.FontSize_Pixel_Type,0.0f)
+
+        screenSize = ScreenUtil.getScreenSize(this@PhPlayerActivity)
+        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@PhPlayerActivity)
+
+        val intentAction = intent.action
+        LogUtil.d(mTAG, "onCreate.intentAction = $intentAction")
+        val intentCategories = intent.categories
+        LogUtil.d(mTAG, "onCreate.intentCategories = $intentCategories")
+        if (intentCategories != null && intentCategories.isNotEmpty()) {
+            for (category in intentCategories) {
+                LogUtil.d(mTAG, "onCreate.category = $category")
+            }
+        } else {
+            LogUtil.d(mTAG, "No categories in intent")
+        }
+
+        textFontSize = FontUtil.getTextFontSizeNeeded(this@PhPlayerActivity)
         toastTextSize = textFontSize * 0.7f
-        fontSize = ScreenUtil.suitableFontScale(this@PhPlayerActivity,
-            ScreenUtil.FontSize_Pixel_Type, 0.0f)
+        fontSize = FontUtil.getFontSize(this@PhPlayerActivity)
         SmileAppBase.textFontSize = textFontSize
         SmileAppBase.toastTextSize = toastTextSize
         SmileAppBase.fontSize = fontSize
-        Composables.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
-        Composables.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
+        KaraokeComposable.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
+        KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
         vlcLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            Log.d(mTAG, "vlcLauncher.result received")
-            // loadingMessage.value = ""
-            restartApp()
+            LogUtil.d(mTAG, "vlcLauncher.result received")
+            loadingMessage.value = ""
+            // restartApp()
         }
 
         exoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            Log.d(mTAG, "exoLauncher.result received")
-            // loadingMessage.value = ""
-            restartApp()
+            LogUtil.d(mTAG, "exoLauncher.result received")
+            loadingMessage.value = ""
+            // restartApp()
         }
 
         permissionExternalStorage =
@@ -179,11 +161,11 @@ open class PhPlayerActivity : ComponentActivity() {
         askIgnoreOptimizationsBattery()
 
         setContent {
-            Log.d(mTAG,"onCreate.setContent")
+            LogUtil.d(mTAG,"onCreate.setContent")
 
             val configuration = LocalConfiguration.current
             val smallestScreenWidthDp = configuration.smallestScreenWidthDp
-            Log.d(mTAG, "onCreate.setContent.smallestScreenWidthDp = $smallestScreenWidthDp")
+            LogUtil.d(mTAG, "onCreate.setContent.smallestScreenWidthDp = $smallestScreenWidthDp")
             SmileAppBase.deviceType = if (smallestScreenWidthDp >= 600) {
                 CommonConstants.DEVICE_TYPE_TABLET
             } else {
@@ -193,7 +175,7 @@ open class PhPlayerActivity : ComponentActivity() {
             // This requires checking UI mode, not just screen width.
             val uiModeManager = configuration.uiMode
             val isTv = uiModeManager and Configuration.UI_MODE_TYPE_TELEVISION == Configuration.UI_MODE_TYPE_TELEVISION
-            Log.d(mTAG, "onCreate.setContent.isTv = $isTv")
+            LogUtil.d(mTAG, "onCreate.setContent.isTv = $isTv")
             if (isTv) {
                 SmileAppBase.deviceType = CommonConstants.DEVICE_TYPE_ANDROID_TV
             }
@@ -214,7 +196,7 @@ open class PhPlayerActivity : ComponentActivity() {
 
             onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    Log.d(mTAG, "handleOnBackPressed")
+                    LogUtil.d(mTAG, "handleOnBackPressed")
                     exitApp()
                 }
             })
@@ -237,16 +219,16 @@ open class PhPlayerActivity : ComponentActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
-            Log.d(mTAG, "onRequestPermissionsResult.permissions = $str")
+            LogUtil.d(mTAG, "onRequestPermissionsResult.permissions = $str")
         }
         if (requestCode == PERMISSION_WRITE_EXTERNAL_CODE) {
             val rLen = grantResults.size
             permissionExternalStorage = rLen > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            Log.d(mTAG, "onRequestPermissionsResult.permissionExternalStorage = $permissionExternalStorage")
+            LogUtil.d(mTAG, "onRequestPermissionsResult.permissionExternalStorage = $permissionExternalStorage")
         }
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
-            Log.d(mTAG, "onRequestPermissionsResult.Permission Denied")
+            LogUtil.d(mTAG, "onRequestPermissionsResult.Permission Denied")
             exitApp()
         }
     }
@@ -267,7 +249,7 @@ open class PhPlayerActivity : ComponentActivity() {
 
 
     private fun exitApp() {
-        Log.d(mTAG, "exitApp")
+        LogUtil.d(mTAG, "exitApp")
         finish()
     }
 
@@ -304,7 +286,7 @@ open class PhPlayerActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center) {
             Text(text = getString(R.string.loadingStr),
                 color = Color.Blue, fontWeight = FontWeight.Bold,
-                fontSize = Composables.fontSize.times(2.0f))
+                fontSize = KaraokeComposable.fontSize.times(2.0f))
         }
     }
 
@@ -313,7 +295,7 @@ open class PhPlayerActivity : ComponentActivity() {
                         buttonWidth: Float,
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
-        Log.d(mTAG, "ExoPlayerButton")
+        LogUtil.d(mTAG, "ExoPlayerButton")
         val buttonBackground = Color.Transparent
         val buttonContentColor = Color.Green
         val buttonContainerColor = Color.Blue
@@ -351,11 +333,11 @@ open class PhPlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "ExoPlayer", fontSize = Composables.fontSize) }
+            { Text(text = "ExoPlayer", fontSize = KaraokeComposable.fontSize) }
             Text(//modifier = Modifier.weight(2.0f),
                 lineHeight = textLineHeight,
                 text = getString(R.string.exoDescription),
-                color = Color.Red, fontSize = Composables.toastFontSize)
+                color = Color.Red, fontSize = KaraokeComposable.toastFontSize)
         }
     }
 
@@ -364,7 +346,7 @@ open class PhPlayerActivity : ComponentActivity() {
                         buttonWidth: Float,
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
-        Log.d(mTAG, "VlcPlayerButton")
+        LogUtil.d(mTAG, "VlcPlayerButton")
         val buttonBackground = Color.Transparent
         val buttonContentColor = Color.Green
         val buttonContainerColor = Color.Blue
@@ -400,21 +382,21 @@ open class PhPlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "VLCPlayer", fontSize = Composables.fontSize) }
+            { Text(text = "VLCPlayer", fontSize = KaraokeComposable.fontSize) }
             Text(//modifier = Modifier.weight(2.0f),
                 lineHeight = textLineHeight,
                 text = getString(R.string.vlcDescription),
-                color = Color.Red, fontSize = Composables.toastFontSize)
+                color = Color.Red, fontSize = KaraokeComposable.toastFontSize)
         }
     }
 
     @Composable
     fun CreateMainUI() {
-        Log.d(mTAG, "CreateMainUI")
+        LogUtil.d(mTAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
         val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
         val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
-        Log.d(mTAG, "CreateMainUI.maxHeight = $maxHeight")
+        LogUtil.d(mTAG, "CreateMainUI.maxHeight = $maxHeight")
         var verSpacerWeight = 1.0f
         var horSpacerWeight = 1.0f
         if (resources.configuration.orientation
@@ -425,9 +407,9 @@ open class PhPlayerActivity : ComponentActivity() {
         val buttonWidth = maxWidth * (10.0f - horSpacerWeight * 2.0f)
         // 1 in 5
         val buttonHeight = maxHeight * (10.0f - (verSpacerWeight * 2.0f)) / 50.0f
-        Log.d(mTAG, "CreateMainUI.buttonHeight = $buttonHeight")
+        LogUtil.d(mTAG, "CreateMainUI.buttonHeight = $buttonHeight")
         val backgroundColor = Yellow3
-        val textLineHeight = (Composables.toastFontSize.value + 5.0f).sp
+        val textLineHeight = (KaraokeComposable.toastFontSize.value + 5.0f).sp
         Column(modifier = Modifier
             .fillMaxSize()
             .background(color = backgroundColor)) {
@@ -457,42 +439,42 @@ open class PhPlayerActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(mTAG, "onResume")
+        LogUtil.d(mTAG, "onResume")
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        Log.d(mTAG, "onSaveInstanceState()")
+        LogUtil.d(mTAG, "onSaveInstanceState()")
     }
 
     private fun stopCast() {
-        Log.d(mTAG, "stopCast")
+        LogUtil.d(mTAG, "stopCast")
         (application as SmileAppBase).castContext?.apply {
             // stop casting
-            Log.d(mTAG, "stopCasting.endCurrentSession")
+            LogUtil.d(mTAG, "stopCasting.endCurrentSession")
             sessionManager.endCurrentSession(true)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(mTAG, "onDestroy")
+        LogUtil.d(mTAG, "onDestroy")
         stopCast()
     }
 
     private fun restartApp() {
-        Log.d(mTAG, "restartApp")
+        LogUtil.d(mTAG, "restartApp")
         stopCast()
         finish()
         // then restart in 1 seconds
         val tmpHandler = Handler(Looper.getMainLooper())
         val tmpRunnable = Runnable {
-            Log.d(mTAG, "restartApp.tmpRunnable()")
+            LogUtil.d(mTAG, "restartApp.tmpRunnable()")
             tmpHandler.removeCallbacksAndMessages(null)
             val i: Intent? = baseContext.packageManager
                 .getLaunchIntentForPackage(baseContext.packageName)
             i?.let {
-                Log.d(mTAG, "restartApp.startActivity()")
+                LogUtil.d(mTAG, "restartApp.startActivity()")
                 startActivity(Intent.makeRestartActivityTask(it.component))
             }
             // Runtime.getRuntime().exit(0)
