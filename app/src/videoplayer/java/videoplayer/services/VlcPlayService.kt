@@ -2,6 +2,7 @@ package videoplayer.services
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
@@ -21,6 +22,7 @@ import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.util.VLCVideoLayout
+import kotlin.properties.Delegates
 
 @UnstableApi
 class VlcPlayService : BasePlayService() {
@@ -29,9 +31,11 @@ class VlcPlayService : BasePlayService() {
         private const val TAG = "VlcPlayService"
     }
 
-    var presenter : VlcPlayerPresenter? = null
+    private lateinit var audioManager: AudioManager
+    private var curAudioVolume by Delegates.notNull<Int>()
     private var mediaSessionCallback: VlcMediaSessionCallback? = null
     private var controllerCallback: VlcMediaControllerCallback? = null
+    var presenter : VlcPlayerPresenter? = null
     var libVLC: LibVLC? = null
     var vlcPlayer: MediaPlayer? = null
 
@@ -45,6 +49,8 @@ class VlcPlayService : BasePlayService() {
     override fun onCreate() {
         super.onCreate()
         LogUtil.i(TAG, "onCreate")
+        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -60,6 +66,12 @@ class VlcPlayService : BasePlayService() {
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
+        // restore the original audio volume before starting this app
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            curAudioVolume,
+            AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+        //
         detachPlayerViews()
         releaseVlcPlayer()
         mediaControllerCompat?.apply {
@@ -270,6 +282,22 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
+        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+        presenter?.playingParam?.let {
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            // An integer from 0 to max volume, volumeTmp is between 0.0 and 1.0
+            val volumeLevel = (volumeTmp * maxVolume).toInt()
+            audioManager.setStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                volumeLevel,
+                AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+            it.currentVolume = volumeTmp
+            return
+        }
+        LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
+    }
+
+    private fun setAudioVolume_old(volumeTmp: Float) {
         LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
             LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
