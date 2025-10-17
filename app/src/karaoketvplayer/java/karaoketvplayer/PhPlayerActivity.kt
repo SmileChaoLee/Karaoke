@@ -101,8 +101,6 @@ open class PhPlayerActivity : ComponentActivity() {
         }
 
         screenSize = ScreenUtil.getScreenSize(this@PhPlayerActivity)
-        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@PhPlayerActivity)
-
         val intentAction = intent.action
         LogUtil.d(mTAG, "onCreate.intentAction = $intentAction")
         val intentCategories = intent.categories
@@ -123,6 +121,8 @@ open class PhPlayerActivity : ComponentActivity() {
         SmileAppBase.fontSize = fontSize
         KaraokeComposable.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
         KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
+
+        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@PhPlayerActivity)
 
         vlcLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -162,37 +162,17 @@ open class PhPlayerActivity : ComponentActivity() {
 
         setContent {
             LogUtil.d(mTAG,"onCreate.setContent")
-
-            val configuration = LocalConfiguration.current
-            val smallestScreenWidthDp = configuration.smallestScreenWidthDp
-            LogUtil.d(mTAG, "onCreate.setContent.smallestScreenWidthDp = $smallestScreenWidthDp")
-            SmileAppBase.deviceType = if (smallestScreenWidthDp >= 600) {
-                CommonConstants.DEVICE_TYPE_TABLET
-            } else {
-                CommonConstants.DEVICE_TYPE_PHONE
-            }
-            // More specific check for Android TV
-            // This requires checking UI mode, not just screen width.
-            val uiModeManager = configuration.uiMode
-            val isTv = uiModeManager and Configuration.UI_MODE_TYPE_TELEVISION == Configuration.UI_MODE_TYPE_TELEVISION
-            LogUtil.d(mTAG, "onCreate.setContent.isTv = $isTv")
-            if (isTv) {
-                SmileAppBase.deviceType = CommonConstants.DEVICE_TYPE_ANDROID_TV
-            }
-            if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            }
-
             KaraokePlayerTheme {
                 Box {
                     DisplayLoading()
                     CreateMainUI()
                 }
             }
-
+            /*
             if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
+            */
 
             onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
