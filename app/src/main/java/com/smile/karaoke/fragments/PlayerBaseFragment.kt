@@ -200,10 +200,12 @@ abstract class PlayerBaseFragment : Fragment(),
         arguments?.let {
             LogUtil.d(TAG, "onCreate.arguments is not null")
         }
+        /*
         // keep the screen on all the time, added on 2021-02-18
         activity?.window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        */
         setHasOptionsMenu(true) // must have because it has menu
 
         activity?.let {

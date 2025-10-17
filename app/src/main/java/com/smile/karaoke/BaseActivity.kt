@@ -15,7 +15,6 @@ import android.os.PersistableBundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
@@ -36,6 +35,8 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.DeviceTypeUtil
+import com.smile.karaoke.utilities.FontUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -260,17 +261,10 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this@BaseActivity,
-            ScreenUtil.FontSize_Pixel_Type, null)
-        var textFontSize = ScreenUtil.suitableFontSize(this@BaseActivity,
-            defaultTextFontSize,
-            ScreenUtil.FontSize_Pixel_Type,0.0f)
-        val toastTextSize = textFontSize * 0.7f
-        val fontSize = ScreenUtil.suitableFontScale(this@BaseActivity,
-            ScreenUtil.FontSize_Pixel_Type, 0.0f)
-        SmileAppBase.textFontSize = textFontSize
-        SmileAppBase.toastTextSize = toastTextSize
-        SmileAppBase.fontSize = fontSize
+        SmileAppBase.textFontSize = FontUtil.getTextFontSizeNeeded(this@BaseActivity)
+        SmileAppBase.toastTextSize = SmileAppBase.textFontSize * 0.7f
+        SmileAppBase.fontSize = FontUtil.getFontSize(this@BaseActivity)
+        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@BaseActivity)
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
