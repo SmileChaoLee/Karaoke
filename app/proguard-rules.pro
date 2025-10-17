@@ -22,3 +22,5 @@
 
 # the following is for solving E/VLC/JNI/VLCObject: FindClass(org/videolan/libvlc/Media$Track) failed
 -keep class org.videolan.** { *; }
+# the following is for extentions of ExoPlayer (keep all classes and their native classes)
+-keep class androidx.media3.decoder.** { *; }

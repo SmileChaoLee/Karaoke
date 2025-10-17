@@ -110,7 +110,7 @@ import java.util.List;
   @Nullable
   protected FfmpegDecoderException decode(
           DecoderInputBuffer inputBuffer, SimpleDecoderOutputBuffer outputBuffer, boolean reset) {
-    Log.d(TAG, "FfmpegDecoderException");
+    // Log.d(TAG, "decode.FfmpegDecoderException");
     if (reset) {
       nativeContext = ffmpegReset(nativeContext, extraData);
       if (nativeContext == 0) {

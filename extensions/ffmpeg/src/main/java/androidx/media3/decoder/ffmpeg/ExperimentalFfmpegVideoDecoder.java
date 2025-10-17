@@ -147,7 +147,7 @@ import java.util.List;
     @Nullable
     protected FfmpegDecoderException decode(
             DecoderInputBuffer inputBuffer, VideoDecoderOutputBuffer outputBuffer, boolean reset) {
-        Log.d(TAG, "FfmpegDecoderException.reset = " + reset);
+        // Log.d(TAG, "FfmpegDecoderException.reset = " + reset);
         if (reset) {
             nativeContext = ffmpegReset(nativeContext);
             if (nativeContext == 0) {
@@ -218,7 +218,7 @@ import java.util.List;
      */
     public void renderToSurface(VideoDecoderOutputBuffer outputBuffer, Surface surface)
             throws FfmpegDecoderException {
-        Log.d(TAG, "renderToSurface");
+        // Log.d(TAG, "renderToSurface");
         if (outputBuffer.mode != C.VIDEO_OUTPUT_MODE_SURFACE_YUV) {
             throw new FfmpegDecoderException("Invalid output mode.");
         }

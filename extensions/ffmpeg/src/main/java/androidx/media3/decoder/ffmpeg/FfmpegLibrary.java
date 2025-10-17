@@ -38,6 +38,7 @@ public final class FfmpegLibrary {
           new LibraryLoader("ffmpegJNI") {
             @Override
             protected void loadLibrary(String name) {
+              Log.d(TAG, "LibraryLoader.name = " + name);
               System.loadLibrary(name);
             }
           };

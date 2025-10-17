@@ -184,7 +184,7 @@ public final class ExperimentalFfmpegVideoRenderer extends DecoderVideoRenderer 
     @Override
     protected void renderOutputBufferToSurface(VideoDecoderOutputBuffer outputBuffer, Surface surface)
             throws FfmpegDecoderException {
-        Log.d(TAG, "renderOutputBufferToSurface");
+        // Log.d(TAG, "renderOutputBufferToSurface");
         if (decoder == null) {
             throw new FfmpegDecoderException(
                     "Failed to render output buffer to surface: decoder is not initialized.");

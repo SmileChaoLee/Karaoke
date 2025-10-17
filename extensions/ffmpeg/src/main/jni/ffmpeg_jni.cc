@@ -548,7 +548,7 @@ AVFrame *cvt_frame(JniContext *jniContext,
                    AVPixelFormat dst_format,
                    int dst_width,
                    int dst_height) {
-    LOGD("Video decoder.cvt_frame");
+    // LOGD("Video decoder.cvt_frame");
     auto src_format = AVPixelFormat(src->format);
     auto swsContext = sws_getCachedContext(jniContext->swsContext,
                                            src->width, src->height, src_format,
@@ -765,7 +765,7 @@ VIDEO_DECODER_FUNC(void, ffmpegRelease, jlong jContext) {
 
 VIDEO_DECODER_FUNC(jint, ffmpegSendPacket, jlong jContext, jobject encodedData,
                    jint length, jlong inputTimeUs) {
-    LOGD("Video decoder.ffmpegSendPacket");
+    // LOGD("Video decoder.ffmpegSendPacket");
     JniContext *const jniContext = reinterpret_cast<JniContext *>(jContext);
     AVCodecContext *avContext = jniContext->codecContext;
 
@@ -796,7 +796,7 @@ VIDEO_DECODER_FUNC(jint, ffmpegSendPacket, jlong jContext, jobject encodedData,
 
 VIDEO_DECODER_FUNC(jint, ffmpegReceiveFrame, jlong jContext, jint outputMode, jobject jOutputBuffer,
                    jboolean decodeOnly) {
-    LOGD("Video decoder.ffmpegReceiveFrame");
+    // LOGD("Video decoder.ffmpegReceiveFrame");
     JniContext *const jniContext = reinterpret_cast<JniContext *>(jContext);
     AVCodecContext *avContext = jniContext->codecContext;
     int result = 0;
@@ -918,7 +918,7 @@ VIDEO_DECODER_FUNC(jint, ffmpegReceiveFrame, jlong jContext, jint outputMode, jo
 
 VIDEO_DECODER_FUNC(jint, ffmpegRenderFrame, jlong jContext, jobject jSurface,
                    jobject jOutputBuffer, jint displayedWidth, jint displayedHeight) {
-    LOGD("Video decoder.ffmpegRenderFrame");
+    // LOGD("Video decoder.ffmpegRenderFrame");
     JniContext *const jniContext = reinterpret_cast<JniContext *>(jContext);
     if (!jniContext->MaybeAcquireNativeWindow(env, jSurface)) {
         return VIDEO_DECODER_ERROR_OTHER;
