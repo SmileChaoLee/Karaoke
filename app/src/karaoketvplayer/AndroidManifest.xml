@@ -28,7 +28,7 @@
             android:value="ca-app-pub-8354869049759576~5466555802" />           
 
         <activity
-            android:name=".PhPlayerActivity"
+            android:name="karaoketvplayer.PhPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TvPlayerActivity"
+            android:name="karaoketvplayer.TvPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

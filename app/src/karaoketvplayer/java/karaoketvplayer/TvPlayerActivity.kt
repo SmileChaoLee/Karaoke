@@ -1,4 +1,4 @@
-package com.smile.karaoke
+package karaoketvplayer
 
 import android.util.Log
 

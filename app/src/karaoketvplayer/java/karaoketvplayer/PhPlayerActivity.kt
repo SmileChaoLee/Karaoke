@@ -1,4 +1,4 @@
-package com.smile.karaoke
+package karaoketvplayer
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -27,7 +27,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -52,16 +51,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import com.smile.karaoke.R
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import karaokeplayer.ExoPlayerActivity
-import com.smile.karaoke.ui.theme.KaraokePlayerTheme
-import com.smile.karaoke.ui.theme.Yellow3
+import karaoketvplayer.ui.theme.KaraokePlayerTheme
+import karaoketvplayer.ui.theme.Yellow3
 import videoplayer.VlcPlayerActivity
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.CoroutineScope
@@ -178,7 +180,7 @@ open class PhPlayerActivity : ComponentActivity() {
 
         setContent {
             Log.d(mTAG,"onCreate.setContent")
-            /*
+
             val configuration = LocalConfiguration.current
             val smallestScreenWidthDp = configuration.smallestScreenWidthDp
             Log.d(mTAG, "onCreate.setContent.smallestScreenWidthDp = $smallestScreenWidthDp")
@@ -198,7 +200,7 @@ open class PhPlayerActivity : ComponentActivity() {
             if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
-            */
+
             KaraokePlayerTheme {
                 Box {
                     DisplayLoading()
@@ -251,7 +253,7 @@ open class PhPlayerActivity : ComponentActivity() {
 
     private fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
         val activeNetwork =
             connectivityManager.getNetworkCapabilities(network) ?: return false
