@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
@@ -50,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -59,7 +57,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.utilities.DeviceTypeUtil
 import com.smile.karaoke.utilities.FontUtil
 import com.smile.karaoke.utilities.LogUtil
