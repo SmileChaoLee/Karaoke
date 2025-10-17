@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -17,6 +16,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.PlayerConstants;
 import com.smile.karaoke.presenters.PlayerBasePresenter;
+import com.smile.karaoke.utilities.LogUtil;
+
 import videoplayer.services.VlcPlayService;
 
 @OptIn(markerClass = UnstableApi.class)
@@ -40,11 +41,11 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             durationBarHandler.removeCallbacksAndMessages(null);
             if (getPlayService() != null) {
                 int playbackState = mPlayingParam.getCurrentPlaybackState();
-                Log.d(TAG, msgStr + ".playbackState = " + playbackState);
-                Log.d(TAG, msgStr + ".getMediaDuration() = " + getPlayService().getMediaDuration());
+                LogUtil.d(TAG, msgStr + ".playbackState = " + playbackState);
+                LogUtil.d(TAG, msgStr + ".getMediaDuration() = " + getPlayService().getMediaDuration());
                 if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
                     // PlaybackStateCompat.STATE_PLAYING = 3
-                    Log.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
+                    LogUtil.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
                     mPresentView.update_Player_duration_seekbar_progress(
                             (int) getPlayService().getCurrentPosition());
                 }
@@ -64,7 +65,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     }
 
     public VlcPlayService getPlayService() {
-        Log.d(TAG, "getPlayService()");
+        LogUtil.d(TAG, "getPlayService()");
         return mPresentView.getPlayService() != null?
                 (VlcPlayService) (mPresentView.getPlayService()) : null;
     }
@@ -73,7 +74,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @SuppressWarnings("unchecked")
     public void initializeVariables(Bundle savedInstanceState, Intent callingIntent,
                                     boolean isAutoPlay) {
-        Log.d(TAG, "initializeVariables");
+        LogUtil.i(TAG, "initializeVariables");
         initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
@@ -88,7 +89,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
         int numOfAudioTracks = audioTrackIndicesList.size();
-        Log.d(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex +
+        LogUtil.i(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex +
                 ", audioChannel = " + audioChannel + ", numOfAudioTracks = " +
                 numOfAudioTracks);
         if (audioTrackIndex <= 0) {
@@ -101,7 +102,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 audioTrackIndex = 1;
             }
             int audioTrackId = audioTrackIndicesList.get(audioTrackIndex - 1);
-            Log.d(TAG, "setAudioTrackAndChannel.getPlayService() = " + getPlayService());
+            LogUtil.d(TAG, "setAudioTrackAndChannel.getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
                 getPlayService().setAudioTrack(audioTrackId);
                 mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
@@ -114,7 +115,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
-        Log.d(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
+        LogUtil.i(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
         if (getPlayService() != null) {
             if (getPlayService().getVlcPlayer() != null) {
                 mPlayingParam.setCurrentAudioPosition(getPlayService().getVlcPlayer().getTime());
@@ -129,7 +130,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void switchAudioToMusic() {
-        Log.d(TAG, "switchAudioToMusic");
+        LogUtil.i(TAG, "switchAudioToMusic");
         if (!mPlayingParam.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
@@ -143,7 +144,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void switchAudioToVocal() {
         // do nothing because it does not have this functionality yet
-        Log.d(TAG, "switchAudioToVocal() is called.");
+        LogUtil.i(TAG, "switchAudioToVocal() is called.");
         if (!mPlayingParam.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
@@ -169,7 +170,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void setAudioActionSubMenu() {
         final String msgStr = "setAudioActionSubMenu";
-        Log.d(TAG, msgStr);
+        LogUtil.i(TAG, msgStr);
         getPlayingMediaInfo();
         if (audioTrackIndicesList.isEmpty()) {
             final Handler handler = new Handler(Looper.getMainLooper());
@@ -178,7 +179,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 @Override
                 public void run() {
                     handler.removeCallbacksAndMessages(null);
-                    Log.d(TAG, msgStr + ".runnable.count = " + count);
+                    LogUtil.d(TAG, msgStr + ".runnable.count = " + count);
                     getPlayingMediaInfo();
                     if (audioTrackIndicesList.isEmpty()) {
                         if (count < 10) {
@@ -187,7 +188,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                         }
                     } else {
                         handler.removeCallbacksAndMessages(null);
-                        Log.d(TAG, msgStr + ".audioTrackIndicesList not empty");
+                        LogUtil.d(TAG, msgStr + ".audioTrackIndicesList not empty");
                         mPresentView.setVideoWindowSize();
                     }
                 }
@@ -199,17 +200,17 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     private void getPlayingMediaInfo() {
         String msgStr = "getPlayingMediaInfo";
-        Log.d(TAG, msgStr);
+        LogUtil.i(TAG, msgStr);
         int[] result = new int[] {1, CommonConstants.STEREO};
         mNumberOfVideoTracks = 0;
         int numOfAudioTracks = 0;
         audioTrackIndicesList.clear();
         if (getPlayService() == null || getPlayService().getVlcPlayer() == null) {
-            Log.d(TAG, msgStr + ".getPlayService() or vlcPlayer is null");
+            LogUtil.d(TAG, msgStr + ".getPlayService() or vlcPlayer is null");
         } else {
             mNumberOfVideoTracks = getPlayService().getPlayingMediaInfo(audioTrackIndicesList);
             numOfAudioTracks = audioTrackIndicesList.size();
-            Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
+            LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
             if (numOfAudioTracks == 0) {
                 mPlayingParam.setCurrentAudioTrackIndexPlayed(PlayerConstants.NoAudioTrack);
                 mPlayingParam.setCurrentChannelPlayed(PlayerConstants.NoAudioChannel);
@@ -256,7 +257,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         setAudioTrackAndChannel(result[0], result[1]);
         // update the duration on controller UI
         // build R.id.audioTrack submenu
-        Log.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
+        LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         mPresentView.setVideoWindowSize();
         mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
@@ -264,7 +265,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public int getNumberOfAudioTracks() {
-        Log.d(TAG, "getNumberOfAudioTracks.audioTrackIndicesList.size() = " +
+        LogUtil.i(TAG, "getNumberOfAudioTracks.audioTrackIndicesList.size() = " +
                 audioTrackIndicesList.size());
         return audioTrackIndicesList.size();
     }

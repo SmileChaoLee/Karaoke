@@ -6,14 +6,11 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-
 import androidx.media3.common.util.UnstableApi;
-
 import com.smile.karaoke.constants.PlayerConstants;
 import com.smile.karaoke.models.PlayingParameters;
+import com.smile.karaoke.utilities.LogUtil;
 import org.videolan.libvlc.interfaces.IMedia;
-
 import videoplayer.Presenters.VlcPlayerPresenter;
 import videoplayer.services.VlcPlayService;
 
@@ -35,18 +32,18 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
     @Override
     public synchronized void onPrepare() {
         super.onPrepare();
-        Log.d(TAG, "onPrepare() is called.");
+        LogUtil.d(TAG, "onPrepare() is called.");
     }
 
     @Override
     public synchronized void onPrepareFromMediaId(String mediaId, Bundle extras) {
         super.onPrepareFromMediaId(mediaId, extras);
-        Log.d(TAG, "onPrepareFromMediaId() is called.");
+        LogUtil.d(TAG, "onPrepareFromMediaId() is called.");
     }
 
     @Override
     public synchronized void onPrepareFromUri(Uri uri, Bundle extras) {
-        Log.d(TAG, "onPrepareFromUri.uri = " + uri);
+        LogUtil.i(TAG, "onPrepareFromUri.uri = " + uri);
         super.onPrepareFromUri(uri, extras);
         VlcPlayerPresenter presenter = mPlayService.getPresenter();
         if (presenter == null) return;
@@ -61,16 +58,16 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         float currentVolume = playingParam.getCurrentVolume();
         int playbackState = playingParam.getCurrentPlaybackState();
         if (extras != null) {
-            Log.d(TAG, "extras is not null.");
+            LogUtil.d(TAG, "extras is not null.");
             PlayingParameters playingParamOrigin;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin,
                         PlayingParameters.class);
             } else playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin);
             if (playingParamOrigin != null) {
-                Log.d(TAG, "playingParamOrigin is not null.");
+                LogUtil.d(TAG, "playingParamOrigin is not null.");
                 playbackState = playingParamOrigin.getCurrentPlaybackState();
-                Log.d(TAG, "playingParamOrigin.playbackState = " + playbackState);
+                LogUtil.d(TAG, "playingParamOrigin.playbackState = " + playbackState);
                 currentAudioPosition = playingParamOrigin.getCurrentAudioPosition();
                 currentVolume = playingParamOrigin.getCurrentVolume();
                 presenter.getPlayingParam().setCurrentAudioPosition(currentAudioPosition);
@@ -81,30 +78,30 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
         try {
             switch (playbackState) {
                 case PlaybackStateCompat.STATE_PAUSED:
-                    Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PAUSED");
+                    LogUtil.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PAUSED");
                     break;
                 case PlaybackStateCompat.STATE_STOPPED:
                     // playing is finished
-                    Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_STOPPED");
+                    LogUtil.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_STOPPED");
                     break;
                 case PlaybackStateCompat.STATE_PLAYING:
-                    Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PLAYING");
+                    LogUtil.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_PLAYING");
                     break;
                 case PlaybackStateCompat.STATE_NONE:
                     // stopped by user previously
-                    Log.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
+                    LogUtil.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
                     break;
                 case PlayerConstants.PREPARE_MEDIA:
                     // prepare media for playing
-                    Log.d(TAG, "onPrepareFromUri.PlayerConstants.PREPARE_MEDIA");
+                    LogUtil.d(TAG, "onPrepareFromUri.PlayerConstants.PREPARE_MEDIA");
                     break;
                 default:
-                    Log.d(TAG, "onPrepareFromUri.default.playbackState = " + playbackState);
+                    LogUtil.d(TAG, "onPrepareFromUri.default.playbackState = " + playbackState);
                     break;
             }
             // the following must be after vlcPlayer.play()
-            Log.d(TAG, "onPrepareFromUri.preparedStatus = " + playingParam.getPreparedStatus());
-            Log.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
+            LogUtil.d(TAG, "onPrepareFromUri.preparedStatus = " + playingParam.getPreparedStatus());
+            LogUtil.d(TAG, "onPrepareFromUri.currentVolume = " + currentVolume +
                             ", currentAudioPosition = " + currentAudioPosition);
             if (playingParam.getPreparedStatus() == 4) {
                 // just prepared but just came back from background
@@ -113,54 +110,54 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                 playingParam.setPreparedStatus(1);
             }
         } catch (Exception e) {
-            Log.d(TAG, "onPrepareFromUri.Invalid mediaId", e);
+            LogUtil.e(TAG, "onPrepareFromUri.Invalid mediaId", e);
         }
     }
 
     @Override
     public synchronized void onPlay() {
         super.onPlay();
-        Log.d(TAG, "onPlay() is called.");
+        LogUtil.i(TAG, "onPlay() is called.");
         mPlayService.onPlay();
     }
 
     @Override
     public synchronized void onPlayFromMediaId(String mediaId, Bundle extras) {
         super.onPlayFromMediaId(mediaId, extras);
-        Log.d(TAG, "onPlayFromMediaId() is called.");
+        LogUtil.d(TAG, "onPlayFromMediaId() is called.");
     }
 
     @Override
     public synchronized void onPlayFromUri(Uri uri, Bundle extras) {
         super.onPlayFromUri(uri, extras);
-        Log.d(TAG, "onPlayFromUri() is called.");
+        LogUtil.d(TAG, "onPlayFromUri() is called.");
     }
 
     @Override
     public synchronized void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause() is called.");
+        LogUtil.i(TAG, "onPause() is called.");
         mPlayService.onPause();
     }
 
     @Override
     public synchronized void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop() is called.");
+        LogUtil.i(TAG, "onStop() is called.");
         mPlayService.onStop();
     }
 
     @Override
     public synchronized void onFastForward() {
         super.onFastForward();
-        Log.d(TAG, "onFastForward() is called.");
+        LogUtil.d(TAG, "onFastForward() is called.");
         mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_FAST_FORWARDING);
     }
 
     @Override
     public synchronized void onRewind() {
         super.onRewind();
-        Log.d(TAG, "onRewind() is called.");
+        LogUtil.d(TAG, "onRewind() is called.");
         mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_REWINDING);
     }
 }

@@ -6,11 +6,11 @@ import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.services.BasePlayService
+import com.smile.karaoke.utilities.LogUtil
 import videoplayer.Callbacks.VlcMediaControllerCallback
 import videoplayer.Callbacks.VlcMediaSessionCallback
 import videoplayer.Listeners.VlcPlayerListener
@@ -44,22 +44,22 @@ class VlcPlayService : BasePlayService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate")
+        LogUtil.i(TAG, "onCreate")
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        Log.d(TAG, "onBind.binder = $binder")
+        LogUtil.i(TAG, "onBind.binder = $binder")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "onUnbind.intent = $intent")
+        LogUtil.i(TAG, "onUnbind.intent = $intent")
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy")
+        LogUtil.i(TAG, "onDestroy")
         detachPlayerViews()
         releaseVlcPlayer()
         mediaControllerCompat?.apply {
@@ -71,7 +71,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun initVlcPlayer() {
-        Log.d(TAG, "initVlcPlayer.presenter = $presenter")
+        LogUtil.i(TAG, "initVlcPlayer.presenter = $presenter")
         presenter?.let {
             libVLC = LibVLC(it.activity)
             vlcPlayer = MediaPlayer(libVLC)
@@ -82,7 +82,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     private fun releaseVlcPlayer() {
-        Log.d(TAG, "releaseVlcPlayer.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG, "releaseVlcPlayer.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             stop()
             media?.release()
@@ -95,10 +95,10 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
-        Log.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             val isAttached = vlcVout.areViewsAttached()
-            Log.d(TAG,"attachPlayerViews.areViewsAttached = $isAttached")
+            LogUtil.d(TAG,"attachPlayerViews.areViewsAttached = $isAttached")
             if (!isAttached) {
                 attachViews(videoVLCPlayerView, null, true, false)
             }
@@ -107,9 +107,9 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun detachPlayerViews() {
-        Log.d(TAG,"detachPlayerViews.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG,"detachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
-            Log.d(TAG,"detachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
+            LogUtil.d(TAG,"detachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
             if (vlcVout.areViewsAttached()) {
                 detachViews()
             }
@@ -118,14 +118,14 @@ class VlcPlayService : BasePlayService() {
 
     fun setVideoWindowSize(videoVLCPlayerView: VLCVideoLayout) {
         val msgStr = "setVideoWindowSize"
-        Log.d(TAG,msgStr)
+        LogUtil.i(TAG,msgStr)
         presenter?.let {
             attachPlayerViews(videoVLCPlayerView)   // must be the first statement
             it.activity.let { actIt ->
                 vlcPlayer?.apply {
                     val screenSize = ScreenUtil.getScreenSize(actIt)
-                    Log.d(TAG,"${msgStr}.screenSize = ${screenSize.x}, ${screenSize.y}")
-                    Log.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
+                    LogUtil.d(TAG,"${msgStr}.screenSize = ${screenSize.x}, ${screenSize.y}")
+                    LogUtil.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
                     scale = 0f
                     vlcVout.setWindowSize(screenSize.x, screenSize.y)
                     aspectRatio = if (actIt.resources.configuration.orientation
@@ -134,14 +134,14 @@ class VlcPlayService : BasePlayService() {
                     } else {
                         "4:3"
                     }
-                    Log.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
+                    LogUtil.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
                 }
             }
         }
     }
 
     fun prepare(med: IMedia) {
-        Log.d(TAG, "prepare.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG, "prepare.vlcPlayer = $vlcPlayer")
         vlcPlayer?.media = med
     }
 
@@ -150,13 +150,13 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun getAudioTrack(): Int {
-        Log.d(TAG, "getAudioTrack")
+        LogUtil.i(TAG, "getAudioTrack")
         val tracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
-        Log.d(TAG, "getAudioTrack.tracks.size = ${tracks?.size}")
+        LogUtil.d(TAG, "getAudioTrack.tracks.size = ${tracks?.size}")
         tracks?.also {
             for (trackIndex in 0 until it.size) {
                 if (it[trackIndex].selected) {
-                    Log.d(TAG, "getAudioTrack.return trackIndex = $trackIndex")
+                    LogUtil.d(TAG, "getAudioTrack.return trackIndex = $trackIndex")
                     return trackIndex
                 }
             }
@@ -165,12 +165,12 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun setAudioTrack(audioTrackId: Int) {
-        Log.d(TAG, "setAudioTrack")
+        LogUtil.i(TAG, "setAudioTrack")
         val selectedTracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
         selectedTracks?.also {
             if (audioTrackId >= 0 && audioTrackId < it.size) {
                 val track = it[audioTrackId]
-                Log.d(TAG, "setAudioTrack.track = $track")
+                LogUtil.d(TAG, "setAudioTrack.track = $track")
                 vlcPlayer?.selectTrack(track.id)
             }
         }
@@ -178,9 +178,9 @@ class VlcPlayService : BasePlayService() {
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {
         val msgStr = "getPlayingMediaInfo"
-        Log.d(TAG, msgStr)
+        LogUtil.i(TAG, msgStr)
         if (vlcPlayer == null) {
-            Log.d(TAG, "${msgStr}.vlcPlayer is null")
+            LogUtil.i(TAG, "${msgStr}.vlcPlayer is null")
             return 0
         }
         val vPlayer = vlcPlayer!!
@@ -192,13 +192,13 @@ class VlcPlayService : BasePlayService() {
             // because it is null sometimes
             for (videoDi in it) {
                 videoTrackId = videoDi.id
-                Log.d(TAG, "${msgStr}.videoTrackId = $videoTrackId")
+                LogUtil.d(TAG, "${msgStr}.videoTrackId = $videoTrackId")
                 videoTrackName = videoDi.name
-                Log.d(TAG, "${msgStr}.videoTrackName = $videoTrackName")
+                LogUtil.d(TAG, "${msgStr}.videoTrackName = $videoTrackName")
                 numOfVideoTracks++
             }
         }
-        Log.d(TAG, "${msgStr}.numOfVideoTracks = " + numOfVideoTracks)
+        LogUtil.d(TAG, "${msgStr}.numOfVideoTracks = " + numOfVideoTracks)
 
         var audioTrackId: String?
         var audioTrackName: String?
@@ -210,12 +210,12 @@ class VlcPlayService : BasePlayService() {
                 val audioTrack: IMedia.AudioTrack = it[tackIndex] as IMedia.AudioTrack
                 // info only
                 val channels = audioTrack.channels
-                Log.d(TAG, "${msgStr}.channels = $channels")
+                LogUtil.d(TAG, "${msgStr}.channels = $channels")
                 //
                 audioTrackId = audioTrack.id
-                Log.d(TAG, "${msgStr}.audioTrackId = $audioTrackId")
+                LogUtil.d(TAG, "${msgStr}.audioTrackId = $audioTrackId")
                 audioTrackName = audioTrack.name
-                Log.d(TAG, "${msgStr}.audioTrackName = $audioTrackName")
+                LogUtil.d(TAG, "${msgStr}.audioTrackName = $audioTrackName")
                 // exclude disabled
                 audioTrackIndicesList.add(tackIndex)
             }
@@ -225,17 +225,17 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun onPlay() {
-        Log.d(TAG, "onPlay.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG, "onPlay.vlcPlayer = $vlcPlayer")
         vlcPlayer?.play()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG, "onPause.vlcPlayer = $vlcPlayer")
         vlcPlayer?.pause()
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop.vlcPlayer = $vlcPlayer")
+        LogUtil.i(TAG, "onStop.vlcPlayer = $vlcPlayer")
         val playbackState = presenter?.playingParam?.currentPlaybackState
         if (playbackState == PlaybackStateCompat.STATE_PLAYING ||
             playbackState == PlaybackStateCompat.STATE_PAUSED) {
@@ -244,7 +244,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun initMediaCallback() {
-        Log.d(TAG, "initMediaCallback")
+        LogUtil.i(TAG, "initMediaCallback")
         mediaSessionCallback = VlcMediaSessionCallback(this@VlcPlayService)
         mediaSessionCompat?.setCallback(mediaSessionCallback)
         controllerCallback = VlcMediaControllerCallback(this@VlcPlayService)
@@ -253,26 +253,26 @@ class VlcPlayService : BasePlayService() {
 
     override fun isPlaying(): Boolean {
         val isPlaying = vlcPlayer?.isPlaying ?: false
-        Log.d(TAG, "isPlaying.isPlaying = $isPlaying")
+        LogUtil.d(TAG, "isPlaying.isPlaying = $isPlaying")
         return isPlaying
     }
 
     override fun setPlayerTime(progress: Long) {
-        Log.d(TAG, "setPlayerTime.progress = $progress")
+        LogUtil.d(TAG, "setPlayerTime.progress = $progress")
         vlcPlayer?.time = progress
-        Log.d(TAG, "setPlayerTime.time = ${vlcPlayer?.time}")
+        LogUtil.d(TAG, "setPlayerTime.time = ${vlcPlayer?.time}")
     }
 
     override fun isSeekable(): Boolean {
         val isSeekable = vlcPlayer?.isSeekable ?: false
-        Log.d(TAG, "isSeekable.isSeekable = $isSeekable")
+        LogUtil.d(TAG, "isSeekable.isSeekable = $isSeekable")
         return isSeekable
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
-        Log.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
-            Log.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
+            LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
             // get current channel
             val audioChannel: Int = it.currentChannelPlayed
             var leftVolume: Float = volumeTmp
@@ -283,27 +283,29 @@ class VlcPlayService : BasePlayService() {
                 CommonConstants.STEREO -> leftVolume = rightVolume
             }
             it.currentVolume = volumeTmp
+            // this method does not work any more for version above eap21
+            // have to disable the volume button
             vlcPlayer?.volume = (volumeTmp * PlayerConstants.MAX_PROGRESS).toInt()
             return
         }
-        Log.d(TAG, "setAudioVolume.presenter?.playingParam is null")
+        LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
 
     override fun getMediaDuration(): Long {
         val len = vlcPlayer?.length ?: 0
-        Log.d(TAG, "getMediaDuration.len")
+        LogUtil.d(TAG, "getMediaDuration.len")
         return len
     }
 
     override fun getCurrentPosition(): Long {
         val time = vlcPlayer?.time ?: 0
-        Log.d(TAG, "getCurrentPosition.time")
+        LogUtil.d(TAG, "getCurrentPosition.time")
         return time
     }
 
     override fun getPlaybackState(): Int {
         val state = vlcPlayer?.playerState ?: PlayerConstants.PREPARE_MEDIA
-        Log.d(TAG, "getPlaybackState.state")
+        LogUtil.d(TAG, "getPlaybackState.state")
         return state
     }
 
