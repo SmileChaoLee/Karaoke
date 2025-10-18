@@ -9,6 +9,6 @@
     android:overlapAnchor="false"
     android:dropDownVerticalOffset="0dp"
     android:layout_margin="5dp"
-    android:layout_toRightOf="@+id/edit_vocalTrackStringTextView"
+    android:layout_toEndOf="@+id/edit_vocalTrackStringTextView"
     android:layout_alignTop="@+id/edit_vocalTrackStringTextView">
 </android.widget.Spinner>

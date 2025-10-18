@@ -27,7 +27,7 @@
         app:tabMaxWidth="@dimen/tabMaxWidth"
         app:tabGravity="center"
         app:tabMode="scrollable"
-        app:tabBackground="@drawable/file_menuitem_background_color"
+        app:tabBackground="@drawable/file_menu_item_background_color"
         app:tabIconTint="@color/yellow"
         app:tabIndicatorColor="@color/yellow"
         app:tabSelectedTextColor="@color/yellow"

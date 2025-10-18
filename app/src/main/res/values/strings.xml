@@ -54,13 +54,13 @@
     <string name="backKeyToExitApp">Press the back key again to exit.</string>
     <string name="musicString">Music</string>
     <string name="vocalString">Vocal</string>
-    <string name="titileEmptyString">Title is empty</string>
+    <string name="titleEmptyString">Title is empty</string>
     <string name="filepathEmptyString">File path is empty</string>
     <string name="notSeekableSongString">Unable to forward and backward</string>
     <string name="musicAndVocalNotSet">No setting on Music or Vocal</string>
     <string name="noPreviousSongString">No previous</string>
     <string name="noNextSongString">No next</string>
-    <string name="no_chromecast_devices_avaiable">No ChromeCast devices available</string>
+    <string name="no_chromecast_devices_available">No ChromeCast devices available</string>
     <string name="chromecast_not_connected">Chromecast is not connected</string>
     <string name="chromecast_is_connecting">Chromecast is connecting</string>
     <string name="chromecast_is_connected">Chromecast is connected</string>
@@ -68,7 +68,7 @@
     <string name="duplicate_in_database">Duplicate in database</string>
     <string name="play_video">Video</string>
     <string name="open_files">Open</string>
-    <string name="unknown">Unkonwn</string>
+    <string name="unknown">Unknown</string>
     <string name="add_to_favorites">Add To Favorites</string>
     <string name="excess_max">Excess Max</string>
     <string name="notSupportedString">Not Supported.</string>
@@ -85,4 +85,5 @@
     <string name="currentString">Current</string>
     <string name="loadingStr">Loading …</string>
     <string name="softDecoderFirstStr">SoftDecoder 1st</string>
+    <string name="emptyString">""</string>
 </resources>

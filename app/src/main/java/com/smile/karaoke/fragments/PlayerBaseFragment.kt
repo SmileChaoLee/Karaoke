@@ -149,14 +149,15 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.d(TAG, "controllerTimerRunnable")
         controllerTimerHandler.removeCallbacksAndMessages(null)
         mPresenter.playingParam?.let {
-            if (it.preparedStatus != 0) {
-                LogUtil.d(TAG, "controllerTimerRunnable.playingParam.preparedStatus != 0")
-                if (supportToolbar?.visibility == View.VISIBLE) {
-                    // hide supportToolbar
-                    hideSupportToolbarAndAudioController()
-                }
-            } else {
-                showSupportToolbarAudioControlSetTimer()
+            LogUtil.d(TAG, "controllerTimerRunnable.playingParam")
+            if (supportToolbar?.visibility == View.VISIBLE) {
+                // hide supportToolbar
+                hideSupportToolbarAndAudioController()
+            }
+            if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) {
+                // there is no media playing or playing is finished
+                showNativeAndHideBannerAd()
+                setTimerToHideSupportAudioControl()   // reset the timer
             }
         }
     }
@@ -671,9 +672,18 @@ abstract class PlayerBaseFragment : Fragment(),
         // val screenSize = ScreenUtil.getScreenSize(activity)
         // LogUtil.d(TAG, "screenSize.x = ${screenSize.x}, screenSize.y = ${screenSize.y}, buttonMarginLeft = $buttonMarginLeft")
         LogUtil.d(TAG, "screenSize.x = $screenSizeX, screenSize.y = $screenSizeX, buttonMarginLeft = $buttonMarginLeft")
+
+        val audioControllerViewLP = audioControllerView?.layoutParams as ConstraintLayout.LayoutParams
+        audioControllerViewLP.matchConstraintPercentHeight = 0.18f
+        val emptyLinearLayout = fragmentView?.findViewById<LinearLayout>(R.id.emptyLinearLayout)
+        val emptyLinearLayoutLP = emptyLinearLayout?.layoutParams as ConstraintLayout.LayoutParams
+        emptyLinearLayoutLP.matchConstraintPercentHeight = 0.05f
+
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
                 (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
+            audioControllerViewLP.matchConstraintPercentHeight = 0.30f
+            emptyLinearLayoutLP.matchConstraintPercentHeight = 0.01f
         }
         if (buttonMarginLeft<0) buttonMarginLeft = 0
         LogUtil.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
@@ -786,22 +796,23 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     fun showSupportToolbarAudioControlSetTimer() {
-        LogUtil.i(TAG, "showSupportToolbarAudioControlSetTimer")
+        LogUtil.d(TAG, "showSupportToolbarAudioControlSetTimer")
         showSupportToolbarAudioControl()
         setTimerToHideSupportAudioControl()   // reset the timer
     }
 
     private fun showSupportToolbarAudioControl() {
-        LogUtil.i(TAG, "showSupportToolbarAudioControl")
+        LogUtil.d(TAG, "showSupportToolbarAudioControl")
         // bannerLinearLayout?.visibility = View.GONE
         bannerAdsLayout?.visibility = View.GONE
+        hideNativeAd()
         supportToolbar?.visibility = View.VISIBLE
         audioControllerView?.visibility = View.VISIBLE
         nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
     }
 
     private fun hideSupportToolbarAndAudioController() {
-        LogUtil.i(TAG, "hideSupportToolbarAndAudioController.context = $context")
+        LogUtil.d(TAG, "hideSupportToolbarAndAudioController.context = $context")
         if (context == null) return
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             supportToolbar?.visibility = View.GONE
@@ -1010,9 +1021,8 @@ abstract class PlayerBaseFragment : Fragment(),
         })
         supportToolbar?.let {
             it.setOnClickListener { v: View ->
+                LogUtil.i(TAG, "supportToolbar.onClick() is called.")
                 showSupportToolbarAudioControlSetTimer()
-                // volumeSeekBar?.visibility = View.INVISIBLE
-                LogUtil.d(TAG, "supportToolbar.onClick() is called.")
             }
         }
         playerViewLinearLayout?.let { it->
@@ -1230,9 +1240,9 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.d(TAG, "setTimerToHideSupportAndAudioController")
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             controllerTimerHandler.removeCallbacksAndMessages(null)
+            // 10 seconds
             controllerTimerHandler.postDelayed(controllerTimerRunnable,
-                    PlayerConstants.PlayerView_Timeout.toLong()
-            ) // 10 seconds
+                    PlayerConstants.PlayerView_Timeout.toLong())
         }
     }
 

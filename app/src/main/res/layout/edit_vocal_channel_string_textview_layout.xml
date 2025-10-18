@@ -7,7 +7,7 @@
     android:typeface="monospace"
     android:textStyle="normal"
     android:text="@string/vocalChannelWithColonString"
-    android:gravity="left|center_vertical"
+    android:gravity="start|center_vertical"
     android:layout_alignParentTop="true"
-    android:layout_alignParentLeft="true">
+    android:layout_alignParentStart="true">
 </TextView>
