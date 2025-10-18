@@ -677,13 +677,13 @@ abstract class PlayerBaseFragment : Fragment(),
         audioControllerViewLP.matchConstraintPercentHeight = 0.18f
         val emptyLinearLayout = fragmentView?.findViewById<LinearLayout>(R.id.emptyLinearLayout)
         val emptyLinearLayoutLP = emptyLinearLayout?.layoutParams as ConstraintLayout.LayoutParams
-        emptyLinearLayoutLP.matchConstraintPercentHeight = 0.05f
+        emptyLinearLayoutLP.matchConstraintPercentHeight = 0.03f
 
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
                 (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
             audioControllerViewLP.matchConstraintPercentHeight = 0.30f
-            emptyLinearLayoutLP.matchConstraintPercentHeight = 0.01f
+            emptyLinearLayoutLP.matchConstraintPercentHeight = 0.05f
         }
         if (buttonMarginLeft<0) buttonMarginLeft = 0
         LogUtil.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
