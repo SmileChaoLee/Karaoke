@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 935
-        versionName "9.35"
+        versionCode 936
+        versionName "9.36"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,6 +45,12 @@ android {
         create("karaoketvplayer") {
             dimension = "karaoke"
             applicationId = "com.smile.karaoketvplayer"
+        }
+        create("karaokeplayer2") {
+            // for Amazon app store only
+            // has same package name with "karaokeplayer"
+            dimension = "karaoke"
+            applicationId = "com.smile.karaokeplayer"
         }
     }
 
@@ -75,6 +81,14 @@ android {
         }
 
         karaoketvplayer {
+            java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java", "src/videoplayer/java"]
+            res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
+            manifest {
+                srcFile "src/karaoketvplayer/AndroidManifest.xml"
+            }
+        }
+
+        karaokeplayer2 {
             java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java", "src/videoplayer/java"]
             res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
             manifest {
@@ -199,7 +213,9 @@ dependencies {
         android.applicationVariants.all { variant ->
             variant.productFlavors.each { flavor ->
                 // println("variant.name = ${variant.name}")
-                if (flavor.name.containsIgnoreCase("karaokeplayer") || flavor.name.containsIgnoreCase("karaoketvplayer")) {
+                if (flavor.name.containsIgnoreCase("karaokeplayer")
+                        || flavor.name.containsIgnoreCase("karaoketvplayer")
+                        || flavor.name.containsIgnoreCase("karaokeplayer2")) {
                     // Dynamically add a dependency to this variant
                     dependencies.add(variant.name + "Implementation", "androidx.media3:media3-exoplayer:1.8.0")
                     dependencies.add(variant.name + "Implementation", "androidx.media3:media3-exoplayer-dash:1.8.0")
@@ -213,7 +229,9 @@ dependencies {
                     // dependencies.add(variant.name + "Implementation", project(":extension-vp9"))
                     // Note: You use the full variant name (e.g., "karaokeplayerDebugImplementation")
                 }
-                if (flavor.name.containsIgnoreCase("videoplayer") || flavor.name.containsIgnoreCase("karaoketvplayer")) {
+                if (flavor.name.containsIgnoreCase("videoplayer")
+                        || flavor.name.containsIgnoreCase("karaoketvplayer")
+                        || flavor.name.containsIgnoreCase("karaokeplayer2")) {
                     dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:4.0.0-eap23")
                     // Note: You use the full variant name (e.g., "videoDebugImplementation")
                 }
