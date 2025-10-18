@@ -14,18 +14,18 @@
 
     <application
         tools:replace="android:icon"
-        android:name="karaoketvplayer.SmileKaraokeTvApp"
+        android:name="karaokeplayer.SmileKaraokeApp"
         android:allowBackup="true"
-        android:icon="@mipmap/karaoke_tv_app_icon"
-        android:banner="@mipmap/karaoke_tv_app_icon"
-        android:label="@string/karaoke_tv_app_name"
-        android:roundIcon="@mipmap/karaoke_tv_app_icon"
+        android:icon="@mipmap/karaoke_app_icon"
+        android:banner="@mipmap/karaoke_app_icon"
+        android:label="@string/karaoke_app_name"
+        android:roundIcon="@mipmap/karaoke_app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8354869049759576~5466555802" />           
+            android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
             android:name="karaoketvplayer.PhPlayerActivity"
