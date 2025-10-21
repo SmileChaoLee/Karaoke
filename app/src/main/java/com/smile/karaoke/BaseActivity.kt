@@ -25,6 +25,9 @@ import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.PlayerConstants
@@ -38,7 +41,6 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DeviceTypeUtil
 import com.smile.karaoke.utilities.FontUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -73,6 +75,9 @@ abstract class BaseActivity : AppCompatActivity(),
         settingBeforeCreate()
         MySingleTon.clearSingleton()
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContentView(R.layout.activity_base)
 
         object : BroadcastReceiver() {
@@ -198,6 +203,15 @@ abstract class BaseActivity : AppCompatActivity(),
                     createViewDependingOnOrientation()
                 }
             })
+            // this in here represent FrameLayout (R.id.activity_base_layout)
+            ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+                // Get the insets for the system bars (status bar on top, navigation bar at bottom)
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                // Apply these insets as padding to your FrameLayout
+                view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+                // Return CONSUMED to signal that you've handled the insets
+                WindowInsetsCompat.CONSUMED
+            }
         }
     }
 
