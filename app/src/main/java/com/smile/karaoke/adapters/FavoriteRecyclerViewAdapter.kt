@@ -17,7 +17,6 @@ private const val TAG = "FaRecyclerVAdapter"
 
 class FavoriteRecyclerViewAdapter private constructor(
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
-    private var textFontSize : Float,
     private var mList:  java.util.ArrayList<SongDescription>,
     private var textColor : Int, private var transparentLightGray : Int)
 
@@ -33,7 +32,6 @@ class FavoriteRecyclerViewAdapter private constructor(
         private var viewAdapter : FavoriteRecyclerViewAdapter? = null
         @JvmStatic
         fun getInstance(recyclerItemClickListener : OnRecyclerItemClickListener,
-                        textFontSize : Float,
                         mList : java.util.ArrayList<SongDescription>,
                         textColor : Int, transparentLightGray : Int)
         : FavoriteRecyclerViewAdapter {
@@ -41,11 +39,10 @@ class FavoriteRecyclerViewAdapter private constructor(
             LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter")
             if (viewAdapter == null) {
                 viewAdapter = FavoriteRecyclerViewAdapter(recyclerItemClickListener,
-                        textFontSize, mList, textColor, transparentLightGray)
+                    mList, textColor, transparentLightGray)
             } else {
                 viewAdapter?.let {
                     it.recyclerItemClickListener = recyclerItemClickListener
-                    it.textFontSize = textFontSize
                     it.mList = mList
                     it.textColor = textColor
                     it.transparentLightGray = transparentLightGray
@@ -57,16 +54,21 @@ class FavoriteRecyclerViewAdapter private constructor(
     }
 
     class MyViewHolder(itemView: View,
-                       recyclerItemClickListener : OnRecyclerItemClickListener,
-                       textFontSize: Float)
+                       recyclerItemClickListener : OnRecyclerItemClickListener)
         : RecyclerView.ViewHolder(itemView) {
         val songVideoImageView: ImageView
         val songNameTextView: TextView
         init {
             LogUtil.d(TAG, "MyViewHolder")
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
+            val layoutParams = songVideoImageView.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.width = SmileAppBase.videoThumbnailsWidth
+            layoutParams.height = SmileAppBase.videoThumbnailsHeight
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
-            ScreenUtil.resizeTextSize(songNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+
+            ScreenUtil.resizeTextSize(songNameTextView,
+                SmileAppBase.textFontSize * 0.5f,
+                ScreenUtil.FontSize_Pixel_Type)
 
             itemView.setOnClickListener {view ->
                 recyclerItemClickListener.onRecyclerItemClick(
@@ -81,7 +83,7 @@ class FavoriteRecyclerViewAdapter private constructor(
         LogUtil.d(TAG, "onCreateViewHolder().mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_my_favorites_item, parent, false)
-        return MyViewHolder(fileView, recyclerItemClickListener, textFontSize)
+        return MyViewHolder(fileView, recyclerItemClickListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {

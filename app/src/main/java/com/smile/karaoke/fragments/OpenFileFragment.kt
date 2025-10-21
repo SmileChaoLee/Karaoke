@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.graphics.scale
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.utilities.LogUtil
 
 class OpenFileFragment : Fragment(),
@@ -46,7 +47,6 @@ class OpenFileFragment : Fragment(),
     }
 
     private var fragmentView : View? = null
-    private var textFontSize = 0f
     private var playSongs: PlaySongs? = null
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
@@ -68,11 +68,8 @@ class OpenFileFragment : Fragment(),
 
         mediaRetriever = MediaMetadataRetriever()
 
-        val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(activity,
-            ScreenUtil.FontSize_Pixel_Type, null)
-        textFontSize = ScreenUtil.suitableFontSize(activity,
-            defaultTextFontSize,
-            ScreenUtil.FontSize_Pixel_Type,0.0f)
+        SmileAppBase.videoThumbnailsWidth = (SmileAppBase.textFontSize * 3.0f).toInt()
+        SmileAppBase.videoThumbnailsHeight = (SmileAppBase.textFontSize * 2.0f).toInt()
 
         playSongs = (activity as PlaySongs)
         LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
@@ -145,13 +142,13 @@ class OpenFileFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LogUtil.i(TAG, "onViewCreated")
-        val buttonWidth = (textFontSize*1.5f).toInt()
+        val buttonWidth = (SmileAppBase.textFontSize*1.5f).toInt()
         fragmentView = view
         fragmentView?.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
-            ScreenUtil.resizeTextSize(pathTextView, textFontSize,
+            ScreenUtil.resizeTextSize(pathTextView, SmileAppBase.textFontSize,
                 ScreenUtil.FontSize_Pixel_Type)
             backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
             var layoutParams: ViewGroup.MarginLayoutParams = backKeyButton?.layoutParams as ViewGroup.MarginLayoutParams
@@ -230,7 +227,7 @@ class OpenFileFragment : Fragment(),
                     getSongs(songListSQLite, "playSelectedButton").let { songsIt ->
                         if (songsIt.isEmpty()) {
                             ScreenUtil.showToast(
-                                activityIt, getString(R.string.noFilesSelectedString), textFontSize,
+                                activityIt, getString(R.string.noFilesSelectedString), SmileAppBase.textFontSize,
                                 ScreenUtil.FontSize_Pixel_Type,
                                 Toast.LENGTH_SHORT)
                         } else {
@@ -261,7 +258,7 @@ class OpenFileFragment : Fragment(),
                                 } else {
                                     // excess max number of favorites
                                     ScreenUtil.showToast(activity,getString(R.string.excess_max) +
-                                            " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                            " ${MySingleTon.MAX_SONGS}", SmileAppBase.textFontSize,
                                         ScreenUtil.FontSize_Pixel_Type,
                                         Toast.LENGTH_SHORT)
                                     break
@@ -269,7 +266,7 @@ class OpenFileFragment : Fragment(),
                             }
                             toastMsg = getString(R.string.add_to_favorites)
                         }
-                        ScreenUtil.showToast(activity, toastMsg, textFontSize,
+                        ScreenUtil.showToast(activity, toastMsg, SmileAppBase.textFontSize,
                             ScreenUtil.FontSize_Pixel_Type,
                             Toast.LENGTH_SHORT)
                     }
@@ -360,8 +357,6 @@ class OpenFileFragment : Fragment(),
                             null, false))
                     }
                 } else {
-                    val imageWidth = (textFontSize * 3.0f).toInt()
-                    val imageHeight = (textFontSize * 3.0f).toInt()
                     try {
                         File(it).listFiles()?.also { fIt ->
                             LogUtil.d(TAG, "searchCurrentFolder.file.list().size() = ${fIt.size}")
@@ -373,7 +368,7 @@ class OpenFileFragment : Fragment(),
                                         mediaRetriever.setDataSource(f.path)
                                         bm = mediaRetriever.getFrameAtTime(0,
                                             MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                            ?.scale(imageWidth, imageHeight)
+                                            ?.scale(SmileAppBase.videoThumbnailsWidth, SmileAppBase.videoThumbnailsHeight)
                                     } catch (ex: Exception) {
                                         LogUtil.e(TAG, "searchCurrentFolder.setDataSource.Exception:",
                                                 ex)
@@ -467,7 +462,7 @@ class OpenFileFragment : Fragment(),
                         // excess the max
                         ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
-                                " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                " ${MySingleTon.MAX_SONGS}", SmileAppBase.textFontSize,
                             ScreenUtil.FontSize_Pixel_Type,
                             Toast.LENGTH_SHORT)
                         break
@@ -485,7 +480,7 @@ class OpenFileFragment : Fragment(),
             val transparentLightGray = ContextCompat.getColor(it,
                 R.color.transparentLightGray)
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter.getInstance(
-                this, textFontSize, MySingleTon.fileList,
+                this, MySingleTon.fileList,
                 tColor, transparentLightGray)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
             filesRecyclerView?.layoutManager = object : LinearLayoutManager(context) {

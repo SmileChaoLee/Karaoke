@@ -76,6 +76,10 @@ abstract class SmileAppBase : MultiDexApplication() {
         @JvmField
         var fontSize: Float = 0f
         @JvmField
+        var videoThumbnailsWidth = 0
+        @JvmField
+        var videoThumbnailsHeight = 0
+        @JvmField
         val accentColor = Color.rgb(0xFF, 0x40, 0x81)
         @JvmField
         val audioChannelMap = LinkedHashMap<Int, String>()

@@ -19,7 +19,6 @@ public class SpinnerAdapter extends ArrayAdapter {
 
     private static final String TAG = "ArrayAdapters.SpinnerAdapter";
     private final Activity mActivity;
-    private final int mResourceId;
     private final int mTextViewResourceId;
     private final float mTextFontSize;
     private final int mScaleType;
@@ -28,7 +27,6 @@ public class SpinnerAdapter extends ArrayAdapter {
     public SpinnerAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List objects, float textSize, int scaleType) {
         super(context, resource, textViewResourceId, objects);
         mActivity = (Activity)context;
-        mResourceId = resource;
         mTextViewResourceId = textViewResourceId;
         mTextFontSize = textSize;
         mScaleType = scaleType;
@@ -38,20 +36,12 @@ public class SpinnerAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-        // or
-        // View view = mActivity.getLayoutInflater().inflate(mResourceId, parent, false);
-
         if (getCount() == 0) {
             return view;
         }
 
-        if (view != null) {
-            TextView itemTextView = view.findViewById(mTextViewResourceId);
-            // If using View view = mActivity.getLayoutInflater().inflate(mResourceId, parent, false);
-            // then the following statement must be used
-            // itemTextView.setText(getItem(position).toString());
-            ScreenUtil.resizeTextSize(itemTextView, mTextFontSize, mScaleType);
-        }
+        TextView itemTextView = view.findViewById(mTextViewResourceId);
+        ScreenUtil.resizeTextSize(itemTextView, mTextFontSize, mScaleType);
 
         return view;
     }

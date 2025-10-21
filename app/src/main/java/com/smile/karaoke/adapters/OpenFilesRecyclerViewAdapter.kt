@@ -17,7 +17,6 @@ private const val TAG = "FilesRecyclerVAdapter"
 
 class OpenFilesRecyclerViewAdapter private constructor(
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
-    private var textFontSize : Float,
     private var mList : java.util.ArrayList<FileDescription>,
     private var textColor : Int, private var transparentLightGray : Int)
 
@@ -33,7 +32,6 @@ class OpenFilesRecyclerViewAdapter private constructor(
         private var viewAdapter : OpenFilesRecyclerViewAdapter? = null
         @JvmStatic
         fun getInstance(recyclerItemClickListener: OnRecyclerItemClickListener,
-                        textFontSize : Float,
                         mList : java.util.ArrayList<FileDescription>,
                         textColor : Int, transparentLightGray : Int)
         : OpenFilesRecyclerViewAdapter {
@@ -41,11 +39,10 @@ class OpenFilesRecyclerViewAdapter private constructor(
             LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter")
             if (viewAdapter == null) {
                 viewAdapter = OpenFilesRecyclerViewAdapter(recyclerItemClickListener,
-                        textFontSize, mList, textColor, transparentLightGray)
+                    mList, textColor, transparentLightGray)
             } else {
                 viewAdapter?.let {
                     it.recyclerItemClickListener = recyclerItemClickListener
-                    it.textFontSize = textFontSize
                     it.mList = mList
                     it.textColor = textColor
                     it.transparentLightGray = transparentLightGray
@@ -57,8 +54,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
     }
 
     class MyViewHolder(itemView: View,
-                       recyclerItemClickListener : OnRecyclerItemClickListener,
-                       textFontSize: Float)
+                       recyclerItemClickListener : OnRecyclerItemClickListener)
         : RecyclerView.ViewHolder(itemView) {
         val folderImageView: ImageView
         val fileNameTextView: TextView
@@ -66,20 +62,20 @@ class OpenFilesRecyclerViewAdapter private constructor(
         init {
             LogUtil.d(TAG, "MyViewHolder")
             folderImageView = itemView.findViewById(R.id.folderImageView)
-            val layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = (textFontSize * 1.0f).toInt()
+            var layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.width = (SmileAppBase.textFontSize * 2.0f).toInt()
             layoutParams.height = layoutParams.width
             folderImageView.layoutParams = layoutParams
-
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
             fileNameTextView.visibility = View.VISIBLE
-            ScreenUtil.resizeTextSize(fileNameTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
-
             videoImageView = itemView.findViewById(R.id.videoImageView)
             videoImageView.visibility = View.VISIBLE
+            layoutParams = videoImageView.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.width = SmileAppBase.videoThumbnailsWidth
+            layoutParams.height = SmileAppBase.videoThumbnailsHeight
 
             itemView.setOnClickListener { view ->
-                LogUtil.d(TAG, "setOnClickListener.position = ${bindingAdapterPosition}")
+                LogUtil.d(TAG, "setOnClickListener.position = $bindingAdapterPosition")
                 recyclerItemClickListener.onRecyclerItemClick(
                     view, bindingAdapterPosition)
             }
@@ -91,21 +87,32 @@ class OpenFilesRecyclerViewAdapter private constructor(
         LogUtil.d(TAG, "onCreateViewHolder.mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_open_file_item, parent, false)
-        return MyViewHolder(fileView, recyclerItemClickListener, textFontSize)
+        return MyViewHolder(fileView, recyclerItemClickListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
-        holder.folderImageView.apply {
-            visibility = if (item.file.isDirectory) View.VISIBLE else View.INVISIBLE
-        }
         holder.videoImageView.setImageBitmap(item.bm)
         holder.fileNameTextView.apply {
             text = item.file.name
             setTextColor(Color.WHITE)
             if (item.selected) setTextColor(textColor)
         }
+        if (item.file.isDirectory) {
+            holder.folderImageView.visibility = View.VISIBLE
+            ScreenUtil.resizeTextSize(holder.fileNameTextView,
+                SmileAppBase.textFontSize * 0.8f,
+                ScreenUtil.FontSize_Pixel_Type)
+            holder.videoImageView.visibility = View.GONE
+        } else {
+            holder.folderImageView.visibility = View.GONE
+            ScreenUtil.resizeTextSize(holder.fileNameTextView,
+                SmileAppBase.textFontSize * 0.5f,
+                ScreenUtil.FontSize_Pixel_Type)
+            holder.videoImageView.visibility = View.VISIBLE
+        }
+
         holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 v.setBackgroundColor(SmileAppBase.accentColor) // Example
