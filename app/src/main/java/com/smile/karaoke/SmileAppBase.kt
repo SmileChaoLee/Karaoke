@@ -13,6 +13,7 @@ import com.smile.karaoke.chromecast.InitCastContext
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 abstract class SmileAppBase : MultiDexApplication() {
     var leftChannelString = ""
@@ -74,7 +75,7 @@ abstract class SmileAppBase : MultiDexApplication() {
         @JvmField
         var toastTextSize: Float = 0f
         @JvmField
-        var fontSize: Float = 0f
+        var fontScale: Float = 0f
         @JvmField
         var videoThumbnailsWidth = 0
         @JvmField
@@ -88,6 +89,6 @@ abstract class SmileAppBase : MultiDexApplication() {
         var facebookBannerID = ""
         var googleAdMobBannerID = ""
         var googleAdMobNativeID = ""
-        var deviceType = CommonConstants.DEVICE_TYPE_PHONE
+        var deviceType = ScreenUtil.DEVICE_TYPE_PHONE
     }
 }

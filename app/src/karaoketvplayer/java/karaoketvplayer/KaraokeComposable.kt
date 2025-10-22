@@ -8,13 +8,13 @@ import androidx.compose.ui.unit.sp
 
 object KaraokeComposable {
 
-    var fontSize = 24.sp
+    var textFontSize = 24.sp
         set(value) {
             if (field != value) {
                 field = value
             }
         }
-    var toastFontSize = (fontSize.value * 0.7f).sp
+    var toastFontSize = (textFontSize.value * 0.7f).sp
         set(value) {
             if (field != value) {
                 field = value

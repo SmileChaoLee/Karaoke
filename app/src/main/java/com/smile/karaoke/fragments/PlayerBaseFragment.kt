@@ -194,7 +194,7 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         MySingleTon.clearSingleton()
-        if (SmileAppBase.deviceType != CommonConstants.DEVICE_TYPE_PHONE) {
+        if (SmileAppBase.deviceType != ScreenUtil.DEVICE_TYPE_PHONE) {
             LogUtil.d(TAG, "onCreate.deviceType is not phone")
             orgOrientation = resources.configuration.orientation
         }
@@ -222,7 +222,7 @@ abstract class PlayerBaseFragment : Fragment(),
             return
         }
         textFontSize = SmileAppBase.textFontSize
-        fontScale = SmileAppBase.fontSize
+        fontScale = SmileAppBase.fontScale
         toastTextSize = SmileAppBase.toastTextSize
 
         activity?.let { actIt ->
@@ -391,7 +391,6 @@ abstract class PlayerBaseFragment : Fragment(),
         // or
         supportToolbar?.popupTheme?.let {
             val wrapper: Context = ContextThemeWrapper(activity, it)
-            // ScreenUtil.buildActionViewClassMenu(activity, wrapper, mainMenu, fontScale, SmileAppBase.FontSize_Scale_Type);
             ScreenUtil.resizeMenuTextIconSize(wrapper, mainMenu, fontScale)
         }
 
@@ -733,7 +732,7 @@ abstract class PlayerBaseFragment : Fragment(),
         linearParam.setMargins(0, 0, 0, 0)
         orientationImageButton?.apply {
             layoutParams = linearParam
-            visibility = if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE)
+            visibility = if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE)
                 View.VISIBLE else View.GONE
         }
 
@@ -1262,7 +1261,7 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
-        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
             setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
         }
     }
@@ -1282,7 +1281,7 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
-        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_PHONE) {
+        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
             LogUtil.d(TAG, "showPlayerView.orgOrientation = $orgOrientation")
             setScreenOrientation(orgOrientation)
         }

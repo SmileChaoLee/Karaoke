@@ -7,12 +7,17 @@ import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.utilities.LogUtil
 import videoplayer.fragments.VlcPlayerFragment
 
-private const val TAG : String = "VlcPlayerActivity"
-
 @OptIn(UnstableApi::class)
-class VlcPlayerActivity : BaseActivity() {
+open class VlcPlayerActivity : BaseActivity() {
+
+    private var mTAG : String = "VlcPlayerActivity"
+    fun setTag(tag: String) {
+        LogUtil.d(mTAG, "setTag.tag = $tag")
+        mTAG = tag
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.i(mTAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 

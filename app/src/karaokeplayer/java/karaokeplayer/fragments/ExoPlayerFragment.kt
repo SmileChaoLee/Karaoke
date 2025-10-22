@@ -47,7 +47,7 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresenter.ExoPlayerPres
             LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
-        if (SmileAppBase.deviceType == CommonConstants.DEVICE_TYPE_ANDROID_TV) {
+        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_ANDROID_TV) {
             // disable cast for ExoPlayer for Android TV
             LogUtil.d(TAG, "onCreate.disable cast for Android TV")
             castContext = null  // disable cast

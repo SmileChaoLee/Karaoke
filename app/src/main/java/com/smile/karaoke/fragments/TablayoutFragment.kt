@@ -46,7 +46,7 @@ class TablayoutFragment : Fragment() {
         bannerLayoutForTab = view.findViewById(R.id.bannerLayoutForTab)
         activity?.let {actIt ->
             val defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(actIt,
-                ScreenUtil.FontSize_Pixel_Type, null)
+                ScreenUtil.FontSize_Pixel_Type)
             toastTextSize = 0.7f * ScreenUtil.suitableFontSize(actIt, defaultTextFontSize,
                 ScreenUtil.FontSize_Pixel_Type, 0.0f)
             showBannerAd()

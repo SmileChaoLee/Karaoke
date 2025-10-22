@@ -51,6 +51,10 @@ class VlcPlayService : BasePlayService() {
         LogUtil.i(TAG, "onCreate")
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            curAudioVolume,
+            AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -65,7 +69,7 @@ class VlcPlayService : BasePlayService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.i(TAG, "onDestroy.curAudioVolume = $curAudioVolume")
         // restore the original audio volume before starting this app
         audioManager.setStreamVolume(
             AudioManager.STREAM_MUSIC,

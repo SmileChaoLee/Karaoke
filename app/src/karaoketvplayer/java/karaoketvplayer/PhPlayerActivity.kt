@@ -57,8 +57,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
-import com.smile.karaoke.utilities.DeviceTypeUtil
-import com.smile.karaoke.utilities.FontUtil
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.ExoPlayerActivity
 import karaoketvplayer.ui.theme.KaraokePlayerTheme
@@ -81,7 +79,7 @@ open class PhPlayerActivity : ComponentActivity() {
     private var permissionExternalStorage = false
     private var textFontSize = 0f
     private var toastTextSize = 0f
-    private var fontSize = 0f
+    private var fontScale = 0f
     // the following are for VLCPlayer
     private lateinit var vlcLauncher: ActivityResultLauncher<Intent>
     // the following are for ExoPlayer
@@ -110,16 +108,16 @@ open class PhPlayerActivity : ComponentActivity() {
             LogUtil.d(mTAG, "No categories in intent")
         }
 
-        textFontSize = FontUtil.getTextFontSizeNeeded(this@PhPlayerActivity)
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@PhPlayerActivity)
         toastTextSize = textFontSize * 0.7f
-        fontSize = FontUtil.getFontSize(this@PhPlayerActivity)
+        fontScale = ScreenUtil.getPxFontScale(this@PhPlayerActivity)
         SmileAppBase.textFontSize = textFontSize
         SmileAppBase.toastTextSize = toastTextSize
-        SmileAppBase.fontSize = fontSize
-        KaraokeComposable.fontSize = ScreenUtil.pixelToDp(textFontSize).sp
+        SmileAppBase.fontScale = fontScale
+        KaraokeComposable.textFontSize = ScreenUtil.pixelToDp(textFontSize).sp
         KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
-        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@PhPlayerActivity)
+        SmileAppBase.deviceType = ScreenUtil.getDeviceType(this@PhPlayerActivity)
 
         vlcLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -263,7 +261,7 @@ open class PhPlayerActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center) {
             Text(text = getString(R.string.loadingStr),
                 color = Color.Blue, fontWeight = FontWeight.Bold,
-                fontSize = KaraokeComposable.fontSize.times(2.0f))
+                fontSize = KaraokeComposable.textFontSize.times(2.0f))
         }
     }
 
@@ -310,7 +308,7 @@ open class PhPlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "ExoPlayer", fontSize = KaraokeComposable.fontSize) }
+            { Text(text = "ExoPlayer", fontSize = KaraokeComposable.textFontSize) }
             Text(//modifier = Modifier.weight(2.0f),
                 lineHeight = textLineHeight,
                 text = getString(R.string.exoDescription),
@@ -359,7 +357,7 @@ open class PhPlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "VLCPlayer", fontSize = KaraokeComposable.fontSize) }
+            { Text(text = "VLCPlayer", fontSize = KaraokeComposable.textFontSize) }
             Text(//modifier = Modifier.weight(2.0f),
                 lineHeight = textLineHeight,
                 text = getString(R.string.vlcDescription),

@@ -38,9 +38,8 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.utilities.DeviceTypeUtil
-import com.smile.karaoke.utilities.FontUtil
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -275,10 +274,10 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        SmileAppBase.textFontSize = FontUtil.getTextFontSizeNeeded(this@BaseActivity)
+        SmileAppBase.textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@BaseActivity)
         SmileAppBase.toastTextSize = SmileAppBase.textFontSize * 0.7f
-        SmileAppBase.fontSize = FontUtil.getFontSize(this@BaseActivity)
-        SmileAppBase.deviceType = DeviceTypeUtil.getDeviceType(this@BaseActivity)
+        SmileAppBase.fontScale = ScreenUtil.getPxFontScale(this@BaseActivity)
+        SmileAppBase.deviceType = ScreenUtil.getDeviceType(this@BaseActivity)
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,

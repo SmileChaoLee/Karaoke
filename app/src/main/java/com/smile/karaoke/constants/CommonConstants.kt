@@ -10,7 +10,4 @@ object CommonConstants {
     const val DELETE_ACTION = "DELETE"
     const val PLAY_ACTION = "PLAYING"
     const val IS_BUTTON_PLAY = "IsButtonPlay"
-    const val DEVICE_TYPE_PHONE = "PHONE"
-    const val DEVICE_TYPE_TABLET = "TABLET"
-    const val DEVICE_TYPE_ANDROID_TV = "ANDROID_TV"
 }

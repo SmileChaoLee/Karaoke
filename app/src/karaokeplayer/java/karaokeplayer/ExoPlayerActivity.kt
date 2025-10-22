@@ -7,13 +7,17 @@ import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.fragments.ExoPlayerFragment
 
-private const val TAG : String = "ExoPlayerActivity"
-
 @OptIn(UnstableApi::class)
-class ExoPlayerActivity : BaseActivity() {
+open class ExoPlayerActivity : BaseActivity() {
+
+    private var mTAG : String = "ExoPlayerActivity"
+    fun setTag(tag: String) {
+        LogUtil.d(mTAG, "setTag.tag = $tag")
+        mTAG = tag
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.d(TAG, "onCreate")
+        LogUtil.d(mTAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 
