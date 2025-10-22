@@ -232,7 +232,7 @@ dependencies {
                 if (flavor.name.containsIgnoreCase("videoplayer")
                         || flavor.name.containsIgnoreCase("karaoketvplayer")
                         || flavor.name.containsIgnoreCase("karaokeplayer2")) {
-                    dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:4.0.0-eap23")
+                    dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:3.6.5")
                     // Note: You use the full variant name (e.g., "videoDebugImplementation")
                 }
             }

@@ -2,7 +2,6 @@ package videoplayer.services
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.media.AudioManager
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
@@ -12,17 +11,16 @@ import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
-import videoplayer.Callbacks.VlcMediaControllerCallback
-import videoplayer.Callbacks.VlcMediaSessionCallback
-import videoplayer.Listeners.VlcPlayerListener
-import videoplayer.Presenters.VlcPlayerPresenter
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.util.VLCVideoLayout
-import kotlin.properties.Delegates
+import videoplayer.Callbacks.VlcMediaControllerCallback
+import videoplayer.Callbacks.VlcMediaSessionCallback
+import videoplayer.Listeners.VlcPlayerListener
+import videoplayer.Presenters.VlcPlayerPresenter
 
 @UnstableApi
 class VlcPlayService : BasePlayService() {
@@ -31,8 +29,8 @@ class VlcPlayService : BasePlayService() {
         private const val TAG = "VlcPlayService"
     }
 
-    private lateinit var audioManager: AudioManager
-    private var curAudioVolume by Delegates.notNull<Int>()
+    // private lateinit var audioManager: AudioManager
+    // private var curAudioVolume by Delegates.notNull<Int>()
     private var mediaSessionCallback: VlcMediaSessionCallback? = null
     private var controllerCallback: VlcMediaControllerCallback? = null
     var presenter : VlcPlayerPresenter? = null
@@ -49,12 +47,12 @@ class VlcPlayService : BasePlayService() {
     override fun onCreate() {
         super.onCreate()
         LogUtil.i(TAG, "onCreate")
+        /*
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            curAudioVolume,
-            AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+        restoreAudioVolume()
+        LogUtil.i(TAG, "onCreate.curAudioVolume = $curAudioVolume")
+        */
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -69,12 +67,9 @@ class VlcPlayService : BasePlayService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy.curAudioVolume = $curAudioVolume")
+        LogUtil.i(TAG, "onDestroy")
         // restore the original audio volume before starting this app
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            curAudioVolume,
-            AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+        // restoreAudioVolume()
         //
         detachPlayerViews()
         releaseVlcPlayer()
@@ -85,6 +80,15 @@ class VlcPlayService : BasePlayService() {
         }
         mediaSessionCallback = null
     }
+
+    /*
+    fun restoreAudioVolume() {
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            curAudioVolume,
+            AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+    }
+    */
 
     fun initVlcPlayer() {
         LogUtil.i(TAG, "initVlcPlayer.presenter = $presenter")
@@ -167,6 +171,7 @@ class VlcPlayService : BasePlayService() {
 
     fun getAudioTrack(): Int {
         LogUtil.i(TAG, "getAudioTrack")
+        /*
         val tracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
         LogUtil.d(TAG, "getAudioTrack.tracks.size = ${tracks?.size}")
         tracks?.also {
@@ -178,10 +183,13 @@ class VlcPlayService : BasePlayService() {
             }
         }
         return -1
+        */
+        return vlcPlayer?.audioTrack ?: -1
     }
 
     fun setAudioTrack(audioTrackId: Int) {
         LogUtil.i(TAG, "setAudioTrack")
+        /*
         val selectedTracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
         selectedTracks?.also {
             if (audioTrackId >= 0 && audioTrackId < it.size) {
@@ -190,6 +198,8 @@ class VlcPlayService : BasePlayService() {
                 vlcPlayer?.selectTrack(track.id)
             }
         }
+        */
+        vlcPlayer?.audioTrack = audioTrackId
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {
@@ -200,10 +210,13 @@ class VlcPlayService : BasePlayService() {
             return 0
         }
         val vPlayer = vlcPlayer!!
+
         var numOfVideoTracks = 0
-        val videoDis = vPlayer.getTracks(IMedia.Track.Type.Video)
-        var videoTrackId: String?
+        val videoDis = vPlayer.videoTracks
+        // val videoDis = vPlayer.getTracks(IMedia.Track.Type.Video)
+        var videoTrackId: Int?
         var videoTrackName: String?
+
         videoDis?.also {
             // because it is null sometimes
             for (videoDi in it) {
@@ -216,12 +229,26 @@ class VlcPlayService : BasePlayService() {
         }
         LogUtil.d(TAG, "${msgStr}.numOfVideoTracks = " + numOfVideoTracks)
 
-        var audioTrackId: String?
+        var audioTrackId: Int?
         var audioTrackName: String?
         audioTrackIndicesList.clear()
-        val audioDis = vPlayer.getTracks(IMedia.Track.Type.Audio)
+        // val audioDis = vPlayer.getTracks(IMedia.Track.Type.Audio)
+        val audioDis = vPlayer.audioTracks
         audioDis?.also {
             // because it is null sometimes
+            for (audioDi in audioDis) {
+                audioTrackId = audioDi.id
+                audioTrackName = audioDi.name
+                LogUtil.d(TAG, "${msgStr}.audioDis[i].id = $audioTrackId")
+                LogUtil.d(TAG, "${msgStr}.audioDis[i].name = $audioTrackName")
+                // exclude disabled
+                if (audioTrackId >= 0) {
+                    // enabled audio track
+                    audioTrackIndicesList.add(audioTrackId)
+                }
+            }
+
+            /*
             for (tackIndex in 0 until it.size) {
                 val audioTrack: IMedia.AudioTrack = it[tackIndex] as IMedia.AudioTrack
                 // info only
@@ -235,6 +262,7 @@ class VlcPlayService : BasePlayService() {
                 // exclude disabled
                 audioTrackIndicesList.add(tackIndex)
             }
+            */
         }
 
         return numOfVideoTracks
@@ -285,23 +313,25 @@ class VlcPlayService : BasePlayService() {
         return isSeekable
     }
 
+    /*
     override fun setAudioVolume(volumeTmp: Float) {
         LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
-            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            // val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
             // An integer from 0 to max volume, volumeTmp is between 0.0 and 1.0
-            val volumeLevel = (volumeTmp * maxVolume).toInt()
+            val volumeLevel = (volumeTmp * curAudioVolume).toInt()
             audioManager.setStreamVolume(
                 AudioManager.STREAM_MUSIC,
                 volumeLevel,
-                AudioManager.FLAG_SHOW_UI)  // Shows the volume slider UI
+                AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)  // Shows the volume slider UI
             it.currentVolume = volumeTmp
             return
         }
         LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
+    */
 
-    private fun setAudioVolume_old(volumeTmp: Float) {
+    override fun setAudioVolume(volumeTmp: Float) {
         LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
             LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")

@@ -107,6 +107,8 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 LogUtil.d(TAG, "onEvent.Playing.playingParam.preparedStatus = " +
                         playingParam.getPreparedStatus());
                 mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                // added on 2025-10-22 to get fully media info
+                presenter.setAudioActionSubMenu();
                 break;
             case MediaPlayer.Event.Paused:
                 LogUtil.d(TAG, "onEvent.Paused.playingParam.preparedStatus = " +
