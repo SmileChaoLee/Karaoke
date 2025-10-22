@@ -25,7 +25,7 @@
             android:value="ca-app-pub-8354869049759576~5376732060" />
 
         <activity
-            android:name="videoplayer.VlcPlayerActivity"
+            android:name="videoplayer.PhVlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -41,6 +41,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="videoplayer.VlcPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
         </activity>
 
         <service

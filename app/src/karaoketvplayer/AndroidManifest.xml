@@ -32,6 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="karaoketvplayer.TvPlayerActivity"
             android:exported="true">
@@ -40,23 +41,19 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="karaokeplayer.ExoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
+
         <activity
             android:name="videoplayer.VlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
-        <activity android:name=".BaseActivity" />
-        <activity android:name=".BaseFavoriteListActivity" />
-        <activity android:name=".BaseSongDataActivity" />
 
-        <service
-            android:name=".services.BasePlayService"
-            android:exported="false" />
         <service
             android:name="karaokeplayer.services.ExoPlayService"
             android:exported="false" />

@@ -1,4 +1,4 @@
-package karaoketvplayer
+package com.smile.karaoke
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity

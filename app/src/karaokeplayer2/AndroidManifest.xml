@@ -28,38 +28,35 @@
             android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
-            android:name="karaoketvplayer.PhPlayerActivity"
+            android:name="karaokeplayer2.Ph2PlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="karaoketvplayer.TvPlayerActivity"
+            android:name="karaokeplayer2.Tv2PlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="karaokeplayer.ExoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
+
         <activity
             android:name="videoplayer.VlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
-        <activity android:name=".BaseActivity" />
-        <activity android:name=".BaseFavoriteListActivity" />
-        <activity android:name=".BaseSongDataActivity" />
 
-        <service
-            android:name=".services.BasePlayService"
-            android:exported="false" />
         <service
             android:name="karaokeplayer.services.ExoPlayService"
             android:exported="false" />

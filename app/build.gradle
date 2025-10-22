@@ -89,7 +89,8 @@ android {
         }
 
         karaokeplayer2 {
-            java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java", "src/videoplayer/java"]
+            java.srcDirs += ["src/karaokeplayer2/java","src/karaoketvplayer/java",
+                             "src/karaokeplayer/java", "src/videoplayer/java"]
             res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
             manifest {
                 srcFile "src/karaokeplayer2/AndroidManifest.xml"

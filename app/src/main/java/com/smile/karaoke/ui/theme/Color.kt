@@ -1,4 +1,4 @@
-package karaoketvplayer.ui.theme
+package com.smile.karaoke.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

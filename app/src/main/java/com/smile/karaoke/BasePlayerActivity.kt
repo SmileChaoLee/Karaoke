@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -53,11 +54,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
-import karaoketvplayer.ui.theme.KaraokePlayerTheme
-import karaoketvplayer.ui.theme.Yellow3
+import com.smile.karaoke.ui.theme.KaraokePlayerTheme
+import com.smile.karaoke.ui.theme.Yellow3
 import com.smile.smilelibraries.utilities.ScreenUtil
-import karaoketvplayer.KaraokeComposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 
 abstract class BasePlayerActivity : ComponentActivity() {
 
+    abstract fun getAppName(): String
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
 
@@ -143,9 +145,15 @@ abstract class BasePlayerActivity : ComponentActivity() {
         setContent {
             LogUtil.d(TAG,"onCreate.setContent")
             KaraokePlayerTheme {
-                Box {
-                    DisplayLoading()
-                    CreateMainUI()
+                val backgroundColor = Yellow3
+                Column(modifier = Modifier.padding(all = 0.dp)
+                    .background(backgroundColor),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    SetMainUiTitle()
+                    Box {
+                        DisplayLoading()
+                        CreateMainUI()
+                    }
                 }
             }
 
@@ -214,6 +222,14 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private fun startVlcActivity() {
         startVlcPlayer()
+    }
+
+    @Composable
+    fun SetMainUiTitle() {
+        Text(modifier = Modifier.padding(all = 0.dp)
+            .background(Color.Transparent),
+            text = getAppName(), color = ColorPrimaryDark,
+            fontSize = KaraokeComposable.textFontSize)
     }
 
     @Composable
