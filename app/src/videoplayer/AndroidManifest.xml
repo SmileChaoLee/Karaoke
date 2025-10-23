@@ -15,9 +15,9 @@
     <application
         tools:replace="android:icon"
         android:name="videoplayer.SmileVideoApp"
-        android:icon="@mipmap/video_app_icon"
-        android:banner="@mipmap/video_app_icon"
-        android:roundIcon="@mipmap/video_app_icon"
+        android:icon="@drawable/video_app_icon"
+        android:banner="@drawable/video_app_icon"
+        android:roundIcon="@drawable/video_app_icon"
         android:label="@string/video_app_name">
 
         <meta-data

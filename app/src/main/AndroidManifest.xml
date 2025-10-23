@@ -24,7 +24,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/karaoke_app_icon"
+        android:icon="@drawable/karaoke_app_icon"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -50,6 +50,11 @@
         <activity android:name=".BaseActivity" />
         <activity android:name=".BaseFavoriteListActivity" />
         <activity android:name=".BaseSongDataActivity" />
+        <activity
+            android:name=".smileapps.SmileAppsActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme">
+        </activity>
 
         <service
             android:name=".services.BasePlayService"

@@ -2,13 +2,10 @@ package com.smile.karaoke
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -19,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +36,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
@@ -72,12 +72,14 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
-    // the following are for VLCPlayer
-    protected lateinit var vlcLauncher: ActivityResultLauncher<Intent>
     // the following are for ExoPlayer
     protected lateinit var exoLauncher: ActivityResultLauncher<Intent>
+    // the following are for VLCPlayer
+    protected lateinit var vlcLauncher: ActivityResultLauncher<Intent>
+    private lateinit var smileAppsLauncher: ActivityResultLauncher<Intent>
     //
     protected val loadingMessage = mutableStateOf("")
+    val backgroundColor = Yellow3
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,6 +110,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
         SmileAppBase.deviceType = ScreenUtil.getDeviceType(this@BasePlayerActivity)
 
+        exoLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            LogUtil.d(TAG, "exoLauncher.result received")
+            loadingMessage.value = ""
+        }
+
         vlcLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
@@ -115,10 +124,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
             loadingMessage.value = ""
         }
 
-        exoLauncher = registerForActivityResult(
+        smileAppsLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            LogUtil.d(TAG, "exoLauncher.result received")
+            LogUtil.i(TAG, "smileAppsLauncher.result received")
             loadingMessage.value = ""
         }
 
@@ -142,17 +151,19 @@ abstract class BasePlayerActivity : ComponentActivity() {
         }
         askIgnoreOptimizationsBattery()
 
+        enableEdgeToEdge()
         setContent {
             LogUtil.d(TAG,"onCreate.setContent")
             KaraokePlayerTheme {
-                val backgroundColor = Yellow3
-                Column(modifier = Modifier.padding(all = 0.dp)
-                    .background(backgroundColor),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    SetMainUiTitle()
-                    Box {
-                        DisplayLoading()
-                        CreateMainUI()
+                Scaffold {innerPadding ->
+                    Column(modifier = Modifier.padding(innerPadding)
+                        .background(backgroundColor),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        SetMainUiTitle()
+                        Box {
+                            DisplayLoading()
+                            CreateMainUINew()
+                        }
                     }
                 }
             }
@@ -196,21 +207,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
         }
     }
 
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager =
-        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val activeNetwork =
-            connectivityManager.getNetworkCapabilities(network) ?: return false
-        return when {
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-            // Add other network types if needed
-            else -> false
-        }
-    }
-
-
     private fun exitApp() {
         LogUtil.d(TAG, "exitApp")
         finish()
@@ -222,6 +218,16 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private fun startVlcActivity() {
         startVlcPlayer()
+    }
+
+    private fun showSmileAppsActivity() {
+        Intent(
+            this@BasePlayerActivity,
+            SmileAppsActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            smileAppsLauncher.launch(it)
+        }
     }
 
     @Composable
@@ -237,10 +243,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
         if (loadingMessage.value.isEmpty()) {
             return
         }
-        val backgroundColor = Yellow3
         Column(modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor),
+            .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
             Text(text = getString(R.string.loadingStr),
@@ -350,6 +354,49 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
+    fun SmileAppsButton(modifier: Modifier = Modifier,
+                        buttonWidth: Float,
+                        buttonHeight: Float,
+                        textLineHeight: TextUnit) {
+        LogUtil.d(TAG, "SmileAppsButton")
+        val buttonBackground = Color.Transparent
+        val buttonContentColor = Color.Green
+        val buttonContainerColor = Color.Blue
+        Column(modifier = modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center) {
+            val isClicked = remember { mutableStateOf(false) }
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        isClicked.value = true
+                        delay(200)
+                        showSmileAppsActivity()
+                        isClicked.value = false
+                    }
+                },
+                modifier = Modifier//.weight(1.0f)
+                    .width(width = buttonWidth.dp)
+                    .height(height = buttonHeight.dp)
+                    .background(color = buttonBackground),
+                colors = ButtonColors(
+                    containerColor =
+                        if (!isClicked.value) buttonContainerColor
+                        else Color.Cyan,
+                    disabledContainerColor = buttonContainerColor,
+                    contentColor =
+                        if (!isClicked.value)
+                            buttonContentColor
+                        else Color.Red ,
+                    disabledContentColor = buttonContentColor
+                )
+            )
+            { Text(text = getString(R.string.smileApps),
+                fontSize = KaraokeComposable.textFontSize) }
+        }
+    }
+
+    @Composable
     fun CreateMainUI() {
         LogUtil.d(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
@@ -367,11 +414,9 @@ abstract class BasePlayerActivity : ComponentActivity() {
         // 1 in 5
         val buttonHeight = maxHeight * (10.0f - (verSpacerWeight * 2.0f)) / 50.0f
         LogUtil.d(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
-        val backgroundColor = Yellow3
         val textLineHeight = (KaraokeComposable.toastFontSize.value + 5.0f).sp
         Column(modifier = Modifier
-            .fillMaxSize()
-            .background(color = backgroundColor)) {
+            .fillMaxSize()) {
             Spacer(modifier = Modifier
                 .fillMaxWidth()
                 .weight(verSpacerWeight))
@@ -393,6 +438,38 @@ abstract class BasePlayerActivity : ComponentActivity() {
             Spacer(modifier = Modifier
                 .fillMaxSize()
                 .weight(verSpacerWeight))
+        }
+    }
+
+    @Composable
+    fun CreateMainUINew() {
+        LogUtil.i(TAG, "CreateMainUI")
+        if (loadingMessage.value.isNotEmpty()) return
+        val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
+        val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
+        LogUtil.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
+        var verSpacerWeight = 1.0f
+        var horSpacerWeight = 1.0f
+        if (resources.configuration.orientation
+            == Configuration.ORIENTATION_LANDSCAPE) {
+            verSpacerWeight = 0.2f
+            horSpacerWeight = 2.5f
+        }
+        val buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
+        LogUtil.i(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
+        // 1 in 5
+        val buttonHeight = maxHeight * ((10.0f - verSpacerWeight * 2.0f) / 10.0f) / 5.0f
+        LogUtil.i(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
+        val textLineHeight = (KaraokeComposable.toastFontSize.value + 5.0f).sp
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            ExoPlayerButton(modifier = Modifier.weight(1.0f),
+                buttonWidth, buttonHeight, textLineHeight)
+            VlcPlayerButton(modifier = Modifier.weight(1.0f),
+                buttonWidth, buttonHeight, textLineHeight)
+            SmileAppsButton(modifier = Modifier.weight(1.0f),
+                buttonWidth, buttonHeight, textLineHeight)
         }
     }
 

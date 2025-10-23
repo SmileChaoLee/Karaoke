@@ -84,10 +84,6 @@
     </style>
 
     <style name="CustomActionOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
-        <!--
-        Already put the icon programmatically (in ExoPlayerFragment.java)
-        <item name="android:src">@mipmap/circle_and_three_dots</item>
-        -->
         <item name="android:background">@drawable/main_menu_item_background_color</item>
     </style>
 

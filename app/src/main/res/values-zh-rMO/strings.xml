@@ -87,4 +87,9 @@
     <string name="loadingStr">載入中 …</string>
     <string name="softDecoderFirstStr">軟解碼優先</string>
     <string name="emptyString">""</string>
+
+    <!-- For showing Smile Apps list -->
+    <string name="color_balls">色球</string>
+    <string name="smileApps">微笑的所有Apps</string>
+    <string name="balls_remover_name">色球移除</string>
 </resources>
