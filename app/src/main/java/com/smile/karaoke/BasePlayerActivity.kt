@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import androidx.core.view.WindowCompat
 import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
@@ -67,6 +67,8 @@ import kotlinx.coroutines.launch
 abstract class BasePlayerActivity : ComponentActivity() {
 
     abstract fun getAppName(): String
+    abstract fun getExoButtonName(): String
+    abstract fun getVlcButtonName(): String
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
 
@@ -79,7 +81,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private lateinit var smileAppsLauncher: ActivityResultLauncher<Intent>
     //
     protected val loadingMessage = mutableStateOf("")
-    val backgroundColor = Yellow3
+    private val backgroundColor = Yellow3
+    private val buttonBackground = Color.Transparent
+    private val buttonContentColor = Color.Green
+    private val buttonContainerColor = Color.Blue
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,7 +156,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
         }
         askIgnoreOptimizationsBattery()
 
-        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             LogUtil.d(TAG,"onCreate.setContent")
             KaraokePlayerTheme {
@@ -230,6 +235,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
         }
     }
 
+    open fun isListingApps(): Boolean {
+        return true
+    }
+
     @Composable
     fun SetMainUiTitle() {
         Text(modifier = Modifier.padding(all = 0.dp)
@@ -259,9 +268,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "ExoPlayerButton")
-        val buttonBackground = Color.Transparent
-        val buttonContentColor = Color.Green
-        val buttonContainerColor = Color.Blue
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -278,7 +284,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         exoClicked.value = false
                     }
                 },
-                modifier = Modifier//.weight(1.0f)
+                modifier = Modifier
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground)
@@ -296,10 +302,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "ExoPlayer", fontSize = KaraokeComposable.textFontSize) }
-            Text(//modifier = Modifier.weight(2.0f),
+            { Text(text = getExoButtonName(),
                 lineHeight = textLineHeight,
-                text = getString(R.string.exoDescription),
+                fontSize = KaraokeComposable.textFontSize) }
+            Text(text = getString(R.string.exoDescription),
+                lineHeight = textLineHeight,
                 color = Color.Red, fontSize = KaraokeComposable.toastFontSize)
         }
     }
@@ -310,9 +317,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "VlcPlayerButton")
-        val buttonBackground = Color.Transparent
-        val buttonContentColor = Color.Green
-        val buttonContainerColor = Color.Blue
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -328,7 +332,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         vlcClicked.value = false
                     }
                 },
-                modifier = Modifier//.weight(1.0f)
+                modifier = Modifier
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground),
@@ -345,10 +349,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = "VLCPlayer", fontSize = KaraokeComposable.textFontSize) }
-            Text(//modifier = Modifier.weight(2.0f),
+            { Text(text = getVlcButtonName(),
                 lineHeight = textLineHeight,
-                text = getString(R.string.vlcDescription),
+                fontSize = KaraokeComposable.textFontSize) }
+            Text(text = getString(R.string.vlcDescription),
+                lineHeight = textLineHeight,
                 color = Color.Red, fontSize = KaraokeComposable.toastFontSize)
         }
     }
@@ -359,9 +364,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "SmileAppsButton")
-        val buttonBackground = Color.Transparent
-        val buttonContentColor = Color.Green
-        val buttonContainerColor = Color.Blue
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -375,7 +377,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         isClicked.value = false
                     }
                 },
-                modifier = Modifier//.weight(1.0f)
+                modifier = Modifier
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground),
@@ -392,6 +394,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 )
             )
             { Text(text = getString(R.string.smileApps),
+                lineHeight = textLineHeight,
                 fontSize = KaraokeComposable.textFontSize) }
         }
     }
@@ -442,6 +445,24 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
+    fun ExoVlcButtons(modifier: Modifier = Modifier,
+                      buttonWidth: Float, buttonHeight: Float,
+                      textLineHeight: TextUnit) {
+        Column(modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            ExoPlayerButton(
+                modifier = Modifier.weight(1.0f),
+                buttonWidth, buttonHeight, textLineHeight
+            )
+            VlcPlayerButton(
+                modifier = Modifier.weight(1.0f),
+                buttonWidth, buttonHeight, textLineHeight
+            )
+        }
+    }
+
+    @Composable
     fun CreateMainUINew() {
         LogUtil.i(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
@@ -450,12 +471,14 @@ abstract class BasePlayerActivity : ComponentActivity() {
         LogUtil.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
         var verSpacerWeight = 1.0f
         var horSpacerWeight = 1.0f
+        var buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
         if (resources.configuration.orientation
             == Configuration.ORIENTATION_LANDSCAPE) {
             verSpacerWeight = 0.2f
-            horSpacerWeight = 2.5f
+            horSpacerWeight = if (isListingApps()) 0.5f else 2.5f
+            buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
+            buttonWidth = if (isListingApps()) buttonWidth / 2.0f else buttonWidth
         }
-        val buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
         LogUtil.i(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
         // 1 in 5
         val buttonHeight = maxHeight * ((10.0f - verSpacerWeight * 2.0f) / 10.0f) / 5.0f
@@ -464,12 +487,30 @@ abstract class BasePlayerActivity : ComponentActivity() {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
-            ExoPlayerButton(modifier = Modifier.weight(1.0f),
-                buttonWidth, buttonHeight, textLineHeight)
-            VlcPlayerButton(modifier = Modifier.weight(1.0f),
-                buttonWidth, buttonHeight, textLineHeight)
-            SmileAppsButton(modifier = Modifier.weight(1.0f),
-                buttonWidth, buttonHeight, textLineHeight)
+            if (resources.configuration.orientation
+                == Configuration.ORIENTATION_PORTRAIT) {
+                ExoVlcButtons(modifier = Modifier.weight(4.0f),
+                    buttonWidth, buttonHeight, textLineHeight)
+                if (isListingApps()) {
+                    SmileAppsButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                }
+            } else {
+                Row(modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    ExoVlcButtons(modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight)
+                    if (isListingApps()) {
+                        SmileAppsButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
+                    }
+                }
+            }
         }
     }
 

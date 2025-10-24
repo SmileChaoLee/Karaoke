@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="karaoke_app_name">微笑卡拉OK</string>
+    <string name="karaoke_app_name">微笑咔拉OK</string>
     <string name="video_app_name">微笑視頻播放器</string>
-    <string name="karaoke_tv_app_name">微笑電視卡拉OK</string>
+    <string name="karaoke_tv_app_name">微笑電視咔拉OK</string>
     <string name="fileString">档案</string>
     <string name="accessExternalStoragePermissionDeniedString">存取外部储存装置被拒绝</string>
     <string name="noReadableExternalStorageString">没有外部存取装置</string>
@@ -87,9 +87,6 @@
     <string name="loadingStr">載入中 …</string>
     <string name="softDecoderFirstStr">軟解碼優先</string>
     <string name="emptyString">""</string>
-
-    <!-- For showing Smile Apps list -->
-    <string name="color_balls">色球</string>
-    <string name="smileApps">微笑的所有Apps</string>
-    <string name="balls_remover_name">色球移除</string>
+    <string name="installKaraokePlayer">安裝\n咔拉OK播放器</string>
+    <string name="installVideoPlayer">安裝\n視頻播放器</string>
 </resources>

@@ -1,11 +1,9 @@
 package com.smile.karaoke.smileapps
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,44 +31,19 @@ import com.smile.karaoke.R
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.KaraokeComposable
 import com.smile.karaoke.ui.theme.Yellow3
-import androidx.core.net.toUri
-import com.smile.karaoke.utilities.LogUtil
+import androidx.core.view.WindowCompat
+import com.smile.smilelibraries.utilities.AppLinkUtil
 
 class SmileAppsActivity : ComponentActivity() {
-
-    private data class AndroidApp
-        (val appName: String,
-         val icon: Int,
-         val appUrl: String)
-    private val appsList = ArrayList<AndroidApp>()
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        appsList.add(AndroidApp(getString(R.string.karaoke_app_name),
-            R.drawable.karaoke_app_icon,
-            "https://play.google.com/store/apps/details?id=com.smile.karaokeplayer"))
-
-        appsList.add(AndroidApp(getString(R.string.video_app_name),
-            R.drawable.video_app_icon,
-            "https://play.google.com/store/apps/details?id=com.smile.videoplayer"))
-
-        appsList.add(AndroidApp(getString(R.string.karaoke_tv_app_name),
-            R.drawable.karaoke_tv_app_icon,
-            "https://play.google.com/store/apps/details?id=com.smile.karaoketvplayer"))
-
-        appsList.add(AndroidApp(getString(R.string.app_name),
-            R.drawable.color_balls_app_icon,
-            "https://play.google.com/store/apps/details?id=com.smile.colorballs"))
-
-        appsList.add(AndroidApp(getString(R.string.balls_remover_name),
-            R.drawable.balls_remover_app_icon,
-            "https://play.google.com/store/apps/details?id=com.smile.ballsremover"))
-
+        val appList = AppLinkUtil.getAppList(this@SmileAppsActivity)
         val backgroundColor = Yellow3
 
-        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             KaraokePlayerTheme {
                 Scaffold { innerPadding ->
@@ -88,17 +61,20 @@ class SmileAppsActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .height(height = 20.dp))
                         LazyColumn {
-                            items(items = appsList) { item ->
-                                Column {
+                            items(items = appList) { item ->
+                                Column(modifier = Modifier.clickable(
+                                    onClick = {
+                                        // start the link
+                                        AppLinkUtil.startAppLinkOnStore(this@SmileAppsActivity, item.appUrl)
+                                    }
+                                )) {
                                     Row {
                                         Text(
-                                            text = item.appName,
-                                            color = Color.Blue,
+                                            text = item.appName, color = Color.Blue,
                                             fontWeight = FontWeight.Medium,
                                             fontSize = KaraokeComposable.textFontSize
                                         )
-                                        Image(
-                                            modifier = Modifier
+                                        Image(modifier = Modifier
                                                 .size(
                                                     KaraokeComposable
                                                         .textUnitToDp(KaraokeComposable.textFontSize)
@@ -109,13 +85,8 @@ class SmileAppsActivity : ComponentActivity() {
                                             contentScale = ContentScale.FillBounds
                                         )
                                     }
-                                    Text(modifier = Modifier.clickable(
-                                        onClick = {
-                                            // start the link
-                                            startAppLinkOnStore(item.appUrl)
-                                        }),
-                                        text = item.appUrl,
-                                        color = Color.Black, fontWeight = FontWeight.Normal,
+                                    Text(text = item.appUrl, color = Color.Black,
+                                        fontWeight = FontWeight.Normal,
                                         fontSize = KaraokeComposable.textFontSize
                                     )
                                     HorizontalDivider(modifier = Modifier.fillMaxWidth(),
@@ -127,14 +98,5 @@ class SmileAppsActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun startAppLinkOnStore(link: String) {
-        LogUtil.i(TAG, "startAppLinkOnStore.link = $link")
-        startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
-    }
-
-    companion object {
-        private const val TAG = "SmileAppsActivity"
     }
 }

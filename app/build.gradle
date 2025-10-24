@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 942
-        versionName "9.42"
+        versionCode 950
+        versionName "9.50"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -179,7 +179,7 @@ dependencies {
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version
-    implementation platform('androidx.compose:compose-bom:2025.10.00')
+    implementation platform('androidx.compose:compose-bom:2025.10.01')
     // Compose Runtime
     implementation 'androidx.compose.runtime:runtime'
     // Other Compose dependencies you might be using (UI, Material, etc.)
@@ -243,7 +243,7 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation platform('androidx.compose:compose-bom:2025.10.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2025.10.01')
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test:rules:1.7.0'

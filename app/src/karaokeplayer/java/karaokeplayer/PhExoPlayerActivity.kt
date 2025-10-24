@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.AppLinkUtil
 
 open class PhExoPlayerActivity : BasePlayerActivity() {
 
@@ -17,6 +18,14 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
 
     override fun getAppName(): String {
         return resources.getString(R.string.karaoke_app_name)
+    }
+
+    override fun getExoButtonName(): String {
+        return resources.getString(R.string.karaoke_app_name)
+    }
+
+    override fun getVlcButtonName(): String {
+        return resources.getString(R.string.installVideoPlayer)
     }
 
     override fun startExoPlayer() {
@@ -32,6 +41,8 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
 
     override fun startVlcPlayer() {
         LogUtil.i(mTAG, "startVlcPlayer()")
+        AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
+            AppLinkUtil.VIDEO_LINK)
     }
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")

@@ -26,7 +26,6 @@
 
         <activity
             android:name="videoplayer.PhVlcPlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

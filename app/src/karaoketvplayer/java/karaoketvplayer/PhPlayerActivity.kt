@@ -21,6 +21,14 @@ open class PhPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.karaoke_tv_app_name)
     }
 
+    override fun getExoButtonName(): String {
+        return resources.getString(R.string.exoPlayerName)
+    }
+
+    override fun getVlcButtonName(): String {
+        return resources.getString(R.string.vlcPlayerName)
+    }
+
     override fun startExoPlayer() {
         LogUtil.i(mTAG, "startExoPlayer()")
         Intent(

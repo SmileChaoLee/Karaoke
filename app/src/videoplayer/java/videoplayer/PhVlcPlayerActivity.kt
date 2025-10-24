@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.AppLinkUtil
 
 open class PhVlcPlayerActivity : BasePlayerActivity() {
 
@@ -19,8 +20,18 @@ open class PhVlcPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.video_app_name)
     }
 
+    override fun getExoButtonName(): String {
+        return resources.getString(R.string.installKaraokePlayer)
+    }
+
+    override fun getVlcButtonName(): String {
+        return resources.getString(R.string.video_app_name)
+    }
+
     override fun startExoPlayer() {
         LogUtil.i(mTAG, "startExoPlayer()")
+        AppLinkUtil.startAppLinkOnStore(this@PhVlcPlayerActivity,
+            AppLinkUtil.KARAOKE_LINK)
     }
 
     override fun startVlcPlayer() {

@@ -86,9 +86,6 @@
     <string name="loadingStr">Loading …</string>
     <string name="softDecoderFirstStr">SoftDecoder 1st</string>
     <string name="emptyString">""</string>
-
-    <!-- For showing Smile Apps list -->
-    <string name="smileApps">Smile All Apps</string>
-    <string name="color_balls">5 color balls</string>
-    <string name="balls_remover_name">BallsRemover</string>
+    <string name="installKaraokePlayer">Install\nKaraoke Player</string>
+    <string name="installVideoPlayer">Install\nVideo Player</string>
 </resources>
