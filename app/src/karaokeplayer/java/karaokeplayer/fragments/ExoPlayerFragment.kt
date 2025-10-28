@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import com.smile.karaoke.R
-import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import karaokeplayer.presenters.ExoPlayerPresenter
@@ -23,7 +22,8 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
-class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresenter.ExoPlayerPresentView {
+class ExoPlayerFragment : PlayerBaseFragment(),
+    ExoPlayerPresenter.ExoPlayerPresentView {
     companion object {
         private const val TAG: String = "ExoPlayerFragment"
     }
@@ -35,7 +35,10 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresenter.ExoPlayerPres
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this)
-        super.onCreate(savedInstanceState)  // must be after ExoPlayerPresenter(this, this)
+
+        // must be after ExoPlayerPresenter(this, this)
+        super.onCreate(savedInstanceState)
+
         var isAutoPlay = false
         arguments?.let {
             isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
@@ -46,11 +49,6 @@ class ExoPlayerFragment : PlayerBaseFragment(), ExoPlayerPresenter.ExoPlayerPres
             val callingIntent: Intent? = it.intent
             LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
-        }
-        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_ANDROID_TV) {
-            // disable cast for ExoPlayer for Android TV
-            LogUtil.d(TAG, "onCreate.disable cast for Android TV")
-            castContext = null  // disable cast
         }
     }
 

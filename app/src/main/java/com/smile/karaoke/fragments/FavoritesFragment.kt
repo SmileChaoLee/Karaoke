@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
 import com.smile.karaoke.R
-import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
@@ -45,6 +44,9 @@ class FavoritesFragment : Fragment(),
         private const val EXCESS_YN = "ExcessYN"
     }
 
+    private var textFontSize = 0.0f
+    private var videoThumbnailsWidth = 0
+    private var videoThumbnailsHeight = 0
     private var fragmentView : View? = null
     private var playSongs: PlaySongs? = null
     private var playMyFavorites: PlayMyFavorites? = null
@@ -60,20 +62,19 @@ class FavoritesFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
 
-        mediaRetriever = MediaMetadataRetriever()
-
-        SmileAppBase.videoThumbnailsWidth = (SmileAppBase.textFontSize * 3.0f).toInt()
-        SmileAppBase.videoThumbnailsHeight = (SmileAppBase.textFontSize * 2.0f).toInt()
-
+        arguments?.let {}
         activity?.let {
+            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
+            videoThumbnailsWidth = (textFontSize * 3.0f).toInt()
+            videoThumbnailsHeight = (textFontSize * 2.0f).toInt()
             if (it is PlaySongs) playSongs = it
             LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
             if (it is PlayMyFavorites) playMyFavorites = it
             LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
         }
+
+        mediaRetriever = MediaMetadataRetriever()
 
         editSongsActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             playMyFavorites?.restorePlayingState()
@@ -90,7 +91,7 @@ class FavoritesFragment : Fragment(),
                         if (intent.getBooleanExtra(EXCESS_YN, false)) {
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
-                                    " ${MySingleTon.MAX_SONGS}", SmileAppBase.textFontSize,
+                                    " ${MySingleTon.MAX_SONGS}", textFontSize,
                                 ScreenUtil.FontSize_Pixel_Type,
                                 Toast.LENGTH_SHORT)
                         }
@@ -135,7 +136,7 @@ class FavoritesFragment : Fragment(),
 
         fragmentView = view
         fragmentView?.let {
-            val buttonWidth = (SmileAppBase.textFontSize * 1.5f).toInt()
+            val buttonWidth = (textFontSize * 1.5f).toInt()
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
             val selectAllButton: ImageButton = it.findViewById(R.id.favoriteSelectAllButton)
@@ -197,7 +198,7 @@ class FavoritesFragment : Fragment(),
                                 // excess the max
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
-                                        " ${MySingleTon.MAX_SONGS}", SmileAppBase.textFontSize,
+                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
                                     ScreenUtil.FontSize_Pixel_Type,
                                     Toast.LENGTH_SHORT)
                                 break
@@ -206,9 +207,8 @@ class FavoritesFragment : Fragment(),
                     }
                 }
                 if (songs.isEmpty()) {
-                    ScreenUtil.showToast(
-                            activity, getString(R.string.noFilesSelectedString),
-                        SmileAppBase.textFontSize,
+                    ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
+                        textFontSize,
                         ScreenUtil.FontSize_Pixel_Type,
                         Toast.LENGTH_SHORT)
                 } else {
@@ -240,7 +240,7 @@ class FavoritesFragment : Fragment(),
                         }
                     } else {
                         ScreenUtil.showToast(
-                                activity, getString(R.string.noFilesSelectedString), SmileAppBase.textFontSize,
+                                activity, getString(R.string.noFilesSelectedString), textFontSize,
                             ScreenUtil.FontSize_Pixel_Type,
                             Toast.LENGTH_SHORT)
                     }
@@ -332,7 +332,7 @@ class FavoritesFragment : Fragment(),
                             mediaRetriever.setDataSource(element.filePath)
                             bm = mediaRetriever.getFrameAtTime(0,
                                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                ?.scale(SmileAppBase.videoThumbnailsWidth, SmileAppBase.videoThumbnailsHeight)
+                                ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                         } catch (ex: Exception) {
                             LogUtil.e(TAG, "searchFavorites.setDataSource.Exception:",
                                 ex)
@@ -375,9 +375,10 @@ class FavoritesFragment : Fragment(),
             val transparentLightGray = ContextCompat.getColor(it,
                 R.color.transparentLightGray)
 
-            myRecyclerViewAdapter = FavoriteRecyclerViewAdapter.getInstance(
+            myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(
                     this, MySingleTon.favorites,
-                tColor, transparentLightGray)
+                tColor, transparentLightGray, textFontSize,
+                videoThumbnailsWidth, videoThumbnailsHeight)
 
             myListRecyclerView?.adapter = myRecyclerViewAdapter
             myListRecyclerView?.layoutManager = object : LinearLayoutManager(context) {

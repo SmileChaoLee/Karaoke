@@ -23,7 +23,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.FrameLayout
@@ -116,6 +115,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private var mediaRouteButton: MediaRouteButton? = null
     protected var castContext: CastContext? = null
+    protected var deviceType: String = ScreenUtil.DEVICE_TYPE_PHONE
 
     private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
@@ -193,10 +193,26 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+
         MySingleTon.clearSingleton()
-        if (SmileAppBase.deviceType != ScreenUtil.DEVICE_TYPE_PHONE) {
-            LogUtil.d(TAG, "onCreate.deviceType is not phone")
-            orgOrientation = resources.configuration.orientation
+        activity?.let {
+            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
+            fontScale = ScreenUtil.getPxFontScale(activity)
+            toastTextSize = textFontSize * 0.7f
+            castContext = (it.application as SmileAppBase).castContext
+            deviceType = ScreenUtil.getDeviceType(it)
+            if (deviceType != ScreenUtil.DEVICE_TYPE_PHONE) {
+                LogUtil.d(TAG, "onCreate.deviceType is not phone")
+                orgOrientation = resources.configuration.orientation
+                if (deviceType == ScreenUtil.DEVICE_TYPE_ANDROID_TV) {
+                    // disable cast for ExoPlayer for Android TV
+                    LogUtil.d(TAG, "onCreate.disable cast for Android TV")
+                    castContext = null  // disable cast
+                }
+            }
+
+            if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
+            LogUtil.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
         }
         arguments?.let {
             LogUtil.d(TAG, "onCreate.arguments is not null")
@@ -208,25 +224,12 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         */
         setHasOptionsMenu(true) // must have because it has menu
-
-        activity?.let {
-            if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
-            LogUtil.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
-        }
-        
         getPlayerPresenter()?.let {
             mPresenter = it
         } ?: run {
             LogUtil.d(TAG, "onCreate.presenter is null so exit activity.")
             playBaseFragmentFunc?.returnToPrevious(false)
             return
-        }
-        textFontSize = SmileAppBase.textFontSize
-        fontScale = SmileAppBase.fontScale
-        toastTextSize = SmileAppBase.toastTextSize
-
-        activity?.let { actIt ->
-            castContext = (actIt.application as SmileAppBase).castContext
         }
     }
 
@@ -597,10 +600,12 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null)
         myBannerAdView?.destroy()
         nativeTemplate?.release()
+        /*
         // clear the screen on, added on 2021-02-18
         activity?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        */
         unbindAndStopPlayService()
         // setupCast?.release()
     }
@@ -732,7 +737,7 @@ abstract class PlayerBaseFragment : Fragment(),
         linearParam.setMargins(0, 0, 0, 0)
         orientationImageButton?.apply {
             layoutParams = linearParam
-            visibility = if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE)
+            visibility = if (deviceType == ScreenUtil.DEVICE_TYPE_PHONE)
                 View.VISIBLE else View.GONE
         }
 
@@ -1261,7 +1266,7 @@ abstract class PlayerBaseFragment : Fragment(),
         controllerTimerHandler.removeCallbacksAndMessages(null) // cancel the timer
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
-        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
+        if (deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
             setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
         }
     }
@@ -1281,7 +1286,7 @@ abstract class PlayerBaseFragment : Fragment(),
         setTimerToHideSupportAudioControl()   // reset the timer
         playBaseFragmentFunc?.baseShowPlayerView()
         mPresenter.playingParam.isPlayerViewVisible = true
-        if (SmileAppBase.deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
+        if (deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
             LogUtil.d(TAG, "showPlayerView.orgOrientation = $orgOrientation")
             setScreenOrientation(orgOrientation)
         }

@@ -39,7 +39,6 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -268,16 +267,16 @@ abstract class BaseActivity : AppCompatActivity(),
             unregisterReceiver(baseReceiver)
         }
         MySingleTon.clearSingleton()
+        // clear the screen on, added on 2021-02-18
+        window?.apply {
+            clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
 
     private fun settingBeforeCreate() {
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-        SmileAppBase.textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@BaseActivity)
-        SmileAppBase.toastTextSize = SmileAppBase.textFontSize * 0.7f
-        SmileAppBase.fontScale = ScreenUtil.getPxFontScale(this@BaseActivity)
-        SmileAppBase.deviceType = ScreenUtil.getDeviceType(this@BaseActivity)
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,

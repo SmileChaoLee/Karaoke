@@ -27,18 +27,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.smile.karaoke.R
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.KaraokeComposable
 import com.smile.karaoke.ui.theme.Yellow3
 import androidx.core.view.WindowCompat
 import com.smile.smilelibraries.utilities.AppLinkUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 class SmileAppsActivity : ComponentActivity() {
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@SmileAppsActivity)
+        val toastTextSize = textFontSize * 0.7f
+        KaraokeComposable.textFontSize = ScreenUtil.pixelToDp(textFontSize).sp
+        KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
         val appList = AppLinkUtil.getAppList(this@SmileAppsActivity)
         val backgroundColor = Yellow3

@@ -13,12 +13,13 @@ import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-private const val TAG = "FilesRecyclerVAdapter"
-
-class OpenFilesRecyclerViewAdapter private constructor(
+class OpenFilesRecyclerViewAdapter(
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
     private var mList : java.util.ArrayList<FileDescription>,
-    private var textColor : Int, private var transparentLightGray : Int)
+    private var textColor : Int, private var transparentLightGray : Int,
+    private val textFontSize: Float,
+    private val videoThumbnailsWidth: Int,
+    private val videoThumbnailsHeight: Int)
 
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
@@ -29,28 +30,7 @@ class OpenFilesRecyclerViewAdapter private constructor(
     }
 
     companion object {
-        private var viewAdapter : OpenFilesRecyclerViewAdapter? = null
-        @JvmStatic
-        fun getInstance(recyclerItemClickListener: OnRecyclerItemClickListener,
-                        mList : java.util.ArrayList<FileDescription>,
-                        textColor : Int, transparentLightGray : Int)
-        : OpenFilesRecyclerViewAdapter {
-
-            LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter")
-            if (viewAdapter == null) {
-                viewAdapter = OpenFilesRecyclerViewAdapter(recyclerItemClickListener,
-                    mList, textColor, transparentLightGray)
-            } else {
-                viewAdapter?.let {
-                    it.recyclerItemClickListener = recyclerItemClickListener
-                    it.mList = mList
-                    it.textColor = textColor
-                    it.transparentLightGray = transparentLightGray
-                }
-            }
-
-            return viewAdapter!!
-        }
+        private const val TAG = "FilesRecyclerVAdapter"
     }
 
     class MyViewHolder(itemView: View,
@@ -62,17 +42,10 @@ class OpenFilesRecyclerViewAdapter private constructor(
         init {
             LogUtil.d(TAG, "MyViewHolder")
             folderImageView = itemView.findViewById(R.id.folderImageView)
-            var layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = (SmileAppBase.textFontSize * 2.0f).toInt()
-            layoutParams.height = layoutParams.width
-            folderImageView.layoutParams = layoutParams
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
             fileNameTextView.visibility = View.VISIBLE
             videoImageView = itemView.findViewById(R.id.videoImageView)
             videoImageView.visibility = View.VISIBLE
-            layoutParams = videoImageView.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = SmileAppBase.videoThumbnailsWidth
-            layoutParams.height = SmileAppBase.videoThumbnailsHeight
 
             itemView.setOnClickListener { view ->
                 LogUtil.d(TAG, "setOnClickListener.position = $bindingAdapterPosition")
@@ -102,16 +75,27 @@ class OpenFilesRecyclerViewAdapter private constructor(
         if (item.file.isDirectory) {
             holder.folderImageView.visibility = View.VISIBLE
             ScreenUtil.resizeTextSize(holder.fileNameTextView,
-                SmileAppBase.textFontSize * 0.8f,
+                textFontSize * 0.8f,
                 ScreenUtil.FontSize_Pixel_Type)
             holder.videoImageView.visibility = View.GONE
         } else {
             holder.folderImageView.visibility = View.GONE
             ScreenUtil.resizeTextSize(holder.fileNameTextView,
-                SmileAppBase.textFontSize * 0.5f,
+                textFontSize * 0.5f,
                 ScreenUtil.FontSize_Pixel_Type)
             holder.videoImageView.visibility = View.VISIBLE
         }
+
+        var layoutParams: ViewGroup.MarginLayoutParams = holder.folderImageView.layoutParams
+                as ViewGroup.MarginLayoutParams
+        layoutParams.width = (textFontSize * 2.0f).toInt()
+        layoutParams.height = layoutParams.width
+        holder.folderImageView.layoutParams = layoutParams
+
+        layoutParams = holder.videoImageView.layoutParams
+                as ViewGroup.MarginLayoutParams
+        layoutParams.width = videoThumbnailsWidth
+        layoutParams.height = videoThumbnailsHeight
 
         holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {

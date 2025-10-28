@@ -6,22 +6,24 @@ import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
-import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
 class MySManagerListener : SessionManagerListener<CastSession> {
 
+    companion object {
+        private const val TAG = "MySManagerListener"
+    }
+
     private val mFragment: PlayerBaseFragment
     private val mPresenter: PlayerBasePresenter
     private var mContext: FragmentActivity?
-    private val toastTextSize = SmileAppBase.Companion.toastTextSize
     private val webServerAndCast = WebServerAndCast()
 
-    constructor(fragment: PlayerBaseFragment, presenter: PlayerBasePresenter) {
+    constructor(fragment: PlayerBaseFragment,
+                presenter: PlayerBasePresenter) {
         this.mFragment = fragment
         this.mPresenter = presenter
         this.mContext = fragment.activity
@@ -31,23 +33,13 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         val msgString = "onSessionStarting"
         LogUtil.d(TAG, msgString)
         // Not yet connected
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 
     override fun onSessionStarted(p0: CastSession, p1: String) {
         val msgString = "onSessionStarted"
         LogUtil.d(TAG, msgString)
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
         // Session is active, you can now load media
         mContext?.invalidateOptionsMenu() // To update Cast button state
         // pause the stream on Android device side
@@ -67,36 +59,21 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         val msgString = "onSessionStartFailed"
         LogUtil.d(TAG, msgString)
         // Handle start failure
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 
     override fun onSessionEnding(p0: CastSession) {
         val msgString = "onSessionEnding"
         LogUtil.d(TAG, msgString)
         // Session is about to end
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 
     override fun onSessionEnded(p0: CastSession, p1: Int) {
         val msgString = "onSessionEnded"
         LogUtil.d(TAG, msgString)
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
         // Session has ended
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
         mContext?.invalidateOptionsMenu() // To update Cast button state
         // recover playing on Android device side
         webServerAndCast.stopWebServer()
@@ -108,24 +85,14 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         val msgString = "onSessionResuming"
         LogUtil.d(TAG, msgString)
         // Resuming a previous session
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 
     override fun onSessionResumed(p0: CastSession, p1: Boolean) {
         val msgString = "onSessionResumed"
         LogUtil.d(TAG, msgString)
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
         // Session has resumed
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
         mContext?.invalidateOptionsMenu()
     }
 
@@ -133,27 +100,13 @@ class MySManagerListener : SessionManagerListener<CastSession> {
         val msgString = "onSessionResumeFailed"
         LogUtil.d(TAG, msgString)
         // Handle resume failure
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 
     override fun onSessionSuspended(p0: CastSession, p1: Int) {
         val msgString = "onSessionSuspended"
         LogUtil.d(TAG, msgString)
         // Session is temporarily suspended (e.g., another app started casting)
-        ScreenUtil.showToast(
-            mContext, msgString,
-            toastTextSize,
-            ScreenUtil.FontSize_Pixel_Type,
-            Toast.LENGTH_SHORT
-        )
-    }
-
-    companion object {
-        private const val TAG = "MySManagerListener"
+        Toast.makeText(mContext, msgString, Toast.LENGTH_SHORT).show()
     }
 }

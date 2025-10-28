@@ -12,13 +12,15 @@ import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlin.times
 
-private const val TAG = "FaRecyclerVAdapter"
-
-class FavoriteRecyclerViewAdapter private constructor(
+class FavoriteRecyclerViewAdapter (
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
     private var mList:  java.util.ArrayList<SongDescription>,
-    private var textColor : Int, private var transparentLightGray : Int)
+    private var textColor : Int, private var transparentLightGray : Int,
+    private val textFontSize: Float,
+    private val videoThumbnailsWidth: Int,
+    private val videoThumbnailsHeight: Int)
 
     : RecyclerView.Adapter<FavoriteRecyclerViewAdapter.MyViewHolder>() {
 
@@ -29,28 +31,7 @@ class FavoriteRecyclerViewAdapter private constructor(
     private var positionUpdated: Int = -1
 
     companion object {
-        private var viewAdapter : FavoriteRecyclerViewAdapter? = null
-        @JvmStatic
-        fun getInstance(recyclerItemClickListener : OnRecyclerItemClickListener,
-                        mList : java.util.ArrayList<SongDescription>,
-                        textColor : Int, transparentLightGray : Int)
-        : FavoriteRecyclerViewAdapter {
-
-            LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter")
-            if (viewAdapter == null) {
-                viewAdapter = FavoriteRecyclerViewAdapter(recyclerItemClickListener,
-                    mList, textColor, transparentLightGray)
-            } else {
-                viewAdapter?.let {
-                    it.recyclerItemClickListener = recyclerItemClickListener
-                    it.mList = mList
-                    it.textColor = textColor
-                    it.transparentLightGray = transparentLightGray
-                }
-            }
-
-            return viewAdapter!!
-        }
+        private const val TAG = "FaRecyclerVAdapter"
     }
 
     class MyViewHolder(itemView: View,
@@ -61,15 +42,7 @@ class FavoriteRecyclerViewAdapter private constructor(
         init {
             LogUtil.d(TAG, "MyViewHolder")
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
-            val layoutParams = songVideoImageView.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.width = SmileAppBase.videoThumbnailsWidth
-            layoutParams.height = SmileAppBase.videoThumbnailsHeight
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
-
-            ScreenUtil.resizeTextSize(songNameTextView,
-                SmileAppBase.textFontSize * 0.5f,
-                ScreenUtil.FontSize_Pixel_Type)
-
             itemView.setOnClickListener {view ->
                 recyclerItemClickListener.onRecyclerItemClick(
                     view, bindingAdapterPosition
@@ -90,11 +63,17 @@ class FavoriteRecyclerViewAdapter private constructor(
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
         holder.songVideoImageView.setImageBitmap(item.bm)
+        val layoutParams = holder.songVideoImageView.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.width = videoThumbnailsWidth
+        layoutParams.height = videoThumbnailsHeight
         val songName = item.song.songName?.trim()?: ""
         holder.songNameTextView.apply {
             text = songName.ifEmpty { "No Name" }
             if (item.song.included == "1") setTextColor(textColor)
             else setTextColor(Color.WHITE)
+            ScreenUtil.resizeTextSize(this,
+                textFontSize * 0.5f,
+                ScreenUtil.FontSize_Pixel_Type)
         }
         holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {

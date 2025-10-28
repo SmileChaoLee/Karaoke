@@ -26,10 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -90,9 +87,14 @@ abstract class BasePlayerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG,"onCreate")
         super.onCreate(savedInstanceState)
+
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@BasePlayerActivity)
+        val toastTextSize = textFontSize * 0.7f
+        KaraokeComposable.textFontSize = ScreenUtil.pixelToDp(textFontSize).sp
+        KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(toastTextSize).sp
 
         screenSize = ScreenUtil.getScreenSize(this@BasePlayerActivity)
         val intentAction = intent.action
@@ -106,14 +108,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
         } else {
             LogUtil.d(TAG, "No categories in intent")
         }
-
-        SmileAppBase.textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this@BasePlayerActivity)
-        SmileAppBase.toastTextSize = SmileAppBase.textFontSize * 0.7f
-        SmileAppBase.fontScale = ScreenUtil.getPxFontScale(this@BasePlayerActivity)
-        KaraokeComposable.textFontSize = ScreenUtil.pixelToDp(SmileAppBase.textFontSize).sp
-        KaraokeComposable.toastFontSize = ScreenUtil.pixelToDp(SmileAppBase.toastTextSize).sp
-
-        SmileAppBase.deviceType = ScreenUtil.getDeviceType(this@BasePlayerActivity)
 
         exoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -167,7 +161,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         SetMainUiTitle()
                         Box {
                             DisplayLoading()
-                            CreateMainUINew()
+                            CreateMainUI()
                         }
                     }
                 }
@@ -400,51 +394,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CreateMainUI() {
-        LogUtil.d(TAG, "CreateMainUI")
-        if (loadingMessage.value.isNotEmpty()) return
-        val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
-        val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
-        LogUtil.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
-        var verSpacerWeight = 1.0f
-        var horSpacerWeight = 1.0f
-        if (resources.configuration.orientation
-            == Configuration.ORIENTATION_LANDSCAPE) {
-            verSpacerWeight = 0.2f
-            horSpacerWeight = 2.5f
-        }
-        val buttonWidth = maxWidth * (10.0f - horSpacerWeight * 2.0f)
-        // 1 in 5
-        val buttonHeight = maxHeight * (10.0f - (verSpacerWeight * 2.0f)) / 50.0f
-        LogUtil.d(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
-        val textLineHeight = (KaraokeComposable.toastFontSize.value + 5.0f).sp
-        Column(modifier = Modifier
-            .fillMaxSize()) {
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .weight(verSpacerWeight))
-            Row(modifier = Modifier.weight(10.0f - verSpacerWeight * 2.0f)) {
-                Spacer(modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(horSpacerWeight))
-                Column(modifier = Modifier
-                    .weight(10.0f - horSpacerWeight * 2.0f)) {
-                    ExoPlayerButton(modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight)
-                    VlcPlayerButton(modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight)
-                }
-                Spacer(modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(horSpacerWeight))
-            }
-            Spacer(modifier = Modifier
-                .fillMaxSize()
-                .weight(verSpacerWeight))
-        }
-    }
-
-    @Composable
     fun ExoVlcButtons(modifier: Modifier = Modifier,
                       buttonWidth: Float, buttonHeight: Float,
                       textLineHeight: TextUnit) {
@@ -463,7 +412,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CreateMainUINew() {
+    fun CreateMainUI() {
         LogUtil.i(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
         val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())

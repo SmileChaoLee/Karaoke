@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 950
-        versionName "9.50"
+        versionCode 960
+        versionName "9.60"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
