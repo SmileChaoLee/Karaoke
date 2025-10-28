@@ -356,6 +356,9 @@ abstract class BaseActivity : AppCompatActivity(),
             return
         }
         // exit application
+        playerFragment?.mPresenter?.apply {
+            stopPlay(PlayerConstants.STOPPED_BY_USER)
+        }
         finishThisActivity()
     }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
