@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 960
-        versionName "9.60"
+        versionCode 961
+        versionName "9.61"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,6 +37,7 @@ android {
         create("karaokeplayer") {
             dimension = "karaoke"
             applicationId = "com.smile.karaokeplayer"
+            isDefault = true
         }
         create("videoplayer") {
             dimension = "karaoke"
@@ -173,9 +174,19 @@ dependencies {
     implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-ads:23.6.0'
-
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
+
+    implementation 'com.facebook.android:audience-network-sdk:6.20.0'
+    implementation 'com.google.ads.mediation:facebook:6.20.0.2'
+    // InMobi's SDK
+    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:11.0.0'
+    // AdMob's InMobi adapter
+    implementation 'com.google.ads.mediation:inmobi:10.8.8.1'
+    // ironSource's SDK
+    implementation 'com.unity3d.ads-mediation:mediation-sdk:9.0.0'
+    // AdMob's ironSource adapter
+    implementation 'com.google.ads.mediation:ironsource:9.0.0.1'
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version

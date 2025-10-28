@@ -39,6 +39,8 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.interfaces.DismissFunction
+import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -64,6 +66,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var hasPlayedSingle : Boolean = false
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
+    private var interstitialAd: ShowInterstitial? = null
 
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
@@ -266,6 +269,7 @@ abstract class BaseActivity : AppCompatActivity(),
         LocalBroadcastManager.getInstance(this).apply {
             unregisterReceiver(baseReceiver)
         }
+        interstitialAd?.releaseInterstitial()
         MySingleTon.clearSingleton()
         // clear the screen on, added on 2021-02-18
         window?.apply {
@@ -277,6 +281,9 @@ abstract class BaseActivity : AppCompatActivity(),
         window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        val app = application as? SmileAppBase
+        interstitialAd = ShowInterstitial(this, null,
+            app?.getInterstitial())
     }
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
@@ -349,7 +356,7 @@ abstract class BaseActivity : AppCompatActivity(),
             return
         }
         // exit application
-        finish()
+        finishThisActivity()
     }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
 
@@ -430,6 +437,28 @@ abstract class BaseActivity : AppCompatActivity(),
         }
     }
     // Finish implementing interface PlaySongs
+
+    private fun showInterstitialAd() {
+        LogUtil.i(TAG, "showInterstitialAd = $interstitialAd")
+        interstitialAd?.ShowAdThread()?.startShowAd(0) // AdMob first
+    }
+
+    private fun finishThisActivity() {
+        LogUtil.i(TAG, "finishThisActivity = $interstitialAd")
+        interstitialAd?.ShowAdThread(object: DismissFunction {
+            override fun backgroundWork() {
+                // do nothing
+            }
+
+            override fun executeDismiss() {
+                finish()    // finish() after dismissing ad
+            }
+
+            override fun afterFinished(isAdShown: Boolean) {
+                if (!isAdShown) finish() // no ad, then finish
+            }
+        })?.startShowAd(0) ?: finish()
+    }
 
     private fun createViewDependingOnOrientation() {
         LogUtil.i(TAG, "createViewDependingOnOrientation")

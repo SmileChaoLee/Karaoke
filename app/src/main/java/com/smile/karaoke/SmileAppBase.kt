@@ -12,18 +12,33 @@ import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.chromecast.InitCastContext
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.google_ads_util.AdMobInterstitial
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
 abstract class SmileAppBase : MultiDexApplication() {
+
+    companion object {
+        private const val TAG = "SmileAppBase"
+        @JvmField
+        val accentColor = Color.rgb(0xFF, 0x40, 0x81)
+        @JvmField
+        val audioChannelMap = LinkedHashMap<Int, String>()
+        @JvmField
+        val audioChannelReverseMap = LinkedHashMap<String, Int>()
+        var facebookBannerID = ""
+        var adMobBannerID = ""
+        var adMobNativeID = ""
+    }
+
     var leftChannelString = ""
     var rightChannelString = ""
     var stereoChannelString = ""
     var castContext: CastContext? = null
-    var googleAdMobAppID = ""
 
     abstract fun initAds()
     abstract fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?)
     : SetBannerAdView?
+    abstract fun getInterstitial(): AdMobInterstitial?
     abstract fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
     : GoogleAdMobNativeTemplate?
@@ -65,24 +80,5 @@ abstract class SmileAppBase : MultiDexApplication() {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         LogUtil.w(TAG, "onTrimMemory, level: = $level")
-    }
-
-    companion object {
-        private const val TAG = "SmileAppBase"
-        /*
-        @JvmField
-        var videoThumbnailsWidth = 0
-        @JvmField
-        var videoThumbnailsHeight = 0
-        */
-        @JvmField
-        val accentColor = Color.rgb(0xFF, 0x40, 0x81)
-        @JvmField
-        val audioChannelMap = LinkedHashMap<Int, String>()
-        @JvmField
-        val audioChannelReverseMap = LinkedHashMap<String, Int>()
-        var facebookBannerID = ""
-        var googleAdMobBannerID = ""
-        var googleAdMobNativeID = ""
     }
 }

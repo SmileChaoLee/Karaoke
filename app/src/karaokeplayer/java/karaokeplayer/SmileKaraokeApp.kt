@@ -3,14 +3,13 @@ package karaokeplayer
 import android.app.Activity
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.facebook.ads.AudienceNetworkAds
 import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
-import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
+import com.smile.smilelibraries.google_ads_util.AdMobInterstitial
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 
 class SmileKaraokeApp : SmileAppBase() {
@@ -21,24 +20,22 @@ class SmileKaraokeApp : SmileAppBase() {
     }
 
     override fun initAds() {
-        AudienceNetworkAds.initialize(this)
+        // AudienceNetworkAds.initialize(this)  // no need for mediation
         // facebookInterstitialID = "1712962715503258_1712963252169871";
         // facebookInterstitialID = testString + facebookInterstitialID;
         // facebookInterstitial = new FacebookInterstitial(appContext,
         //         facebookInterstitialID);
         // for debug mode and for facebook
-        val testString = if (BuildConfig.DEBUG) "IMG_16_9_APP_INSTALL#" else ""
-        facebookBannerID = testString + "1712962715503258_2019623008170559"
-        googleAdMobAppID = "ca-app-pub-8354869049759576~5549171584"
-        // googleAdMobInterstitialID = "ca-app-pub-8354869049759576/1418354889";
-        googleAdMobBannerID = "ca-app-pub-8354869049759576/8267060571"
-        googleAdMobNativeID = "ca-app-pub-8354869049759576/7985456524"
+        // val testString = if (BuildConfig.DEBUG) "IMG_16_9_APP_INSTALL#" else ""
+        // facebookBannerID = testString + "1712962715503258_2019623008170559"
+        // googleAdMobAppID = "ca-app-pub-8354869049759576~5549171584"
+        adMobBannerID = "ca-app-pub-8354869049759576/8267060571"
+        adMobNativeID = "ca-app-pub-8354869049759576/7985456524"
         // google
         MobileAds.initialize(applicationContext
         ) { initializationStatus: InitializationStatus? ->
             LogUtil.d(TAG, "Google AdMob was initialized successfully.")
         }
-        // adMobInterstitial = new AdMobInterstitial(appContext, googleAdMobInterstitialID);
         // for the chrome cast
     }
 
@@ -46,7 +43,12 @@ class SmileKaraokeApp : SmileAppBase() {
         LogUtil.d(TAG, "showBannerAd")
         return SetBannerAdView(activity, null,
             bannerLayout,
-            googleAdMobBannerID, facebookBannerID, 0)
+            adMobBannerID, facebookBannerID, 0)
+    }
+
+    override fun getInterstitial(): AdMobInterstitial? {
+        val adMobInterstitialID = "ca-app-pub-8354869049759576/1418354889"
+        return AdMobInterstitial(applicationContext, adMobInterstitialID)
     }
 
     override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
@@ -55,7 +57,7 @@ class SmileKaraokeApp : SmileAppBase() {
         LogUtil.d(TAG, "geNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
-            googleAdMobNativeID,
+            adMobNativeID,
             nativeAdView)
     }
 
