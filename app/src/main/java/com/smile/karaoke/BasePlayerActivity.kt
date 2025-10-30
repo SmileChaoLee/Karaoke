@@ -35,9 +35,11 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -50,12 +52,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
+import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
 import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.ui.theme.Yellow3
 import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.smilelibraries.utilities.UmpUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -82,6 +86,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private val buttonBackground = Color.Transparent
     private val buttonContentColor = Color.Green
     private val buttonContainerColor = Color.Blue
+    private var isBackPressedEnabled = true
+
+    private var isExoEnabled by mutableStateOf(true)
+    private var isVlcEnabled by mutableStateOf(true)
+    private var isSmileAppsEnabled by mutableStateOf(true)
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,6 +139,51 @@ abstract class BasePlayerActivity : ComponentActivity() {
             loadingMessage.value = ""
         }
 
+        disableExitApp()
+        disableMainButtons()
+
+        askPermissions()
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContent {
+            LogUtil.d(TAG,"onCreate.setContent")
+            KaraokePlayerTheme {
+                Scaffold {innerPadding ->
+                    Column(modifier = Modifier.padding(innerPadding)
+                        .background(backgroundColor),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        SetMainUiTitle()
+                        Box {
+                            DisplayLoading()
+                            CreateMainUI()
+                        }
+                    }
+                }
+            }
+            LaunchedEffect(Unit) {
+                val deviceHashedId = "8F6C5B0830E624E8D8BFFB5853B4EDDD" // for debug test
+                // val deviceHashedId = ""  // for release
+                UmpUtil.initConsentInformation(this@BasePlayerActivity,
+                    DEBUG_GEOGRAPHY_EEA,deviceHashedId,
+                    object : UmpUtil.UmpInterface {
+                        override fun callback() {
+                            LogUtil.d(TAG, "onCreate.initConsentInformation.finished")
+                            enableMainButtons()
+                            enableExitApp()
+                        }
+                    })
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                LogUtil.d(TAG, "handleOnBackPressed")
+                exitApp()
+            }
+        })
+    }
+
+    private fun askPermissions() {
         permissionExternalStorage =
             (ActivityCompat.checkSelfPermission(applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -149,31 +203,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
             )
         }
         askIgnoreOptimizationsBattery()
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent {
-            LogUtil.d(TAG,"onCreate.setContent")
-            KaraokePlayerTheme {
-                Scaffold {innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)
-                        .background(backgroundColor),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        SetMainUiTitle()
-                        Box {
-                            DisplayLoading()
-                            CreateMainUI()
-                        }
-                    }
-                }
-            }
-
-            onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    LogUtil.d(TAG, "handleOnBackPressed")
-                    exitApp()
-                }
-            })
-        }
     }
 
     @SuppressLint("BatteryLife")
@@ -206,9 +235,29 @@ abstract class BasePlayerActivity : ComponentActivity() {
         }
     }
 
+    private fun enableExitApp() {
+        isBackPressedEnabled = true
+    }
+
+    private fun disableExitApp() {
+        isBackPressedEnabled = false
+    }
+
     private fun exitApp() {
-        LogUtil.d(TAG, "exitApp")
-        finish()
+        LogUtil.i(TAG, "exitApp.isBackPressedEnabled = $isBackPressedEnabled")
+        if (isBackPressedEnabled) finish()
+    }
+
+    private fun enableMainButtons() {
+        isExoEnabled = true
+        isVlcEnabled = true
+        isSmileAppsEnabled = true
+    }
+
+    protected fun disableMainButtons() {
+        isExoEnabled = false
+        isVlcEnabled = false
+        isSmileAppsEnabled = false
     }
 
     private fun startExoActivity() {
@@ -270,6 +319,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             val focusRequester = remember { FocusRequester() }
             val exoClicked = remember { mutableStateOf(false) }
             Button(
+                enabled = isExoEnabled,
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         exoClicked.value = true
@@ -318,6 +368,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             val isFocused by interactionSource.collectIsFocusedAsState()
             val vlcClicked = remember { mutableStateOf(false) }
             Button(
+                enabled = isVlcEnabled,
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         vlcClicked.value = true
@@ -363,6 +414,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center) {
             val isClicked = remember { mutableStateOf(false) }
             Button(
+                enabled = isSmileAppsEnabled,
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         isClicked.value = true

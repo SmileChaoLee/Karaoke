@@ -170,14 +170,14 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.annotation:annotation:1.9.1"
-    implementation 'com.facebook.android:audience-network-sdk:6.20.0'
-    implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-ads:23.6.0'
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
 
-    implementation 'com.facebook.android:audience-network-sdk:6.20.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.21.0'
+    implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'
     implementation 'com.google.ads.mediation:facebook:6.20.0.2'
     // InMobi's SDK
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:11.0.0'
@@ -187,6 +187,10 @@ dependencies {
     implementation 'com.unity3d.ads-mediation:mediation-sdk:9.0.0'
     // AdMob's ironSource adapter
     implementation 'com.google.ads.mediation:ironsource:9.0.0.1'
+    // applovin's SDK
+    implementation 'com.applovin:applovin-sdk:13.5.0'
+    // AppLovin AdMob adapter
+    implementation 'com.google.ads.mediation:applovin:13.5.0.0'
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version
