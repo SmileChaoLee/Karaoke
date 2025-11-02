@@ -5,19 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@android:color/white"
     tools:context=".fragments.FavoritesFragment">
 
     <LinearLayout
         android:id="@+id/favoriteListButtonLayout"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
+        app:layout_constrainedWidth="true"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="1.0">
         <ImageButton
             android:id="@+id/favoriteSelectAllButton"
             android:layout_width="wrap_content"
@@ -104,13 +105,32 @@
             android:layout_gravity="center"
             android:visibility="visible">
         </ImageButton>
-
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+            <ImageButton
+                android:id="@+id/appsImageButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/emptyString"
+                android:background="@drawable/file_menu_item_background_color"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:src="@drawable/circle_and_three_dots"
+                android:focusable="true"
+                android:clickable="true"
+                android:layout_gravity="center_vertical|end">
+            </ImageButton>
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/myListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@android:color/black"
         android:focusable="true"
         android:clickable="true"
         app:layout_constraintTop_toBottomOf="@+id/favoriteListButtonLayout"

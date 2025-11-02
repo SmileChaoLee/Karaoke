@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 970
-        versionName "9.70"
+        versionCode 980
+        versionName "9.80"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -174,7 +174,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-ads:23.6.0'
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
 
     implementation 'com.facebook.android:audience-network-sdk:6.21.0'
     implementation 'com.facebook.infer.annotation:infer-annotation:0.18.0'

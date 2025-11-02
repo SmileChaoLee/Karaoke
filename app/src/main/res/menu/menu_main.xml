@@ -111,14 +111,19 @@
             </item>
         </menu>
     </item>
+    <item android:id="@+id/smileApps"
+        android:title="@string/smileApps"
+        android:orderInCategory="7"
+        app:showAsAction="never">
+    </item>
     <item android:id="@+id/privacyPolicy"
         android:title="@string/privacyPolicyString"
-        android:orderInCategory="6"
+        android:orderInCategory="9"
         app:showAsAction="never">
     </item>
     <item android:id="@+id/exit"
         android:title="@string/exitString"
-        android:orderInCategory="7"
+        android:orderInCategory="10"
         app:showAsAction="never">
     </item>
 

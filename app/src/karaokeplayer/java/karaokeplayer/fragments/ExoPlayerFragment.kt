@@ -132,8 +132,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         return presenter
     }
 
-    override fun setMenuItemsVisibility() {
-        val channelMenuItem = mainMenu?.findItem(R.id.channel)
+    override fun setupMenuItems() {
         channelMenuItem?.isVisible = true
         channelMenuItem?.isEnabled = true
     }
@@ -212,10 +211,12 @@ class ExoPlayerFragment : PlayerBaseFragment(),
                         CommonConstants.STEREO -> it.getString(R.string.stereoChannelString)
                         else -> it.getString(R.string.unknown)
                     }
-                ScreenUtil.showToast(it, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                ScreenUtil.showToast(it, str,
+                    toastTextSize, ScreenUtil.FontSize_Pixel_Type,
                     Toast.LENGTH_SHORT)
             }
-            mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
+            mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed,
+                currentChannelPlayed)
         }
     }
     // end of implementing methods of super class

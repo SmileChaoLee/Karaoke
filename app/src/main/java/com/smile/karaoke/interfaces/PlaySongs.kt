@@ -7,4 +7,5 @@ interface PlaySongs {
     fun switchToPlayerView()
     fun isSoftDecoderFirst(): Boolean
     fun switchBetweenSoftAndHardDecoder()
+    fun showSmileAppsActivity()
 }

@@ -38,6 +38,7 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.interfaces.DismissFunction
 import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
@@ -437,6 +438,14 @@ abstract class BaseActivity : AppCompatActivity(),
         playerFragment?.let {
             it.mPresenter.playingParam.softDecoderFirst = !it.mPresenter.playingParam.softDecoderFirst
             it.playService?.switchDecoder()
+        }
+    }
+
+    override fun showSmileAppsActivity() {
+        Intent(this@BaseActivity,
+            SmileAppsActivity::class.java
+        ).also {
+            startActivity(it)
         }
     }
     // Finish implementing interface PlaySongs

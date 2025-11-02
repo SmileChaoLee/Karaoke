@@ -16,6 +16,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.AppLinkUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
 import videoplayer.Presenters.VlcPlayerPresenter
@@ -130,8 +131,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         return playService
     }
 
-    override fun setMenuItemsVisibility() {
-        val channelMenuItem = mainMenu?.findItem(R.id.channel)
+    override fun setupMenuItems() {
         channelMenuItem?.isVisible = true
         channelMenuItem?.isEnabled = false
     }

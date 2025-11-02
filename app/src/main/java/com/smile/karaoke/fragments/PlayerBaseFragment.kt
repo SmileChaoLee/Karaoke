@@ -3,6 +3,7 @@ package com.smile.karaoke.fragments
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -52,11 +53,13 @@ import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
+import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
@@ -82,6 +85,7 @@ abstract class PlayerBaseFragment : Fragment(),
     lateinit var mPresenter: PlayerBasePresenter
     private var screenSizeX = 0
     private var screenSizeY = 0
+    private var playSongs: PlaySongs? = null
     private var playBaseFragmentFunc: PlayBaseFragmentFunc? = null
     protected var fragmentView: View? = null
     protected var textFontSize = 0f
@@ -129,6 +133,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var nativeAdViewVisibility = 0
     private var nativeAdTemplateView: TemplateView? = null
     protected var mainMenu: Menu? = null
+    protected var channelMenuItem: MenuItem? = null
 
     // submenu of file
     private var softDecoderFirstMenuItem: MenuItem? = null
@@ -163,7 +168,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
-    abstract fun setMenuItemsVisibility()
+    abstract fun setupMenuItems()
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun onPlayServiceDisconnected()
     abstract fun startAndBindPlayService()
@@ -211,6 +216,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             }
 
+            if (it is PlaySongs) playSongs = it
             if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
             LogUtil.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
         }
@@ -390,13 +396,6 @@ abstract class PlayerBaseFragment : Fragment(),
         mainMenu = actionMenuView?.menu
         mainMenu?.clear()    // to avoid the issue of onCreateOptionsMenu being called multiple times
         inflater.inflate(R.menu.menu_main, mainMenu)
-        // final Context wrapper = new ContextThemeWrapper(this, R.style.menu_text_style);
-        // or
-        supportToolbar?.popupTheme?.let {
-            val wrapper: Context = ContextThemeWrapper(activity, it)
-            ScreenUtil.resizeMenuTextIconSize(wrapper, mainMenu, fontScale)
-        }
-
         // submenu of file
         mainMenu?.let {
             softDecoderFirstMenuItem = it.findItem(R.id.softDecoderFirst)
@@ -405,12 +404,18 @@ abstract class PlayerBaseFragment : Fragment(),
             // submenu of audio
             audioTrackMenuItem = it.findItem(R.id.audioTrack)
             // submenu of channel
+            channelMenuItem = it.findItem(R.id.channel)
             leftChannelMenuItem = it.findItem(R.id.leftChannel)
             rightChannelMenuItem = it.findItem(R.id.rightChannel)
             stereoChannelMenuItem = it.findItem(R.id.stereoChannel)
         }
-
         setMainMenu()
+        // final Context wrapper = new ContextThemeWrapper(this, R.style.menu_text_style);
+        // or
+        supportToolbar?.popupTheme?.let {
+            val wrapper: Context = ContextThemeWrapper(activity, it)
+            ScreenUtil.resizeMenuTextIconSize(wrapper, mainMenu, fontScale)
+        }
 
         return super.onCreateOptionsMenu(menu, inflater)
     }
@@ -524,6 +529,8 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.playRightChannel()
         } else if (id == R.id.stereoChannel) {
             mPresenter.playStereoChannel()
+        } else if (id == R.id.smileApps) {
+            playSongs?.showSmileAppsActivity()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -635,7 +642,7 @@ abstract class PlayerBaseFragment : Fragment(),
             val privacyPolicyMenuItem = mainMenu?.findItem(R.id.privacyPolicy)
             privacyPolicyMenuItem?.isVisible = isVisible
         }
-        setMenuItemsVisibility() // abstract method
+        setupMenuItems() // abstract method
     }
 
     private fun setMediaRouteButtonVisible() {

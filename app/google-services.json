@@ -3,9 +3,39 @@
     "project_number": "797351081505",
     "firebase_url": "https://smile-information-technology.firebaseio.com",
     "project_id": "smile-information-technology",
-    "storage_bucket": "smile-information-technology.appspot.com"
+    "storage_bucket": "smile-information-technology.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797351081505:android:eb4b38edc25c4f29e9d560",
+        "android_client_info": {
+          "package_name": "com.smile.ballsremover"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "797351081505-tf4eg92nsef9phli6injm0nopqpujp9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaBRrr0Ei1lucLN0W5hlLNYnAXQslrKck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "797351081505-tf4eg92nsef9phli6injm0nopqpujp9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-8354869049759576~1441776815"
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:797351081505:android:582a51010def0935e9d560",
@@ -72,44 +102,6 @@
         }
       },
       "admob_app_id": "ca-app-pub-8354869049759576~1891379677"
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:797351081505:android:9e9d2432772709e9",
-        "android_client_info": {
-          "package_name": "com.smile.fivecolorballs"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "797351081505-1cbceb2ba7svn5npble0up3kd9222ahh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.smile.fivecolorballs",
-            "certificate_hash": "4fe4d423e2d9bb50cbc1418ad2dbb8ae7d1b9bf6"
-          }
-        },
-        {
-          "client_id": "797351081505-tf4eg92nsef9phli6injm0nopqpujp9m.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAaBRrr0Ei1lucLN0W5hlLNYnAXQslrKck"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "797351081505-tf4eg92nsef9phli6injm0nopqpujp9m.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      },
-      "admob_app_id": "ca-app-pub-8354869049759576~8647116443"
     },
     {
       "client_info": {
@@ -181,9 +173,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:797351081505:android:26bb9bfb54eb718be9d560",
+        "mobilesdk_app_id": "1:797351081505:android:05ad2beaef5df2bbe9d560",
         "android_client_info": {
-          "package_name": "com.smile.musicplayer"
+          "package_name": "com.smile.karaoketvplayer"
         }
       },
       "oauth_client": [
@@ -235,7 +227,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-8354869049759576~5376732060"
     }
   ],
   "configuration_version": "1"

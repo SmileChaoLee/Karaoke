@@ -52,6 +52,7 @@ class SmileAppsActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            val textLineHeight = (KaraokeComposable.textFontSize.value + 10.0f).sp
             KaraokePlayerTheme {
                 Scaffold { innerPadding ->
                     Column(modifier = Modifier
@@ -93,8 +94,9 @@ class SmileAppsActivity : ComponentActivity() {
                                         )
                                     }
                                     Text(text = item.appUrl, color = Color.Black,
+                                        lineHeight = textLineHeight,
                                         fontWeight = FontWeight.Normal,
-                                        fontSize = KaraokeComposable.textFontSize
+                                        fontSize = KaraokeComposable.textFontSize,
                                     )
                                     HorizontalDivider(modifier = Modifier.fillMaxWidth(),
                                         thickness = 5.dp, color = Color.White)

@@ -492,24 +492,28 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
+                /*
                 if (isListingApps()) {
                     SmileAppsButton(
                         modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight
                     )
                 }
+                */
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
+                    /*
                     if (isListingApps()) {
                         SmileAppsButton(
                             modifier = Modifier.weight(1.0f),
                             buttonWidth, buttonHeight, textLineHeight
                         )
                     }
+                    */
                 }
             }
         }
