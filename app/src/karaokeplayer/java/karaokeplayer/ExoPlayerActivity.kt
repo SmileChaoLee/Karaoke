@@ -5,7 +5,6 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.AppLinkUtil
 import karaokeplayer.fragments.ExoPlayerFragment
 
 @OptIn(UnstableApi::class)
