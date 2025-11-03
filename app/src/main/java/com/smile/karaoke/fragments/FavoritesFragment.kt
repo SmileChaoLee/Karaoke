@@ -284,6 +284,12 @@ class FavoritesFragment : Fragment(),
         clearFavoriteList()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        LogUtil.i(TAG, "onConfigurationChanged")
+        setButtonsSize()
+        super.onConfigurationChanged(newConfig)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onStop")

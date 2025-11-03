@@ -36,6 +36,7 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -307,6 +308,12 @@ class OpenFileFragment : Fragment(),
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        LogUtil.i(TAG, "onConfigurationChanged")
+        setButtonsSize()
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
