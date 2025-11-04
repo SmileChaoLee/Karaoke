@@ -1,35 +1,31 @@
 package com.smile.karaoke
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.os.PowerManager
-import android.provider.Settings
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
+import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.fragments.TablayoutFragment
@@ -40,8 +36,11 @@ import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.smilelibraries.interfaces.DismissFunction
 import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.smilelibraries.utilities.UmpUtil
 
 private const val TAG : String = "BaseActivity"
 private const val PLAYER_FRAGMENT = "PlayerFragment"
@@ -49,7 +48,6 @@ private const val TAB_LAYOUT_FRAGMENT = "TablayoutFragment"
 private const val IS_PLAY_TO_PAUSE = "IsPlayToPause"
 private const val PLAY_DATA = "PlayData"
 private const val CALLING_COMPONENT = "CallingComponent"
-private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
 
 @UnstableApi
 abstract class BaseActivity : AppCompatActivity(),
@@ -68,6 +66,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
     private var interstitialAd: ShowInterstitial? = null
+    private var touchDisabled = true
 
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
@@ -77,6 +76,8 @@ abstract class BaseActivity : AppCompatActivity(),
         settingBeforeCreate()
         MySingleTon.clearSingleton()
         super.onCreate(savedInstanceState)
+        // disabling the touch events
+        touchDisabled = true
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -175,25 +176,20 @@ abstract class BaseActivity : AppCompatActivity(),
         })
 
         // Asking user's permissions
-        permissionExternalStorage =
-            (ActivityCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED)
-        if (!permissionExternalStorage) {
-            val permissions : Array<String> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        permissionExternalStorage = PermissionUtil.askPermissions(this@BaseActivity)
+
+        // user consent for personal data collection
+        // val deviceHashedId = "8F6C5B0830E624E8D8BFFB5853B4EDDD" // for debug test
+        val deviceHashedId = ""  // for release
+        UmpUtil.initConsentInformation(this@BaseActivity,
+            DEBUG_GEOGRAPHY_EEA, deviceHashedId,
+            object : UmpUtil.UmpInterface {
+                override fun callback() {
+                    LogUtil.d(TAG, "onCreate.initConsentInformation.finished")
+                    // enabling receiving touch events
+                    touchDisabled = false
                 }
-            ActivityCompat.requestPermissions(this,
-                permissions,
-                PERMISSION_WRITE_EXTERNAL_CODE
-            )
-        }
-        askIgnoreOptimizationsBattery()
+            })
 
         findViewById<FrameLayout>(R.id.activity_base_layout).apply {
             viewTreeObserver.addOnGlobalLayoutListener(
@@ -206,6 +202,7 @@ abstract class BaseActivity : AppCompatActivity(),
                 }
             })
             // this in here represent FrameLayout (R.id.activity_base_layout)
+            // fix: the bottom navigation bar covers some contents
             ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
                 // Get the insets for the system bars (status bar on top, navigation bar at bottom)
                 val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -217,16 +214,28 @@ abstract class BaseActivity : AppCompatActivity(),
         }
     }
 
-    @SuppressLint("BatteryLife")
-    private fun askIgnoreOptimizationsBattery() {
-        val pm = getSystemService(POWER_SERVICE) as? PowerManager
-        if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
-            val intent = Intent()
-            val pName = packageName
-            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-            intent.data = "package:$pName".toUri()
-            startActivity(intent)
+    @Deprecated(
+        "This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}."
+    )
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionExternalStorage = PermissionUtil.onRequestPermResult(requestCode, grantResults)
+        if (!permissionExternalStorage) {
+            ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
+            LogUtil.i(TAG, "onRequestPermissionsResult.Permission Denied")
+            finish()
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (touchDisabled) {
+            // Consume the touch event, effectively disabling touch
+            return true
+        }
+        // Allow touch events to proceed
+        return super.dispatchTouchEvent(ev)
     }
 
     override fun onStart() {

@@ -1,16 +1,12 @@
 package com.smile.karaoke
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.os.PowerManager
-import android.provider.Settings
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -49,8 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
 import com.smile.karaoke.smileapps.SmileAppsActivity
@@ -58,6 +52,7 @@ import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.ui.theme.Yellow3
+import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.smilelibraries.utilities.UmpUtil
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +61,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 abstract class BasePlayerActivity : ComponentActivity() {
+
+    companion object {
+        private const val TAG : String = "BasePlayerActivity"
+    }
 
     abstract fun getAppName(): String
     abstract fun getExoButtonName(): String
@@ -142,7 +141,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
         disableExitApp()
         disableMainButtons()
 
-        askPermissions()
+        // askPermissions()
+        permissionExternalStorage = PermissionUtil.askPermissions(this@BasePlayerActivity)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -161,10 +161,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 }
             }
             LaunchedEffect(Unit) {
+                // user consent for personal data collection
                 // val deviceHashedId = "8F6C5B0830E624E8D8BFFB5853B4EDDD" // for debug test
                 val deviceHashedId = ""  // for release
                 UmpUtil.initConsentInformation(this@BasePlayerActivity,
-                    DEBUG_GEOGRAPHY_EEA,deviceHashedId,
+                    DEBUG_GEOGRAPHY_EEA, deviceHashedId,
                     object : UmpUtil.UmpInterface {
                         override fun callback() {
                             LogUtil.d(TAG, "onCreate.initConsentInformation.finished")
@@ -183,54 +184,16 @@ abstract class BasePlayerActivity : ComponentActivity() {
         })
     }
 
-    private fun askPermissions() {
-        permissionExternalStorage =
-            (ActivityCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED)
-        if (!permissionExternalStorage) {
-            val permissions : Array<String> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            ActivityCompat.requestPermissions(this,
-                permissions,
-                PERMISSION_WRITE_EXTERNAL_CODE
-            )
-        }
-        askIgnoreOptimizationsBattery()
-    }
-
-    @SuppressLint("BatteryLife")
-    private fun askIgnoreOptimizationsBattery() {
-        val pm = getSystemService(POWER_SERVICE) as? PowerManager
-        if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
-            val intent = Intent()
-            val pName = packageName
-            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-            intent.data = "package:$pName".toUri()
-            startActivity(intent)
-        }
-    }
-
     @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
             LogUtil.d(TAG, "onRequestPermissionsResult.permissions = $str")
         }
-        if (requestCode == PERMISSION_WRITE_EXTERNAL_CODE) {
-            val rLen = grantResults.size
-            permissionExternalStorage = rLen > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            LogUtil.d(TAG, "onRequestPermissionsResult.permissionExternalStorage = $permissionExternalStorage")
-        }
+        permissionExternalStorage = PermissionUtil.onRequestPermResult(requestCode, grantResults)
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
-            LogUtil.d(TAG, "onRequestPermissionsResult.Permission Denied")
+            LogUtil.i(TAG, "onRequestPermissionsResult.Permission Denied")
             exitApp()
         }
     }
@@ -542,10 +505,5 @@ abstract class BasePlayerActivity : ComponentActivity() {
         super.onDestroy()
         LogUtil.d(TAG, "onDestroy")
         stopCast()
-    }
-
-    companion object {
-        private const val TAG : String = "BasePlayerActivity"
-        private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
     }
 }
