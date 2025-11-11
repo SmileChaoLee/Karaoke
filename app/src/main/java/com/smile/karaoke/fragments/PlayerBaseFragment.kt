@@ -3,7 +3,6 @@ package com.smile.karaoke.fragments
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -59,7 +58,6 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
-import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
@@ -69,6 +67,7 @@ import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.util.Locale
+import kotlin.math.abs
 
 private const val TAG: String = "PlayerBaseFragment"
 
@@ -146,6 +145,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var rightChannelMenuItem: MenuItem? = null
     private var stereoChannelMenuItem: MenuItem? = null
     private var oldMotionEventX = 0.0f
+    private var currentAudioPosition = 0L
     private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
     private var lastFocusView: ImageButton? = null
 
@@ -1045,12 +1045,13 @@ abstract class PlayerBaseFragment : Fragment(),
                 fragmentView?.requestFocus() // request focus for fragment view
             }
             it.setOnTouchListener { _, motionEvent ->
-                val posX = motionEvent.x
-                // LogUtil.d(TAG, "setOnTouchListener.motionEvent.x = $posX")
+                val posX = motionEvent.x    // keep changing if there is new motionEvent
+                LogUtil.d(TAG, "setOnTouchListener.motionEvent.x = $posX")
                 when (motionEvent.action) {
                     MotionEvent.ACTION_DOWN -> {
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_DOWN.posX = $posX")
                         oldMotionEventX = posX
+                        currentAudioPosition = mPresenter.playingParam.currentAudioPosition
                         mPresenter.removeMsgFromDurationBarHandler()
                     }
                     MotionEvent.ACTION_UP -> {
@@ -1070,39 +1071,33 @@ abstract class PlayerBaseFragment : Fragment(),
                             LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.out of the screen size")
                             return@run
                         }
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.posX = $posX")
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.oldMotionEventX = $oldMotionEventX")
                         val distance = posX - oldMotionEventX
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.screenSizeX = $screenSizeX")
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
-                        if (distance >= -20.0 && distance <= 20.0f) {
+                        if (abs(distance) <= 20.0f) {
                             LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.distance is too small")
                             return@run
                         }
                         val duration = playService.getMediaDuration()
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.duration = $duration")
                         if (duration > 0) {
-                            val currentTime = playService.getCurrentPosition()
-                            val progress = currentTime + ((distance / screenSizeX) * duration).toInt()
-                            if (progress <= (duration - 2000)) {
+                            // val currentTime = playService.getCurrentPosition()
+                            var progress = currentAudioPosition + ((distance / screenSizeX) * duration).toInt()
+                            if (progress < 0) {
+                                progress = 0
+                            } else if (progress > duration - 2000) {
                                 // less than 2 seconds before the end
-                                mPresenter.onDurationSeekBarProgressChanged(progress.toInt(),
-                                    true)
-                                update_Player_duration_seekbar_progress(progress.toInt())
-                                showSupportToolbarAudioControl() // show the player buttons
-                                // oldMotionEventX = posX
+                                progress = duration - 2000
                             }
+                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.currentAudioPosition = $currentAudioPosition")
+                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.progress = $progress")
+                            mPresenter.onDurationSeekBarProgressChanged(progress.toInt(),
+                                true)
+                            update_Player_duration_seekbar_progress(progress.toInt())
+                            showSupportToolbarAudioControl() // show the player buttons
                         }
-                        /*
-                        if (duration > 0) {
-                            playerDurationSeekbar?.let {
-                                val progress = it.progress + ((distance / screenSizeX) * duration).toInt()
-                                if (progress <= (duration - 2000)) {
-                                    // less than 2 seconds before the end
-                                    it.progress = progress
-                                    mPresenter.onDurationSeekBarProgressChanged(it.progress, true)
-                                    showSupportToolbarAudioControl() // show the player buttons
-                                    oldMotionEventX = posX
-                                }
-                            }
-                        }
-                        */
                     }
                     MotionEvent.ACTION_OUTSIDE -> {
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_OUTSIDE")
