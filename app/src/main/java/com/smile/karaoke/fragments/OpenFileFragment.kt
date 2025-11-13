@@ -25,9 +25,9 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
+import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.PlaySongs
@@ -36,7 +36,6 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -111,7 +110,6 @@ class OpenFileFragment : Fragment(),
         }
 
         object : BroadcastReceiver() {
-            @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
                 LogUtil.i(TAG, "BroadcastReceiver.onReceive")
                 val focusView = activity?.currentFocus
@@ -119,8 +117,7 @@ class OpenFileFragment : Fragment(),
                     if (it == SEARCH_FOLDER_COMPLETED) {
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
                         pathTextView?.text = MySingleTon.currentPath
-                        myRecyclerViewAdapter?.notifyDataSetChanged()
-                        searchCompleted = true  // searching thread finished
+                        myRecyclerViewAdapter?.myNotifyDataSetChanged()
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
                         if (MySingleTon.fileList.isEmpty()) {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
@@ -129,6 +126,7 @@ class OpenFileFragment : Fragment(),
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
                             backKeyButton?.requestFocus()
                         }
+                        searchCompleted = true  // searching thread finished
                     }
                 }
             }
@@ -331,6 +329,7 @@ class OpenFileFragment : Fragment(),
     override fun onRecyclerItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
         if (position < 0) return
+        v?.requestFocus()
         if (MySingleTon.fileList[position].file.isFile) {
             MySingleTon.fileList[position].selected = !MySingleTon.fileList[position].selected
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
@@ -340,10 +339,9 @@ class OpenFileFragment : Fragment(),
         searchCurrentFolder()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun clearFileList() {
         MySingleTon.fileList.clear()
-        myRecyclerViewAdapter?.notifyDataSetChanged()
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
     }
 
     fun searchCurrentFolder() {
@@ -437,6 +435,7 @@ class OpenFileFragment : Fragment(),
         */
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setButtonsSize() {
         val buttonWidth = (textFontSize*1.5f).toInt()
         var percentWidth = 1.0f
@@ -451,6 +450,14 @@ class OpenFileFragment : Fragment(),
         constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.matchConstraintPercentWidth = percentWidth
+        buttonLayout.setOnTouchListener { view, _ ->
+            // issue requestFocus() will get focus immediately
+            // but it still be able to get focus a little bit later
+            // if do not issue requestFocus()
+            val hasFocus = view.requestFocus()
+            LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
+            false
+        }
 
         var linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
         linearParam.setMargins(0, 0, rightMargin, 0)
@@ -465,7 +472,7 @@ class OpenFileFragment : Fragment(),
 
         linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
         linearParam.setMargins(0, 0, 0, 0)
-        linearParam.gravity = Gravity.CENTER_VERTICAL or Gravity.END
+        linearParam.gravity = Gravity.CENTER
         appsImageButton?.layoutParams = linearParam
     }
 
@@ -518,11 +525,7 @@ class OpenFileFragment : Fragment(),
                 tColor, transparentLightGray, textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
-            filesRecyclerView?.layoutManager = object : LinearLayoutManager(context) {
-                override fun isAutoMeasureEnabled(): Boolean {
-                    return false
-                }
-            }
+            filesRecyclerView?.layoutManager = MyLinearLayoutManager(context)
         }
     }
 

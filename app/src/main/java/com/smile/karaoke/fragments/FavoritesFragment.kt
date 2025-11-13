@@ -1,6 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -24,11 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
+import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
@@ -91,7 +90,6 @@ class FavoritesFragment : Fragment(),
         } // update the UI }
 
         object : BroadcastReceiver() {
-            @SuppressLint("NotifyDataSetChanged")
             override fun onReceive(context: Context?, intent: Intent?) {
                 LogUtil.i(TAG, "BroadcastReceiver.onReceive")
                 intent?.action?.let {
@@ -104,7 +102,7 @@ class FavoritesFragment : Fragment(),
                                 ScreenUtil.FontSize_Pixel_Type,
                                 Toast.LENGTH_SHORT)
                         }
-                        myRecyclerViewAdapter?.notifyDataSetChanged()
+                        myRecyclerViewAdapter?.myNotifyDataSetChanged()
                         searchCompleted = true  // searching thread finished
                         if (MySingleTon.favorites.isEmpty()) {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
@@ -309,10 +307,9 @@ class FavoritesFragment : Fragment(),
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun clearFavoriteList() {
         MySingleTon.favorites.clear()
-        myRecyclerViewAdapter?.notifyDataSetChanged()
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
     }
 
     fun searchFavorites() {
@@ -380,6 +377,14 @@ class FavoritesFragment : Fragment(),
         constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.matchConstraintPercentWidth = percentWidth
+        buttonLayout.setOnTouchListener { view, _ ->
+            // issue requestFocus() will get focus immediately
+            // but it still be able to get focus a little bit later
+            // if do not issue requestFocus()
+            val hasFocus = view.requestFocus()
+            LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
+            false
+        }
 
         var linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
         linearParam.setMargins(0, 0, rightMargin, 0)
@@ -393,7 +398,7 @@ class FavoritesFragment : Fragment(),
 
         linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
         linearParam.setMargins(0, 0, 0, 0)
-        linearParam.gravity = Gravity.CENTER_VERTICAL or Gravity.END
+        linearParam.gravity = Gravity.CENTER
         appsImageButton?.layoutParams = linearParam
     }
 
@@ -414,11 +419,7 @@ class FavoritesFragment : Fragment(),
                 videoThumbnailsWidth, videoThumbnailsHeight)
 
             myListRecyclerView?.adapter = myRecyclerViewAdapter
-            myListRecyclerView?.layoutManager = object : LinearLayoutManager(context) {
-                override fun isAutoMeasureEnabled(): Boolean {
-                    return false
-                }
-            }
+            myListRecyclerView?.layoutManager = MyLinearLayoutManager(context)
         }
     }
 

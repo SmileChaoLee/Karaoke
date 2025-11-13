@@ -1,5 +1,6 @@
 package com.smile.karaoke.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,6 @@ import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import kotlin.times
 
 class FavoriteRecyclerViewAdapter (
     private var recyclerItemClickListener : OnRecyclerItemClickListener,
@@ -29,6 +29,7 @@ class FavoriteRecyclerViewAdapter (
     }
 
     private var positionUpdated: Int = -1
+    private var isDataSetChanged = false
 
     companion object {
         private const val TAG = "FaRecyclerVAdapter"
@@ -83,10 +84,17 @@ class FavoriteRecyclerViewAdapter (
                 else transparentLightGray)
             }
         }
-        if (position == 0) {
-            holder.itemView.requestFocus()
+
+        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
+        else transparentLightGray)
+
+        if (isDataSetChanged) {
+            if (position == 0) {
+                holder.itemView.requestFocus()
+            }
+            isDataSetChanged = false
         }
-        if(position == positionUpdated) {
+        if (position == positionUpdated) {
             holder.itemView.requestFocus()
             positionUpdated = -1
         }
@@ -101,5 +109,12 @@ class FavoriteRecyclerViewAdapter (
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
         notifyItemChanged(position)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun myNotifyDataSetChanged() {
+        LogUtil.d(TAG, "myNotifyDataSetChanged")
+        isDataSetChanged = true
+        notifyDataSetChanged()
     }
 }

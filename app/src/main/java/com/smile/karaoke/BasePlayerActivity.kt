@@ -2,7 +2,6 @@ package com.smile.karaoke
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Bundle
@@ -120,21 +119,21 @@ abstract class BasePlayerActivity : ComponentActivity() {
         exoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            LogUtil.d(TAG, "exoLauncher.result received")
+            LogUtil.d(TAG, "exoLauncher.receive.result = $result")
             loadingMessage.value = ""
         }
 
         vlcLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            LogUtil.d(TAG, "vlcLauncher.result received")
+            LogUtil.d(TAG, "vlcLauncher.receive.result = $result")
             loadingMessage.value = ""
         }
 
         smileAppsLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            LogUtil.i(TAG, "smileAppsLauncher.result received")
+            LogUtil.d(TAG, "smileAppsLauncher.receive.result = $result")
             loadingMessage.value = ""
         }
 
@@ -184,7 +183,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
         })
     }
 
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (str : String? in permissions) {
@@ -274,12 +273,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         buttonHeight: Float,
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "ExoPlayerButton")
+
+        val focusRequester = remember { FocusRequester() }
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
-            val focusRequester = remember { FocusRequester() }
             val exoClicked = remember { mutableStateOf(false) }
             Button(
                 enabled = isExoEnabled,
@@ -291,11 +291,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         exoClicked.value = false
                     }
                 },
-                modifier = Modifier
+                modifier = Modifier.focusRequester(focusRequester)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
-                    .background(color = buttonBackground)
-                    .focusRequester(focusRequester),
+                    .background(color = buttonBackground),
                 interactionSource = interactionSource,
                 colors = ButtonColors(
                     containerColor =
@@ -315,6 +314,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
             Text(text = getString(R.string.exoDescription),
                 lineHeight = textLineHeight,
                 color = Color.Red, fontSize = KaraokeComposable.toastFontSize)
+        }
+
+        LaunchedEffect(true) {
+            delay(2000L)
+            focusRequester.requestFocus()
         }
     }
 
@@ -367,48 +371,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun SmileAppsButton(modifier: Modifier = Modifier,
-                        buttonWidth: Float,
-                        buttonHeight: Float,
-                        textLineHeight: TextUnit) {
-        LogUtil.d(TAG, "SmileAppsButton")
-        Column(modifier = modifier,
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center) {
-            val isClicked = remember { mutableStateOf(false) }
-            Button(
-                enabled = isSmileAppsEnabled,
-                onClick = {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        isClicked.value = true
-                        delay(200)
-                        showSmileAppsActivity()
-                        isClicked.value = false
-                    }
-                },
-                modifier = Modifier
-                    .width(width = buttonWidth.dp)
-                    .height(height = buttonHeight.dp)
-                    .background(color = buttonBackground),
-                colors = ButtonColors(
-                    containerColor =
-                        if (!isClicked.value) buttonContainerColor
-                        else Color.Cyan,
-                    disabledContainerColor = buttonContainerColor,
-                    contentColor =
-                        if (!isClicked.value)
-                            buttonContentColor
-                        else Color.Red ,
-                    disabledContentColor = buttonContentColor
-                )
-            )
-            { Text(text = getString(R.string.smileApps),
-                lineHeight = textLineHeight,
-                fontSize = KaraokeComposable.textFontSize) }
-        }
-    }
-
-    @Composable
     fun ExoVlcButtons(modifier: Modifier = Modifier,
                       buttonWidth: Float, buttonHeight: Float,
                       textLineHeight: TextUnit) {
@@ -455,28 +417,12 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
-                /*
-                if (isListingApps()) {
-                    SmileAppsButton(
-                        modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight
-                    )
-                }
-                */
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
-                    /*
-                    if (isListingApps()) {
-                        SmileAppsButton(
-                            modifier = Modifier.weight(1.0f),
-                            buttonWidth, buttonHeight, textLineHeight
-                        )
-                    }
-                    */
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.smile.karaoke.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class OpenFilesRecyclerViewAdapter(
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
     private var positionUpdated: Int = -1
+    private var isDataSetChanged = false
 
     interface OnRecyclerItemClickListener {
         fun onRecyclerItemClick(v: View?, position: Int)
@@ -46,7 +48,6 @@ class OpenFilesRecyclerViewAdapter(
             fileNameTextView.visibility = View.VISIBLE
             videoImageView = itemView.findViewById(R.id.videoImageView)
             videoImageView.visibility = View.VISIBLE
-
             itemView.setOnClickListener { view ->
                 LogUtil.d(TAG, "setOnClickListener.position = $bindingAdapterPosition")
                 recyclerItemClickListener.onRecyclerItemClick(
@@ -66,6 +67,7 @@ class OpenFilesRecyclerViewAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
+        LogUtil.d(TAG, "onBindViewHolder.item.filename = ${item.file.name}")
         holder.videoImageView.setImageBitmap(item.bm)
         holder.fileNameTextView.apply {
             text = item.file.name
@@ -78,12 +80,14 @@ class OpenFilesRecyclerViewAdapter(
                 textFontSize * 0.8f,
                 ScreenUtil.FontSize_Pixel_Type)
             holder.videoImageView.visibility = View.GONE
+            LogUtil.d(TAG, "onBindViewHolder.item.file isDirectory")
         } else {
             holder.folderImageView.visibility = View.GONE
             ScreenUtil.resizeTextSize(holder.fileNameTextView,
                 textFontSize * 0.5f,
                 ScreenUtil.FontSize_Pixel_Type)
             holder.videoImageView.visibility = View.VISIBLE
+            LogUtil.d(TAG, "onBindViewHolder.item.file not isDirectory")
         }
 
         var layoutParams: ViewGroup.MarginLayoutParams = holder.folderImageView.layoutParams
@@ -98,24 +102,34 @@ class OpenFilesRecyclerViewAdapter(
         layoutParams.height = videoThumbnailsHeight
 
         holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener")
             if (hasFocus) {
+                LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener.hasFocus")
                 v.setBackgroundColor(SmileAppBase.accentColor) // Example
             } else {
+                LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener.no hasFocus")
                 v.setBackgroundColor(if (position % 2 == 0) Color.BLACK
                 else transparentLightGray)
             }
         }
-        if (position == 0) {
-            holder.itemView.requestFocus()
+
+        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
+        else transparentLightGray)
+
+        if (isDataSetChanged) {
+            if (position == 0) {
+                holder.itemView.requestFocus()
+            }
+            isDataSetChanged = false
         }
-        if(position == positionUpdated) {
+        if (position == positionUpdated) {
             holder.itemView.requestFocus()
             positionUpdated = -1
         }
     }
 
     override fun getItemCount(): Int {
-        LogUtil.d(TAG, "getItemCount().favoriteList.size = ${mList.size}")
+        LogUtil.d(TAG, "getItemCount().size = ${mList.size}")
         return mList.size
     }
 
@@ -123,5 +137,12 @@ class OpenFilesRecyclerViewAdapter(
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
         notifyItemChanged(position)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun myNotifyDataSetChanged() {
+        LogUtil.d(TAG, "myNotifyDataSetChanged")
+        isDataSetChanged = true
+        notifyDataSetChanged()
     }
 }
