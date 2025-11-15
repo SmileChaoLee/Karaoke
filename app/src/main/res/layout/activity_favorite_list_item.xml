@@ -14,7 +14,7 @@
             android:typeface="monospace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/background_dark"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
             android:text="@string/titleWithColonString"
             android:gravity="start|center_vertical"
@@ -44,7 +44,7 @@
             android:typeface="monospace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/background_dark"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
             android:text="@string/filePathWithColonString"
             android:gravity="start|center_vertical"
@@ -82,7 +82,7 @@
                 android:typeface="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/background_dark"
+                android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:text="@string/musicTrackWithColonString"
                 android:gravity="start|center_vertical"
@@ -112,7 +112,7 @@
                 android:typeface="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/background_dark"
+                android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:text="@string/musicChannelWithColonString"
                 android:gravity="start|center_vertical"
@@ -151,7 +151,7 @@
                 android:typeface="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/background_dark"
+                android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:text="@string/vocalTrackWithColonString"
                 android:gravity="start|center_vertical"
@@ -181,7 +181,7 @@
                 android:typeface="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/background_dark"
+                android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:text="@string/vocalChannelWithColonString"
                 android:gravity="start|center_vertical"
@@ -210,7 +210,7 @@
         <TextView android:id="@+id/includedPlaylistTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@android:color/background_dark"
+            android:textColor="@android:color/black"
             android:textScaleX="1.0"
             android:typeface="monospace"
             android:textStyle="bold"
@@ -224,6 +224,8 @@
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:gravity="start|center_vertical"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_toEndOf="@+id/includedPlaylistTextView"
             android:layout_alignTop="@+id/includedPlaylistTextView">
         </CheckBox>
@@ -247,8 +249,10 @@
                 android:text="@string/editString"
                 android:textAllCaps="false"
                 android:textStyle="normal"
+                android:focusable="true"
+                android:clickable="true"
                 android:background="@android:drawable/btn_default"
-                android:textColor="@android:color/background_dark">
+                android:textColor="@android:color/black">
             </Button>
         </LinearLayout>
         <LinearLayout
@@ -267,8 +271,10 @@
                 android:text="@string/deleteString"
                 android:textAllCaps="false"
                 android:textStyle="normal"
+                android:focusable="true"
+                android:clickable="true"
                 android:background="@android:drawable/btn_default"
-                android:textColor="@android:color/background_dark">
+                android:textColor="@android:color/black">
             </Button>
         </LinearLayout>
         <LinearLayout
@@ -287,8 +293,10 @@
                 android:text="@string/playString"
                 android:textAllCaps="false"
                 android:textStyle="normal"
+                android:focusable="true"
+                android:clickable="true"
                 android:background="@android:drawable/btn_default"
-                android:textColor="@android:color/background_dark">
+                android:textColor="@android:color/black">
             </Button>
         </LinearLayout>
     </RelativeLayout>

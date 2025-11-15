@@ -51,9 +51,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LogUtil.d(TAG, "onCreate() is called.");
 
-        float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this, ScreenUtil.FontSize_Pixel_Type);
-        float textFontSize = ScreenUtil.suitableFontSize(this, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
-        // float fontScale = ScreenUtil.suitableFontScale(this, ScreenUtil.FontSize_Pixel_Type, 0.0f);
+        float textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
         textFontSize *= 0.8f;
         toastTextSize = 0.9f * textFontSize;
 

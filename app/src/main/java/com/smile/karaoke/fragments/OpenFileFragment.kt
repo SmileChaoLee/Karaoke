@@ -19,7 +19,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -30,6 +29,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleTon
@@ -41,8 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class OpenFileFragment : Fragment(),
-    OpenFilesRecyclerViewAdapter.OnRecyclerItemClickListener {
+class OpenFileFragment : Fragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
@@ -53,7 +52,6 @@ class OpenFileFragment : Fragment(),
     private var videoThumbnailsWidth = 0
     private var videoThumbnailsHeight = 0
     private var fragmentView : View? = null
-    private var playSongs: PlaySongs? = null
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
@@ -69,6 +67,8 @@ class OpenFileFragment : Fragment(),
     private var addToFavoriteButton: ImageButton? = null
     private var showVideoButton: ImageButton? = null
     private var appsImageButton: ImageButton? = null
+
+    private var playSongs: PlaySongs? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -326,8 +326,8 @@ class OpenFileFragment : Fragment(),
         mediaRetriever.release()
     }
 
-    override fun onRecyclerItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
+    override fun onItemClick(v: View?, position: Int) {
+        LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
         v?.requestFocus()
         if (MySingleTon.fileList[position].file.isFile) {
@@ -517,12 +517,9 @@ class OpenFileFragment : Fragment(),
     private fun initFilesRecyclerView() {
         LogUtil.i(TAG, "initFilesRecyclerView() is called")
         activity?.let {
-            val tColor = ContextCompat.getColor(it, R.color.gnt_green)
-            val transparentLightGray = ContextCompat.getColor(it,
-                R.color.transparentLightGray)
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
                 this, MySingleTon.fileList,
-                tColor, transparentLightGray, textFontSize,
+                textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
             filesRecyclerView?.layoutManager = MyLinearLayoutManager(context)

@@ -1,5 +1,6 @@
 package com.smile.karaoke.fragments
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -19,7 +20,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -28,6 +28,7 @@ import com.smile.karaoke.BaseFavoriteListActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
+import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
@@ -38,8 +39,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class FavoritesFragment : Fragment(),
-    FavoriteRecyclerViewAdapter.OnRecyclerItemClickListener {
+class FavoritesFragment : Fragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "FavoritesFragment"
@@ -299,7 +299,7 @@ class FavoritesFragment : Fragment(),
         mediaRetriever.release()
     }
 
-    override fun onRecyclerItemClick(v: View?, position: Int) {
+    override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
         MySingleTon.favorites[position].apply {
             song.included = if (song.included == "1") "0" else "1"
@@ -363,6 +363,7 @@ class FavoritesFragment : Fragment(),
         }.start()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setButtonsSize() {
         val buttonWidth = (textFontSize*1.5f).toInt()
         var percentWidth = 1.0f
@@ -409,15 +410,10 @@ class FavoritesFragment : Fragment(),
     private fun initFavoriteRecyclerView() {
         LogUtil.i(TAG, "initFavoriteRecyclerView")
         activity?.let {
-            val tColor = ContextCompat.getColor(it, R.color.gnt_green)
-            val transparentLightGray = ContextCompat.getColor(it,
-                R.color.transparentLightGray)
-
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(
                     this, MySingleTon.favorites,
-                tColor, transparentLightGray, textFontSize,
+                textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)
-
             myListRecyclerView?.adapter = myRecyclerViewAdapter
             myListRecyclerView?.layoutManager = MyLinearLayoutManager(context)
         }

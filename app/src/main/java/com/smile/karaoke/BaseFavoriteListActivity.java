@@ -39,7 +39,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     private final String PositionEditState = "PositionEdit";
     private SongListSQLite songListSQLite;
     private float textFontSize;
-    private float toastTextSize;
     private ActivityResultLauncher<Intent> editFavoritesLauncher;
     private String currentAction = CommonConstants.ADD_ACTION;
     private float weightSum = 0.f;
@@ -54,10 +53,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.d(TAG, "onCreate");
-        float defaultTextFontSize = ScreenUtil.getDefaultTextSizeFromTheme(this, ScreenUtil.FontSize_Pixel_Type);
-        textFontSize = ScreenUtil.suitableFontSize(this, defaultTextFontSize, ScreenUtil.FontSize_Pixel_Type, 0.0f);
-        // float fontScale = ScreenUtil.suitableFontScale(this, ScreenUtil.FontSize_Pixel_Type, 0.0f);
-        toastTextSize = 0.8f * textFontSize;
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
         songListSQLite = new SongListSQLite(getApplicationContext());
 
         super.onCreate(savedInstanceState);
@@ -197,7 +193,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         int yellow2Color = ContextCompat.getColor(this, R.color.yellow2);
         int yellow3Color = ContextCompat.getColor(this, R.color.yellow3);
 
-        myRecyclerViewAdapter = SelectedFavoriteAdapter.getInstance(
+        myRecyclerViewAdapter = new SelectedFavoriteAdapter(
                 this, songListSQLite,
                 MySingleTon.INSTANCE.getSelectedFavorites(),
                 textFontSize, yellow2Color, yellow3Color);
@@ -248,23 +244,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         LogUtil.d(TAG, "playSongButtonFunc.positionEdit = " + positionEdit);
         positionEdit = -1;  // no edit or delete
         currentAction = CommonConstants.PLAY_ACTION;
-        /*
-        // getCallingActivity() only works from startActivityForResult
-        LogUtil.d(TAG, "playSongButtonFunc.getCallingActivity() = " + getCallingActivity());
-        Intent playerActivityIntent = new Intent();
-        playerActivityIntent.setComponent(getCallingActivity());
-        playerActivityIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        Bundle extras = new Bundle();
-        extras.putBoolean(PlayerConstants.IsPlaySingleSongState, true);   // play single song
-        extras.putParcelable(PlayerConstants.SingleSongInfoState,
-                (MySingleTon.INSTANCE.getSelectedFavorites().get(position)));
-        playerActivityIntent.putExtras(extras);
-        ActivityResultLauncher<Intent> playSongLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), result -> {
-                    LogUtil.d(TAG, "playSongButtonFunc.playSongLauncher.result");
-                });
-        playSongLauncher.launch(playerActivityIntent);
-        */
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         Intent bIntent = new Intent(PlayerConstants.PlaySingleSongAction);
         Bundle extras = new Bundle();
@@ -298,7 +277,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
     private void setLayoutViewWeight() {
         Point screen = ScreenUtil.getScreenSize(this);
-        LogUtil.d(TAG, "onCreate.textFontSize = " + textFontSize);
+        LogUtil.d(TAG, "setLayoutViewWeight.textFontSize = " + textFontSize);
         float factor = (textFontSize * 2.5f) / screen.y;
         LinearLayout.LayoutParams layoutP = (LinearLayout.LayoutParams)favoritesTitleLayout.getLayoutParams();
         float weight = weightSum * factor;

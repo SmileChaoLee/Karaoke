@@ -1,5 +1,6 @@
 package com.smile.karaoke.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,6 @@ import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-private const val TAG : String = "SelectedFavoriteAdapter"
-
 class SelectedFavoriteAdapter (
         private var itemClickListener : OnRecyclerItemClickListener,
         private var songListSQLite : SongListSQLite,
@@ -23,6 +22,9 @@ class SelectedFavoriteAdapter (
 
     : RecyclerView.Adapter<SelectedFavoriteAdapter.MyViewHolder>() {
 
+    private var positionUpdated: Int = -1
+    private var isDataSetChanged = true
+
     interface OnRecyclerItemClickListener {
         fun onRecyclerItemClick(v: View?, position: Int)
         fun editSongButtonFunc(position : Int)
@@ -31,6 +33,8 @@ class SelectedFavoriteAdapter (
     }
 
     companion object {
+        private const val TAG = "SelectedFavAdapter"
+        /*
         private var viewAdapter : SelectedFavoriteAdapter? = null
         @JvmStatic
         fun getInstance(itemClickListener: OnRecyclerItemClickListener,
@@ -56,6 +60,7 @@ class SelectedFavoriteAdapter (
 
             return viewAdapter!!
         }
+        */
     }
 
     class MyViewHolder(itemView: View, itemClickListener : OnRecyclerItemClickListener, textFontSize: Float)
@@ -68,6 +73,9 @@ class SelectedFavoriteAdapter (
         val vocalTrackTextView: TextView
         val vocalChannelTextView: TextView
         val includedPlaylistCheckBox: CheckBox
+        val editSongButton : Button
+        val deleteSongButton : Button
+        val playSongButton : Button
         var inPlaylist: Boolean = true
 
         init {
@@ -106,36 +114,56 @@ class SelectedFavoriteAdapter (
             ScreenUtil.resizeTextSize(vocalChannelTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
 
             // audioVocalLinearLayout.setVisibility(View.GONE);
-            audioVocalLinearLayout.setVisibility(View.VISIBLE)
+            audioVocalLinearLayout.visibility = View.VISIBLE
 
             val includedPlaylistTextView : TextView = itemView.findViewById(R.id.includedPlaylistTextView)
             ScreenUtil.resizeTextSize(includedPlaylistTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
             includedPlaylistCheckBox = itemView.findViewById(R.id.includedPlaylistCheckBox)
             ScreenUtil.resizeTextSize(includedPlaylistCheckBox, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
-            val editSongButton : Button = itemView.findViewById(R.id.editSongButton)
+            includedPlaylistCheckBox.onFocusChangeListener
+            includedPlaylistCheckBox.onFocusChangeListener = View.OnFocusChangeListener{ _, hasFocus ->
+                if (hasFocus) {
+                    includedPlaylistTextView.setBackgroundColor(SmileAppBase.accentColor)
+                    includedPlaylistCheckBox.setBackgroundColor(Color.BLUE)
+                } else {
+                    includedPlaylistTextView.setBackgroundColor(Color.TRANSPARENT)
+                    includedPlaylistCheckBox.setBackgroundColor(Color.TRANSPARENT)
+                }
+            }
+
+            val pos = bindingAdapterPosition
+
+            editSongButton = itemView.findViewById(R.id.editSongButton)
             ScreenUtil.resizeTextSize(editSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
-            val deleteSongButton : Button = itemView.findViewById(R.id.deleteSongButton)
+            deleteSongButton = itemView.findViewById(R.id.deleteSongButton)
             ScreenUtil.resizeTextSize(deleteSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
-            val playSongButton : Button = itemView.findViewById(R.id.playSongButton)
+            playSongButton = itemView.findViewById(R.id.playSongButton)
             ScreenUtil.resizeTextSize(playSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
 
             // the following is still needed to be test (have to reduce the usage of memory)
             // if (!com.smile.karaokeplayer.BuildConfig.DEBUG) playSongButton.setVisibility(View.GONE);
             editSongButton.setOnClickListener {
-                LogUtil.d(TAG, "editSongButton.bindingAdapterPosition = $bindingAdapterPosition")
-                itemClickListener.editSongButtonFunc(bindingAdapterPosition)
+                LogUtil.d(TAG, "MyViewHolder.editSongButton.pos = $pos")
+                itemClickListener.editSongButtonFunc(pos)
             }
             deleteSongButton.setOnClickListener {
-                LogUtil.d(TAG, "deleteSongButton.bindingAdapterPosition = $bindingAdapterPosition")
-                itemClickListener.deleteSongButtonFunc(bindingAdapterPosition)
+                LogUtil.d(TAG, "MyViewHolder.deleteSongButton.pos = $pos")
+                itemClickListener.deleteSongButtonFunc(pos)
             }
             playSongButton.setOnClickListener {
-                LogUtil.d(TAG, "playSongButton.bindingAdapterPosition = $bindingAdapterPosition")
-                itemClickListener.playSongButtonFunc(bindingAdapterPosition)
+                LogUtil.d(TAG, "MyViewHolder.playSongButton.pos = $pos")
+                itemClickListener.playSongButtonFunc(pos)
             }
             itemView.setOnClickListener {
-                LogUtil.d(TAG, "itemView.bindingAdapterPosition = $bindingAdapterPosition")
-                itemClickListener.onRecyclerItemClick(itemView, bindingAdapterPosition)
+                LogUtil.d(TAG, "MyViewHolder.itemView.pos = $pos")
+                itemClickListener.onRecyclerItemClick(itemView, pos)
+            }
+
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                LogUtil.d(TAG, "MyViewHolder.itemView.onFocusChangeListener.hasFocus = $hasFocus")
+                if (hasFocus) {
+                    editSongButton.requestFocus()
+                }
             }
         }
     }
@@ -170,11 +198,36 @@ class SelectedFavoriteAdapter (
 
             itemView.setBackgroundColor(if (position % 2 == 0) yellow2Color
             else yellow3Color)
+
+            if (isDataSetChanged) {
+                if (position == 0) {
+                    holder.itemView.requestFocus()
+                }
+                isDataSetChanged = false
+            }
+            
+            if (position == positionUpdated) {
+                holder.itemView.requestFocus()
+                positionUpdated = -1
+            }
         }
+    }
+
+    override fun onViewAttachedToWindow(holder: MyViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        val position = holder.absoluteAdapterPosition
+        LogUtil.d(TAG, "onViewAttachedToWindow.position = $position")
     }
 
     override fun getItemCount(): Int {
         LogUtil.d(TAG, "getItemCount().mList.size = ${mList.size}")
         return mList.size
+    }
+
+    fun myNotifyItemChanged(position:Int) {
+        LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
+        positionUpdated = position
+        isDataSetChanged = true
+        notifyItemChanged(position)
     }
 }

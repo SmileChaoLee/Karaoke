@@ -9,15 +9,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
-import com.smile.karaoke.SmileAppBase
+import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 class OpenFilesRecyclerViewAdapter(
-    private var recyclerItemClickListener : OnRecyclerItemClickListener,
-    private var mList : java.util.ArrayList<FileDescription>,
-    private var textColor : Int, private var transparentLightGray : Int,
+    private val itemListener : RecyclerItemListener,
+    private val mList : java.util.ArrayList<FileDescription>,
     private val textFontSize: Float,
     private val videoThumbnailsWidth: Int,
     private val videoThumbnailsHeight: Int)
@@ -25,18 +24,14 @@ class OpenFilesRecyclerViewAdapter(
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
     private var positionUpdated: Int = -1
-    private var isDataSetChanged = false
-
-    interface OnRecyclerItemClickListener {
-        fun onRecyclerItemClick(v: View?, position: Int)
-    }
+    private var isDataSetChanged = true
 
     companion object {
         private const val TAG = "FilesRecyclerVAdapter"
     }
 
     class MyViewHolder(itemView: View,
-                       recyclerItemClickListener : OnRecyclerItemClickListener)
+                       itemListener : RecyclerItemListener)
         : RecyclerView.ViewHolder(itemView) {
         val folderImageView: ImageView
         val fileNameTextView: TextView
@@ -50,8 +45,13 @@ class OpenFilesRecyclerViewAdapter(
             videoImageView.visibility = View.VISIBLE
             itemView.setOnClickListener { view ->
                 LogUtil.d(TAG, "setOnClickListener.position = $bindingAdapterPosition")
-                recyclerItemClickListener.onRecyclerItemClick(
+                itemListener.onItemClick(
                     view, bindingAdapterPosition)
+            }
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                itemListener.onItemViewFocusChanged(
+                    v, bindingAdapterPosition, hasFocus
+                )
             }
         }
     }
@@ -61,71 +61,67 @@ class OpenFilesRecyclerViewAdapter(
         LogUtil.d(TAG, "onCreateViewHolder.mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_open_file_item, parent, false)
-        return MyViewHolder(fileView, recyclerItemClickListener)
+        return MyViewHolder(fileView, itemListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
         LogUtil.d(TAG, "onBindViewHolder.item.filename = ${item.file.name}")
-        holder.videoImageView.setImageBitmap(item.bm)
-        holder.fileNameTextView.apply {
-            text = item.file.name
-            setTextColor(Color.WHITE)
-            if (item.selected) setTextColor(textColor)
-        }
-        if (item.file.isDirectory) {
-            holder.folderImageView.visibility = View.VISIBLE
-            ScreenUtil.resizeTextSize(holder.fileNameTextView,
-                textFontSize * 0.8f,
-                ScreenUtil.FontSize_Pixel_Type)
-            holder.videoImageView.visibility = View.GONE
-            LogUtil.d(TAG, "onBindViewHolder.item.file isDirectory")
-        } else {
-            holder.folderImageView.visibility = View.GONE
-            ScreenUtil.resizeTextSize(holder.fileNameTextView,
-                textFontSize * 0.5f,
-                ScreenUtil.FontSize_Pixel_Type)
-            holder.videoImageView.visibility = View.VISIBLE
-            LogUtil.d(TAG, "onBindViewHolder.item.file not isDirectory")
-        }
-
-        var layoutParams: ViewGroup.MarginLayoutParams = holder.folderImageView.layoutParams
-                as ViewGroup.MarginLayoutParams
-        layoutParams.width = (textFontSize * 2.0f).toInt()
-        layoutParams.height = layoutParams.width
-        holder.folderImageView.layoutParams = layoutParams
-
-        layoutParams = holder.videoImageView.layoutParams
-                as ViewGroup.MarginLayoutParams
-        layoutParams.width = videoThumbnailsWidth
-        layoutParams.height = videoThumbnailsHeight
-
-        holder.itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener")
-            if (hasFocus) {
-                LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener.hasFocus")
-                v.setBackgroundColor(SmileAppBase.accentColor) // Example
+        holder.apply {
+            videoImageView.setImageBitmap(item.bm)
+            fileNameTextView.apply {
+                text = item.file.name
+                setTextColor(Color.WHITE)
+                if (item.selected) setTextColor(Color.GREEN)
+            }
+            if (item.file.isDirectory) {
+                folderImageView.visibility = View.VISIBLE
+                ScreenUtil.resizeTextSize(fileNameTextView,
+                    textFontSize * 0.8f,
+                    ScreenUtil.FontSize_Pixel_Type)
+                videoImageView.visibility = View.GONE
+                LogUtil.d(TAG, "onBindViewHolder.item.file isDirectory")
             } else {
-                LogUtil.d(TAG, "onBindViewHolder.item.onFocusChangeListener.no hasFocus")
-                v.setBackgroundColor(if (position % 2 == 0) Color.BLACK
-                else transparentLightGray)
+                folderImageView.visibility = View.GONE
+                ScreenUtil.resizeTextSize(fileNameTextView,
+                    textFontSize * 0.5f,
+                    ScreenUtil.FontSize_Pixel_Type)
+                videoImageView.visibility = View.VISIBLE
+                LogUtil.d(TAG, "onBindViewHolder.item.file not isDirectory")
+            }
+
+            var layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams
+                    as ViewGroup.MarginLayoutParams
+            layoutParams.width = (textFontSize * 2.0f).toInt()
+            layoutParams.height = layoutParams.width
+            folderImageView.layoutParams = layoutParams
+
+            layoutParams = videoImageView.layoutParams
+                    as ViewGroup.MarginLayoutParams
+            layoutParams.width = videoThumbnailsWidth
+            layoutParams.height = videoThumbnailsHeight
+
+            itemView.setBackgroundColor(itemListener.myBackgroundColor(position))
+
+            if (isDataSetChanged) {
+                if (position == 0) {
+                    holder.itemView.requestFocus()
+                }
+                isDataSetChanged = false
+            }
+
+            if (position == positionUpdated) {
+                itemView.requestFocus()
+                positionUpdated = -1
             }
         }
+    }
 
-        holder.itemView.setBackgroundColor(if (position % 2 == 0) Color.BLACK
-        else transparentLightGray)
-
-        if (isDataSetChanged) {
-            if (position == 0) {
-                holder.itemView.requestFocus()
-            }
-            isDataSetChanged = false
-        }
-        if (position == positionUpdated) {
-            holder.itemView.requestFocus()
-            positionUpdated = -1
-        }
+    override fun onViewAttachedToWindow(holder: MyViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        val position = holder.absoluteAdapterPosition
+        LogUtil.d(TAG, "onViewAttachedToWindow.position = $position")
     }
 
     override fun getItemCount(): Int {
