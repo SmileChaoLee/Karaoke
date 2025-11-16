@@ -189,13 +189,13 @@ class SmileAppsActivity : ComponentActivity() {
                     }
                 },
                 colors = ButtonColors(
-                    containerColor = if (!isClicked)
-                        Color.Blue
-                    else Color.Cyan,
+                    containerColor = if (isFocused) {
+                        Color(SmileAppBase.accentColor)
+                    } else {
+                        if (!isClicked) Color.Blue else Color.Cyan
+                    },
                     disabledContainerColor = Color.DarkGray,
-                    contentColor = if (!isFocused && !isClicked)
-                        Color.Green
-                    else Color.Red,
+                    contentColor = Color.Green,
                     disabledContentColor = Color.LightGray
                 )
             )

@@ -9,7 +9,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -439,10 +438,8 @@ class OpenFileFragment : Fragment(), RecyclerItemListener {
     private fun setButtonsSize() {
         val buttonWidth = (textFontSize*1.5f).toInt()
         var percentWidth = 1.0f
-        var rightMargin = 5
         if (resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) {
             percentWidth = 0.6f
-            rightMargin = 15
         }
         val buttonLayout = fragmentView?.findViewById<LinearLayout>(R.id.openFileButtonLayout)
         val constrainParam = buttonLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -450,13 +447,8 @@ class OpenFileFragment : Fragment(), RecyclerItemListener {
         constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.matchConstraintPercentWidth = percentWidth
-        buttonLayout.setOnTouchListener { view, _ ->
-            // issue requestFocus() will get focus immediately
-            // but it still be able to get focus a little bit later
-            // if do not issue requestFocus()
-            val hasFocus = view.requestFocus()
+        buttonLayout.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
-            false
         }
 
         var linearParam = backKeyButton?.layoutParams as LinearLayout.LayoutParams

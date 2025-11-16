@@ -88,7 +88,7 @@ class FavoritesFragment : Fragment(),
         editSongsActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             playMyFavorites?.restorePlayingState()
             searchFavorites()
-        } // update the UI }
+        } // update the UI
 
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -284,13 +284,17 @@ class FavoritesFragment : Fragment(),
 
     override fun startEditSongInfo(position: Int) {
         LogUtil.i(TAG, "startEditSongInfo.position = $position")
-        val singleSongInfo = MySingleTon.favorites[position].song
-        Intent(activity, BaseSongDataActivity::class.java).apply {
-            putExtra(CommonConstants.CRUD_ACTION,
-                CommonConstants.EDIT_ACTION)
-            putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE,
-                singleSongInfo)
-            startActivity(this)
+        val listIt = listOf(MySingleTon.favorites[position].song)
+        LogUtil.d(TAG, "editButton.listIt.size = ${listIt.size}")
+        if (listIt.isNotEmpty()) {
+            playMyFavorites?.let {playIt ->
+                intentForFavoriteListActivity().apply {
+                    playIt.onSavePlayingState(component)
+                    MySingleTon.selectedFavorites.clear()
+                    MySingleTon.selectedFavorites.addAll(listIt)
+                    editSongsActivityLauncher.launch(this)
+                }
+            }
         }
     }
     // end of implementing FavoriteRecyclerViewAdapter.FavItemListener
@@ -355,10 +359,8 @@ class FavoritesFragment : Fragment(),
     private fun setButtonsSize() {
         val buttonWidth = (textFontSize*1.5f).toInt()
         var percentWidth = 1.0f
-        var rightMargin = 5
         if (resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) {
             percentWidth = 0.6f
-            rightMargin = 15
         }
         val buttonLayout = fragmentView?.findViewById<LinearLayout>(R.id.favoriteListButtonLayout)
         val constrainParam = buttonLayout?.layoutParams as ConstraintLayout.LayoutParams
@@ -366,13 +368,8 @@ class FavoritesFragment : Fragment(),
         constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
         constrainParam.matchConstraintPercentWidth = percentWidth
-        buttonLayout.setOnTouchListener { view, _ ->
-            // issue requestFocus() will get focus immediately
-            // but it still be able to get focus a little bit later
-            // if do not issue requestFocus()
-            val hasFocus = view.requestFocus()
+        buttonLayout.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
-            false
         }
 
         var linearParam = selectAllButton?.layoutParams as LinearLayout.LayoutParams
