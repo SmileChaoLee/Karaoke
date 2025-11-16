@@ -85,7 +85,8 @@ class FavoritesFragment : Fragment(),
 
         mediaRetriever = MediaMetadataRetriever()
 
-        editSongsActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        editSongsActivityLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()){
             playMyFavorites?.restorePlayingState()
             searchFavorites()
         } // update the UI
@@ -103,9 +104,16 @@ class FavoritesFragment : Fragment(),
                                 ScreenUtil.FontSize_Pixel_Type,
                                 Toast.LENGTH_SHORT)
                         }
-                        myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                        searchCompleted = true  // searching thread finished
-                        if (MySingleTon.favorites.isEmpty()) {
+                        if (MySingleTon.favorites.isNotEmpty()) {
+                            for (fav in MySingleTon.favorites) {
+                                LogUtil.d(TAG, "BroadcastReceiver.onReceive.fav.song.id = ${fav.song.id}")
+                                if (MySingleTon.backupSelectedId.contains(fav.song.id)) {
+                                    LogUtil.d(TAG, "BroadcastReceiver.onReceive.contains")
+                                    fav.song.included = "1"
+                                }
+                            }
+                            myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                        } else {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
                             // Change the focus
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
@@ -113,6 +121,7 @@ class FavoritesFragment : Fragment(),
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
                             showVideoButton?.requestFocus()
                         }
+                        searchCompleted = true  // searching thread finished
                     }
                 }
             }
@@ -290,6 +299,9 @@ class FavoritesFragment : Fragment(),
             playMyFavorites?.let {playIt ->
                 intentForFavoriteListActivity().apply {
                     playIt.onSavePlayingState(component)
+                    MySingleTon.backupSelectedFavorites()
+                    LogUtil.i(TAG, "startEditSongInfo.backupSelectedId.size" +
+                            "= ${MySingleTon.backupSelectedId.size}")
                     MySingleTon.selectedFavorites.clear()
                     MySingleTon.selectedFavorites.addAll(listIt)
                     editSongsActivityLauncher.launch(this)

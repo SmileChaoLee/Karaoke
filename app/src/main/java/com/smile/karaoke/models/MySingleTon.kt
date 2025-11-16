@@ -8,6 +8,7 @@ object MySingleTon {
     const val MAX_SONGS : Int = 100;
     val favorites : ArrayList<SongDescription> = ArrayList(MAX_SONGS)
     val selectedFavorites : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
+    val backupSelectedId : ArrayList<Int> = ArrayList(MAX_SONGS)
     val orderedSongs : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
     // moved from FileDesList
     const val maxFiles : Int = 500;
@@ -19,9 +20,19 @@ object MySingleTon {
         Log.d(TAG, "clearSingleton()")
         favorites.clear()
         selectedFavorites.clear()
+        backupSelectedId.clear()
         orderedSongs.clear()
         fileList.clear()
         rootPathSet.clear()
         currentPath = "/"
+    }
+
+    fun backupSelectedFavorites() {
+        backupSelectedId.clear()
+        for (fav in favorites) {
+            if (fav.song.included == "1") {
+                backupSelectedId.add(fav.song.id)
+            }
+        }
     }
 }
