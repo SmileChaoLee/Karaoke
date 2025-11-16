@@ -5,7 +5,6 @@ object CommonConstants {
     const val RIGHT_CHANNEL = 1
     const val STEREO = 2
     const val CRUD_ACTION = "CrudAction"
-    const val ADD_ACTION = "ADD"
     const val EDIT_ACTION = "EDIT"
     const val DELETE_ACTION = "DELETE"
     const val PLAY_ACTION = "PLAYING"

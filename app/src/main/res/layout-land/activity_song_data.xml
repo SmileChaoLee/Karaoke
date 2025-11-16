@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/holo_blue_bright"
-    tools:context="vlcplayer.SongDataActivity">
+    tools:context="BaseSongDataActivity">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:weightSum="100"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintTop_toBottomOf="parent">
@@ -43,11 +43,13 @@
             android:layout_weight="30"
             android:weightSum="30">
             <LinearLayout
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="15"
-                android:weightSum="7">
+                android:weightSum="7"
+                tools:ignore="NestedWeights">
                 <RelativeLayout
                     android:id="@+id/edit_audioMusicTrackLayout"
                     android:layout_width="0dp"
@@ -60,13 +62,14 @@
                     android:id="@+id/edit_audioMusicChannelLayout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:gravity="left|center_vertical"
+                    android:gravity="start|center_vertical"
                     android:layout_weight="4">
                     <include layout="@layout/edit_music_channel_string_textview_layout" />
                     <include layout="@layout/edit_music_channel_spinner_layout" />
                 </RelativeLayout>
             </LinearLayout>
             <LinearLayout
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

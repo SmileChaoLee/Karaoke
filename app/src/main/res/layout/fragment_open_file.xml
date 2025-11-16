@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
     android:background="@android:color/white"
     tools:context=".fragments.OpenFileFragment">
 
@@ -16,23 +15,21 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constrainedWidth="true"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="1.0"
-        android:weightSum="10">
+        android:weightSum="9">
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="8">
+            android:layout_weight="7"
+            android:weightSum="7">
             <ImageButton
                 android:id="@+id/openFileBackKeyButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -41,11 +38,12 @@
                 android:src="@drawable/back_key"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/openFileSelectAllButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -54,11 +52,12 @@
                 android:src="@drawable/select_all"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/openFileUnselectButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -68,11 +67,12 @@
                 android:src="@drawable/unselect"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/openFileSwitchDecoderButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -81,11 +81,12 @@
                 android:src="@drawable/hard_decoder"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/openFilePlaySelectedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -94,11 +95,12 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/addToFavoriteButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -107,11 +109,12 @@
                 android:src="@drawable/add_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/showVideoImageButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -121,9 +124,11 @@
                 android:src="@drawable/show_video"
                 android:focusable="true"
                 android:clickable="true"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_weight="1">
             </ImageButton>
         </LinearLayout>
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="0dp"
@@ -143,6 +148,7 @@
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

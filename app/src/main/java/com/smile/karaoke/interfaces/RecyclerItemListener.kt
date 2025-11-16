@@ -17,9 +17,7 @@ interface RecyclerItemListener {
     }
 
     fun myBackgroundColor(position: Int): Int {
-        val transparentLightGray =
-            Color.argb(0x33, 0xd5, 0xd5, 0xd5) //Color(0x33D5D5D5)
         return if (position % 2 == 0) Color.BLACK
-        else transparentLightGray
+        else SmileAppBase.transparentLightGray
     }
 }

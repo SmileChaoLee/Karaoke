@@ -13,6 +13,11 @@
         android:id="@+id/editIncludedPlaylistCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:enabled="true"
+        android:focusable="true"
+        android:clickable="true"
+        android:buttonTint="@color/checkbox_colors"
+        android:background="@drawable/my_checkbox_background"
         android:gravity="start|center_vertical">
     </CheckBox>
 </LinearLayout>

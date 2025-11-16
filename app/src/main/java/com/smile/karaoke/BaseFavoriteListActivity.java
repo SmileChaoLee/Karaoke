@@ -40,7 +40,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     private SongListSQLite songListSQLite;
     private float textFontSize;
     private ActivityResultLauncher<Intent> editFavoritesLauncher;
-    private String currentAction = CommonConstants.ADD_ACTION;
+    private String currentAction = CommonConstants.EDIT_ACTION;
     private float weightSum = 0.f;
     private LinearLayout favoriteListLinearLayout;
     private LinearLayout favoritesTitleLayout;
@@ -261,16 +261,18 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         if (data != null && positionEdit != -1) {
             LogUtil.d(TAG, "updateFavoriteList.positionEdit = " + positionEdit);
             SongInfo songInfo = data.getParcelableExtra(PlayerConstants.SINGLE_SONG_INFO_STATE);
-            if (currentAction.equals(CommonConstants.EDIT_ACTION)) {
-                // edit
-                MySingleTon.INSTANCE.getSelectedFavorites().set(positionEdit, songInfo);
-                myRecyclerViewAdapter.notifyItemChanged(positionEdit);
-            } else if (currentAction.equals(CommonConstants.DELETE_ACTION)){
-                // delete
-                MySingleTon.INSTANCE.getSelectedFavorites().remove(positionEdit);
-                myRecyclerViewAdapter.notifyItemRemoved(positionEdit);
-            } else {    // currentAction = CommonConstants.PlayActionString
-                LogUtil.d(TAG, "updateFavoriteList.do nothing");
+            if (songInfo != null) {
+                if (currentAction.equals(CommonConstants.EDIT_ACTION)) {
+                    // edit
+                    MySingleTon.INSTANCE.getSelectedFavorites().set(positionEdit, songInfo);
+                    myRecyclerViewAdapter.notifyItemChanged(positionEdit);
+                } else if (currentAction.equals(CommonConstants.DELETE_ACTION)) {
+                    // delete
+                    MySingleTon.INSTANCE.getSelectedFavorites().remove(positionEdit);
+                    myRecyclerViewAdapter.notifyItemRemoved(positionEdit);
+                } else {    // currentAction = CommonConstants.PlayActionString
+                    LogUtil.d(TAG, "updateFavoriteList.do nothing");
+                }
             }
         }
     }

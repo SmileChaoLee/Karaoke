@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:textStyle="normal"
     android:textAllCaps="false"
-    android:textColor="@color/darkRed"
+    android:textColor="@color/blue"
     android:background="@color/yellow3"
     android:ellipsize="marquee">
 </TextView>

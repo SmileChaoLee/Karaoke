@@ -10,27 +10,28 @@
 
     <LinearLayout
         android:id="@+id/favoriteListButtonLayout"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constrainedWidth="true"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="1.0"
-        android:weightSum="10">
+        android:weightSum="7">
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="8">
+            android:layout_weight="5"
+            android:weightSum="5">
             <ImageButton
                 android:id="@+id/favoriteSelectAllButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -40,11 +41,12 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:layout_marginEnd="10sp">
+                android:layout_marginEnd="10sp"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/favoriteUnselectButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -55,11 +57,12 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:layout_marginEnd="10sp">
+                android:layout_marginEnd="10sp"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/favoriteSwitchDecoderButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -69,11 +72,12 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:layout_marginEnd="10sp">
+                android:layout_marginEnd="10sp"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/favoritePlaySelectedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -83,25 +87,12 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:layout_marginEnd="20sp">
-            </ImageButton>
-            <ImageButton
-                android:id="@+id/favoriteEditButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/emptyString"
-                android:background="@drawable/file_menu_item_background_color"
-                android:scaleType="centerInside"
-                android:adjustViewBounds="true"
-                android:src="@drawable/edit_image"
-                android:focusable="true"
-                android:clickable="true"
-                android:layout_gravity="center"
-                android:layout_marginEnd="20sp">
+                android:layout_marginEnd="20sp"
+                android:layout_weight="1">
             </ImageButton>
             <ImageButton
                 android:id="@+id/showVideoImageButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
@@ -112,9 +103,11 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:layout_weight="1">
             </ImageButton>
         </LinearLayout>
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="0dp"
@@ -134,6 +127,7 @@
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

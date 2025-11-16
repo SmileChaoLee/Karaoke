@@ -2,6 +2,7 @@ package com.smile.karaoke;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -34,17 +35,15 @@ public class BaseSongDataActivity extends AppCompatActivity {
     private static final String TAG = "BaseSongDataActivity";
     private float toastTextSize;
     private EditText edit_titleNameEditText;
-    protected EditText edit_filePathEditText;
+    private EditText edit_filePathEditText;
     private Spinner edit_musicTrackSpinner;
     private Spinner edit_musicChannelSpinner;
     private Spinner edit_vocalTrackSpinner;
     private Spinner edit_vocalChannelSpinner;
     private CheckBox editIncludedPlaylistCheckBox;
     protected LinearLayout karaokeSettingLayout;
-
-    private String actionButtonString;
-    private String crudAction;
-    private SongInfo mSongInfo;
+    private String crudAction = null;
+    private SongInfo mSongInfo = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,64 +53,23 @@ public class BaseSongDataActivity extends AppCompatActivity {
         float textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
         textFontSize *= 0.8f;
         toastTextSize = 0.9f * textFontSize;
-
-        Intent callingIntent = getIntent();
-        Bundle extras = callingIntent.getExtras();
+        Bundle extras;
         if (savedInstanceState == null) {
+            Intent callingIntent = getIntent();
+            extras = callingIntent.getExtras();
             crudAction = callingIntent.getStringExtra(CommonConstants.CRUD_ACTION);
-            if (crudAction == null) crudAction = "";
-            switch (crudAction.toUpperCase()) {
-                case CommonConstants.ADD_ACTION:
-                    // add one record
-                    mSongInfo = new SongInfo();
-                    actionButtonString = getString(R.string.addString);
-                    break;
-                case CommonConstants.EDIT_ACTION:
-                    // = "EDIT". Edit one record
-                    if (extras != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
-                                    SongInfo.class);
-                        } else
-                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
-                        actionButtonString = getString(R.string.saveString);
-                    }
-                    break;
-                case CommonConstants.DELETE_ACTION:
-                    // = "DELETE". Delete one record
-                    if (extras != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
-                                    SongInfo.class);
-                        } else {
-                            mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
-                        }
-                        actionButtonString = getString(R.string.deleteString);
-                    }
-                    break;
-                default:
-                    returnToPreviousWithResult(Activity.RESULT_CANCELED);
-                    return;
-            }
             LogUtil.d(TAG, "savedInstanceState is null.");
         } else {
             // not null, has savedInstanceState
-            actionButtonString = savedInstanceState.getString("ActionButtonString");
-            crudAction = savedInstanceState.getString(CommonConstants.CRUD_ACTION);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
-                        SongInfo.class);
-            } else mSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
+            extras = savedInstanceState;
+            crudAction = extras.getString(CommonConstants.CRUD_ACTION);
             LogUtil.d(TAG, "savedInstanceState is not null.");
         }
-
-        if (crudAction == null) {
-            returnToPreviousWithResult(Activity.RESULT_CANCELED);
-            return;
-        }
-        if (mSongInfo == null) {
-            returnToPreviousWithResult(Activity.RESULT_CANCELED);
-            return;
+        if (extras != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                        SongInfo.class);
+            else mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
         }
 
         setContentView(R.layout.activity_song_data);
@@ -191,29 +149,25 @@ public class BaseSongDataActivity extends AppCompatActivity {
             editIncludedPlaylistCheckBox.setChecked(isChecked1);
             editIncludedPlaylistCheckBox.jumpDrawablesToCurrentState();
         });
+        editIncludedPlaylistCheckBox.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                editIncludedPlaylistTextView.setTextColor(Color.RED);
+                // editIncludedPlaylistCheckBox.setBackgroundColor(Color.BLUE);
+            } else {
+                editIncludedPlaylistTextView.setTextColor(Color.BLACK);
+                // editIncludedPlaylistCheckBox.setBackgroundColor(Color.TRANSPARENT);
+            }
+        });
 
         final Button edit_saveOneSongButton = findViewById(R.id.edit_saveOneSongButton);
         ScreenUtil.resizeTextSize(edit_saveOneSongButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
-        edit_saveOneSongButton.setText(actionButtonString);
         edit_saveOneSongButton.setOnClickListener(view -> {
             final boolean isValid = setSongInfoFromInput(true);
             SongListSQLite songListSQLite = new SongListSQLite(getApplicationContext());
             SongInfo songInfo;
             long databaseResult = -1;
+            if (crudAction == null) return;
             switch (crudAction.toUpperCase()) {
-                case CommonConstants.ADD_ACTION:
-                    // add one record
-                    if (isValid) {
-                        // check if this file is already in database
-                        songInfo = songListSQLite.findOneSongByUriString(mSongInfo.getFilePath());
-                        if (songInfo == null) {
-                            databaseResult = songListSQLite.addSongToSongList(mSongInfo);
-                        } else {
-                            ScreenUtil.showToast(BaseSongDataActivity.this, getString(R.string.duplicate_in_database),
-                                    toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG);
-                        }
-                    }
-                    break;
                 case CommonConstants.EDIT_ACTION:
                     // = "EDIT". Edit one record
                     if (isValid) {
@@ -243,6 +197,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
             songListSQLite.closeDatabase();
 
             if (databaseResult != -1) {
+                LogUtil.d(TAG, "edit_saveOneSongButton.databaseResult != -1");
                 returnToPreviousWithResult(Activity.RESULT_OK);
             }
         });
@@ -250,6 +205,35 @@ public class BaseSongDataActivity extends AppCompatActivity {
         final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
         ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
         edit_exitEditSongButton.setOnClickListener(view -> returnToPreviousWithResult(Activity.RESULT_CANCELED));
+
+        if (crudAction == null) {
+            LogUtil.d(TAG, "onCreate.crudAction = null");
+            returnToPreviousWithResult(Activity.RESULT_CANCELED);
+            return;
+        }
+        if (mSongInfo == null) {
+            LogUtil.d(TAG, "onCreate.mSongInfo = null");
+            returnToPreviousWithResult(Activity.RESULT_CANCELED);
+            return;
+        }
+        String actionButtonString;
+        switch (crudAction.toUpperCase()) {
+            case CommonConstants.EDIT_ACTION:
+                // = "EDIT". Edit one record
+                actionButtonString = getString(R.string.saveString);
+                enableEditing();
+                break;
+            case CommonConstants.DELETE_ACTION:
+                // = "DELETE". Delete one record
+                actionButtonString = getString(R.string.deleteString);
+                disableEditing();
+                break;
+            default:
+                actionButtonString = "";
+                returnToPreviousWithResult(Activity.RESULT_CANCELED);
+        }
+
+        edit_saveOneSongButton.setText(actionButtonString);
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
@@ -279,7 +263,6 @@ public class BaseSongDataActivity extends AppCompatActivity {
 
         outState.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
         outState.putString(CommonConstants.CRUD_ACTION, crudAction);
-        outState.putString("ActionButtonString", actionButtonString);
 
         super.onSaveInstanceState(outState);
     }
@@ -289,6 +272,28 @@ public class BaseSongDataActivity extends AppCompatActivity {
         super.onDestroy();
         LogUtil.d(TAG, "onDestroy");
         mSongInfo = null;
+    }
+
+    private void enableEditing() {
+        LogUtil.d(TAG, "enableEditing");
+        edit_titleNameEditText.setEnabled(true);
+        edit_filePathEditText.setEnabled(false);    // disabled all the time
+        edit_musicTrackSpinner.setEnabled(true);
+        edit_musicChannelSpinner.setEnabled(true);
+        edit_vocalTrackSpinner.setEnabled(true);
+        edit_vocalChannelSpinner.setEnabled(true);
+        editIncludedPlaylistCheckBox.setEnabled(true);
+    }
+
+    private void disableEditing() {
+        LogUtil.d(TAG, "disableEditing");
+        edit_titleNameEditText.setEnabled(false);
+        edit_filePathEditText.setEnabled(false);    // disabled all the time
+        edit_musicTrackSpinner.setEnabled(false);
+        edit_musicChannelSpinner.setEnabled(false);
+        edit_vocalTrackSpinner.setEnabled(false);
+        edit_vocalChannelSpinner.setEnabled(false);
+        editIncludedPlaylistCheckBox.setEnabled(false);
     }
 
     private void returnToPreviousWithResult(int isOK) {

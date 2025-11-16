@@ -9,7 +9,7 @@
     android:textAlignment="inherit"
     android:textAllCaps="false"
     android:textStyle="normal"
-    android:textColor="@color/darkRed"
+    android:textColor="@color/blue"
     android:layout_margin="0dp"
     android:background="@android:color/transparent">
 </TextView>

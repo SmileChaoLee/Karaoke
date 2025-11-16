@@ -131,8 +131,6 @@ class SelectedFavoriteAdapter (
                 }
             }
 
-            val pos = bindingAdapterPosition
-
             editSongButton = itemView.findViewById(R.id.editSongButton)
             ScreenUtil.resizeTextSize(editSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
             deleteSongButton = itemView.findViewById(R.id.deleteSongButton)
@@ -143,20 +141,20 @@ class SelectedFavoriteAdapter (
             // the following is still needed to be test (have to reduce the usage of memory)
             // if (!com.smile.karaokeplayer.BuildConfig.DEBUG) playSongButton.setVisibility(View.GONE);
             editSongButton.setOnClickListener {
-                LogUtil.d(TAG, "MyViewHolder.editSongButton.pos = $pos")
-                itemClickListener.editSongButtonFunc(pos)
+                LogUtil.d(TAG, "MyViewHolder.editSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                itemClickListener.editSongButtonFunc(bindingAdapterPosition)
             }
             deleteSongButton.setOnClickListener {
-                LogUtil.d(TAG, "MyViewHolder.deleteSongButton.pos = $pos")
-                itemClickListener.deleteSongButtonFunc(pos)
+                LogUtil.d(TAG, "MyViewHolder.deleteSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                itemClickListener.deleteSongButtonFunc(bindingAdapterPosition)
             }
             playSongButton.setOnClickListener {
-                LogUtil.d(TAG, "MyViewHolder.playSongButton.pos = $pos")
-                itemClickListener.playSongButtonFunc(pos)
+                LogUtil.d(TAG, "MyViewHolder.playSongButton.bindingAdapterPosition = $bindingAdapterPosition")
+                itemClickListener.playSongButtonFunc(bindingAdapterPosition)
             }
             itemView.setOnClickListener {
-                LogUtil.d(TAG, "MyViewHolder.itemView.pos = $pos")
-                itemClickListener.onRecyclerItemClick(itemView, pos)
+                LogUtil.d(TAG, "MyViewHolder.itemView.bindingAdapterPosition = $bindingAdapterPosition")
+                itemClickListener.onRecyclerItemClick(itemView, bindingAdapterPosition)
             }
 
             itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->

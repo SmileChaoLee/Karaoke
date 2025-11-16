@@ -10,6 +10,8 @@
     android:textColor="@android:color/holo_red_dark"
     android:layout_marginStart="5dp"
     android:gravity="center"
+    android:focusable="true"
+    android:clickable="true"
     android:layout_toEndOf="@+id/edit_saveOneSongButton"
     android:layout_alignTop="@+id/edit_saveOneSongButton">
 </Button>

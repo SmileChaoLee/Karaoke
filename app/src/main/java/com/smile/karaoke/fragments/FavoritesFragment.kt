@@ -9,7 +9,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -25,10 +24,12 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
+import com.smile.karaoke.BaseSongDataActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
-import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
@@ -39,7 +40,8 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class FavoritesFragment : Fragment(), RecyclerItemListener {
+class FavoritesFragment : Fragment(),
+    FavoriteRecyclerViewAdapter.FavItemListener {
 
     companion object {
         private const val TAG : String = "FavoritesFragment"
@@ -63,7 +65,6 @@ class FavoritesFragment : Fragment(), RecyclerItemListener {
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
-    private var editButton: ImageButton? = null
     private var showVideoButton: ImageButton? = null
     private var appsImageButton: ImageButton? = null
 
@@ -208,33 +209,6 @@ class FavoritesFragment : Fragment(), RecyclerItemListener {
                     playSongs?.playSelectedSongList(ArrayList(songs))
                 }
             }
-            editButton = it.findViewById(R.id.favoriteEditButton)
-            editButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                ArrayList<SongInfo>().also {listIt ->
-                    for (element in MySingleTon.favorites) {
-                        if (element.song.included == "1") listIt.add(element.song)
-                    }
-                    if (listIt.isNotEmpty()) {
-                        playMyFavorites?.let {playIt ->
-                            intentForFavoriteListActivity().apply {
-                                LogUtil.d(TAG, "editButton.listIt.size = ${listIt.size}")
-                                playIt.onSavePlayingState(component)
-                                // putExtra(PlayerConstants.MyFavoriteListState, listIt)
-                                MySingleTon.selectedFavorites.clear()
-                                MySingleTon.selectedFavorites.addAll(listIt)
-                                Runtime.getRuntime().gc()
-                                editSongsActivityLauncher.launch(this)
-                            }
-                        }
-                    } else {
-                        ScreenUtil.showToast(
-                                activity, getString(R.string.noFilesSelectedString), textFontSize,
-                            ScreenUtil.FontSize_Pixel_Type,
-                            Toast.LENGTH_SHORT)
-                    }
-                }
-            }
             showVideoButton = it.findViewById(R.id.showVideoImageButton)
             showVideoButton?.visibility = View.VISIBLE
             showVideoButton?.setOnClickListener {
@@ -299,13 +273,27 @@ class FavoritesFragment : Fragment(), RecyclerItemListener {
         mediaRetriever.release()
     }
 
+    // implementing FavoriteRecyclerViewAdapter.FavItemListener
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onRecyclerItemClick.position = $position")
+        LogUtil.i(TAG, "onItemClick.position = $position")
         MySingleTon.favorites[position].apply {
             song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
     }
+
+    override fun startEditSongInfo(position: Int) {
+        LogUtil.i(TAG, "startEditSongInfo.position = $position")
+        val singleSongInfo = MySingleTon.favorites[position].song
+        Intent(activity, BaseSongDataActivity::class.java).apply {
+            putExtra(CommonConstants.CRUD_ACTION,
+                CommonConstants.EDIT_ACTION)
+            putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                singleSongInfo)
+            startActivity(this)
+        }
+    }
+    // end of implementing FavoriteRecyclerViewAdapter.FavItemListener
 
     fun clearFavoriteList() {
         MySingleTon.favorites.clear()
@@ -387,20 +375,19 @@ class FavoritesFragment : Fragment(), RecyclerItemListener {
             false
         }
 
-        var linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
-        linearParam.setMargins(0, 0, rightMargin, 0)
-        linearParam.gravity = Gravity.CENTER
-        selectAllButton?.layoutParams = linearParam
+        var linearParam = selectAllButton?.layoutParams as LinearLayout.LayoutParams
+        linearParam.width = buttonWidth
+        linearParam.height = buttonWidth
+        linearParam.setMargins(0, 0, 0, 0)
         unselectButton?.layoutParams = linearParam
         switchDecoderButton?.layoutParams = linearParam
         playSelectedButton?.layoutParams = linearParam
-        editButton?.layoutParams = linearParam
         showVideoButton?.layoutParams = linearParam
 
-        linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
+        linearParam = appsImageButton?.layoutParams as LinearLayout.LayoutParams
+        linearParam.width = buttonWidth
+        linearParam.height = buttonWidth
         linearParam.setMargins(0, 0, 0, 0)
-        linearParam.gravity = Gravity.CENTER
-        appsImageButton?.layoutParams = linearParam
     }
 
     private fun intentForFavoriteListActivity(): Intent {
@@ -412,6 +399,7 @@ class FavoritesFragment : Fragment(), RecyclerItemListener {
         activity?.let {
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(
                     this, MySingleTon.favorites,
+                resources.configuration.orientation,
                 textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)
             myListRecyclerView?.adapter = myRecyclerViewAdapter

@@ -13,8 +13,10 @@
         android:id="@+id/edit_titleNameEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/darkRed"
+        android:textColor="@color/my_editbox_textcolor"
         android:textStyle="normal"
-        android:background="@android:drawable/editbox_background">
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/my_editbox_background">
     </EditText>
 </LinearLayout>

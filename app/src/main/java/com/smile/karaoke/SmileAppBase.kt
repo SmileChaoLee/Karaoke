@@ -22,6 +22,9 @@ abstract class SmileAppBase : MultiDexApplication() {
         @JvmField
         val accentColor = Color.rgb(0xFF, 0x40, 0x81)
         @JvmField
+        val transparentLightGray =
+            Color.argb(0x33, 0xd5, 0xd5, 0xd5) //Color(0x33D5D5D5)
+        @JvmField
         val audioChannelMap = LinkedHashMap<Int, String>()
         @JvmField
         val audioChannelReverseMap = LinkedHashMap<String, Int>()

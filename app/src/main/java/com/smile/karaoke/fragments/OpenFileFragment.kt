@@ -459,10 +459,10 @@ class OpenFileFragment : Fragment(), RecyclerItemListener {
             false
         }
 
-        var linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
-        linearParam.setMargins(0, 0, rightMargin, 0)
-        linearParam.gravity = Gravity.CENTER
-        backKeyButton?.layoutParams = linearParam
+        var linearParam = backKeyButton?.layoutParams as LinearLayout.LayoutParams
+        linearParam.width = buttonWidth
+        linearParam.height = buttonWidth
+        linearParam.setMargins(0, 0, 0, 0)
         selectAllButton?.layoutParams = linearParam
         unselectButton?.layoutParams = linearParam
         switchDecoderButton?.layoutParams = linearParam
@@ -470,10 +470,10 @@ class OpenFileFragment : Fragment(), RecyclerItemListener {
         addToFavoriteButton?.layoutParams = linearParam
         showVideoButton?.layoutParams = linearParam
 
-        linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
+        linearParam = appsImageButton?.layoutParams as LinearLayout.LayoutParams
+        linearParam.width = buttonWidth
+        linearParam.height = buttonWidth
         linearParam.setMargins(0, 0, 0, 0)
-        linearParam.gravity = Gravity.CENTER
-        appsImageButton?.layoutParams = linearParam
     }
 
     private fun getSongs(songListSQLite : SongListSQLite, msg : String) : ArrayList<SongInfo> {
