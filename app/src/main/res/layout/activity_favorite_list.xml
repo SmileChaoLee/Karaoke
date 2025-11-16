@@ -17,12 +17,12 @@
         android:layout_height="0dp"
         android:layout_gravity="center|top"
         android:layout_weight="10"
-        app:divider="@drawable/layout_horizontal_divider"
-        app:showDividers="end" >
+        android:divider="@drawable/layout_horizontal_divider"
+        android:showDividers="end" >
         <TextView
             android:id="@+id/myFavoritesTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:textScaleX="1.0"
             android:textColor="@android:color/background_dark"
             android:gravity="center"

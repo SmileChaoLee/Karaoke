@@ -278,11 +278,14 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     }
 
     private void setLayoutViewWeight() {
-        Point screen = ScreenUtil.getScreenSize(this);
         LogUtil.d(TAG, "setLayoutViewWeight.textFontSize = " + textFontSize);
-        float factor = (textFontSize * 2.5f) / screen.y;
+        float weight = 10f;
+        if (getResources().getConfiguration().orientation ==
+            Configuration.ORIENTATION_LANDSCAPE) {
+            weight = 20f;
+        }
         LinearLayout.LayoutParams layoutP = (LinearLayout.LayoutParams)favoritesTitleLayout.getLayoutParams();
-        float weight = weightSum * factor;
+        LogUtil.d(TAG, "setLayoutViewWeight.weight = " + weight);
         layoutP.weight = weight;
         layoutP = (LinearLayout.LayoutParams)favoritesExitButtonLayout.getLayoutParams();
         layoutP.weight = weight;
