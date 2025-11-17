@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,6 +19,10 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.smile.karaoke.adapters.SpinnerAdapter;
 import com.smile.karaoke.constants.CommonConstants;
@@ -242,6 +247,38 @@ public class BaseSongDataActivity extends AppCompatActivity {
                 returnToPreviousWithResult(Activity.RESULT_CANCELED);
             }
         });
+
+        // Find the LinearLayout by its ID
+        ConstraintLayout songDataLayout = findViewById(R.id.songDataLayout);
+        // Get the ViewTreeObserver for the LinearLayout
+        songDataLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Layout has been finished.
+                        // Remove the listener to avoid it being called repeatedly.
+                        // The removeOnGlobalLayoutListener() method is used for API 16 and above.
+                        songDataLayout.getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+                        // Now it's safe to get the view's dimensions or perform other actions
+                        // that depend on the layout being complete.
+                        // do something after layout finished
+                    }
+                }
+        );
+
+        // this in here represent FrameLayout (R.id.activity_base_layout)
+        // fix: the bottom navigation bar covers some contents
+        ViewCompat.setOnApplyWindowInsetsListener(
+                songDataLayout, (v, windowInsets) -> {
+                    // Get the insets for the system bars (status bar on top, navigation bar at bottom)
+                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    // Apply these insets as padding to your View
+                    LogUtil.d(TAG, "setOnApplyWindowInsetsListener.insets.top = " + insets.top);
+                    v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+                    // Return CONSUMED to signal that you've handled the inset
+                    return WindowInsetsCompat.CONSUMED;
+                });
     }
 
     @Override
