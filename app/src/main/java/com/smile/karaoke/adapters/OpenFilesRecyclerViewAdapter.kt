@@ -78,15 +78,13 @@ class OpenFilesRecyclerViewAdapter(
             if (item.file.isDirectory) {
                 folderImageView.visibility = View.VISIBLE
                 ScreenUtil.resizeTextSize(fileNameTextView,
-                    textFontSize * 0.8f,
-                    ScreenUtil.FontSize_Pixel_Type)
+                    textFontSize * 0.8f)
                 videoImageView.visibility = View.GONE
                 LogUtil.d(TAG, "onBindViewHolder.item.file isDirectory")
             } else {
                 folderImageView.visibility = View.GONE
                 ScreenUtil.resizeTextSize(fileNameTextView,
-                    textFontSize * 0.5f,
-                    ScreenUtil.FontSize_Pixel_Type)
+                    textFontSize * 0.5f)
                 videoImageView.visibility = View.VISIBLE
                 LogUtil.d(TAG, "onBindViewHolder.item.file not isDirectory")
             }

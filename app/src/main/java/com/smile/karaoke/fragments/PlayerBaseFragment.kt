@@ -318,7 +318,7 @@ abstract class PlayerBaseFragment : Fragment(),
             messageAreaLinearLayout = findViewById(R.id.message_area_LinearLayout)
             messageAreaLinearLayout?.visibility = View.GONE
             bufferingStringTextView = findViewById(R.id.bufferingStringTextView)
-            ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize)
         }
 
         animationText = AlphaAnimation(0.0f, 1.0f)
@@ -331,11 +331,11 @@ abstract class PlayerBaseFragment : Fragment(),
             val durationTextSize = textFontSize * 0.6f
             playingTimeTextView = findViewById(R.id.playingTimeTextView)
             playingTimeTextView?.text = "000:00"
-            ScreenUtil.resizeTextSize(playingTimeTextView, durationTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(playingTimeTextView, durationTextSize)
             playerDurationSeekbar = findViewById(R.id.player_duration_seekbar)
             durationTimeTextView = findViewById(R.id.durationTimeTextView)
             durationTimeTextView?.text = "000:00"
-            ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize)
             nativeAdsFrameLayout = findViewById(R.id.nativeAdsFrameLayout)
             nativeAdsFrameLayout?.let {
                 nativeAdViewVisibility = it.visibility

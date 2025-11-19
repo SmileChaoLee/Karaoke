@@ -159,8 +159,7 @@ class OpenFileFragment : Fragment(), RecyclerItemListener {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
-            ScreenUtil.resizeTextSize(pathTextView, textFontSize,
-                ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(pathTextView, textFontSize)
             backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
             backKeyButton?.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching

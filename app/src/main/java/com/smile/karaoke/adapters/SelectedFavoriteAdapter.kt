@@ -84,42 +84,42 @@ class SelectedFavoriteAdapter (
             val buttonTextSize = textFontSize * 0.8f
 
             val titleStringTextView : TextView = itemView.findViewById(R.id.titleStringTextView)
-            ScreenUtil.resizeTextSize(titleStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(titleStringTextView, itemTextSize)
             titleNameTextView = itemView.findViewById(R.id.titleNameTextView)
-            ScreenUtil.resizeTextSize(titleNameTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(titleNameTextView, itemTextSize)
 
             val filePathStringTextView : TextView = itemView.findViewById(R.id.filePathStringTextView)
             ScreenUtil.resizeTextSize(filePathStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
             filePathTextView = itemView.findViewById(R.id.filePathTextView)
-            ScreenUtil.resizeTextSize(filePathTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(filePathTextView, itemTextSize)
             val audioMusicLinearLayout : LinearLayout = itemView.findViewById(R.id.audioMusicLinearLayout)
             val musicTrackStringTextView : TextView = itemView.findViewById(R.id.musicTrackStringTextView)
-            ScreenUtil.resizeTextSize(musicTrackStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(musicTrackStringTextView, itemTextSize)
             musicTrackTextView = itemView.findViewById(R.id.musicTrackTextView)
-            ScreenUtil.resizeTextSize(musicTrackTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(musicTrackTextView, itemTextSize)
 
             val musicChannelStringTextView : TextView = itemView.findViewById(R.id.musicChannelStringTextView)
-            ScreenUtil.resizeTextSize(musicChannelStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(musicChannelStringTextView, itemTextSize)
             musicChannelTextView = itemView.findViewById(R.id.musicChannelTextView)
-            ScreenUtil.resizeTextSize(musicChannelTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(musicChannelTextView, itemTextSize)
             val audioVocalLinearLayout : LinearLayout = itemView.findViewById(R.id.audioVocalLinearLayout)
             val vocalTrackStringTextView : TextView = itemView.findViewById(R.id.vocalTrackStringTextView)
-            ScreenUtil.resizeTextSize(vocalTrackStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(vocalTrackStringTextView, itemTextSize)
             vocalTrackTextView = itemView.findViewById(R.id.vocalTrackTextView)
-            ScreenUtil.resizeTextSize(vocalTrackTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(vocalTrackTextView, itemTextSize)
 
             val vocalChannelStringTextView : TextView = itemView.findViewById(R.id.vocalChannelStringTextView)
-            ScreenUtil.resizeTextSize(vocalChannelStringTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(vocalChannelStringTextView, itemTextSize)
             vocalChannelTextView = itemView.findViewById(R.id.vocalChannelTextView)
-            ScreenUtil.resizeTextSize(vocalChannelTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(vocalChannelTextView, itemTextSize)
 
             // audioVocalLinearLayout.setVisibility(View.GONE);
             audioVocalLinearLayout.visibility = View.VISIBLE
 
             val includedPlaylistTextView : TextView = itemView.findViewById(R.id.includedPlaylistTextView)
-            ScreenUtil.resizeTextSize(includedPlaylistTextView, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(includedPlaylistTextView, itemTextSize)
             includedPlaylistCheckBox = itemView.findViewById(R.id.includedPlaylistCheckBox)
-            ScreenUtil.resizeTextSize(includedPlaylistCheckBox, itemTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(includedPlaylistCheckBox, itemTextSize)
             includedPlaylistCheckBox.onFocusChangeListener
             includedPlaylistCheckBox.onFocusChangeListener = View.OnFocusChangeListener{ _, hasFocus ->
                 if (hasFocus) {
@@ -132,11 +132,11 @@ class SelectedFavoriteAdapter (
             }
 
             editSongButton = itemView.findViewById(R.id.editSongButton)
-            ScreenUtil.resizeTextSize(editSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(editSongButton, buttonTextSize)
             deleteSongButton = itemView.findViewById(R.id.deleteSongButton)
-            ScreenUtil.resizeTextSize(deleteSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(deleteSongButton, buttonTextSize)
             playSongButton = itemView.findViewById(R.id.playSongButton)
-            ScreenUtil.resizeTextSize(playSongButton, buttonTextSize, ScreenUtil.FontSize_Pixel_Type)
+            ScreenUtil.resizeTextSize(playSongButton, buttonTextSize)
 
             // the following is still needed to be test (have to reduce the usage of memory)
             // if (!com.smile.karaokeplayer.BuildConfig.DEBUG) playSongButton.setVisibility(View.GONE);

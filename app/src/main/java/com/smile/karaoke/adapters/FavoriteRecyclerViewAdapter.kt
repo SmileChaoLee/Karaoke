@@ -80,8 +80,7 @@ class FavoriteRecyclerViewAdapter (
             nLayoutParams.height = videoThumbnailsHeight
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView,
-                textFontSize * 0.5f,
-                ScreenUtil.FontSize_Pixel_Type)
+                textFontSize * 0.5f)
 
             val buttonWidth = (textFontSize*1.5f).toInt()
             editButton = itemView.findViewById(R.id.myListEditButton)

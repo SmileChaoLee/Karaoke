@@ -20,10 +20,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.smile.karaoke.adapters.SpinnerAdapter;
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.PlayerConstants;
@@ -90,51 +86,51 @@ public class BaseSongDataActivity extends AppCompatActivity {
         numList.add("7");
         numList.add("8");
         SpinnerAdapter audioMusicTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+                R.id.spinnerTextView, numList, textFontSize);
         SpinnerAdapter audioVocalTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, numList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+                R.id.spinnerTextView, numList, textFontSize);
         ArrayList<String> aList = new ArrayList<>(SmileAppBase.audioChannelMap.values());
         SpinnerAdapter audioMusicChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, aList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+                R.id.spinnerTextView, aList, textFontSize);
         SpinnerAdapter audioVocalChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, aList, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+                R.id.spinnerTextView, aList, textFontSize);
         // audioVocalChannelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_layout);
 
         TextView edit_titleStringTextView = findViewById(R.id.edit_titleStringTextView);
-        ScreenUtil.resizeTextSize(edit_titleStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_titleStringTextView, textFontSize);
         edit_titleNameEditText = findViewById(R.id.edit_titleNameEditText);
-        ScreenUtil.resizeTextSize(edit_titleNameEditText, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_titleNameEditText, textFontSize);
         edit_titleNameEditText.setText(mSongInfo.getSongName());
 
         TextView edit_filePathStringTextView = findViewById(R.id.edit_filePathStringTextView);
-        ScreenUtil.resizeTextSize(edit_filePathStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_filePathStringTextView, textFontSize);
         edit_filePathEditText = findViewById(R.id.edit_filePathEditText);
         edit_filePathEditText.setEnabled(false);
-        ScreenUtil.resizeTextSize(edit_filePathEditText, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_filePathEditText, textFontSize);
         edit_filePathEditText.setText(mSongInfo.getFilePath());
 
         karaokeSettingLayout = findViewById(R.id.karaokeSettingLayout);
         //
         TextView edit_musicTrackStringTextView = findViewById(R.id.edit_musicTrackStringTextView);
-        ScreenUtil.resizeTextSize(edit_musicTrackStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_musicTrackStringTextView, textFontSize);
         edit_musicTrackSpinner = findViewById(R.id.edit_musicTrackSpinner);
         edit_musicTrackSpinner.setAdapter(audioMusicTrackAdapter);
         edit_musicTrackSpinner.setSelection(mSongInfo.getMusicTrackNo() - 1);
 
         TextView edit_musicChannelStringTextView = findViewById(R.id.edit_musicChannelStringTextView);
-        ScreenUtil.resizeTextSize(edit_musicChannelStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_musicChannelStringTextView, textFontSize);
         edit_musicChannelSpinner = findViewById(R.id.edit_musicChannelSpinner);
         edit_musicChannelSpinner.setAdapter(audioMusicChannelAdapter);
         edit_musicChannelSpinner.setSelection(mSongInfo.getMusicChannel());
 
         TextView edit_vocalTrackStringTextView = findViewById(R.id.edit_vocalTrackStringTextView);
-        ScreenUtil.resizeTextSize(edit_vocalTrackStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_vocalTrackStringTextView, textFontSize);
         edit_vocalTrackSpinner = findViewById(R.id.edit_vocalTrackSpinner);
         edit_vocalTrackSpinner.setAdapter(audioVocalTrackAdapter);
         edit_vocalTrackSpinner.setSelection(mSongInfo.getVocalTrackNo() - 1);
 
         TextView edit_vocalChannelStringTextView = findViewById(R.id.edit_vocalChannelStringTextView);
-        ScreenUtil.resizeTextSize(edit_vocalChannelStringTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_vocalChannelStringTextView, textFontSize);
         edit_vocalChannelSpinner = findViewById(R.id.edit_vocalChannelSpinner);
         edit_vocalChannelSpinner.setAdapter(audioVocalChannelAdapter);
         edit_vocalChannelSpinner.setSelection(mSongInfo.getVocalChannel());
@@ -145,9 +141,9 @@ public class BaseSongDataActivity extends AppCompatActivity {
         //
 
         TextView editIncludedPlaylistTextView = findViewById(R.id.editIncludedPlayListTextView);
-        ScreenUtil.resizeTextSize(editIncludedPlaylistTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(editIncludedPlaylistTextView, textFontSize);
         editIncludedPlaylistCheckBox = findViewById(R.id.editIncludedPlaylistCheckBox);
-        ScreenUtil.resizeTextSize(editIncludedPlaylistCheckBox, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(editIncludedPlaylistCheckBox, textFontSize);
         boolean isChecked = Objects.equals(mSongInfo.getIncluded(), "1");
         editIncludedPlaylistCheckBox.setChecked(isChecked);
         editIncludedPlaylistCheckBox.setOnCheckedChangeListener((buttonView, isChecked1) -> {
@@ -165,7 +161,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         });
 
         final Button edit_saveOneSongButton = findViewById(R.id.edit_saveOneSongButton);
-        ScreenUtil.resizeTextSize(edit_saveOneSongButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_saveOneSongButton, textFontSize);
         edit_saveOneSongButton.setOnClickListener(view -> {
             final boolean isValid = setSongInfoFromInput(true);
             SongListSQLite songListSQLite = new SongListSQLite(getApplicationContext());
@@ -208,7 +204,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         });
 
         final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
-        ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize);
         edit_exitEditSongButton.setOnClickListener(view -> returnToPreviousWithResult(Activity.RESULT_CANCELED));
 
         if (crudAction == null) {
@@ -266,19 +262,6 @@ public class BaseSongDataActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        // this in here represent FrameLayout (R.id.activity_base_layout)
-        // fix: the bottom navigation bar covers some contents
-        ViewCompat.setOnApplyWindowInsetsListener(
-                songDataLayout, (v, windowInsets) -> {
-                    // Get the insets for the system bars (status bar on top, navigation bar at bottom)
-                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    // Apply these insets as padding to your View
-                    LogUtil.d(TAG, "setOnApplyWindowInsetsListener.insets.top = " + insets.top);
-                    v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-                    // Return CONSUMED to signal that you've handled the inset
-                    return WindowInsetsCompat.CONSUMED;
-                });
     }
 
     @Override

@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/holo_blue_bright"
     android:weightSum="100"
+    android:fitsSystemWindows="true"
     tools:context=".BaseFavoriteListActivity">
 
     <LinearLayout

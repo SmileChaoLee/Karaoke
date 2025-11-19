@@ -20,9 +20,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
@@ -78,8 +75,6 @@ abstract class BaseActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         // disabling the touch events
         touchDisabled = true
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContentView(R.layout.activity_base)
 
@@ -201,16 +196,6 @@ abstract class BaseActivity : AppCompatActivity(),
                     createViewDependingOnOrientation()
                 }
             })
-            // this in here represent FrameLayout (R.id.activity_base_layout)
-            // fix: the bottom navigation bar covers some contents
-            ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
-                // Get the insets for the system bars (status bar on top, navigation bar at bottom)
-                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-                // Apply these insets as padding to your FrameLayout
-                view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
-                // Return CONSUMED to signal that you've handled the insets
-                WindowInsetsCompat.CONSUMED
-            }
         }
     }
 

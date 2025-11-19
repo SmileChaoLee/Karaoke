@@ -17,19 +17,17 @@ import java.util.List;
 
 public class SpinnerAdapter extends ArrayAdapter {
 
-    private static final String TAG = "ArrayAdapters.SpinnerAdapter";
     private final Activity mActivity;
     private final int mTextViewResourceId;
     private final float mTextFontSize;
-    private final int mScaleType;
 
     @SuppressWarnings("unchecked")
-    public SpinnerAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List objects, float textSize, int scaleType) {
+    public SpinnerAdapter(@NonNull Context context, int resource, int textViewResourceId,
+                          @NonNull List objects, float textSize) {
         super(context, resource, textViewResourceId, objects);
         mActivity = (Activity)context;
         mTextViewResourceId = textViewResourceId;
         mTextFontSize = textSize;
-        mScaleType = scaleType;
     }
 
     @NonNull
@@ -41,7 +39,7 @@ public class SpinnerAdapter extends ArrayAdapter {
         }
 
         TextView itemTextView = view.findViewById(mTextViewResourceId);
-        ScreenUtil.resizeTextSize(itemTextView, mTextFontSize, mScaleType);
+        ScreenUtil.resizeTextSize(itemTextView, mTextFontSize);
 
         return view;
     }
@@ -59,7 +57,7 @@ public class SpinnerAdapter extends ArrayAdapter {
         if (view != null) {
             TextView itemTextView = view.findViewById(R.id.customSpinnerTextView);
             itemTextView.setText(getItem(position).toString());
-            ScreenUtil.resizeTextSize(itemTextView, mTextFontSize, mScaleType);
+            ScreenUtil.resizeTextSize(itemTextView, mTextFontSize);
         }
 
         return view;

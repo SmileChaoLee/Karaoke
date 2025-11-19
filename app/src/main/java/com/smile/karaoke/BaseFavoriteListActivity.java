@@ -17,10 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.activity.OnBackPressedCallback;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,22 +57,12 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         songListSQLite = new SongListSQLite(getApplicationContext());
 
         super.onCreate(savedInstanceState);
-
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        /*
-        // Get the object that controls the system bar appearance
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        // Set the status bar icons to be dark
-        windowInsetsController.setAppearanceLightStatusBars(true);
-        */
-
         setContentView(R.layout.activity_favorite_list);
 
         TextView myFavoritesTextView = findViewById(R.id.myFavoritesTextView);
-        ScreenUtil.resizeTextSize(myFavoritesTextView, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(myFavoritesTextView, textFontSize);
         Button exitFavoriteListButton = findViewById(R.id.exitFavoriteListButton);
-        ScreenUtil.resizeTextSize(exitFavoriteListButton, textFontSize, ScreenUtil.FontSize_Pixel_Type);
+        ScreenUtil.resizeTextSize(exitFavoriteListButton, textFontSize);
         exitFavoriteListButton.setOnClickListener(v -> returnToPrevious());
 
         favoriteListLinearLayout = findViewById(R.id.favoriteListLinearLayout);
@@ -146,19 +132,6 @@ public class BaseFavoriteListActivity extends AppCompatActivity
                     }
                 }
         );
-
-        // this in here represent FrameLayout (R.id.activity_base_layout)
-        // fix: the bottom navigation bar covers some contents
-        ViewCompat.setOnApplyWindowInsetsListener(
-                favoriteListLinearLayout, (v, windowInsets) -> {
-                    // Get the insets for the system bars (status bar on top, navigation bar at bottom)
-                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    // Apply these insets as padding to your View
-                    LogUtil.d(TAG, "setOnApplyWindowInsetsListener.insets.top = " + insets.top);
-                    v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-                    // Return CONSUMED to signal that you've handled the inset
-                    return WindowInsetsCompat.CONSUMED;
-        });
     }
 
     @Override
