@@ -8,11 +8,13 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.ExoPlayerActivity
 import videoplayer.VlcPlayerActivity
+import youtube.YouTubeActivity
 
 open class PhPlayerActivity : BasePlayerActivity() {
 
     private var mTAG : String = "PhPlayerActivity"
-    open fun setTag(tag: String) {
+
+    fun setTag(tag: String) {
         LogUtil.d(mTAG, "setTag.tag = $tag")
         mTAG = tag
     }
@@ -64,11 +66,5 @@ open class PhPlayerActivity : BasePlayerActivity() {
             loadingMessage.value = getString(R.string.loadingStr)
             youTubeLauncher.launch(it)
         }
-    }
-
-    @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.d(mTAG,"onCreate")
-        super.onCreate(savedInstanceState)
     }
 }

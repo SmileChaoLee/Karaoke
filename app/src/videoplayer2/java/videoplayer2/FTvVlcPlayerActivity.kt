@@ -1,14 +1,16 @@
 package videoplayer2
 
-import videoplayer.VlcPlayerActivity
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.utilities.LogUtil
 
 // For Amazon Fire TV
-class FTvVlcPlayerActivity: VlcPlayerActivity() {
+@OptIn(UnstableApi::class)
+class FTvVlcPlayerActivity: FPhVlcPlayerActivity() {
     private val mTAG : String = "FTvVlcPlayerActivity"
 
     init {
-        LogUtil.d(mTAG, "")
+        LogUtil.d(mTAG, "init")
         setTag(mTAG)
     }
 }

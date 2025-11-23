@@ -1,4 +1,4 @@
-package karaoketvplayer.fragments
+package youtube.fragments
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -17,8 +17,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.utilities.LogUtil
-import karaoketvplayer.presenters.YouTubePresenter
-import karaoketvplayer.services.YouTubeService
+import youtube.presenters.YouTubePresenter
+import youtube.services.YouTubeService
 
 @OptIn(UnstableApi::class)
 class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView {

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="presenter"
-            type="karaoketvplayer.presenters.YouTubePresenter" />
+            type="youtube.presenters.YouTubePresenter" />
     </data>
     <LinearLayout
         android:orientation="vertical"

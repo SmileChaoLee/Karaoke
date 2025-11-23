@@ -55,13 +55,13 @@
         </activity>
 
         <activity
-            android:name="karaoketvplayer.YouTubeActivity"
+            android:name="youtube.YouTubeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <activity
-            android:name="karaoketvplayer.YouTubeActivityAlone"
+            android:name="youtube.YouTubeActivityAlone"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
@@ -73,7 +73,7 @@
             android:name="videoplayer.services.VlcPlayService"
             android:exported="false" />
         <service
-            android:name="karaoketvplayer.services.YouTubeService"
+            android:name="youtube.services.YouTubeService"
             android:exported="false" />
 
     </application>

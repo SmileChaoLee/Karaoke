@@ -1,12 +1,11 @@
-package karaoketvplayer
+package youtube
 
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.utilities.LogUtil
-import karaoketvplayer.fragments.YouTubeFragment
+import youtube.fragments.YouTubeFragment
 
 
 @OptIn(UnstableApi::class)

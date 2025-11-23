@@ -1,4 +1,4 @@
-package karaoketvplayer.services
+package youtube.services
 
 import android.content.Intent
 import android.os.Binder
@@ -13,7 +13,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
-import karaoketvplayer.presenters.YouTubePresenter
+import youtube.presenters.YouTubePresenter
 
 @UnstableApi
 class YouTubeService : BasePlayService() {
