@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
-import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.ui.theme.ColorPrimaryDark
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
@@ -70,14 +69,15 @@ abstract class BasePlayerActivity : ComponentActivity() {
     abstract fun getVlcButtonName(): String
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
+    open fun startYouTubePlayer() {}
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
     // the following are for ExoPlayer
-    protected lateinit var exoLauncher: ActivityResultLauncher<Intent>
+    lateinit var exoLauncher: ActivityResultLauncher<Intent>
     // the following are for VLCPlayer
-    protected lateinit var vlcLauncher: ActivityResultLauncher<Intent>
-    private lateinit var smileAppsLauncher: ActivityResultLauncher<Intent>
+    lateinit var vlcLauncher: ActivityResultLauncher<Intent>
+    lateinit var youTubeLauncher: ActivityResultLauncher<Intent>
     //
     protected val loadingMessage = mutableStateOf("")
     private val backgroundColor = Yellow3
@@ -88,7 +88,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private var isExoEnabled by mutableStateOf(true)
     private var isVlcEnabled by mutableStateOf(true)
-    private var isSmileAppsEnabled by mutableStateOf(true)
+    private var isYouTubeEnabled by mutableStateOf(true)
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,7 +130,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             loadingMessage.value = ""
         }
 
-        smileAppsLauncher = registerForActivityResult(
+        youTubeLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
             LogUtil.d(TAG, "smileAppsLauncher.receive.result = $result")
@@ -213,13 +213,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private fun enableMainButtons() {
         isExoEnabled = true
         isVlcEnabled = true
-        isSmileAppsEnabled = true
+        isYouTubeEnabled = true
     }
 
     protected fun disableMainButtons() {
         isExoEnabled = false
         isVlcEnabled = false
-        isSmileAppsEnabled = false
+        isYouTubeEnabled = false
     }
 
     private fun startExoActivity() {
@@ -230,18 +230,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
         startVlcPlayer()
     }
 
-    private fun showSmileAppsActivity() {
-        Intent(
-            this@BasePlayerActivity,
-            SmileAppsActivity::class.java
-        ).also {
-            loadingMessage.value = getString(R.string.loadingStr)
-            smileAppsLauncher.launch(it)
-        }
-    }
-
-    open fun isListingApps(): Boolean {
-        return true
+    open fun hasYouTubePlayer(): Boolean {
+        return false
     }
 
     @Composable
@@ -371,6 +361,48 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
+    fun YouTubeButton(modifier: Modifier = Modifier,
+                      buttonWidth: Float,
+                      buttonHeight: Float,
+                      textLineHeight: TextUnit) {
+        LogUtil.d(TAG, "YouTubeButton")
+        Column(modifier = modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center) {
+            val isClicked = remember { mutableStateOf(false) }
+            Button(
+                enabled = isYouTubeEnabled,
+                onClick = {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        isClicked.value = true
+                        delay(200)
+                        startYouTubePlayer()
+                        isClicked.value = false
+                    }
+                },
+                modifier = Modifier
+                    .width(width = buttonWidth.dp)
+                    .height(height = buttonHeight.dp)
+                    .background(color = buttonBackground),
+                colors = ButtonColors(
+                    containerColor =
+                        if (!isClicked.value) buttonContainerColor
+                        else Color.Cyan,
+                    disabledContainerColor = buttonContainerColor,
+                    contentColor =
+                        if (!isClicked.value)
+                            buttonContentColor
+                        else Color.Red ,
+                    disabledContentColor = buttonContentColor
+                )
+            )
+            { Text(text = getString(R.string.youTubePlayer),
+                lineHeight = textLineHeight,
+                fontSize = KaraokeComposable.textFontSize) }
+        }
+    }
+
+    @Composable
     fun ExoVlcButtons(modifier: Modifier = Modifier,
                       buttonWidth: Float, buttonHeight: Float,
                       textLineHeight: TextUnit) {
@@ -401,9 +433,9 @@ abstract class BasePlayerActivity : ComponentActivity() {
         if (resources.configuration.orientation
             == Configuration.ORIENTATION_LANDSCAPE) {
             verSpacerWeight = 0.2f
-            horSpacerWeight = if (isListingApps()) 0.5f else 2.5f
+            horSpacerWeight = if (hasYouTubePlayer()) 0.5f else 2.5f
             buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
-            buttonWidth = if (isListingApps()) buttonWidth / 2.0f else buttonWidth
+            buttonWidth = if (hasYouTubePlayer()) buttonWidth / 2.0f else buttonWidth
         }
         LogUtil.i(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
         // 1 in 5
@@ -417,12 +449,24 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
+                if (hasYouTubePlayer()) {
+                    YouTubeButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                }
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
+                    if (hasYouTubePlayer()) {
+                        YouTubeButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
+                    }
                 }
             }
         }

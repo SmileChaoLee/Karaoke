@@ -54,11 +54,26 @@
             android:exported="false">
         </activity>
 
+        <activity
+            android:name="karaoketvplayer.YouTubeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name="karaoketvplayer.YouTubeActivityAlone"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
         <service
             android:name="karaokeplayer.services.ExoPlayService"
             android:exported="false" />
         <service
             android:name="videoplayer.services.VlcPlayService"
+            android:exported="false" />
+        <service
+            android:name="karaoketvplayer.services.YouTubeService"
             android:exported="false" />
 
     </application>

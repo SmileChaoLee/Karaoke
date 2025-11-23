@@ -21,6 +21,10 @@ open class PhPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.karaoke_tv_app_name)
     }
 
+    override fun hasYouTubePlayer(): Boolean {
+        return true
+    }
+
     override fun getExoButtonName(): String {
         return resources.getString(R.string.exoPlayerName)
     }
@@ -48,6 +52,17 @@ open class PhPlayerActivity : BasePlayerActivity() {
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
             vlcLauncher.launch(it)
+        }
+    }
+
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer()")
+        Intent(
+            this@PhPlayerActivity,
+            YouTubeActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            youTubeLauncher.launch(it)
         }
     }
 
