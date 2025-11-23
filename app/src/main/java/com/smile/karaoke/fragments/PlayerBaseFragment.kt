@@ -3,6 +3,7 @@ package com.smile.karaoke.fragments
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -82,19 +83,20 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     lateinit var mPresenter: PlayerBasePresenter
-    private var screenSizeX = 0
-    private var screenSizeY = 0
+    var screenSizeX = 0
+    var screenSizeY = 0
     private var playSongs: PlaySongs? = null
     private var playBaseFragmentFunc: PlayBaseFragmentFunc? = null
-    protected var fragmentView: View? = null
-    protected var textFontSize = 0f
+    var fragmentView: View? = null
+    var textFontSize = 0f
     private var fontScale = 0f
-    protected var toastTextSize = 0f
-    protected var playerViewLinearLayout: LinearLayout? = null
+    var toastTextSize = 0f
+    var playerViewLinearLayout: LinearLayout? = null
+    var toolbarAudioAdsLayout: LinearLayout? = null
     private var supportToolbar // use customized ToolBar
             : androidx.appcompat.widget.Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
-    private var audioControllerView: LinearLayout? = null
+    var audioControllerView: LinearLayout? = null
     private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
     private var playMediaImageButton: ImageButton? = null
@@ -117,8 +119,8 @@ abstract class PlayerBaseFragment : Fragment(),
     private var audioTrackImageButton: ImageButton? = null
 
     private var mediaRouteButton: MediaRouteButton? = null
-    protected var castContext: CastContext? = null
-    protected var deviceType: String = ScreenUtil.DEVICE_TYPE_PHONE
+    var castContext: CastContext? = null
+    var deviceType: String = ScreenUtil.DEVICE_TYPE_PHONE
 
     private var bannerAdsLayout: LinearLayout? = null
     private var bannerLinearLayout: LinearLayout? = null
@@ -131,8 +133,8 @@ abstract class PlayerBaseFragment : Fragment(),
     private var nativeAdsFrameLayout: FrameLayout? = null
     private var nativeAdViewVisibility = 0
     private var nativeAdTemplateView: TemplateView? = null
-    protected var mainMenu: Menu? = null
-    protected var channelMenuItem: MenuItem? = null
+    var mainMenu: Menu? = null
+    var channelMenuItem: MenuItem? = null
 
     // submenu of file
     private var softDecoderFirstMenuItem: MenuItem? = null
@@ -169,15 +171,53 @@ abstract class PlayerBaseFragment : Fragment(),
 
     abstract fun getPlayerPresenter(): PlayerBasePresenter?
     abstract fun setupMenuItems()
+    abstract fun getPlayServiceIntent(): Intent?
     abstract fun onPlayServiceConnected(service: IBinder)
-    abstract fun onPlayServiceDisconnected()
-    abstract fun startAndBindPlayService()
-    abstract fun unbindAndStopPlayService()
     abstract fun audioChannelButtonListener()
 
-    protected var isServiceBound: Boolean = false
-    protected var isServiceDestroyed: Boolean = true
-    protected val connection: ServiceConnection = object : ServiceConnection {
+    var mPlayServiceIntent: Intent? = null
+    private fun startAndBindPlayService() {
+        activity?.let {
+            if (isServiceDestroyed) {
+                LogUtil.d(TAG, "startAndBindPlayService.startService()")
+                it.startService(mPlayServiceIntent)
+                isServiceDestroyed = false
+            } else {
+                LogUtil.d(TAG, "startAndBindPlayService.PlayService already started")
+            }
+            if (!isServiceBound) {
+                val result: Boolean = it.bindService(mPlayServiceIntent!!,
+                    connection, Context.BIND_IMPORTANT)
+                LogUtil.d(TAG, "startAndBindPlayService.isBound = $result")
+            } else {
+                LogUtil.d(TAG, "startAndBindPlayService.PlayService already bound")
+            }
+        }
+    }
+
+    private fun unbindAndStopPlayService() {
+        activity?.let {
+            if (isServiceBound) {
+                LogUtil.d(TAG, "unbindAndStopPlayService.unbindService()")
+                it.unbindService(connection)
+                it.stopService(mPlayServiceIntent)
+                isServiceBound = false
+                isServiceDestroyed = true
+            } else {
+                LogUtil.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
+            }
+        }
+    }
+
+    private fun onPlayServiceDisconnected() {
+        LogUtil.i(TAG, "onPlayServiceDisconnected")
+        activity?.stopService(mPlayServiceIntent)
+        isServiceDestroyed = true
+    }
+
+    var isServiceBound: Boolean = false
+    var isServiceDestroyed: Boolean = true
+    val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             LogUtil.i(TAG, "onServiceConnected")
             onPlayServiceConnected(service)
@@ -220,9 +260,6 @@ abstract class PlayerBaseFragment : Fragment(),
             if (it is PlayBaseFragmentFunc) playBaseFragmentFunc = it
             LogUtil.d(TAG, "onCreate.playBaseFragmentFunc = $playBaseFragmentFunc")
         }
-        arguments?.let {
-            LogUtil.d(TAG, "onCreate.arguments is not null")
-        }
         /*
         // keep the screen on all the time, added on 2021-02-18
         activity?.window?.apply {
@@ -236,6 +273,21 @@ abstract class PlayerBaseFragment : Fragment(),
             LogUtil.d(TAG, "onCreate.presenter is null so exit activity.")
             playBaseFragmentFunc?.returnToPrevious(false)
             return
+        }
+
+        var isAutoPlay = false
+        arguments?.let {
+            LogUtil.d(TAG, "onCreate.arguments is not null")
+            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE,
+                false)
+        }
+
+        // must be after super.onCreate(savedInstanceState)
+        activity?.let {
+            mPlayServiceIntent = getPlayServiceIntent()
+            val callingIntent: Intent? = it.intent
+            LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
+            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
     }
 
@@ -266,6 +318,7 @@ abstract class PlayerBaseFragment : Fragment(),
             playerViewLinearLayout = findViewById(R.id.playerViewLinearLayout)
             supportToolbar = findViewById(R.id.player_view_toolbar)
             supportToolbar?.visibility = View.VISIBLE
+            toolbarAudioAdsLayout = findViewById(R.id.toolbarAudioAdsLayout)
         }
 
         activity?.let {
@@ -573,13 +626,16 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        val logStr = "onConfigurationChanged"
+        LogUtil.i(TAG, logStr)
         closeMenu(mainMenu)
         setOrientationImageButton(newConfig.orientation)
         setButtonsPositionAndSize(newConfig)
         activity?.let {actIt ->
             screenSizeX = ScreenUtil.getScreenSize(actIt).x
+            LogUtil.i(TAG, "$logStr.screenSizeX = $screenSizeX")
             screenSizeY = ScreenUtil.getScreenSize(actIt).y
+            LogUtil.i(TAG, "$logStr.screenSizeY = $screenSizeY")
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
@@ -958,6 +1014,7 @@ abstract class PlayerBaseFragment : Fragment(),
             fragmentView?.requestFocus()
         }
         hideVideoImageButton?.setOnClickListener {
+            LogUtil.d(TAG, "hideVideoImageButton.setOnClickListener")
             if (playerViewLinearLayout?.visibility==View.VISIBLE) {
                 hidePlayerView()
             } else {

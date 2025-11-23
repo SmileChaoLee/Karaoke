@@ -26,17 +26,18 @@ class TablayoutFragment : Fragment() {
     private var playTabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate() is called.")
+        LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
+        LogUtil.i(TAG, "onCreate.finished")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView()")
+        LogUtil.i(TAG, "onCreateView")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tablayout, container, false)
     }
@@ -96,10 +97,12 @@ class TablayoutFragment : Fragment() {
             favoriteTab.text = tabText[1]
             it.addTab(favoriteTab)
         }
+
+        LogUtil.i(TAG, "onViewCreated.finished")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged()")
+        LogUtil.i(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         showBannerAd()
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)

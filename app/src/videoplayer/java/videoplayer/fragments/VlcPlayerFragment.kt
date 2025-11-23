@@ -1,6 +1,5 @@
 package videoplayer.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -13,45 +12,49 @@ import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.R
-import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.AppLinkUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
 import videoplayer.Presenters.VlcPlayerPresenter
 import videoplayer.services.VlcPlayService
 import videoplayer.services.VlcPlayService.LocalBinder
 
-private const val TAG: String = "VlcPlayerFragment"
-
 @OptIn(UnstableApi::class)
 class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentView {
+
+    companion object {
+        private const val TAG: String = "VlcPlayerFragment"
+    }
+
     private lateinit var presenter: VlcPlayerPresenter
     private lateinit var videoVLCPlayerView: VLCVideoLayout
     private var playService: VlcPlayService? = null
-    private var mPlayServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.i(TAG, "onCreate() is called")
         presenter = VlcPlayerPresenter(this)
 
-        super.onCreate(savedInstanceState)  // must be after VlcPlayerPresenter(this, this)
-        LogUtil.i(TAG, "onCreate() is called")
-        var isAutoPlay = false
+        // must be after VlcPlayerPresenter(this)
+        super.onCreate(savedInstanceState)
+
+        /*
         arguments?.let {
             isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
         }
 
+        // must be after super.onCreate(savedInstanceState)
         activity?.let {
             mPlayServiceIntent = Intent(it, VlcPlayService::class.java)
             val callingIntent: Intent? = it.intent
             LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
+        */
 
         castContext = null  // disable cast for VLC player for now
 
-        LogUtil.i(TAG, "onCreate() is finished")
+        LogUtil.i(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -136,6 +139,10 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         channelMenuItem?.isEnabled = false
     }
 
+    override fun getPlayServiceIntent(): Intent {
+        return Intent(activity, VlcPlayService::class.java)
+    }
+
     override fun onPlayServiceConnected(service: IBinder) {
         LogUtil.i(TAG, "onPlayServiceConnected")
         val binder = service as LocalBinder
@@ -145,44 +152,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         playService?.initVlcPlayer()
         playService?.initMediaControllerCompat(this.presenter)
         presenter.playSongPlayedBeforeActivityCreated()
-    }
-
-    override fun onPlayServiceDisconnected() {
-        LogUtil.i(TAG, "onPlayServiceDisconnected")
-        activity?.stopService(mPlayServiceIntent)
-        isServiceDestroyed = true
-    }
-
-    override fun startAndBindPlayService() {
-        activity?.let {
-            if (isServiceDestroyed) {
-                LogUtil.d(TAG, "startAndBindPlayService.startService()")
-                it.startService(mPlayServiceIntent)
-                isServiceDestroyed = false
-            } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already started")
-            }
-            if (!isServiceBound) {
-                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
-                LogUtil.d(TAG, "startAndBindPlayService.isBound = $result")
-            } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already bound")
-            }
-        }
-    }
-
-    override fun unbindAndStopPlayService() {
-        activity?.let {
-            if (isServiceBound) {
-                LogUtil.d(TAG, "unbindAndStopPlayService.unbindService()")
-                it.unbindService(connection)
-                it.stopService(mPlayServiceIntent)
-                isServiceBound = false
-                isServiceDestroyed = true
-            } else {
-                LogUtil.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
-            }
-        }
     }
 
     override fun getPlayerPresenter() : VlcPlayerPresenter {

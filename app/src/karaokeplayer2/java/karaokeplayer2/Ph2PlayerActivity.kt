@@ -15,9 +15,4 @@ open class Ph2PlayerActivity : PhPlayerActivity() {
     override fun getAppName(): String {
         return resources.getString(R.string.karaoke_app_name)
     }
-
-    // No apps list on Amazon store
-    override fun isListingApps(): Boolean {
-        return false
-    }
 }
