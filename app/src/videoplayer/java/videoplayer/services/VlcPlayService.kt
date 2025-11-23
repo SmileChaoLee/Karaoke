@@ -148,12 +148,15 @@ class VlcPlayService : BasePlayService() {
                     LogUtil.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
                     scale = 0f
                     vlcVout.setWindowSize(screenSize.x, screenSize.y)
-                    aspectRatio = if (actIt.resources.configuration.orientation
+                    var scaleType = MediaPlayer.ScaleType.SURFACE_ORIGINAL
+                    var nRatio = "4:3"
+                    if (actIt.resources.configuration.orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
-                        "16:9"
-                    } else {
-                        "4:3"
+                        scaleType = MediaPlayer.ScaleType.SURFACE_FILL
+                        nRatio = "16:9"
                     }
+                    videoScale = scaleType
+                    aspectRatio = nRatio
                     LogUtil.d(TAG,"${msgStr}.aspectRatio = $aspectRatio")
                 }
             }
