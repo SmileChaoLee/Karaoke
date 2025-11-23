@@ -51,6 +51,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     public interface ExoPlayerPresentView extends BasePresentView {
         void setVideoPlayerView();
         void removeVideoPlayerView();
+        void setVideoWindowSize();
     }
 
     public ExoPlayerPresenter(ExoPlayerPresentView presentView) {
@@ -235,13 +236,13 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             result[1] = audioChannelPlayed;
         }
         setAudioTrackAndChannel(result[0], result[1]);
+        mPresentView.setVideoWindowSize();
         // build R.id.audioTrack submenu
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         // update the duration on controller UI
         LogUtil.d(TAG, msgStr + ".update_Player_duration_seekbar");
         mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
-
     }
 
     @Override

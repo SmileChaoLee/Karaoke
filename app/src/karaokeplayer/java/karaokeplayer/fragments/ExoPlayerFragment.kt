@@ -1,7 +1,7 @@
 package karaokeplayer.fragments
 
-import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 
 import android.os.Bundle
 import android.os.IBinder
@@ -11,10 +11,10 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.constants.PlayerConstants
 import karaokeplayer.presenters.ExoPlayerPresenter
 import karaokeplayer.services.ExoPlayService
 import com.smile.karaoke.fragments.PlayerBaseFragment
@@ -30,19 +30,20 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     private lateinit var presenter: ExoPlayerPresenter
     private var playerView: PlayerView? = null
     private var playService: ExoPlayService? = null
-    private var mPlayServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this)
 
-        // must be after ExoPlayerPresenter(this, this)
+        // must be after ExoPlayerPresenter(this)
         super.onCreate(savedInstanceState)
 
+        /*
         var isAutoPlay = false
         arguments?.let {
             isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
         }
+
         // must be after super.onCreate(savedInstanceState)
         activity?.let {
             mPlayServiceIntent = Intent(it, ExoPlayService::class.java)
@@ -50,6 +51,9 @@ class ExoPlayerFragment : PlayerBaseFragment(),
             LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
             mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
         }
+        */
+
+        LogUtil.i(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,6 +69,12 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     override fun onPause() {
         super.onPause()
         LogUtil.i(TAG, "onPause")
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        LogUtil.i(TAG, "onConfigurationChanged")
+        super.onConfigurationChanged(newConfig)
+        setVideoWindowSize()
     }
 
     override fun onDestroy() {
@@ -87,6 +97,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
             playerView = PlayerView(it.applicationContext)
             LogUtil.d(TAG, "setVideoPlayerView.playerView = $playerView")
             playerView?.apply {
+                setVideoWindowSize()
                 layoutParams = layParams
                 setBackgroundColor(ContextCompat.getColor(it.applicationContext,
                     android.R.color.black))
@@ -113,6 +124,16 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         playerView = null
     }
 
+    override fun setVideoWindowSize() {
+        val logStr = "setVideoWindowSize"
+        LogUtil.i(TAG, logStr)
+        playerView?.resizeMode =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+                AspectRatioFrameLayout.RESIZE_MODE_FIT
+            else AspectRatioFrameLayout.RESIZE_MODE_FILL
+        playService?.setVideoWindowSize()
+    }
+
     override fun setCurrentPlayerToPlayerView() {
         LogUtil.i(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {
@@ -137,6 +158,10 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         channelMenuItem?.isEnabled = true
     }
 
+    override fun getPlayServiceIntent(): Intent {
+        return Intent(activity, ExoPlayService::class.java)
+    }
+
     override fun onPlayServiceConnected(service: IBinder) {
         LogUtil.i(TAG, "onPlayServiceConnected")
         val binder = service as ExoPlayService.LocalBinder
@@ -150,44 +175,6 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         setVideoPlayerView()
         LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
-    }
-
-    override fun onPlayServiceDisconnected() {
-        LogUtil.i(TAG, "onPlayServiceDisconnected")
-        activity?.stopService(mPlayServiceIntent)
-        isServiceDestroyed = true
-    }
-
-    override fun startAndBindPlayService() {
-        activity?.let {
-            if (isServiceDestroyed) {
-                LogUtil.d(TAG, "startAndBindPlayService.startService()")
-                it.startService(mPlayServiceIntent)
-                isServiceDestroyed = false
-            } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already started")
-            }
-            if (!isServiceBound) {
-                val result: Boolean = it.bindService(mPlayServiceIntent!!, connection, Context.BIND_IMPORTANT)
-                LogUtil.d(TAG, "startAndBindPlayService.isBound = $result")
-            } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already bound")
-            }
-        }
-    }
-
-    override fun unbindAndStopPlayService() {
-        activity?.let {
-            if (isServiceBound) {
-                LogUtil.d(TAG, "unbindAndStopPlayService.unbindService()")
-                it.unbindService(connection)
-                it.stopService(mPlayServiceIntent)
-                isServiceBound = false
-                isServiceDestroyed = true
-            } else {
-                LogUtil.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
-            }
-        }
     }
 
     override fun audioChannelButtonListener() {

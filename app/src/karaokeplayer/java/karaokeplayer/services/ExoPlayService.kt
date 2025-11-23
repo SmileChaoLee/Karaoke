@@ -97,6 +97,13 @@ class ExoPlayService : BasePlayService() {
         releaseCastPlayer()
     }
 
+    fun setVideoWindowSize() {
+        LogUtil.i(TAG, "setVideoWindowSize")
+        exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
+        // or
+        // exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+    }
+
     fun addExoPlayerListener() {
         LogUtil.i(TAG, "addExoPlayerListener")
         if (exoPlayerListener == null) {
