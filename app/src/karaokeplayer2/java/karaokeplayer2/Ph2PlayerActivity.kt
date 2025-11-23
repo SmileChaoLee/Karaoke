@@ -15,4 +15,9 @@ open class Ph2PlayerActivity : PhPlayerActivity() {
     override fun getAppName(): String {
         return resources.getString(R.string.karaoke_app_name)
     }
+
+    // Amazon appstore does not allow playing YouTube
+    override fun hasYouTubePlayer(): Boolean {
+        return false
+    }
 }

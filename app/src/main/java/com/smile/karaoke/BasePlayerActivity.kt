@@ -51,6 +51,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.ui.theme.Yellow3
 import com.smile.karaoke.utilities.PermissionUtil
+import com.smile.karaoke.BuildConfig
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.smilelibraries.utilities.UmpUtil
 import kotlinx.coroutines.CoroutineScope
@@ -449,11 +450,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
-                if (hasYouTubePlayer()) {
-                    YouTubeButton(
-                        modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight
-                    )
+                if (BuildConfig.DEBUG) {
+                    if (hasYouTubePlayer()) {
+                        YouTubeButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
+                    }
                 }
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
