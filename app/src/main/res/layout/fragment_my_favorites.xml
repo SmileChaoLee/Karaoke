@@ -121,7 +121,7 @@
                 android:background="@drawable/file_menu_item_background_color"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:src="@drawable/circle_and_three_dots"
+                android:src="@drawable/app_list"
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center">
