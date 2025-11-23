@@ -160,6 +160,7 @@ abstract class BaseActivity : AppCompatActivity(),
                 }
             }
             if (isReplaced) commit()
+            LogUtil.d(TAG, "beginTransaction.commit()")
         }
 
         onBackPressedDispatcher.addCallback(
@@ -197,6 +198,8 @@ abstract class BaseActivity : AppCompatActivity(),
                 }
             })
         }
+
+        LogUtil.i(TAG,"onCreate.finished")
     }
 
     @Deprecated(
