@@ -1,12 +1,9 @@
 package karaoketvplayer.presenters
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.utilities.LogUtil
 
