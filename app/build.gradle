@@ -37,15 +37,21 @@ android {
         create("karaokeplayer") {
             dimension = "karaoke"
             applicationId = "com.smile.karaokeplayer"
-            isDefault = true
         }
         create("videoplayer") {
+            dimension = "karaoke"
+            applicationId = "com.smile.videoplayer"
+        }
+        create("videoplayer2") {
+            // for Amazon app store only
+            // has same package name with "videoplayer"
             dimension = "karaoke"
             applicationId = "com.smile.videoplayer"
         }
         create("karaoketvplayer") {
             dimension = "karaoke"
             applicationId = "com.smile.karaoketvplayer"
+            isDefault = true
         }
         create("karaokeplayer2") {
             // for Amazon app store only
@@ -81,18 +87,28 @@ android {
             }
         }
 
+        videoplayer2 {
+            java.srcDirs += ["src/videoplayer/java", "src/videoplayer2/java"]
+            res.srcDirs += ["src/videoplayer/res", "src/videoplayer2/res"]
+            manifest {
+                srcFile "src/videoplayer2/AndroidManifest.xml"
+            }
+        }
+
         karaoketvplayer {
-            java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java", "src/videoplayer/java"]
-            res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
+            java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java",
+                             "src/youtube/java", "src/videoplayer/java"]
+            res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res",
+                            "src/youtube/res", "src/videoplayer/res"]
             manifest {
                 srcFile "src/karaoketvplayer/AndroidManifest.xml"
             }
         }
 
         karaokeplayer2 {
-            java.srcDirs += ["src/karaokeplayer2/java","src/karaoketvplayer/java",
-                             "src/karaokeplayer/java", "src/videoplayer/java"]
-            res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res", "src/videoplayer/res"]
+            java.srcDirs += ["src/karaokeplayer2/java", "src/karaokeplayer/java",
+                             "src/videoplayer/java"]
+            res.srcDirs += ["src/karaokeplayer/res", "src/videoplayer/res"]
             manifest {
                 srcFile "src/karaokeplayer2/AndroidManifest.xml"
             }
@@ -229,9 +245,7 @@ dependencies {
         android.applicationVariants.all { variant ->
             variant.productFlavors.each { flavor ->
                 // println("variant.name = ${variant.name}")
-                if (flavor.name.containsIgnoreCase("karaokeplayer")
-                        || flavor.name.containsIgnoreCase("karaoketvplayer")
-                        || flavor.name.containsIgnoreCase("karaokeplayer2")) {
+                if (flavor.name.containsIgnoreCase("karaoke")) {
                     // Dynamically add a dependency to this variant
                     dependencies.add(variant.name + "Implementation", "androidx.media3:media3-exoplayer:1.8.0")
                     dependencies.add(variant.name + "Implementation", "androidx.media3:media3-exoplayer-dash:1.8.0")
@@ -245,15 +259,14 @@ dependencies {
                     // dependencies.add(variant.name + "Implementation", project(":extension-vp9"))
                     // Note: You use the full variant name (e.g., "karaokeplayerDebugImplementation")
                 }
-                if (flavor.name.containsIgnoreCase("karaoketvplayer")
-                        || flavor.name.containsIgnoreCase("karaokeplayer2")) {
+                if (flavor.name.containsIgnoreCase("karaoketvplayer")) {
                     // Check for latest version
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:custom-ui:13.0.0")
                 }
-                if (flavor.name.containsIgnoreCase("videoplayer")
+                if (flavor.name.containsIgnoreCase("videoplayer")   // includes videoplayer2
                         || flavor.name.containsIgnoreCase("karaoketvplayer")
                         || flavor.name.containsIgnoreCase("karaokeplayer2")) {
                     dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:3.6.5")
