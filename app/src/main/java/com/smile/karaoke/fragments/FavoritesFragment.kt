@@ -24,12 +24,9 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
-import com.smile.karaoke.BaseSongDataActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
-import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
@@ -101,7 +98,6 @@ class FavoritesFragment : Fragment(),
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
                                     " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                ScreenUtil.FontSize_Pixel_Type,
                                 Toast.LENGTH_SHORT)
                         }
                         if (MySingleTon.favorites.isNotEmpty()) {
@@ -202,7 +198,6 @@ class FavoritesFragment : Fragment(),
                                 ScreenUtil.showToast(
                                         activity, getString(R.string.excess_max) +
                                         " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                    ScreenUtil.FontSize_Pixel_Type,
                                     Toast.LENGTH_SHORT)
                                 break
                             }
@@ -212,7 +207,6 @@ class FavoritesFragment : Fragment(),
                 if (songs.isEmpty()) {
                     ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
                         textFontSize,
-                        ScreenUtil.FontSize_Pixel_Type,
                         Toast.LENGTH_SHORT)
                 } else {
                     playSongs?.playSelectedSongList(ArrayList(songs))
@@ -224,20 +218,23 @@ class FavoritesFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchToPlayerView()
             }
-            it.isFocusable = true
-            it.isFocusableInTouchMode = true
-            it.requestFocus()
             appsImageButton = it.findViewById(R.id.appsImageButton)
             appsImageButton?.visibility = View.VISIBLE
             appsImageButton?.setOnClickListener {
                 playSongs?.showSmileAppsActivity()
             }
+
             it.isFocusable = true
             it.isFocusableInTouchMode = true
+            it.requestFocus()
+            it.setOnKeyListener {
+                    _, keyCode, event ->
+                showVideoButton?.requestFocus()
+                return@setOnKeyListener false
+            }
         }
 
         setButtonsSize()
-
         initFavoriteRecyclerView()
     }
 

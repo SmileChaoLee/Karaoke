@@ -19,15 +19,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.scale
+import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -35,19 +40,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class OpenFileFragment : CommonFragment(), RecyclerItemListener {
+class OpenFileFragmentOld : Fragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
         private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
     }
 
+    private var textFontSize = 0.0f
+    private var videoThumbnailsWidth = 0
+    private var videoThumbnailsHeight = 0
     private var fragmentView : View? = null
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
+    private var isPlayButton: Boolean = true
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var searchCompleted = true
+    private lateinit var mediaRetriever: MediaMetadataRetriever
     private var backKeyButton: ImageButton? = null
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
@@ -57,11 +67,12 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
     private var showVideoButton: ImageButton? = null
     private var appsImageButton: ImageButton? = null
 
+    private var playSongs: PlaySongs? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
-        /*
         arguments?.let {
             isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
             LogUtil.d(TAG, "onCreate.isPlayButton = $isPlayButton")
@@ -73,8 +84,8 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
             if (it is PlaySongs) playSongs = it
             LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
         }
+
         mediaRetriever = MediaMetadataRetriever()
-        */
 
         // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
         LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
@@ -197,12 +208,24 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
             }
             playSelectedButton = it.findViewById(R.id.openFilePlaySelectedButton)
             playSelectedButton?.setImageResource(
-                    if (isPlayButton) R.drawable.play_media_button_image
-                    else R.drawable.open_files)
+                    if (isPlayButton) R.drawable.play_media_button_image else R.drawable.open_files)
             playSelectedButton?.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 // open the files to play
-                startPlaySelectedSong(activity, "playSelectedButton")
+                activity?.let {activityIt ->
+                    val songListSQLite = SongListSQLite(activityIt)
+                    getSongs(songListSQLite, "playSelectedButton").let { songsIt ->
+                        if (songsIt.isEmpty()) {
+                            ScreenUtil.showToast(
+                                activityIt, getString(R.string.noFilesSelectedString), textFontSize,
+                                ScreenUtil.FontSize_Pixel_Type,
+                                Toast.LENGTH_SHORT)
+                        } else {
+                            playSongs?.playSelectedSongList(ArrayList(songsIt))
+                        }
+                    }
+                    songListSQLite.closeDatabase()
+                }
             }
             addToFavoriteButton = it.findViewById(R.id.addToFavoriteButton)
             addToFavoriteButton?.setOnClickListener {
@@ -220,9 +243,9 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
                                     songListSQLite.addSongToSongList(song)
                                 } else {
                                     // excess max number of favorites
-                                    ScreenUtil.showToast(activity,
-                                        getString(R.string.excess_max) +
+                                    ScreenUtil.showToast(activity,getString(R.string.excess_max) +
                                             " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                        ScreenUtil.FontSize_Pixel_Type,
                                         Toast.LENGTH_SHORT)
                                     break
                                 }
@@ -230,6 +253,7 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
                             toastMsg = getString(R.string.add_to_favorites)
                         }
                         ScreenUtil.showToast(activity, toastMsg, textFontSize,
+                            ScreenUtil.FontSize_Pixel_Type,
                             Toast.LENGTH_SHORT)
                     }
                     songListSQLite.closeDatabase()
@@ -241,24 +265,21 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchToPlayerView()
             }
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
+            it.requestFocus()
 
             appsImageButton = it.findViewById(R.id.appsImageButton)
             appsImageButton?.visibility = View.VISIBLE
             appsImageButton?.setOnClickListener {
                 playSongs?.showSmileAppsActivity()
             }
-
             it.isFocusable = true
             it.isFocusableInTouchMode = true
-            it.requestFocus()
-            it.setOnKeyListener {
-                    _, keyCode, event ->
-                showVideoButton?.requestFocus()
-                return@setOnKeyListener false
-            }
         }
 
         setButtonsSize()
+
         initFilesRecyclerView()
     }
 
@@ -363,10 +384,6 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
             MySingleTon.fileList.addAll(tempList)
             LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
 
-            for (fileDes in MySingleTon.fileList) {
-                LogUtil.d(TAG, "searchCurrentFolder.file = ${fileDes.file}")
-            }
-
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
                     sendBroadcast(Intent().apply {
@@ -448,6 +465,44 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
         linearParam.width = buttonWidth
         linearParam.height = buttonWidth
         linearParam.setMargins(0, 0, 0, 0)
+    }
+
+    private fun getSongs(songListSQLite : SongListSQLite, msg : String) : ArrayList<SongInfo> {
+        val songs = ArrayList<SongInfo>().also {songIt ->
+            var index = 0
+            for (i in 0 until MySingleTon.fileList.size) {
+                if (MySingleTon.fileList[i].selected) {
+                    LogUtil.d(TAG, "$msg.file.path = ${MySingleTon.fileList[i].file.path}")
+                    LogUtil.d(TAG, "$msg.file.toUri() = ${MySingleTon.fileList[i].file.toUri()}")
+                    var song = SongInfo().apply {
+                        songName = MySingleTon.fileList[i].file.name
+                        filePath = MySingleTon.fileList[i].file.toUri().toString()
+                        musicTrackNo = 1    // guess
+                        musicChannel = CommonConstants.STEREO
+                        vocalTrackNo = 2    // guess
+                        vocalChannel = CommonConstants.STEREO
+                        included = "0"
+                    }
+                    songListSQLite.findOneSongByUriString(song.filePath)?.apply {
+                        LogUtil.d(TAG, "$msg.found")
+                        included = "1"
+                        song = this
+                    }
+                    songIt.add(song)
+                    index++
+                    if (index >= MySingleTon.MAX_SONGS) {
+                        // excess the max
+                        ScreenUtil.showToast(
+                                activity, getString(R.string.excess_max) +
+                                " ${MySingleTon.MAX_SONGS}", textFontSize,
+                            ScreenUtil.FontSize_Pixel_Type,
+                            Toast.LENGTH_SHORT)
+                        break
+                    }
+                }
+            }
+        }
+        return songs
     }
 
     private fun initFilesRecyclerView() {

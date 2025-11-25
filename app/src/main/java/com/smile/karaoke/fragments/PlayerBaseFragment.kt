@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -380,25 +379,34 @@ abstract class PlayerBaseFragment : Fragment(),
         animationText?.repeatMode = Animation.REVERSE
         animationText?.repeatCount = Animation.INFINITE
 
-        fragmentView?.apply {
+        fragmentView?.let {
             val durationTextSize = textFontSize * 0.6f
-            playingTimeTextView = findViewById(R.id.playingTimeTextView)
+            playingTimeTextView = it.findViewById(R.id.playingTimeTextView)
             playingTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(playingTimeTextView, durationTextSize)
-            playerDurationSeekbar = findViewById(R.id.player_duration_seekbar)
-            durationTimeTextView = findViewById(R.id.durationTimeTextView)
+            playerDurationSeekbar = it.findViewById(R.id.player_duration_seekbar)
+            durationTimeTextView = it.findViewById(R.id.durationTimeTextView)
             durationTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize)
-            nativeAdsFrameLayout = findViewById(R.id.nativeAdsFrameLayout)
+            nativeAdsFrameLayout = it.findViewById(R.id.nativeAdsFrameLayout)
             nativeAdsFrameLayout?.let {
                 nativeAdViewVisibility = it.visibility
             }
-            nativeAdTemplateView = findViewById(R.id.nativeAdTemplateView)
+            nativeAdTemplateView = it.findViewById(R.id.nativeAdTemplateView)
             activity?.let { actIt ->
                 nativeTemplate = (actIt.application as SmileAppBase)
                     .geNativeTemplate(actIt,
                         nativeAdsFrameLayout,
                         nativeAdTemplateView)
+            }
+
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
+            it.requestFocus()
+            it.setOnKeyListener {
+                    _, keyCode, event ->
+                supportToolbar?.performClick()
+                return@setOnKeyListener false
             }
         }
 
@@ -411,31 +419,6 @@ abstract class PlayerBaseFragment : Fragment(),
         setButtonsPositionAndSize(resources.configuration)
         setOnClickEvents()
         showNativeAndHideBannerAd()
-
-        fragmentView?.setOnKeyListener {
-                _, keyCode, event ->
-            LogUtil.d(TAG, "onViewCreated.setOnKeyListener.keyCode = $keyCode, event = $event")
-            when (keyCode) {
-                KeyEvent.KEYCODE_DPAD_UP,
-                KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if (event?.action == KeyEvent.ACTION_DOWN) {
-                        supportToolbar?.performClick()
-                        // D-pad move started
-                        LogUtil.d(TAG, "setOnKeyListener.D-pad move started: $keyCode")
-                        // Handle your logic here
-                        if (lastFocusView == null) {
-                            hideVideoImageButton?.requestFocus()
-                        } else {
-                            lastFocusView?.requestFocus()
-                        }
-                        return@setOnKeyListener true
-                    }
-                }
-            }
-            return@setOnKeyListener false
-        }
 
         LogUtil.d(TAG, "onViewCreated is finished.")
     }
@@ -1091,6 +1074,7 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnClickListener { v: View ->
                 LogUtil.i(TAG, "supportToolbar.onClick() is called.")
                 showSupportToolbarAudioControlSetTimer()
+                actionMenuImageButton?.requestFocus()
             }
         }
         playerViewLinearLayout?.let { it->
@@ -1099,7 +1083,6 @@ abstract class PlayerBaseFragment : Fragment(),
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
                     supportToolbar?.performClick()
                 }
-                fragmentView?.requestFocus() // request focus for fragment view
             }
             it.setOnTouchListener { _, motionEvent ->
                 val posX = motionEvent.x    // keep changing if there is new motionEvent

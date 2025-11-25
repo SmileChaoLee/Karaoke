@@ -51,7 +51,6 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.ui.theme.Yellow3
 import com.smile.karaoke.utilities.PermissionUtil
-import com.smile.karaoke.BuildConfig
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.smilelibraries.utilities.UmpUtil
 import kotlinx.coroutines.CoroutineScope

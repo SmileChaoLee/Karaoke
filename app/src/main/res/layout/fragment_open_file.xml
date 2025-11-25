@@ -39,7 +39,8 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                tools:ignore="NestedWeights">
             </ImageButton>
             <ImageButton
                 android:id="@+id/openFileSelectAllButton"
