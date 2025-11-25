@@ -2,6 +2,7 @@ package com.smile.karaoke.fragments
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ class TablayoutFragment : Fragment() {
 
     private var toastTextSize: Float = 0f
     private val openFragment = OpenFileFragment()
+    private val safPickerFragment = SafPickerFragment()
     private val favoriteFragment = FavoritesFragment()
     private var bannerLayoutForTab: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
@@ -39,7 +41,8 @@ class TablayoutFragment : Fragment() {
     ): View? {
         LogUtil.i(TAG, "onCreateView")
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tablayout, container, false)
+        return inflater.inflate(R.layout.fragment_tablayout,
+            container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,7 +56,9 @@ class TablayoutFragment : Fragment() {
         MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
 
         playTabLayout = view.findViewById(R.id.fragmentsTabLayout)
-        val tabText = arrayOf(getString(R.string.open_files), getString(R.string.my_favorites))
+        val tabText = arrayOf(getString(R.string.open_files),
+            getString(R.string.files_picker),
+            getString(R.string.my_favorites))
         playTabLayout?.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
@@ -61,14 +66,24 @@ class TablayoutFragment : Fragment() {
                         0-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(R.id.tablayout_container, openFragment, OPEN_FRAGMENT_TAG)
+                                replace(R.id.tablayout_container, openFragment,
+                                    OPEN_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         1-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(R.id.tablayout_container, favoriteFragment, FAVORITE_FRAGMENT_TAG)
+                                replace(R.id.tablayout_container, safPickerFragment,
+                                    PICKER_FRAGMENT_TAG)
+                                commit()
+                            }
+                        }
+                        2-> {
+                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            activity?.supportFragmentManager?.beginTransaction()?.apply {
+                                replace(R.id.tablayout_container, favoriteFragment,
+                                    FAVORITE_FRAGMENT_TAG)
                                 commit()
                             }
                         }
@@ -93,8 +108,11 @@ class TablayoutFragment : Fragment() {
             val openTab = it.newTab()
             openTab.text = tabText[0]
             it.addTab(openTab, true)
+            val pickerTab = it.newTab()
+            pickerTab.text = tabText[1]
+            it.addTab(pickerTab)
             val favoriteTab = it.newTab()
-            favoriteTab.text = tabText[1]
+            favoriteTab.text = tabText[2]
             it.addTab(favoriteTab)
         }
 
@@ -171,6 +189,7 @@ class TablayoutFragment : Fragment() {
     companion object {
         private const val TAG : String = "TablayoutFragment"
         private const val OPEN_FRAGMENT_TAG : String = "OPEN_FILES"
+        private const val PICKER_FRAGMENT_TAG : String = "FILES_PICKER"
         private const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
     }
 }

@@ -1,4 +1,4 @@
-package karaokeplayer.utilities
+package com.smile.karaoke.utilities
 
 import android.content.Context
 import android.content.Intent
@@ -8,6 +8,6 @@ import java.util.ArrayList
 object UriUtil {
     @JvmStatic
     fun getUrisListFromIntent(context: Context, data: Intent): ArrayList<Uri> {
-        return ContentUriAccessUtil.getUrisList(context, data)
+        return ContentUriUtil.getUrisList(context, data)
     }
 }
