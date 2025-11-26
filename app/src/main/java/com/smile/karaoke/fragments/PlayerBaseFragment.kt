@@ -390,9 +390,7 @@ abstract class PlayerBaseFragment : Fragment(),
             durationTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize)
             nativeAdsFrameLayout = it.findViewById(R.id.nativeAdsFrameLayout)
-            nativeAdsFrameLayout?.let {
-                nativeAdViewVisibility = it.visibility
-            }
+            if (nativeAdsFrameLayout != null) nativeAdViewVisibility = it.visibility
             nativeAdTemplateView = it.findViewById(R.id.nativeAdTemplateView)
             activity?.let { actIt ->
                 nativeTemplate = (actIt.application as SmileAppBase)
