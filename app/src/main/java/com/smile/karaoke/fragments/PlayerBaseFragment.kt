@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -313,74 +314,45 @@ abstract class PlayerBaseFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
 
         fragmentView = view
+
+        val screen = ScreenUtil.getScreenSize(activity)
+        screenSizeX = screen.x
+        screenSizeY = screen.y
+
         // Video player view
-        fragmentView?.apply {
-            playerViewLinearLayout = findViewById(R.id.playerViewLinearLayout)
-            supportToolbar = findViewById(R.id.player_view_toolbar)
+        view.let {
+            playerViewLinearLayout = it.findViewById(R.id.playerViewLinearLayout)
+            supportToolbar = it.findViewById(R.id.player_view_toolbar)
             supportToolbar?.visibility = View.VISIBLE
-            toolbarAudioAdsLayout = findViewById(R.id.toolbarAudioAdsLayout)
-        }
+            toolbarAudioAdsLayout = it.findViewById(R.id.toolbarAudioAdsLayout)
 
-        activity?.let {
-            screenSizeX = ScreenUtil.getScreenSize(it).x
-            screenSizeY = ScreenUtil.getScreenSize(it).y
-            (it as AppCompatActivity).apply {
-                setSupportActionBar(supportToolbar)
-                supportActionBar?.setDisplayShowTitleEnabled(false)
-            }
-        }
+            audioControllerView = it.findViewById(R.id.audioControllerView)
+            volumeImageButton = it.findViewById(R.id.volumeImageButton)
+            previousMediaImageButton = it.findViewById(R.id.previousMediaImageButton)
+            playMediaImageButton = it.findViewById(R.id.playMediaImageButton)
+            replayMediaImageButton = it.findViewById(R.id.replayMediaImageButton)
+            stopMediaImageButton = it.findViewById(R.id.stopMediaImageButton)
+            nextMediaImageButton = it.findViewById(R.id.nextMediaImageButton)
+            heartImageButton = it.findViewById(R.id.heartImageButton)
 
-        actionMenuView = supportToolbar?.findViewById(R.id.actionMenuViewLayout) // main menu
-        fragmentView?.apply {
-            audioControllerView = findViewById(R.id.audioControllerView)
-            volumeImageButton = findViewById(R.id.volumeImageButton)
-            previousMediaImageButton = findViewById(R.id.previousMediaImageButton)
-            playMediaImageButton = findViewById(R.id.playMediaImageButton)
-            mPresenter.playingParam.let {
-                if (it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
-                    playButtonOffPauseButtonOn()
-                } else {
-                    playButtonOnPauseButtonOff()
-                }
-            }
+            orientationImageButton = it.findViewById(R.id.orientationImageButton)
+            repeatImageButton = it.findViewById(R.id.repeatImageButton)
+            switchToMusicImageButton = it.findViewById(R.id.switchToMusicImageButton)
+            switchToVocalImageButton = it.findViewById(R.id.switchToVocalImageButton)
+            hideVideoImageButton = it.findViewById(R.id.hideVideoImageButton)
+            actionMenuImageButton = it.findViewById(R.id.actionMenuImageButton)
 
-            replayMediaImageButton = findViewById(R.id.replayMediaImageButton)
-            stopMediaImageButton = findViewById(R.id.stopMediaImageButton)
-            nextMediaImageButton = findViewById(R.id.nextMediaImageButton)
-            heartImageButton = findViewById(R.id.heartImageButton)
+            audioChannelImageButton = it.findViewById(R.id.audioChannelImageButton)
+            audioTrackImageButton = it.findViewById(R.id.audioTrackImageButton)
 
-            orientationImageButton = findViewById(R.id.orientationImageButton)
-            repeatImageButton = findViewById(R.id.repeatImageButton)
-            switchToMusicImageButton = findViewById(R.id.switchToMusicImageButton)
-            switchToVocalImageButton = findViewById(R.id.switchToVocalImageButton)
-            hideVideoImageButton = findViewById(R.id.hideVideoImageButton)
-            actionMenuImageButton = findViewById(R.id.actionMenuImageButton)
-
-            audioChannelImageButton = findViewById(R.id.audioChannelImageButton)
-            audioTrackImageButton = findViewById(R.id.audioTrackImageButton)
-
-            bannerLinearLayout = findViewById(R.id.bannerLinearLayout)
-            activity?.let {actIt ->
-                bannerLinearLayout?.also {layoutIt ->
-                    layoutIt.visibility = View.VISIBLE // Show Banner Ad
-                    showBannerAd()
-                }
-            }
+            bannerLinearLayout = it.findViewById(R.id.bannerLinearLayout)
 
             // message area
-            messageAreaLinearLayout = findViewById(R.id.message_area_LinearLayout)
+            messageAreaLinearLayout = it.findViewById(R.id.message_area_LinearLayout)
             messageAreaLinearLayout?.visibility = View.GONE
-            bufferingStringTextView = findViewById(R.id.bufferingStringTextView)
+            bufferingStringTextView = it.findViewById(R.id.bufferingStringTextView)
             ScreenUtil.resizeTextSize(bufferingStringTextView, textFontSize)
-        }
 
-        animationText = AlphaAnimation(0.0f, 1.0f)
-        animationText?.duration = 500
-        animationText?.startOffset = 0
-        animationText?.repeatMode = Animation.REVERSE
-        animationText?.repeatCount = Animation.INFINITE
-
-        fragmentView?.let {
             val durationTextSize = textFontSize * 0.6f
             playingTimeTextView = it.findViewById(R.id.playingTimeTextView)
             playingTimeTextView?.text = "000:00"
@@ -390,29 +362,57 @@ abstract class PlayerBaseFragment : Fragment(),
             durationTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize)
             nativeAdsFrameLayout = it.findViewById(R.id.nativeAdsFrameLayout)
-            if (nativeAdsFrameLayout != null) nativeAdViewVisibility = it.visibility
             nativeAdTemplateView = it.findViewById(R.id.nativeAdTemplateView)
-            activity?.let { actIt ->
-                nativeTemplate = (actIt.application as SmileAppBase)
-                    .geNativeTemplate(actIt,
-                        nativeAdsFrameLayout,
-                        nativeAdTemplateView)
-            }
 
             it.isFocusable = true
             it.isFocusableInTouchMode = true
             it.requestFocus()
             it.setOnKeyListener {
                     _, keyCode, event ->
+                LogUtil.d(TAG, "setOnKeyListener.keyCode = $keyCode")
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
+                    /*
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        lastFocusView = actionMenuImageButton
+                    }
+                    */
                     supportToolbar?.performClick()
                 }
                 return@setOnKeyListener false
             }
         }
+        actionMenuView = supportToolbar?.findViewById(R.id.actionMenuViewLayout) // main menu
+
+        animationText = AlphaAnimation(0.0f, 1.0f)
+        animationText?.duration = 500
+        animationText?.startOffset = 0
+        animationText?.repeatMode = Animation.REVERSE
+        animationText?.repeatCount = Animation.INFINITE
+
+        bannerLinearLayout?.also {layoutIt ->
+            layoutIt.visibility = View.VISIBLE // Show Banner Ad
+            showBannerAd()
+        }
+        if (nativeAdsFrameLayout != null) nativeAdViewVisibility = view.visibility
+
+        activity?.let { actIt ->
+            (actIt as AppCompatActivity).apply {
+                setSupportActionBar(supportToolbar)
+                supportActionBar?.setDisplayShowTitleEnabled(false)
+            }
+            nativeTemplate = (actIt.application as SmileAppBase)
+                .geNativeTemplate(actIt,
+                    nativeAdsFrameLayout,
+                    nativeAdTemplateView)
+        }
 
         // must before setImageButtonStatus() and showNativeAndBannerAd
         mPresenter.playingParam.let {
+            if (it.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
+                playButtonOffPauseButtonOn()
+            } else {
+                playButtonOnPauseButtonOff()
+            }
             if (it.isPlayerViewVisible) showPlayerView() else hidePlayerView()
         }
 
@@ -1075,7 +1075,12 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnClickListener { v: View ->
                 LogUtil.i(TAG, "supportToolbar.onClick() is called.")
                 showSupportToolbarAudioControlSetTimer()
-                actionMenuImageButton?.requestFocus()
+                if (lastFocusView != null) {
+                    lastFocusView!!.requestFocus()
+                } else {
+                    actionMenuImageButton?.requestFocus()
+                    lastFocusView = actionMenuImageButton
+                }
             }
         }
         playerViewLinearLayout?.let { it->
