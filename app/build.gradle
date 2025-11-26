@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 990
-        versionName "9.90"
+        versionCode 991
+        versionName "9.91"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -199,7 +199,7 @@ dependencies {
     // InMobi's SDK
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:11.1.0'
     // AdMob's InMobi adapter
-    implementation 'com.google.ads.mediation:inmobi:10.8.8.1'
+    implementation 'com.google.ads.mediation:inmobi:11.1.0.0'
     // ironSource's SDK
     // implementation 'com.unity3d.ads-mediation:mediation-sdk:9.0.0'
     // AdMob's ironSource adapter

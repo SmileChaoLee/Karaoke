@@ -299,11 +299,12 @@ abstract class PlayerBaseFragment : Fragment(),
         val view = inflater.inflate(R.layout.fragment_player_base_view,
             container, false)
 
+        // commented out because moving to onViewCreated()
         // Make the root view focusable
         // Allows it to receive focus when touched
-        view.isFocusableInTouchMode = true
-        view.isFocusable = true
-        view.requestFocus()
+        // view.isFocusableInTouchMode = true
+        // view.isFocusable = true
+        // view.requestFocus()
         return view
     }
 
@@ -405,7 +406,9 @@ abstract class PlayerBaseFragment : Fragment(),
             it.requestFocus()
             it.setOnKeyListener {
                     _, keyCode, event ->
-                supportToolbar?.performClick()
+                if (playerViewLinearLayout?.visibility == View.VISIBLE) {
+                    supportToolbar?.performClick()
+                }
                 return@setOnKeyListener false
             }
         }
