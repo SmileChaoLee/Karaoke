@@ -17,6 +17,8 @@ object RetrofitClient {
     fun getRetrofit(packageName: String): Retrofit {
         Log.d(TAG, "getInstance.url = $YOUTUBE_URL")
 
+        val debugSHA1 = "BC6C274D1114EAFB5DA81CBF038A066000A084F6"
+        val releaseSHA1 = "942646C07D3B482A1C7EB55A1FAFE900CDDFC3A9"
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.HEADERS // Logs only headers, not the body
         }
@@ -29,8 +31,8 @@ object RetrofitClient {
                 val newRequest: Request = originalRequest.newBuilder()
                     // This is the essential header for restricted Android keys
                     .header("X-Android-Package", packageName)
-                    .header("X-Android-Cert",
-                        "BC6C274D1114EAFB5DA81CBF038A066000A084F6")
+                    // .header("X-Android-Cert", debugSHA1)
+                    .header("X-Android-Cert", releaseSHA1)
                     // Note: The X-Android-Cert header is typically handled automatically
                     // by the underlying Google Play Services SDK or handled implicitly
                     // by Google's servers based on the SSL certificate handshake.
