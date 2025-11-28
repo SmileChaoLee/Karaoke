@@ -3,12 +3,12 @@ package karaokeplayer
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import com.smile.karaoke.BaseActivity
+import com.smile.karaoke.UpBaseActivity
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.fragments.ExoPlayerFragment
 
 @OptIn(UnstableApi::class)
-open class ExoPlayerActivity : BaseActivity() {
+open class ExoPlayerActivity : UpBaseActivity() {
 
     private var mTAG : String = "ExoPlayerActivity"
     fun setTag(tag: String) {

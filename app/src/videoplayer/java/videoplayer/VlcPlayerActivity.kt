@@ -3,12 +3,12 @@ package videoplayer
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import com.smile.karaoke.BaseActivity
+import com.smile.karaoke.UpBaseActivity
 import com.smile.karaoke.utilities.LogUtil
 import videoplayer.fragments.VlcPlayerFragment
 
 @OptIn(UnstableApi::class)
-open class VlcPlayerActivity : BaseActivity() {
+open class VlcPlayerActivity : UpBaseActivity() {
 
     private var mTAG : String = "VlcPlayerActivity"
     fun setTag(tag: String) {

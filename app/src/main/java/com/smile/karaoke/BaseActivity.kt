@@ -34,7 +34,6 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.smileapps.SmileAppsActivity
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
-import com.smile.smilelibraries.interfaces.DismissFunction
 import com.smile.smilelibraries.show_interstitial_ads.ShowInterstitial
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.smilelibraries.utilities.UmpUtil
@@ -49,7 +48,8 @@ private const val CALLING_COMPONENT = "CallingComponent"
 @UnstableApi
 abstract class BaseActivity : AppCompatActivity(),
     PlayerBaseFragment.PlayBaseFragmentFunc,
-    PlaySongs, PlayMyFavorites {
+    PlaySongs, PlayMyFavorites,
+    TablayoutFragment.TabFragmentFunc {
 
     private var permissionExternalStorage = false
     private var playerFragment: PlayerBaseFragment? = null
