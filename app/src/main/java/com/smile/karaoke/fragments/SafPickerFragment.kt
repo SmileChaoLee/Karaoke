@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +26,8 @@ class SafPickerFragment: CommonFragment() {
     }
 
     private lateinit var openDocumentLauncher: ActivityResultLauncher<Intent>
+    var fragmentView : View? = null
+    var showVideoButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -82,6 +83,7 @@ class SafPickerFragment: CommonFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LogUtil.i(TAG, "onViewCreated")
+        fragmentView = view
 
         val pickerButton: ImageView = view.findViewById(R.id.safPickerImageView)
         pickerButton.isClickable = true
@@ -91,10 +93,10 @@ class SafPickerFragment: CommonFragment() {
             openDocumentLauncher.launch(intent)
         }
 
-        val showVideoButton: ImageButton = view.findViewById(R.id.showVideoImageButton)
-        showVideoButton.isClickable = true
-        showVideoButton.isFocusable = true
-        showVideoButton.setOnClickListener {
+        showVideoButton = view.findViewById(R.id.showVideoImageButton)
+        showVideoButton?.isClickable = true
+        showVideoButton?.isFocusable = true
+        showVideoButton?.setOnClickListener {
             playSongs?.switchToPlayerView()
         }
         view.isFocusable = true

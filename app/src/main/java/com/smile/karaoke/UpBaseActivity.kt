@@ -1,5 +1,6 @@
 package com.smile.karaoke
 
+import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
@@ -87,19 +88,28 @@ abstract class UpBaseActivity: BaseActivity() {
     }
 
     override fun becomeVisible(tabLayout: TabLayout) {
-        LogUtil.d(TAG, "becomeVisible.selectedTabPosition = ${tabLayout.selectedTabPosition}")
-        if (tabLayout.selectedTabPosition == 0) {
-            openFragment.setupSwitchDecoderButton()
-            openFragment.searchCurrentFolder()
-        } else {
-            favoriteFragment.setupSwitchDecoderButton()
-            favoriteFragment.searchFavorites()
+        val index = tabLayout.selectedTabPosition
+        LogUtil.d(TAG, "becomeVisible.index = $index")
+        LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
+        val tabView = tabLayout.getTabAt(index)?.view
+        tabView?.let {
+            when (index) {
+                1 -> {
+                    it.post { safPickerFragment.showVideoButton?.requestFocus() }
+                }
+                2 -> {
+                    it.post { favoriteFragment.showVideoButton?.requestFocus() }
+                }
+                else -> {
+                    it.post { openFragment.showVideoButton?.requestFocus() }
+                }
+            }
         }
     }
 
     override fun becomeInVisible() {
         LogUtil.d(TAG, "becomeInVisible")
-        openFragment.clearFileList()
-        favoriteFragment.clearFavoriteList()
+        // openFragment.clearFileList()
+        // favoriteFragment.clearFavoriteList()
     }
 }

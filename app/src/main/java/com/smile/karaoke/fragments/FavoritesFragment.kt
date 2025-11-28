@@ -46,10 +46,10 @@ class FavoritesFragment : Fragment(),
         private const val EXCESS_YN = "ExcessYN"
     }
 
+    var fragmentView : View? = null
     private var textFontSize = 0.0f
     private var videoThumbnailsWidth = 0
     private var videoThumbnailsHeight = 0
-    private var fragmentView : View? = null
     private var playSongs: PlaySongs? = null
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
@@ -62,7 +62,7 @@ class FavoritesFragment : Fragment(),
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
-    private var showVideoButton: ImageButton? = null
+    var showVideoButton: ImageButton? = null
     private var appsImageButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,9 +146,9 @@ class FavoritesFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-
         fragmentView = view
-        fragmentView?.let {
+
+        view.let {
             val buttonWidth = (textFontSize * 1.5f).toInt()
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)

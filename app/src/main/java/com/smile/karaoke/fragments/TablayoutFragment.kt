@@ -34,7 +34,7 @@ class TablayoutFragment : Fragment() {
     private var toastTextSize: Float = 0f
     private var bannerLayoutForTab: LinearLayout? = null
     private var myBannerAdView: SetBannerAdView? = null
-    private var playTabLayout: TabLayout? = null
+    var playTabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")

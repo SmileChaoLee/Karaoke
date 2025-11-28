@@ -42,7 +42,7 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
         private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
     }
 
-    private var fragmentView : View? = null
+    var fragmentView : View? = null
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
@@ -54,27 +54,12 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
-    private var showVideoButton: ImageButton? = null
+    var showVideoButton: ImageButton? = null
     private var appsImageButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-
-        /*
-        arguments?.let {
-            isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
-            LogUtil.d(TAG, "onCreate.isPlayButton = $isPlayButton")
-        }
-        activity?.let {
-            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
-            videoThumbnailsWidth = (textFontSize * 3.0f).toInt()
-            videoThumbnailsHeight = (textFontSize * 2.0f).toInt()
-            if (it is PlaySongs) playSongs = it
-            LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
-        }
-        mediaRetriever = MediaMetadataRetriever()
-        */
 
         // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
         LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
@@ -144,7 +129,7 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
         super.onViewCreated(view, savedInstanceState)
         LogUtil.i(TAG, "onViewCreated")
         fragmentView = view
-        fragmentView?.let {
+        view.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
@@ -253,6 +238,7 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
             it.requestFocus()
             it.setOnKeyListener {
                     _, keyCode, event ->
+                LogUtil.i(TAG, "OpenFileFragment.setOnKeyListener")
                 showVideoButton?.requestFocus()
                 return@setOnKeyListener false
             }

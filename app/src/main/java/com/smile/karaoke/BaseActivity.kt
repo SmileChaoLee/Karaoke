@@ -54,7 +54,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var permissionExternalStorage = false
     private var playerFragment: PlayerBaseFragment? = null
     private lateinit var basePlayViewLayout : LinearLayout
-    private var tablayoutFragment : TablayoutFragment? = null
+    var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
     private lateinit var baseReceiver: BroadcastReceiver
     private lateinit var callingIntent : Intent
@@ -320,16 +320,17 @@ abstract class BaseActivity : AppCompatActivity(),
     override fun baseHidePlayerView() {
         LogUtil.i(TAG, "baseHidePlayerView()")
         basePlayViewLayout.clearFocus()
-        basePlayViewLayout.visibility = View.GONE
+        basePlayViewLayout.visibility = View.INVISIBLE
         tablayoutViewLayout.visibility = View.VISIBLE
         tablayoutViewLayout.requestFocus()
+        // tablayoutFragment?.playTabLayout?.requestFocus()
         tablayoutFragment?.becomeVisible()
     }
 
     override fun baseShowPlayerView() {
         LogUtil.i(TAG, "baseShowPlayerView()")
         tablayoutViewLayout.clearFocus()
-        tablayoutViewLayout.visibility = View.GONE
+        tablayoutViewLayout.visibility = View.INVISIBLE
         basePlayViewLayout.visibility = View.VISIBLE
         basePlayViewLayout.requestFocus()
         tablayoutFragment?.becomeInVisible()
