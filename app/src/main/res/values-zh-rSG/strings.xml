@@ -71,6 +71,7 @@
     <string name="open_files">开启档案</string>
     <string name="files_picker">檔案選擇器</string>
     <string name="start_picker">開啟檔案選擇器</string>
+    <string name="search_videos">搜尋視頻</string>
     <string name="unknown">不知道</string>
     <string name="add_to_favorites">加入我的最爱</string>
     <string name="excess_max">超过最大数</string>
