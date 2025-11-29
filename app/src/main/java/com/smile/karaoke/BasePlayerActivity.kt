@@ -89,6 +89,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private var isExoEnabled by mutableStateOf(true)
     private var isVlcEnabled by mutableStateOf(true)
     private var isYouTubeEnabled by mutableStateOf(true)
+    private val focusRequester = mutableStateOf(FocusRequester())
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -264,7 +265,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "ExoPlayerButton")
 
-        val focusRequester = remember { FocusRequester() }
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -281,7 +281,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         exoClicked.value = false
                     }
                 },
-                modifier = Modifier.focusRequester(focusRequester)
+                modifier = Modifier.focusRequester(focusRequester.value)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground),
@@ -308,7 +308,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
         LaunchedEffect(true) {
             delay(2000L)
-            focusRequester.requestFocus()
+            focusRequester.value.requestFocus()
         }
     }
 
@@ -369,6 +369,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isFocused by interactionSource.collectIsFocusedAsState()
             val isClicked = remember { mutableStateOf(false) }
             Button(
                 enabled = isYouTubeEnabled,
@@ -384,15 +386,16 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground),
+                interactionSource = interactionSource,
                 colors = ButtonColors(
                     containerColor =
                         if (!isClicked.value) buttonContainerColor
                         else Color.Cyan,
                     disabledContainerColor = buttonContainerColor,
                     contentColor =
-                        if (!isClicked.value)
+                        if (!isFocused && !isClicked.value)
                             buttonContentColor
-                        else Color.Red ,
+                            else Color.Red,
                     disabledContentColor = buttonContentColor
                 )
             )
@@ -463,11 +466,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
-                    if (hasYouTubePlayer()) {
-                        YouTubeButton(
-                            modifier = Modifier.weight(1.0f),
-                            buttonWidth, buttonHeight, textLineHeight
-                        )
+                    if (BuildConfig.DEBUG) {
+                        if (hasYouTubePlayer()) {
+                            YouTubeButton(
+                                modifier = Modifier.weight(1.0f),
+                                buttonWidth, buttonHeight, textLineHeight
+                            )
+                        }
                     }
                 }
             }

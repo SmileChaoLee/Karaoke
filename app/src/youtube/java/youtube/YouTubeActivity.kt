@@ -79,8 +79,9 @@ class YouTubeActivity : BaseActivity() {
         val tabView = tabLayout.getTabAt(index)?.view
         tabView?.let {
             when (index) {
-                1 -> {
-                    // implement codes here
+                0 -> {
+                    LogUtil.d(TAG, "becomeVisible.index.0")
+                    it.post { searchFragment.showVideoButton?.requestFocus() }
                 }
             }
         }
