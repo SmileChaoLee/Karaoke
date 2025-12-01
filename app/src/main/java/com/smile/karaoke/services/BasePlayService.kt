@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.models.MySingleton.orderedSongs
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
@@ -97,7 +97,7 @@ abstract class BasePlayService : Service() {
     private fun initMediaSessionCompat() {
         LogUtil.i(TAG, "initMediaSessionCompat")
         // Create a MediaSessionCompat
-        mediaSessionCompat = MediaSessionCompat(this, PlayerConstants.LOG_TAG)
+        mediaSessionCompat = MediaSessionCompat(this, MyPlayerConstants.LOG_TAG)
         LogUtil.d(TAG, "initMediaSessionCompat.mediaSessionCompat = $mediaSessionCompat")
         mediaSessionCompat?.apply {
             setMediaButtonReceiver(null)
@@ -186,7 +186,7 @@ abstract class BasePlayService : Service() {
         val playingParam: PlayingParameters? = presenter.playingParam
         playingParam?.apply {
             currentAudioPosition = 0
-            currentPlaybackState = PlayerConstants.PREPARE_MEDIA
+            currentPlaybackState = MyPlayerConstants.PREPARE_MEDIA
             preparedStatus = 0
             val param = this.copy()
             playMediaFromUri(presenter.mediaUri, param)
@@ -228,7 +228,7 @@ abstract class BasePlayService : Service() {
                 it.controller?.transportControls?.apply {
                     LogUtil.d(TAG, "playMediaFromUri.mediaTransportControls is not null")
                     val playingParamOriginExtras = Bundle()
-                    playingParamOriginExtras.putParcelable(PlayerConstants.PlayingParamOrigin,
+                    playingParamOriginExtras.putParcelable(MyPlayerConstants.PlayingParamOrigin,
                         PlayingParameters(playingParam))
                     prepareFromUri(mediaIt, playingParamOriginExtras)
                 }
@@ -249,11 +249,11 @@ abstract class BasePlayService : Service() {
             stillPlayNext = false // no more songs
         } else {
             when (repeatStatus) {
-                PlayerConstants.NoRepeatPlaying ->                     // no repeat
+                MyPlayerConstants.NoRepeatPlaying ->                     // no repeat
                     if ((nextSongIndex >= orderedSongsSize) || (nextSongIndex < 0)) {
                         stillPlayNext = false // no more songs
                     }
-                PlayerConstants.RepeatOneSong -> {
+                MyPlayerConstants.RepeatOneSong -> {
                     // repeat one song
                     LogUtil.d(TAG, "startAutoPlay.RepeatOneSong")
                     if (isSelfFinished && (nextSongIndex > 0) && (nextSongIndex <= orderedSongsSize)) {
@@ -261,7 +261,7 @@ abstract class BasePlayService : Service() {
                         LogUtil.d(TAG, "startAutoPlay.RepeatOneSong.nextSongIndex = $nextSongIndex")
                     }
                 }
-                PlayerConstants.RepeatAllSongs ->                     // repeat all songs
+                MyPlayerConstants.RepeatAllSongs ->                     // repeat all songs
                     if (nextSongIndex >= orderedSongsSize) {
                         nextSongIndex = 0
                     }
@@ -302,7 +302,7 @@ abstract class BasePlayService : Service() {
         } else {
             LogUtil.d(TAG, "replayMedia.playMediaFromUri")
             // playingParam.currentPlaybackState = PlaybackStateCompat.STATE_NONE
-            playingParam.currentPlaybackState = PlayerConstants.PREPARE_MEDIA
+            playingParam.currentPlaybackState = MyPlayerConstants.PREPARE_MEDIA
             playMediaFromUri(mediaUri, playingParam)
         }
     }
@@ -330,7 +330,7 @@ abstract class BasePlayService : Service() {
         LogUtil.d(TAG, "${msgStr}.mediaUri = $mediaUri")
         LogUtil.d(TAG, "${msgStr}.playbackState = $playbackState")
         if (mediaUri != null && Uri.EMPTY != mediaUri) {
-            param.currentPlaybackState = PlayerConstants.PREPARE_MEDIA
+            param.currentPlaybackState = MyPlayerConstants.PREPARE_MEDIA
             playMediaFromUri(mediaUri, param)
         }
     }

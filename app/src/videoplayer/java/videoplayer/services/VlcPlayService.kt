@@ -9,7 +9,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -351,7 +351,7 @@ class VlcPlayService : BasePlayService() {
             it.currentVolume = volumeTmp
             // this method does not work any more for version above eap21
             // have to disable the volume button
-            vlcPlayer?.volume = (volumeTmp * PlayerConstants.MAX_PROGRESS).toInt()
+            vlcPlayer?.volume = (volumeTmp * MyPlayerConstants.MAX_PROGRESS).toInt()
             return
         }
         LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
@@ -370,7 +370,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun getPlaybackState(): Int {
-        val state = vlcPlayer?.playerState ?: PlayerConstants.PREPARE_MEDIA
+        val state = vlcPlayer?.playerState ?: MyPlayerConstants.PREPARE_MEDIA
         LogUtil.d(TAG, "getPlaybackState.state")
         return state
     }

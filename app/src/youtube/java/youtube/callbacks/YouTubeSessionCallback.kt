@@ -8,7 +8,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.utilities.LogUtil
 import youtube.presenters.YouTubePresenter
@@ -50,6 +50,7 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
         LogUtil.d(TAG, "onPrepareFromUri().Uri = $uri")
+        LogUtil.d(TAG, "onPrepareFromUri().Uri.path = ${uri.path}")
         val playingParam: PlayingParameters? = presenter?.playingParam
         playingParam?.preparedStatus = 1
         LogUtil.d(TAG, "removeVideoPlayerView")
@@ -57,7 +58,7 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
         LogUtil.d(TAG, "setVideoPlayerView")
         // presenter.presentView.setVideoPlayerView()
         LogUtil.d(TAG, "onPrepareFromUri().playService.prepare()")
-        playService.prepare()
+        playService.prepare(uri.toString())
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition
         var currentPlaybackState = playingParam?.currentPlaybackState
@@ -68,9 +69,9 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
         extras?.let {
             LogUtil.d(TAG, "onPrepareFromUri().extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(PlayerConstants.PlayingParamOrigin,
+                it.getParcelable(MyPlayerConstants.PlayingParamOrigin,
                     PlayingParameters::class.java)
-            } else it.getParcelable(PlayerConstants.PlayingParamOrigin)
+            } else it.getParcelable(MyPlayerConstants.PlayingParamOrigin)
             playingParamOrigin?.let { playIt ->
                 currentPlaybackState = playIt.currentPlaybackState
                 currentAudioPosition = playIt.currentAudioPosition
@@ -88,21 +89,26 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
         when (currentPlaybackState) {
             PlaybackStateCompat.STATE_PAUSED -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
+                playService.onPause()
             }
             PlaybackStateCompat.STATE_STOPPED -> {
                 // playing was finished
                 LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
+                playService.onStop()
             }
             PlaybackStateCompat.STATE_PLAYING -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
+                // playService.onPlay()
             }
-            PlayerConstants.PREPARE_MEDIA -> {
+            MyPlayerConstants.PREPARE_MEDIA -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
+                // playService.onPlay()
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
                 // stopped by user
                 LogUtil.d(TAG,"onPrepareFromUr().PlaybackStateCompat.STATE_NONE or default")
+                playService.onStop()
             }
         }
     }

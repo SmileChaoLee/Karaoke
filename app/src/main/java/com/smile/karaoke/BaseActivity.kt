@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.fragments.TablayoutFragment
 import com.smile.karaoke.interfaces.PlayMyFavorites
@@ -83,9 +83,9 @@ abstract class BaseActivity : AppCompatActivity(),
             override fun onReceive(context: Context?, intent: Intent?) {
                 LogUtil.i(TAG, "onCreate.BroadcastReceiver.onReceive")
                 intent?.action?.let {
-                    if (it == PlayerConstants.PlaySingleSongAction) {
+                    if (it == MyPlayerConstants.PlaySingleSongAction) {
                         LogUtil.d(TAG, "onReceive.PlaySingleSongAction")
-                        intent.putExtra(PlayerConstants.SingleSongVolume,
+                        intent.putExtra(MyPlayerConstants.SingleSongVolume,
                                 playerFragment?.mPresenter?.playingParam?.currentVolume)
                         onReceiveFunc(isSingleSong = true, needPlay = true, intent = intent, pData = null)
                         hasPlayedSingle = true
@@ -97,8 +97,8 @@ abstract class BaseActivity : AppCompatActivity(),
         LocalBroadcastManager.getInstance(this).apply {
             LogUtil.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
             registerReceiver(baseReceiver, IntentFilter().apply {
-                addAction(PlayerConstants.PlaySingleSongAction)
-                addAction(PlayerConstants.BackToBaseActivity)
+                addAction(MyPlayerConstants.PlaySingleSongAction)
+                addAction(MyPlayerConstants.BackToBaseActivity)
             })
         }
 
@@ -360,8 +360,8 @@ abstract class BaseActivity : AppCompatActivity(),
         LogUtil.i(TAG, "${msgStr}.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            playData.getParcelable(PlayerConstants.PlayingParamState, PlayingParameters::class.java)
-        else playData.getParcelable(PlayerConstants.PlayingParamState))?.apply {
+            playData.getParcelable(MyPlayerConstants.PlayingParamState, PlayingParameters::class.java)
+        else playData.getParcelable(MyPlayerConstants.PlayingParamState))?.apply {
             LogUtil.d(TAG, "${msgStr}.currentPlaybackState = $currentPlaybackState")
             LogUtil.d(TAG, "${msgStr}.currentAudioPosition = $currentAudioPosition")
             LogUtil.d(TAG, "${msgStr}.preparedStatus = $preparedStatus")
@@ -442,7 +442,7 @@ abstract class BaseActivity : AppCompatActivity(),
         }
         // exit application
         playerFragment?.mPresenter?.apply {
-            stopPlay(PlayerConstants.STOPPED_BY_USER)
+            stopPlay(MyPlayerConstants.STOPPED_BY_USER)
         }
         finishThisActivity()
     }

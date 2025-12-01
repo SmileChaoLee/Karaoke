@@ -11,10 +11,9 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Ful
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.smile.karaoke.callbacks.MediaControllerCallback
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
-import karaokeplayer.services.ExoPlayService
 import youtube.callbacks.YouTubeSessionCallback
 import youtube.presenters.YouTubePresenter
 
@@ -102,7 +101,11 @@ class YouTubeService : BasePlayService() {
                 youTubePlayer: YouTubePlayer,
                 state: PlayerConstants.PlayerState
             ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onStateChange")
+                LogUtil.d(TAG, "YouTubePlayerListener.onStateChange.state = $state")
+                if (state == PlayerConstants.PlayerState.VIDEO_CUED) {
+                    LogUtil.d(TAG, "YouTubePlayerListener.onStateChange.start play")
+                    // mYouTubePlayer?.play()
+                }
             }
 
             override fun onPlaybackQualityChange(
@@ -151,7 +154,7 @@ class YouTubeService : BasePlayService() {
                 youTubePlayer: YouTubePlayer,
                 videoId: String
             ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onVideoId")
+                LogUtil.d(TAG, "YouTubePlayerListener.onVideoId.videoId = $videoId")
             }
 
             override fun onApiChange(youTubePlayer: YouTubePlayer) {
@@ -191,9 +194,11 @@ class YouTubeService : BasePlayService() {
         LogUtil.i(TAG,"setVideoWindowSize.youTubePlayer = $mYouTubePlayer")
     }
 
-    fun prepare() {
+    fun prepare(videoId: String) {
         LogUtil.i(TAG, "prepare")
-        mYouTubePlayer?.loadVideo("hPNJ7Ge6-uk", 0f)
+        // mYouTubePlayer?.loadVideo("hPNJ7Ge6-uk", 0f)
+        mYouTubePlayer?.loadVideo(videoId, 0f)   // play immediately
+        // mYouTubePlayer?.cueVideo(videoId, 0f)
     }
 
     fun getAudioTrack(): Int {
@@ -212,7 +217,7 @@ class YouTubeService : BasePlayService() {
 
     override fun onPlay() {
         LogUtil.i(TAG, "onPlay.youTubePlayer = $mYouTubePlayer")
-        mYouTubePlayer?.play()
+        mYouTubePlayer?.playVideoAt(0)
     }
 
     override fun onPause() {
@@ -294,7 +299,7 @@ class YouTubeService : BasePlayService() {
     }
 
     override fun getPlaybackState(): Int {
-        var state = PlayerConstants.PREPARE_MEDIA
+        var state = MyPlayerConstants.PREPARE_MEDIA
         presenter?.playingParam?.let {
             state = it.currentPlaybackState
         }

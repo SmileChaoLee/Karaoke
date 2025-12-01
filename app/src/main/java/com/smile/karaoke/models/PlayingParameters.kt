@@ -2,7 +2,7 @@ package com.smile.karaoke.models
 
 import android.os.Parcelable
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -38,13 +38,13 @@ data class PlayingParameters (
         // from VlcMediaSessionCallback.onPrepareFromUri()
         var singleSongPlayingStatus: Int) : Parcelable {
         constructor() : this(false,
-                PlayerConstants.PREPARE_MEDIA, false,
+                MyPlayerConstants.PREPARE_MEDIA, false,
                 0, false, false,
                 1, 1, CommonConstants.LEFT_CHANNEL,
                 CommonConstants.RIGHT_CHANNEL, 1, CommonConstants.LEFT_CHANNEL,
                 0, 1.0f, -1,
-                PlayerConstants.NoRepeatPlaying, true,
-                false, PlayerConstants.FINISHED_NORMALLY, 0)
+                MyPlayerConstants.NoRepeatPlaying, true,
+                false, MyPlayerConstants.FINISHED_NORMALLY, 0)
         // finishState = 0 --> playing finishes normally
         // finishState = 1 --> playing stopped by user
         // finishState = 2 --> finished by pressing playPreviousSong or PlayNextSong buttons

@@ -7,7 +7,7 @@ import android.os.ResultReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.media3.common.util.UnstableApi;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.utilities.LogUtil;
 import org.videolan.libvlc.interfaces.IMedia;
@@ -61,9 +61,9 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
             LogUtil.d(TAG, "extras is not null.");
             PlayingParameters playingParamOrigin;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin,
+                playingParamOrigin = extras.getParcelable(MyPlayerConstants.PlayingParamOrigin,
                         PlayingParameters.class);
-            } else playingParamOrigin = extras.getParcelable(PlayerConstants.PlayingParamOrigin);
+            } else playingParamOrigin = extras.getParcelable(MyPlayerConstants.PlayingParamOrigin);
             if (playingParamOrigin != null) {
                 LogUtil.d(TAG, "playingParamOrigin is not null.");
                 playbackState = playingParamOrigin.getCurrentPlaybackState();
@@ -91,7 +91,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
                     // stopped by user previously
                     LogUtil.d(TAG, "onPrepareFromUri.PlaybackStateCompat.STATE_NONE");
                     break;
-                case PlayerConstants.PREPARE_MEDIA:
+                case MyPlayerConstants.PREPARE_MEDIA:
                     // prepare media for playing
                     LogUtil.d(TAG, "onPrepareFromUri.PlayerConstants.PREPARE_MEDIA");
                     break;

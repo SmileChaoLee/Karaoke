@@ -22,7 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.smile.karaoke.adapters.SpinnerAdapter;
 import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.models.SongInfo;
 import com.smile.karaoke.models.SongListSQLite;
 import com.smile.karaoke.utilities.LogUtil;
@@ -68,9 +68,9 @@ public class BaseSongDataActivity extends AppCompatActivity {
         }
         if (extras != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                mSongInfo = extras.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
                         SongInfo.class);
-            else mSongInfo = extras.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
+            else mSongInfo = extras.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE);
         }
 
         setContentView(R.layout.activity_song_data);
@@ -281,7 +281,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         LogUtil.d(TAG, "onSaveInstanceState");
         setSongInfoFromInput(false);
 
-        outState.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
+        outState.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
         outState.putString(CommonConstants.CRUD_ACTION, crudAction);
 
         super.onSaveInstanceState(outState);
@@ -320,7 +320,7 @@ public class BaseSongDataActivity extends AppCompatActivity {
         LogUtil.d(TAG, "returnToPreviousWithResult");
         Intent returnIntent = new Intent();
         Bundle extras = new Bundle();
-        extras.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
+        extras.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
         returnIntent.putExtras(extras);
 
         setResult(isOK, returnIntent);    // can bundle some data to previous activity

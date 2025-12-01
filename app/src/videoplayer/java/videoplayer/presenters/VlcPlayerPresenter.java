@@ -14,7 +14,7 @@ import androidx.media3.common.util.UnstableApi;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.presenters.PlayerBasePresenter;
 import com.smile.karaoke.utilities.LogUtil;
 
@@ -80,8 +80,8 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             audioTrackIndicesList = new ArrayList<>();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                audioTrackIndicesList = (ArrayList<Integer>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
-            } else audioTrackIndicesList = (ArrayList<Integer>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState);
+                audioTrackIndicesList = (ArrayList<Integer>)savedInstanceState.getSerializable(MyPlayerConstants.AudioTrackIndicesListState, ArrayList.class);
+            } else audioTrackIndicesList = (ArrayList<Integer>)savedInstanceState.getSerializable(MyPlayerConstants.AudioTrackIndicesListState);
             if (audioTrackIndicesList == null) audioTrackIndicesList = new ArrayList<>();
         }
     }
@@ -212,8 +212,8 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             numOfAudioTracks = audioTrackIndicesList.size();
             LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
             if (numOfAudioTracks == 0) {
-                mPlayingParam.setCurrentAudioTrackIndexPlayed(PlayerConstants.NoAudioTrack);
-                mPlayingParam.setCurrentChannelPlayed(PlayerConstants.NoAudioChannel);
+                mPlayingParam.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
+                mPlayingParam.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
             } else {
                 // currently played audio track
                 int audioTrackIdPlayed = getPlayService().getAudioTrack();

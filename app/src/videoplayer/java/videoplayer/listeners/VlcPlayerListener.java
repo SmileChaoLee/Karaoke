@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.utilities.LogUtil;
 import org.videolan.libvlc.MediaPlayer;
@@ -81,7 +81,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                     case PlaybackStateCompat.STATE_STOPPED:
                         // playing is finished
                         LogUtil.d(TAG, "onEvent.PlaybackStateCompat.STATE_STOPPED");
-                        presenter.stopPlay(PlayerConstants.FINISHED_NORMALLY);
+                        presenter.stopPlay(MyPlayerConstants.FINISHED_NORMALLY);
                         break;
                     case PlaybackStateCompat.STATE_PLAYING:
                         LogUtil.d(TAG, "onEvent.PlaybackStateCompat.STATE_PLAYING");
@@ -89,7 +89,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                     case PlaybackStateCompat.STATE_NONE:
                         // stopped by user previously
                         LogUtil.d(TAG, "onEvent.PlaybackStateCompat.STATE_NONE");
-                        presenter.stopPlay(PlayerConstants.STOPPED_BY_USER);
+                        presenter.stopPlay(MyPlayerConstants.STOPPED_BY_USER);
                         break;
                     default:
                         LogUtil.d(TAG, "onEvent().default.playbackState = " + playbackState);
@@ -130,7 +130,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 LogUtil.d(TAG, "onEvent.Stopped.playingParam.finishState = " +
                         playingParam.getFinishState());
                 if (mediaUri != null && !Uri.EMPTY.equals(mediaUri)
-                        && playingParam.getFinishState() == PlayerConstants.STOPPED_BY_USER) {
+                        && playingParam.getFinishState() == MyPlayerConstants.STOPPED_BY_USER) {
                     LogUtil.d(TAG, "onEvent.Stopped.vlcPlayer was stopped by user.");
                     mPlayService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 } else {

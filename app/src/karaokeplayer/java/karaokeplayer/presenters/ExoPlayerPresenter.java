@@ -13,7 +13,7 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
 import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.presenters.PlayerBasePresenter;
 import com.smile.karaoke.utilities.LogUtil;
 
@@ -83,10 +83,10 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
                     .Builder().build();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState, ArrayList.class);
-            } else audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(PlayerConstants.AudioTrackIndicesListState);
+                audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(MyPlayerConstants.AudioTrackIndicesListState, ArrayList.class);
+            } else audioTrackIndicesList = (ArrayList<Integer[]>)savedInstanceState.getSerializable(MyPlayerConstants.AudioTrackIndicesListState);
             if (audioTrackIndicesList == null) audioTrackIndicesList = new ArrayList<>();
-            Bundle parameter = savedInstanceState.getBundle(PlayerConstants.TrackSelectionParametersState);
+            Bundle parameter = savedInstanceState.getBundle(MyPlayerConstants.TrackSelectionParametersState);
             if (parameter != null) mTrackSelectionParameters = TrackSelectionParameters.fromBundle(parameter);
             else mTrackSelectionParameters = new TrackSelectionParameters
                     .Builder().build();
@@ -190,8 +190,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
 
         if (numOfAudioTracks == 0) {
-            mPlayingParam.setCurrentAudioTrackIndexPlayed(PlayerConstants.NoAudioTrack);
-            mPlayingParam.setCurrentChannelPlayed(PlayerConstants.NoAudioChannel);
+            mPlayingParam.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
+            mPlayingParam.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
         } else {
             int audioChannelPlayed, audioTrackIdPlayed;
             if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong()
@@ -258,8 +258,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         } else {
             mPlayingParam.setCurrentAudioPosition(0);
         }
-        outState.putSerializable(PlayerConstants.AudioTrackIndicesListState, audioTrackIndicesList);
-        outState.putBundle(PlayerConstants.TrackSelectionParametersState, mTrackSelectionParameters.toBundle());
+        outState.putSerializable(MyPlayerConstants.AudioTrackIndicesListState, audioTrackIndicesList);
+        outState.putBundle(MyPlayerConstants.TrackSelectionParametersState, mTrackSelectionParameters.toBundle());
         super.saveInstanceState(outState);
     }
 }

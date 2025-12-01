@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import karaokeplayer.services.ExoPlayService;
 import com.smile.karaoke.utilities.LogUtil;
 
@@ -93,7 +93,7 @@ public class ExoPlayerListener implements Player.Listener {
                 LogUtil.d(mTAG, msgStr + ".Player.STATE_IDLE");
                 if (mService.getPresenter() != null
                         && mService.getPresenter().getPlayingParam().getFinishState()
-                        == PlayerConstants.STOPPED_BY_USER) {
+                        == MyPlayerConstants.STOPPED_BY_USER) {
                     // stopped by user
                     LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_NONE");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);

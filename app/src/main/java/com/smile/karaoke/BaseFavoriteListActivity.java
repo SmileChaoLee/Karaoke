@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.smile.karaoke.adapters.SelectedFavoriteAdapter;
 import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.models.MySingleton;
 import com.smile.karaoke.models.SongInfo;
 import com.smile.karaoke.models.SongListSQLite;
@@ -80,10 +80,10 @@ public class BaseFavoriteListActivity extends AppCompatActivity
             positionEdit = savedInstanceState.getInt(PositionEditState, -1);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 tempList = (ArrayList<SongInfo>) savedInstanceState
-                        .getSerializable(PlayerConstants.MyFavoriteListState, ArrayList.class);
+                        .getSerializable(MyPlayerConstants.MyFavoriteListState, ArrayList.class);
             else
                 tempList = (ArrayList<SongInfo>) savedInstanceState
-                        .getSerializable(PlayerConstants.MyFavoriteListState);
+                        .getSerializable(MyPlayerConstants.MyFavoriteListState);
             if (tempList == null) tempList = new ArrayList<>();
             LogUtil.d(TAG, "onCreate.savedInstanceState is not null.tempList.size() = "
                     + tempList.size());
@@ -149,7 +149,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         // must create a new instance for FavoriteSingleTon.INSTANCE.getSelectedList()
         // in this case
         ArrayList<SongInfo> tempList = new ArrayList<>(MySingleton.INSTANCE.getSelectedFavorites());
-        outState.putSerializable(PlayerConstants.MyFavoriteListState, tempList);
+        outState.putSerializable(MyPlayerConstants.MyFavoriteListState, tempList);
         super.onSaveInstanceState(outState);
     }
 
@@ -192,7 +192,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         currentAction = CommonConstants.DELETE_ACTION;
         Intent deleteIntent = createIntentFromSongDataActivity();
         deleteIntent.putExtra(CommonConstants.CRUD_ACTION, CommonConstants.DELETE_ACTION);
-        deleteIntent.putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
+        deleteIntent.putExtra(MyPlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
         editFavoritesLauncher.launch(deleteIntent);
     }
 
@@ -201,7 +201,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         currentAction = CommonConstants.EDIT_ACTION;
         Intent editIntent = createIntentFromSongDataActivity();
         editIntent.putExtra(CommonConstants.CRUD_ACTION, CommonConstants.EDIT_ACTION);
-        editIntent.putExtra(PlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
+        editIntent.putExtra(MyPlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo);
         editFavoritesLauncher.launch(editIntent);
     }
 
@@ -264,10 +264,10 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         positionEdit = -1;  // no edit or delete
         currentAction = CommonConstants.PLAY_ACTION;
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
-        Intent bIntent = new Intent(PlayerConstants.PlaySingleSongAction);
+        Intent bIntent = new Intent(MyPlayerConstants.PlaySingleSongAction);
         Bundle extras = new Bundle();
-        extras.putBoolean(PlayerConstants.IS_PLAY_SINGLE_SONG_STATE, true);   // play single song
-        extras.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+        extras.putBoolean(MyPlayerConstants.IS_PLAY_SINGLE_SONG_STATE, true);   // play single song
+        extras.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
                 (MySingleton.INSTANCE.getSelectedFavorites().get(position)));
         bIntent.putExtras(extras);
         LogUtil.d(TAG, "playSongButtonFunc.sendBroadcast().to play");
@@ -279,7 +279,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
         LogUtil.d(TAG, "updateFavoriteList");
         if (data != null && positionEdit != -1) {
             LogUtil.d(TAG, "updateFavoriteList.positionEdit = " + positionEdit);
-            SongInfo songInfo = data.getParcelableExtra(PlayerConstants.SINGLE_SONG_INFO_STATE);
+            SongInfo songInfo = data.getParcelableExtra(MyPlayerConstants.SINGLE_SONG_INFO_STATE);
             if (songInfo != null) {
                 if (currentAction.equals(CommonConstants.EDIT_ACTION)) {
                     // edit

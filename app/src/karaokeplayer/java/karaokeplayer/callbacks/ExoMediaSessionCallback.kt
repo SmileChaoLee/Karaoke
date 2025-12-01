@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MimeTypes
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.presenters.ExoPlayerPresenter
@@ -91,9 +90,9 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
         extras?.let {
             LogUtil.d(TAG, "onPrepareFromUri().extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(PlayerConstants.PlayingParamOrigin,
+                it.getParcelable(MyPlayerConstants.PlayingParamOrigin,
                     PlayingParameters::class.java)
-            } else it.getParcelable(PlayerConstants.PlayingParamOrigin)
+            } else it.getParcelable(MyPlayerConstants.PlayingParamOrigin)
             playingParamOrigin?.let { playIt ->
                 currentPlaybackState = playIt.currentPlaybackState
                 currentAudioPosition = playIt.currentAudioPosition
@@ -122,7 +121,7 @@ class ExoMediaSessionCallback(private val presenter : ExoPlayerPresenter,
                 LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
                 playService.setPlayWhenReady(true)  // start playing when ready
             }
-            PlayerConstants.PREPARE_MEDIA -> {
+            MyPlayerConstants.PREPARE_MEDIA -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
                 playService.setPlayWhenReady(true)  // start playing when ready
             }

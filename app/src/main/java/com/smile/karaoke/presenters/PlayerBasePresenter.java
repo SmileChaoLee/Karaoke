@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.UnstableApi;
 
 import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.PlayerConstants;
+import com.smile.karaoke.constants.MyPlayerConstants;
 import com.smile.karaoke.models.MySingleton;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.models.SongInfo;
@@ -122,7 +122,7 @@ public abstract class PlayerBasePresenter {
             LogUtil.d(TAG, "autoPlaySongList.isPlaying = " + isPlaying);
             if (isPlaying && playService.isSeekable()) {
                 LogUtil.d(TAG, "autoPlaySongList.stopPlay(PlayerConstants.FINISHED_BY_PROGRAM)");
-                stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
+                stopPlay(MyPlayerConstants.FINISHED_BY_PROGRAM);
             } else {
                 LogUtil.d(TAG, "autoPlaySongList.startAutoPlay(false)");
                 startAutoPlay(false);
@@ -153,46 +153,46 @@ public abstract class PlayerBasePresenter {
                 Bundle arguments = callingIntent.getExtras();
                 if (arguments != null) {
                     mPlayingParam.setPlaySingleSong(arguments
-                            .getBoolean(PlayerConstants.IS_PLAY_SINGLE_SONG_STATE, true));
+                            .getBoolean(MyPlayerConstants.IS_PLAY_SINGLE_SONG_STATE, true));
                     mPlayingParam.setCurrentVolume(arguments
-                            .getFloat(PlayerConstants.SingleSongVolume, mPlayingParam.getCurrentVolume()));
+                            .getFloat(MyPlayerConstants.SingleSongVolume, mPlayingParam.getCurrentVolume()));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                        mSingleSongInfo = arguments.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                        mSingleSongInfo = arguments.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
                                 SongInfo.class);
-                    else mSingleSongInfo = arguments.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
+                    else mSingleSongInfo = arguments.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE);
                     LogUtil.d(TAG, "initializeVariablesBase.singleSongInfo = " + mSingleSongInfo);
                 }
             }
         } else {
             // needed to be set
-            mNumberOfVideoTracks = savedInstanceState.getInt(PlayerConstants.NumberOfVideoTracksState,0);
+            mNumberOfVideoTracks = savedInstanceState.getInt(MyPlayerConstants.NumberOfVideoTracksState,0);
             ArrayList<SongInfo> orderedSongs;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(PlayerConstants.OrderedSongsState, ArrayList.class);
-            } else orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(PlayerConstants.OrderedSongsState);
+                orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(MyPlayerConstants.OrderedSongsState, ArrayList.class);
+            } else orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(MyPlayerConstants.OrderedSongsState);
             LogUtil.d(TAG, "initializeVariablesBase.orderedSongs = " + orderedSongs);
             if (orderedSongs != null) {
                 MySingleton.INSTANCE.getOrderedSongs().clear();
                 MySingleton.INSTANCE.getOrderedSongs().addAll(orderedSongs);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mMediaUri = savedInstanceState.getParcelable(PlayerConstants.MediaUriState,
+                mMediaUri = savedInstanceState.getParcelable(MyPlayerConstants.MediaUriState,
                         Uri.class);
-            } else mMediaUri = savedInstanceState.getParcelable(PlayerConstants.MediaUriState);
+            } else mMediaUri = savedInstanceState.getParcelable(MyPlayerConstants.MediaUriState);
             LogUtil.d(TAG, "initializeVariablesBase.mediaUri = " + mMediaUri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mPlayingParam = savedInstanceState.getParcelable(PlayerConstants.PlayingParamState,
+                mPlayingParam = savedInstanceState.getParcelable(MyPlayerConstants.PlayingParamState,
                         PlayingParameters.class);
-            } else mPlayingParam = savedInstanceState.getParcelable(PlayerConstants.PlayingParamState);
+            } else mPlayingParam = savedInstanceState.getParcelable(MyPlayerConstants.PlayingParamState);
             LogUtil.d(TAG, "initializeVariablesBase.playingParam = " + mPlayingParam);
             if (mPlayingParam == null) {
                 initializePlayingParam();
             }
-            mCanShowNotSupportedFormat = savedInstanceState.getBoolean(PlayerConstants.CanShowNotSupportedFormatState);
+            mCanShowNotSupportedFormat = savedInstanceState.getBoolean(MyPlayerConstants.CanShowNotSupportedFormatState);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mSingleSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE,
+                mSingleSongInfo = savedInstanceState.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
                         SongInfo.class);
-            } else mSingleSongInfo = savedInstanceState.getParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE);
+            } else mSingleSongInfo = savedInstanceState.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE);
             LogUtil.d(TAG, "initializeVariablesBase.singleSongInfo = " + mSingleSongInfo);
         }
         mPlayingParam.setAutoPlay(isAutoPlay);
@@ -291,11 +291,11 @@ public abstract class PlayerBasePresenter {
 
     public void stopAutoPlay() {
         int playbackState = mPlayingParam.getCurrentPlaybackState();
-        if (playbackState!=PlayerConstants.PREPARE_MEDIA
+        if (playbackState!= MyPlayerConstants.PREPARE_MEDIA
                 && playbackState!=PlaybackStateCompat.STATE_NONE
                 && playbackState!=PlaybackStateCompat.STATE_STOPPED) {
             // not the following: (has not started, stopped, or finished)
-            stopPlay(PlayerConstants.STOPPED_BY_USER);
+            stopPlay(MyPlayerConstants.STOPPED_BY_USER);
         }
         mPlayingParam.setAutoPlay(false);    // must be the last in this block
         mPresentView.setImageButtonStatus();
@@ -315,8 +315,8 @@ public abstract class PlayerBasePresenter {
         // because in startAutoPlay(), the next song will be current index + 1
         int lastPreviousIndex = currentIndex - 2;
         switch (repeatStatus) {
-            case PlayerConstants.NoRepeatPlaying:
-            case PlayerConstants.RepeatOneSong:
+            case MyPlayerConstants.NoRepeatPlaying:
+            case MyPlayerConstants.RepeatOneSong:
                 if (currentIndex <= 0) {
                     LogUtil.d(TAG, "playPreviousSong.currentIndex <= 0, current is the first one.");
                     // no more previous
@@ -326,7 +326,7 @@ public abstract class PlayerBasePresenter {
                 // because in startAutoPlay(), the next song will be current index + 1
                 currentIndex = lastPreviousIndex;
                 break;
-            case PlayerConstants.RepeatAllSongs:
+            case MyPlayerConstants.RepeatAllSongs:
                 if (currentIndex <= 0) {
                     // is going to play the last one
                     currentIndex = orderedSongsSize - 2; // the last one
@@ -339,7 +339,7 @@ public abstract class PlayerBasePresenter {
         mPlayingParam.setCurrentSongIndex(currentIndex);
         if (mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PLAYING
                 || mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
+            stopPlay(MyPlayerConstants.FINISHED_BY_PROGRAM);
         } else {
             startAutoPlay(false);
         }
@@ -358,8 +358,8 @@ public abstract class PlayerBasePresenter {
             return;
         }
         switch (repeatStatus) {
-            case PlayerConstants.NoRepeatPlaying:
-            case PlayerConstants.RepeatOneSong:
+            case MyPlayerConstants.NoRepeatPlaying:
+            case MyPlayerConstants.RepeatOneSong:
                 if (currentIndex >= (orderedSongsSize-1)) {
                     LogUtil.d(TAG, "playPreviousSong.currentIndex >= (orderedSongsSize-1)," +
                             " current is the last one.");
@@ -368,13 +368,13 @@ public abstract class PlayerBasePresenter {
                     return;
                 }
                 break;
-            case PlayerConstants.RepeatAllSongs:
+            case MyPlayerConstants.RepeatAllSongs:
                 break;
         }
         // mPlayingParam.setCurrentSongIndex(currentIndex); no need because it already is
         if (mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PLAYING
             || mPlayingParam.getCurrentPlaybackState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopPlay(PlayerConstants.FINISHED_BY_PROGRAM);
+            stopPlay(MyPlayerConstants.FINISHED_BY_PROGRAM);
         } else {
             startAutoPlay(false);
         }
@@ -407,7 +407,7 @@ public abstract class PlayerBasePresenter {
             int playbackState = mPlayingParam.getCurrentPlaybackState();
             LogUtil.d(TAG, "playSongPlayedBeforeActivityCreated.playbackState = "
                     + playbackState);
-            if (playbackState != PlayerConstants.PREPARE_MEDIA) {
+            if (playbackState != MyPlayerConstants.PREPARE_MEDIA) {
                 BasePlayService playService = mPresentView.getPlayService();
                 if (playService != null) {
                     LogUtil.d(TAG, "playSongPlayedBeforeActivityCreated.playService.playMediaFromUri()");
@@ -425,17 +425,17 @@ public abstract class PlayerBasePresenter {
         LogUtil.d(TAG, "setRepeatSongStatus");
         int repeatStatus = mPlayingParam.getRepeatStatus();
         switch (repeatStatus) {
-            case PlayerConstants.NoRepeatPlaying:
+            case MyPlayerConstants.NoRepeatPlaying:
                 // switch to repeat one song
-                mPlayingParam.setRepeatStatus(PlayerConstants.RepeatOneSong);
+                mPlayingParam.setRepeatStatus(MyPlayerConstants.RepeatOneSong);
                 break;
-            case PlayerConstants.RepeatOneSong:
+            case MyPlayerConstants.RepeatOneSong:
                 // switch to repeat song list
-                mPlayingParam.setRepeatStatus(PlayerConstants.RepeatAllSongs);
+                mPlayingParam.setRepeatStatus(MyPlayerConstants.RepeatAllSongs);
                 break;
-            case PlayerConstants.RepeatAllSongs:
+            case MyPlayerConstants.RepeatAllSongs:
                 // switch to no repeat
-                mPlayingParam.setRepeatStatus(PlayerConstants.NoRepeatPlaying);
+                mPlayingParam.setRepeatStatus(MyPlayerConstants.NoRepeatPlaying);
                 break;
         }
         mPresentView.setImageButtonStatus();
@@ -462,9 +462,9 @@ public abstract class PlayerBasePresenter {
     public void stopPlay(int finishState) {
         LogUtil.i(TAG, "stopPlay.finishState = " + finishState);
         String state;
-        if (finishState == PlayerConstants.FINISHED_NORMALLY) {
+        if (finishState == MyPlayerConstants.FINISHED_NORMALLY) {
             state = "FINISHED_NORMALLY";
-        } else if (finishState == PlayerConstants.STOPPED_BY_USER) {
+        } else if (finishState == MyPlayerConstants.STOPPED_BY_USER) {
             state = "STOPPED_BY_USER";
         } else {
             // finishState == PlayerConstants.FINISHED_BY_PROGRAM
@@ -583,7 +583,7 @@ public abstract class PlayerBasePresenter {
                         mPlayingParam.getFinishState());
                 // not finished by pressing playPreviousSong or PlayNextSong buttons
                 boolean isSelfFinished =
-                        mPlayingParam.getFinishState() != PlayerConstants.FINISHED_BY_PROGRAM;
+                        mPlayingParam.getFinishState() != MyPlayerConstants.FINISHED_BY_PROGRAM;
                 startAutoPlay(isSelfFinished);
                 break;
             case PlaybackStateCompat.STATE_ERROR:
@@ -612,19 +612,19 @@ public abstract class PlayerBasePresenter {
                 LogUtil.d(TAG, msgStr + ".other PlaybackStateCompat");
         }
         // reset the finish state
-        mPlayingParam.setFinishState(PlayerConstants.FINISHED_NORMALLY);
+        mPlayingParam.setFinishState(MyPlayerConstants.FINISHED_NORMALLY);
         mPresentView.showNativeAndHideBannerAd();
     }
 
     public void saveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(PlayerConstants.NumberOfVideoTracksState, mNumberOfVideoTracks);
+        outState.putInt(MyPlayerConstants.NumberOfVideoTracksState, mNumberOfVideoTracks);
         LogUtil.i(TAG, "saveInstanceState.orderedSongs = " + MySingleton.INSTANCE.getOrderedSongs());
         ArrayList<SongInfo> orderedSongs = new ArrayList<>(MySingleton.INSTANCE.getOrderedSongs());
-        outState.putSerializable(PlayerConstants.OrderedSongsState, orderedSongs);
-        outState.putParcelable(PlayerConstants.MediaUriState, mMediaUri);
-        outState.putParcelable(PlayerConstants.PlayingParamState, mPlayingParam);
-        outState.putBoolean(PlayerConstants.CanShowNotSupportedFormatState, mCanShowNotSupportedFormat);
+        outState.putSerializable(MyPlayerConstants.OrderedSongsState, orderedSongs);
+        outState.putParcelable(MyPlayerConstants.MediaUriState, mMediaUri);
+        outState.putParcelable(MyPlayerConstants.PlayingParamState, mPlayingParam);
+        outState.putBoolean(MyPlayerConstants.CanShowNotSupportedFormatState, mCanShowNotSupportedFormat);
         LogUtil.d(TAG, "saveInstanceState.singleSongInfo = " + mSingleSongInfo);
-        outState.putParcelable(PlayerConstants.SINGLE_SONG_INFO_STATE, mSingleSongInfo);
+        outState.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSingleSongInfo);
     }
 }

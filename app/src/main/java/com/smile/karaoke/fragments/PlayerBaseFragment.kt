@@ -51,7 +51,7 @@ import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
@@ -276,7 +276,7 @@ abstract class PlayerBaseFragment : Fragment(),
         var isAutoPlay = false
         arguments?.let {
             LogUtil.d(TAG, "onCreate.arguments is not null")
-            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE,
+            isAutoPlay = it.getBoolean(MyPlayerConstants.IS_AUTOPLAY_STATE,
                 false)
         }
 
@@ -482,7 +482,7 @@ abstract class PlayerBaseFragment : Fragment(),
         } else if (id == R.id.privacyPolicy) {
             PrivacyPolicyUtil.startPrivacyPolicyActivity(
                 activity,
-                PlayerConstants.PrivacyPolicyActivityRequestCode
+                MyPlayerConstants.PrivacyPolicyActivityRequestCode
             )
         } else if (id == R.id.exit) {
             closeFragment()
@@ -934,7 +934,7 @@ abstract class PlayerBaseFragment : Fragment(),
             fragmentView?.requestFocus()
         }
         stopMediaImageButton?.setOnClickListener {
-            mPresenter.stopPlay(PlayerConstants.STOPPED_BY_USER)
+            mPresenter.stopPlay(MyPlayerConstants.STOPPED_BY_USER)
             disableButtonForSometime(it)
             lastFocusView = stopMediaImageButton
             fragmentView?.requestFocus()
@@ -1175,13 +1175,13 @@ abstract class PlayerBaseFragment : Fragment(),
         setOrientationImageButton(resources.configuration.orientation)
         // repeatImageButton
         when (playingParam.repeatStatus) {
-            PlayerConstants.NoRepeatPlaying -> {
+            MyPlayerConstants.NoRepeatPlaying -> {
                 // no repeat but show symbol of repeat all song with transparent background
                 repeatImageButton?.setImageResource(R.drawable.repeat_no)
             }
-            PlayerConstants.RepeatOneSong ->                 // repeat one song
+            MyPlayerConstants.RepeatOneSong ->                 // repeat one song
                 repeatImageButton?.setImageResource(R.drawable.repeat_one)
-            PlayerConstants.RepeatAllSongs ->                 // repeat all song list
+            MyPlayerConstants.RepeatAllSongs ->                 // repeat all song list
                 repeatImageButton?.setImageResource(R.drawable.repeat_all)
         }
         activity?.let {
@@ -1298,7 +1298,7 @@ abstract class PlayerBaseFragment : Fragment(),
             controllerTimerHandler.removeCallbacksAndMessages(null)
             // 10 seconds
             controllerTimerHandler.postDelayed(controllerTimerRunnable,
-                    PlayerConstants.PlayerView_Timeout.toLong())
+                    MyPlayerConstants.PlayerView_Timeout.toLong())
         }
     }
 

@@ -5,7 +5,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
-import com.smile.karaoke.constants.PlayerConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.utilities.LogUtil
 import karaokeplayer.services.ExoPlayService
 
@@ -23,10 +23,10 @@ class CastPlayerListener(private val playService: ExoPlayService)
         // when onPlayWhenReadyChanged()
         val msgStr = "onPlaybackStateChanged"
         val finishState = playService.presenter?.playingParam?.finishState
-            ?: PlayerConstants.FINISHED_NORMALLY
+            ?: MyPlayerConstants.FINISHED_NORMALLY
         LogUtil.d(mTAG, "${msgStr}.finishState = $finishState")
         when(finishState) {
-            PlayerConstants.STOPPED_BY_USER -> {
+            MyPlayerConstants.STOPPED_BY_USER -> {
                 // stopped by PlayerConstants.STOPPED_BY_USER
                 // use castPlay.pause() in playService.stop() for carPlayer
                 // then no playing next song

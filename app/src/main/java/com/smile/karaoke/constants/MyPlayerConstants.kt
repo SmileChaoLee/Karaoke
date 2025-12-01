@@ -1,6 +1,6 @@
 package com.smile.karaoke.constants
 
-object PlayerConstants {
+object MyPlayerConstants {
     const val LOG_TAG = "MediaSessionCompatTag"
     const val PlayingParamOrigin = "PlayingParamOrigin"
     const val PlayingParamState = "PlayingParam"
