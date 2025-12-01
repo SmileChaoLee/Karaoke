@@ -10,9 +10,12 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.*
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.FullscreenListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
+import karaokeplayer.services.ExoPlayService
+import youtube.callbacks.YouTubeSessionCallback
 import youtube.presenters.YouTubePresenter
 
 @UnstableApi
@@ -24,8 +27,7 @@ class YouTubeService : BasePlayService() {
 
     // private lateinit var audioManager: AudioManager
     // private var curAudioVolume by Delegates.notNull<Int>()
-    private var mediaSessionCallback = null
-    private var controllerCallback = null
+    private var mediaSessionCallback: YouTubeSessionCallback? = null
     var presenter : YouTubePresenter? = null
     var youTubeView: YouTubePlayerView? = null
     var mYouTubePlayer: YouTubePlayer? = null
@@ -191,6 +193,7 @@ class YouTubeService : BasePlayService() {
 
     fun prepare() {
         LogUtil.i(TAG, "prepare")
+        mYouTubePlayer?.loadVideo("hPNJ7Ge6-uk", 0f)
     }
 
     fun getAudioTrack(): Int {
@@ -227,7 +230,13 @@ class YouTubeService : BasePlayService() {
     }
 
     override fun initMediaCallback() {
-        LogUtil.i(TAG, "initMediaCallback")
+        LogUtil.i(TAG, "initMediaCallback.presenter = $presenter")
+        presenter?.let {
+            mediaSessionCallback = YouTubeSessionCallback(this@YouTubeService)
+            mediaSessionCompat?.setCallback(mediaSessionCallback)
+            controllerCallback = MediaControllerCallback(it)
+            mediaControllerCompat?.registerCallback(controllerCallback!!)
+        }
     }
 
     override fun isPlaying(): Boolean {

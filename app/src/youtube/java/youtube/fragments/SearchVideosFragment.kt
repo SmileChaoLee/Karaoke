@@ -12,15 +12,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.R
-import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
+import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.fragments.ItemsBaseFragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import youtube.adapters.YouTubeRecyclerAdapter
+import youtube.models.VideoItem
+import youtube.models.YouSingleton
 import youtube.retrofit.RestApiSync
 
 class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
@@ -35,8 +39,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var addToFavoriteButton: ImageButton? = null
     private var searchEditTextView: EditText? = null
     private var searchRecyclerView: RecyclerView? = null
-    private var myRecyclerViewAdapter : FavoriteRecyclerViewAdapter? = null
-
+    private var myRecyclerViewAdapter : YouTubeRecyclerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +47,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         savedInstanceState: Bundle?
     ): View? {
         LogUtil.i(TAG, "onCreateView")
-        return inflater.inflate(R.layout.fragment_search_video,
+        return inflater.inflate(R.layout.fragment_youtube_video,
             container, false)
     }
 
@@ -67,7 +70,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             searchRecyclerView?.setHasFixedSize(true)
         }
 
-        initFavoriteRecyclerView()
+        initRecyclerAdapter()
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -101,22 +104,37 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     fun searchYouTubeVideos(searchTerm: String) {
         val logStr = "searchYouTubeVideos"
         LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
+        if (searchTerm.isEmpty()) return
         searchCompleted = false
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
         lifecycleScope.launch(Dispatchers.IO) {
+            YouSingleton.videos.clear()
             val videoList = RestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
                 searchTerm)
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             for (item in videoList.items) {
-                LogUtil.d(TAG, "$logStr.kind = ${item.id.kind}")
                 LogUtil.d(TAG, "$logStr.videoId = ${item.id.videoId}")
+                LogUtil.d(TAG, "$logStr.title = ${item.snippet.title}")
+                YouSingleton.videos.add(convertItemToSongDes(item))
             }
-            searchCompleted = true
+            for (song in YouSingleton.videos) {
+                LogUtil.d(TAG, "$logStr.song.songName = ${song.song.songName}")
+            }
+            // update the UI
+            withContext(Dispatchers.Main) {
+                myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                searchCompleted = true
+            }
         }
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.d(TAG, "onItemClick")
+        LogUtil.d(TAG, "onItemClick.position = $position")
+        YouSingleton.videos[position].apply {
+            song.included = if (song.included == "1") "0" else "1"
+            myRecyclerViewAdapter?.myNotifyItemChanged(position)
+        }
+
     }
 
     // overriding BaseFragment's methods
@@ -131,8 +149,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.favorites.size) {
-                MySingleTon.favorites[i].run {
+            for (i in 0 until YouSingleton.videos.size) {
+                YouSingleton.videos[i].run {
                     song.included = "1"
                     myRecyclerViewAdapter?.notifyItemChanged(i)
                 }
@@ -140,8 +158,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         unselectButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.favorites.size) {
-                MySingleTon.favorites[i].run {
+            for (i in 0 until YouSingleton.videos.size) {
+                YouSingleton.videos[i].run {
                     song.included = "0"
                     myRecyclerViewAdapter?.notifyItemChanged(i)
                 }
@@ -152,15 +170,15 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             // open the files to play
             val songs = ArrayList<SongInfo>().also { songIt ->
                 var index = 0
-                for (i in 0 until MySingleTon.favorites.size) {
-                    if (MySingleTon.favorites[i].song.included == "1") {
-                        songIt.add(MySingleTon.favorites[i].song)
+                for (i in 0 until YouSingleton.videos.size) {
+                    if (YouSingleton.videos[i].song.included == "1") {
+                        songIt.add(YouSingleton.videos[i].song)
                         index++
-                        if (index >= MySingleTon.MAX_SONGS) {
+                        if (index >= YouSingleton.MAX_SONGS) {
                             // excess the max
                             ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
-                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                        " ${YouSingleton.MAX_SONGS}", textFontSize,
                                 Toast.LENGTH_SHORT)
                             break
                         }
@@ -193,12 +211,31 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
     // end of overriding BaseFragment's methods
 
-    private fun initFavoriteRecyclerView() {
-        LogUtil.i(TAG, "initFavoriteRecyclerView")
+    private fun initRecyclerAdapter() {
+        LogUtil.i(TAG, "initRecyclerAdapter")
+        activity?.let {
+            myRecyclerViewAdapter = YouTubeRecyclerAdapter(
+                this, YouSingleton.videos,
+                textFontSize,
+                videoThumbnailsWidth, videoThumbnailsHeight)
+            searchRecyclerView?.adapter = myRecyclerViewAdapter
+            searchRecyclerView?.layoutManager = MyLinearLayoutManager(context)
+        }
     }
 
-    private fun convertItemToSongInfo(): SongInfo {
-        val sInfo = SongInfo()
-        return sInfo
+    private fun convertItemToSongDes(item: VideoItem): SongDescription {
+        val songInfo = SongInfo()
+        LogUtil.d(TAG, "convertItemToSongDes")
+        item.id.videoId?.let {
+            songInfo.apply {
+                songName = item.snippet.title
+                filePath = it
+                included = "0"
+                val bm = item.snippet.thumbnails.medium
+            }
+            return SongDescription(songInfo, null)
+        }
+
+        return SongDescription(songInfo, null)
     }
 }
