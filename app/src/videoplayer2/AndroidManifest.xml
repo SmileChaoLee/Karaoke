@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="videoplayer.SmileVideoApp"
+        android:name="videoplayer2.SmileVideo2App"
         android:icon="@drawable/video_app_icon"
         android:banner="@drawable/video_app_icon"
         android:roundIcon="@drawable/video_app_icon"

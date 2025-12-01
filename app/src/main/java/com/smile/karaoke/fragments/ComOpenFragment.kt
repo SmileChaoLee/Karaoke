@@ -1,48 +1,20 @@
 package com.smile.karaoke.fragments
 
 import android.app.Activity
-import android.media.MediaMetadataRetriever
-import android.os.Bundle
 import android.widget.Toast
 import androidx.core.net.toUri
-import androidx.fragment.app.Fragment
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-open class CommonFragment: Fragment() {
+open class ComOpenFragment: BaseFragment() {
 
     companion object {
-        private const val TAG = "CommonFragment"
-    }
-
-    var isPlayButton: Boolean = true
-    var textFontSize = 0.0f
-    lateinit var mediaRetriever: MediaMetadataRetriever
-    var videoThumbnailsWidth = 0
-    var videoThumbnailsHeight = 0
-    var playSongs: PlaySongs? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            isPlayButton = it.getBoolean(CommonConstants.IS_BUTTON_PLAY, true)
-            LogUtil.d(TAG, "onCreate.isPlayButton = $isPlayButton")
-        }
-        activity?.let {
-            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
-            videoThumbnailsWidth = (textFontSize * 3.0f).toInt()
-            videoThumbnailsHeight = (textFontSize * 2.0f).toInt()
-            if (it is PlaySongs) playSongs = it
-            LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
-        }
-        mediaRetriever = MediaMetadataRetriever()
+        private const val TAG = "ComOpenFragment"
     }
 
     fun startPlaySelectedSong(act: Activity?, msg: String) {

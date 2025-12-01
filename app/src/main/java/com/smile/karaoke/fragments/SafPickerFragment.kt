@@ -2,16 +2,17 @@ package com.smile.karaoke.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.scale
 import com.smile.karaoke.R
 import com.smile.karaoke.models.FileDescription
@@ -19,15 +20,14 @@ import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.utilities.ContentUriUtil
 import com.smile.karaoke.utilities.LogUtil
 
-class SafPickerFragment: CommonFragment() {
+class SafPickerFragment: ComOpenFragment() {
 
     companion object {
         private const val TAG = "SafPickerFragment"
     }
 
     private lateinit var openDocumentLauncher: ActivityResultLauncher<Intent>
-    var fragmentView : View? = null
-    var showVideoButton: ImageButton? = null
+    private var pickerButton: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -81,47 +81,27 @@ class SafPickerFragment: CommonFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         LogUtil.i(TAG, "onViewCreated")
-        fragmentView = view
 
-        val pickerButton: ImageView = view.findViewById(R.id.safPickerImageView)
-        pickerButton.isClickable = true
-        pickerButton.isFocusable = true
-        pickerButton.setOnClickListener {
+        view.let {
+            pickerButton = it.findViewById(R.id.safPickerImageView)
+            showVideoButton = it.findViewById(R.id.showVideoImageButton)
+            exitImageButton = it.findViewById(R.id.exitImageButton)
+        }
+
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun setClickListeners() {
+        pickerButton?.setOnClickListener {
             val intent = ContentUriUtil.intentForSelectFile(false)
             openDocumentLauncher.launch(intent)
         }
+        super.setClickListeners()
+    }
 
-        showVideoButton = view.findViewById(R.id.showVideoImageButton)
-        showVideoButton?.isClickable = true
-        showVideoButton?.isFocusable = true
-        showVideoButton?.setOnClickListener {
-            playSongs?.switchToPlayerView()
-        }
-        view.isFocusable = true
-        view.isFocusableInTouchMode = true
-        view.requestFocus()
-
-        view.setOnKeyListener {
-                _, keyCode, event ->
-            /*
-            when (keyCode) {
-                KeyEvent.KEYCODE_DPAD_UP,
-                KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if (event?.action == KeyEvent.ACTION_DOWN) {
-                        // D-pad move started
-                        // Handle your logic here
-                        // pickerButton.requestFocus()
-                        return@setOnKeyListener true
-                    }
-                }
-            }
-            */
-            pickerButton.requestFocus()
-            return@setOnKeyListener false
-        }
+    override fun setButtonsSize() {
+        LogUtil.i(TAG, "setButtonsSize")
+        // do nothing, just follow the xml view file
     }
 }

@@ -40,6 +40,7 @@ abstract class SmileAppBase : MultiDexApplication() {
     var rightChannelString = ""
     var stereoChannelString = ""
     var castContext: CastContext? = null
+    var smileAppsMenuVisible = true
 
     abstract fun initAds()
     abstract fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?)

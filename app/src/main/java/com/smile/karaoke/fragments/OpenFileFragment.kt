@@ -1,11 +1,9 @@
 package com.smile.karaoke.fragments
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
@@ -14,10 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.scale
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -35,27 +31,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class OpenFileFragment : CommonFragment(), RecyclerItemListener {
+class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
         private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
     }
 
-    var fragmentView : View? = null
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
     private lateinit var broadcastReceiver: BroadcastReceiver
-    private var searchCompleted = true
     private var backKeyButton: ImageButton? = null
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
-    var showVideoButton: ImageButton? = null
-    private var appsImageButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -126,126 +118,27 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         LogUtil.i(TAG, "onViewCreated")
-        fragmentView = view
         view.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             pathTextView = it.findViewById(R.id.pathTextView)
             ScreenUtil.resizeTextSize(pathTextView, textFontSize)
             backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
-            backKeyButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                if (MySingleTon.currentPath == "/") return@setOnClickListener
-                MySingleTon.currentPath =
-                    if (MySingleTon.rootPathSet.contains(MySingleTon.currentPath)) "/"
-                else {
-                    val index = MySingleTon.currentPath.lastIndexOf('/')
-                    if (index >= 0 ) MySingleTon.currentPath.substring(0, index) else "/"
-                }
-                if (MySingleTon.currentPath.isEmpty()) MySingleTon.currentPath = "/"
-                searchCurrentFolder()
-            }
             selectAllButton = it.findViewById(R.id.openFileSelectAllButton)
-            selectAllButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until MySingleTon.fileList.size) {
-                    MySingleTon.fileList[i].run {
-                        if (!file.isDirectory && !selected) {
-                            selected = true
-                            myRecyclerViewAdapter?.notifyItemChanged(i)
-                        }
-                    }
-                }
-            }
             unselectButton = it.findViewById(R.id.openFileUnselectButton)
-            unselectButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until MySingleTon.fileList.size) {
-                    MySingleTon.fileList[i].run {
-                        if (!file.isDirectory && selected) {
-                            selected = false
-                            myRecyclerViewAdapter?.notifyItemChanged(i)
-                        }
-                    }
-                }
-            }
             switchDecoderButton = it.findViewById(R.id.openFileSwitchDecoderButton)
             setupSwitchDecoderButton()
-            switchDecoderButton?.let {switchIt ->
-                switchIt.setOnClickListener {
-                    if (!searchCompleted) return@setOnClickListener // searching
-                    playSongs?.switchBetweenSoftAndHardDecoder()
-                    setupSwitchDecoderButton()
-                }
-            }
             playSelectedButton = it.findViewById(R.id.openFilePlaySelectedButton)
-            playSelectedButton?.setImageResource(
-                    if (isPlayButton) R.drawable.play_media_button_image
-                    else R.drawable.open_files)
-            playSelectedButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                // open the files to play
-                startPlaySelectedSong(activity, "playSelectedButton")
-            }
             addToFavoriteButton = it.findViewById(R.id.addToFavoriteButton)
-            addToFavoriteButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                activity?.let {activityIt ->
-                    val songListSQLite = SongListSQLite(activityIt)
-                    getSongs(songListSQLite, "addToFavoriteButton").also { songsIt ->
-                        var toastMsg = getString(R.string.noFilesSelectedString)
-                        if (songsIt.isNotEmpty()) {
-                            for (song in songsIt) {
-                                song.included = "1"
-                                val numRecords = songListSQLite.recordsOfPlayList()
-                                LogUtil.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
-                                if (numRecords < MySingleTon.MAX_SONGS) {
-                                    songListSQLite.addSongToSongList(song)
-                                } else {
-                                    // excess max number of favorites
-                                    ScreenUtil.showToast(activity,
-                                        getString(R.string.excess_max) +
-                                            " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                        Toast.LENGTH_SHORT)
-                                    break
-                                }
-                            }
-                            toastMsg = getString(R.string.add_to_favorites)
-                        }
-                        ScreenUtil.showToast(activity, toastMsg, textFontSize,
-                            Toast.LENGTH_SHORT)
-                    }
-                    songListSQLite.closeDatabase()
-                }
-            }
             showVideoButton = it.findViewById(R.id.showVideoImageButton)
             showVideoButton?.visibility = View.VISIBLE
-            showVideoButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                playSongs?.switchToPlayerView()
-            }
-
-            appsImageButton = it.findViewById(R.id.appsImageButton)
-            appsImageButton?.visibility = View.VISIBLE
-            appsImageButton?.setOnClickListener {
-                playSongs?.showSmileAppsActivity()
-            }
-
-            it.isFocusable = true
-            it.isFocusableInTouchMode = true
-            it.requestFocus()
-            it.setOnKeyListener {
-                    _, keyCode, event ->
-                LogUtil.i(TAG, "OpenFileFragment.setOnKeyListener")
-                showVideoButton?.requestFocus()
-                return@setOnKeyListener false
-            }
+            exitImageButton = it.findViewById(R.id.exitImageButton)
+            exitImageButton?.visibility = View.VISIBLE
         }
-
-        setButtonsSize()
         initFilesRecyclerView()
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onStart() {
@@ -269,12 +162,6 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
-        setButtonsSize()
-        super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
@@ -361,79 +248,99 @@ class OpenFileFragment : CommonFragment(), RecyclerItemListener {
                 }
             }
         }
-        /*
-        Thread {
-            val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
-            MySingleTon.currentPath.let {
-                if (it == "/") {
-                    for (element in MySingleTon.rootPathSet) {
-                        LogUtil.d(TAG, "searchCurrentFolder.element = $element")
-                        tempList.add(FileDescription(File(element), false))
-                    }
-                } else {
-                    try {
-                        File(it).listFiles()?.also { fIt ->
-                            LogUtil.d(TAG, "file.list().size() = ${fIt.size}")
-                            for (f in fIt) {
-                                LogUtil.d(TAG, "isDirectory = ${f.isDirectory}, f.path = ${f.path}")
-                                // if (f.canRead()) {
-                                tempList.add(FileDescription(f, false))
-                                // }
-                            }
-                        }
-                    } catch (ex: Exception) {
-                        LogUtil.d(TAG, "${ex.message}")
-                    }
-                }
-            }
-            MySingleTon.fileList.clear()
-            MySingleTon.fileList.addAll(tempList)
-            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
-
-            activity?.let {
-                LocalBroadcastManager.getInstance(it).apply {
-                    sendBroadcast(Intent().apply {
-                        action = SEARCH_FOLDER_COMPLETED
-                    })
-                }
-            }
-
-        }.start()
-        */
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setButtonsSize() {
-        val buttonWidth = (textFontSize*1.5f).toInt()
-        var percentWidth = 1.0f
-        if (resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) {
-            percentWidth = 0.6f
+    override fun setClickListeners() {
+        backKeyButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            if (MySingleTon.currentPath == "/") return@setOnClickListener
+            MySingleTon.currentPath =
+                if (MySingleTon.rootPathSet.contains(MySingleTon.currentPath)) "/"
+                else {
+                    val index = MySingleTon.currentPath.lastIndexOf('/')
+                    if (index >= 0 ) MySingleTon.currentPath.substring(0, index) else "/"
+                }
+            if (MySingleTon.currentPath.isEmpty()) MySingleTon.currentPath = "/"
+            searchCurrentFolder()
         }
-        val buttonLayout = fragmentView?.findViewById<LinearLayout>(R.id.openFileButtonLayout)
-        val constrainParam = buttonLayout?.layoutParams as ConstraintLayout.LayoutParams
-        constrainParam.constrainedWidth = true
-        constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
-        constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-        constrainParam.matchConstraintPercentWidth = percentWidth
-        buttonLayout.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
+        selectAllButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            for (i in 0 until MySingleTon.fileList.size) {
+                MySingleTon.fileList[i].run {
+                    if (!file.isDirectory && !selected) {
+                        selected = true
+                        myRecyclerViewAdapter?.notifyItemChanged(i)
+                    }
+                }
+            }
+        }
+        unselectButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            for (i in 0 until MySingleTon.fileList.size) {
+                MySingleTon.fileList[i].run {
+                    if (!file.isDirectory && selected) {
+                        selected = false
+                        myRecyclerViewAdapter?.notifyItemChanged(i)
+                    }
+                }
+            }
+        }
+        switchDecoderButton?.let {switchIt ->
+            LogUtil.d(TAG, "setClickListeners.switchDecoderButton.searchCompleted = $searchCompleted")
+            switchIt.setOnClickListener {
+                if (!searchCompleted) return@setOnClickListener // searching
+                playSongs?.switchBetweenSoftAndHardDecoder()
+                setupSwitchDecoderButton()
+            }
+        }
+        playSelectedButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            // open the files to play
+            startPlaySelectedSong(activity, "playSelectedButton")
+        }
+        addToFavoriteButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            activity?.let {activityIt ->
+                val songListSQLite = SongListSQLite(activityIt)
+                getSongs(songListSQLite, "addToFavoriteButton").also { songsIt ->
+                    var toastMsg = getString(R.string.noFilesSelectedString)
+                    if (songsIt.isNotEmpty()) {
+                        for (song in songsIt) {
+                            song.included = "1"
+                            val numRecords = songListSQLite.recordsOfPlayList()
+                            LogUtil.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
+                            if (numRecords < MySingleTon.MAX_SONGS) {
+                                songListSQLite.addSongToSongList(song)
+                            } else {
+                                // excess max number of favorites
+                                ScreenUtil.showToast(activity,
+                                    getString(R.string.excess_max) +
+                                            " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                    Toast.LENGTH_SHORT)
+                                break
+                            }
+                        }
+                        toastMsg = getString(R.string.add_to_favorites)
+                    }
+                    ScreenUtil.showToast(activity, toastMsg, textFontSize,
+                        Toast.LENGTH_SHORT)
+                }
+                songListSQLite.closeDatabase()
+            }
         }
 
-        var linearParam = backKeyButton?.layoutParams as LinearLayout.LayoutParams
-        linearParam.width = buttonWidth
-        linearParam.height = buttonWidth
-        linearParam.setMargins(0, 0, 0, 0)
-        selectAllButton?.layoutParams = linearParam
-        unselectButton?.layoutParams = linearParam
-        switchDecoderButton?.layoutParams = linearParam
-        playSelectedButton?.layoutParams = linearParam
-        addToFavoriteButton?.layoutParams = linearParam
-        showVideoButton?.layoutParams = linearParam
+        super.setClickListeners()
+    }
 
-        linearParam = appsImageButton?.layoutParams as LinearLayout.LayoutParams
-        linearParam.width = buttonWidth
-        linearParam.height = buttonWidth
-        linearParam.setMargins(0, 0, 0, 0)
+    override fun setButtonsSize() {
+        buttonLayout = fragmentView?.findViewById(R.id.openFileButtonLayout)
+        super.setButtonsSize()
+        backKeyButton?.layoutParams = buttonParam
+        selectAllButton?.layoutParams = buttonParam
+        unselectButton?.layoutParams = buttonParam
+        switchDecoderButton?.layoutParams = buttonParam
+        playSelectedButton?.layoutParams = buttonParam
+        addToFavoriteButton?.layoutParams = buttonParam
     }
 
     private fun initFilesRecyclerView() {

@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="karaokeplayer.SmileKaraokeApp"
+        android:name="karaokeplayer2.SmileKaraoke2App"
         android:allowBackup="true"
         android:icon="@drawable/karaoke_app_icon"
         android:banner="@drawable/karaoke_app_icon"

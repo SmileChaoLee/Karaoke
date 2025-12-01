@@ -26,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/showVideoImageButton">
+        app:layout_constraintBottom_toTopOf="@id/showVideoImageButton">
     </android.widget.ImageView>
 
     <ImageButton
@@ -46,7 +46,27 @@
         app:layout_constraintWidth_percent="0.3"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintTop_toBottomOf="@+id/safPickerImageView"
+        app:layout_constraintTop_toBottomOf="@id/safPickerImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/exitImageButton">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/exitImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/emptyString"
+        android:background="@drawable/file_menu_item_background_color"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@drawable/power_button"
+        android:layout_gravity="center"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.3"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toBottomOf="@id/showVideoImageButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

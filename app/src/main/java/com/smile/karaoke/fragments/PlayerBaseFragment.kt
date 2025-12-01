@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -79,7 +78,6 @@ abstract class PlayerBaseFragment : Fragment(),
     interface PlayBaseFragmentFunc {
         fun baseHidePlayerView()
         fun baseShowPlayerView()
-        fun returnToPrevious(isSingleSong : Boolean)
     }
 
     lateinit var mPresenter: PlayerBasePresenter
@@ -271,7 +269,7 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter = it
         } ?: run {
             LogUtil.d(TAG, "onCreate.presenter is null so exit activity.")
-            playBaseFragmentFunc?.returnToPrevious(false)
+            playSongs?.returnToPrevious(false)
             return
         }
 
@@ -673,12 +671,18 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "setMainMenu")
         softDecoderFirstMenuItem?.isVisible = true    // always visible
         mPresenter.playingParam.let {
-            val isVisible = !it.isPlaySingleSong
+            // val isVisible = !it.isPlaySingleSong // no more playing single song
+            val isVisible = true
             autoPlayMenuItem?.isVisible = isVisible
             audioMenuItem?.isVisible = isVisible
             audioTrackMenuItem?.isVisible = isVisible
             val channelMenuItem = mainMenu?.findItem(R.id.channel)
             channelMenuItem?.isVisible = isVisible
+            val smileAppsMenuItem = mainMenu?.findItem(R.id.smileApps)
+            activity?.let { actIt ->
+                val app = (actIt.application as SmileAppBase)
+                smileAppsMenuItem?.isVisible = app.smileAppsMenuVisible
+            }
             val privacyPolicyMenuItem = mainMenu?.findItem(R.id.privacyPolicy)
             privacyPolicyMenuItem?.isVisible = isVisible
         }
@@ -833,7 +837,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private fun closeFragment() {
         LogUtil.i(TAG, "closeFragment.isPlaySingleSong = " + mPresenter.playingParam.isPlaySingleSong)
-        playBaseFragmentFunc?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
+        playSongs?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
     }
 
     private fun showBannerAd() {

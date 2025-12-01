@@ -63,7 +63,7 @@ class FavoritesFragment : Fragment(),
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     var showVideoButton: ImageButton? = null
-    private var appsImageButton: ImageButton? = null
+    private var exitImageButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -140,7 +140,8 @@ class FavoritesFragment : Fragment(),
     ): View? {
         // Inflate the layout for this fragment
         LogUtil.i(TAG, "onCreateView")
-        return inflater.inflate(R.layout.fragment_my_favorites, container, false)
+        return inflater.inflate(R.layout.fragment_my_favorites,
+            container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -149,11 +150,8 @@ class FavoritesFragment : Fragment(),
         fragmentView = view
 
         view.let {
-            val buttonWidth = (textFontSize * 1.5f).toInt()
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
-            val linearParam = LinearLayout.LayoutParams(buttonWidth, buttonWidth)
-            linearParam.setMargins(0, 0, 5, 0)
             selectAllButton = it.findViewById(R.id.favoriteSelectAllButton)
             selectAllButton?.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
@@ -218,10 +216,10 @@ class FavoritesFragment : Fragment(),
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchToPlayerView()
             }
-            appsImageButton = it.findViewById(R.id.appsImageButton)
-            appsImageButton?.visibility = View.VISIBLE
-            appsImageButton?.setOnClickListener {
-                playSongs?.showSmileAppsActivity()
+            exitImageButton = it.findViewById(R.id.exitImageButton)
+            exitImageButton?.visibility = View.VISIBLE
+            exitImageButton?.setOnClickListener {
+                playSongs?.returnToPrevious()
             }
 
             it.isFocusable = true
@@ -390,7 +388,7 @@ class FavoritesFragment : Fragment(),
         playSelectedButton?.layoutParams = linearParam
         showVideoButton?.layoutParams = linearParam
 
-        linearParam = appsImageButton?.layoutParams as LinearLayout.LayoutParams
+        linearParam = exitImageButton?.layoutParams as LinearLayout.LayoutParams
         linearParam.width = buttonWidth
         linearParam.height = buttonWidth
         linearParam.setMargins(0, 0, 0, 0)

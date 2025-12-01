@@ -323,7 +323,6 @@ abstract class BaseActivity : AppCompatActivity(),
         basePlayViewLayout.visibility = View.INVISIBLE
         tablayoutViewLayout.visibility = View.VISIBLE
         tablayoutViewLayout.requestFocus()
-        // tablayoutFragment?.playTabLayout?.requestFocus()
         tablayoutFragment?.becomeVisible()
     }
 
@@ -334,32 +333,6 @@ abstract class BaseActivity : AppCompatActivity(),
         basePlayViewLayout.visibility = View.VISIBLE
         basePlayViewLayout.requestFocus()
         tablayoutFragment?.becomeInVisible()
-    }
-
-    override fun returnToPrevious(isSingleSong : Boolean) {
-        val msgStr = "returnToPrevious"
-        LogUtil.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")
-        if (isSingleSong) {
-            playerFragment?.mPresenter?.let {
-                it.pausePlay()
-                it.playingParam.singleSongPlayingStatus = 0  // exit playing single song
-                callingComponentName?.let { callIt ->
-                    Intent().apply {
-                        component = callIt
-                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                        startActivity(this)
-                    }
-                }
-                LogUtil.d(TAG, "${msgStr}.preparedStatus = " +
-                        "${it.playingParam.preparedStatus}")
-            }
-            return
-        }
-        // exit application
-        playerFragment?.mPresenter?.apply {
-            stopPlay(PlayerConstants.STOPPED_BY_USER)
-        }
-        finishThisActivity()
     }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc
 
@@ -446,6 +419,32 @@ abstract class BaseActivity : AppCompatActivity(),
         ).also {
             startActivity(it)
         }
+    }
+
+    override fun returnToPrevious(isSingleSong : Boolean) {
+        val msgStr = "returnToPrevious"
+        LogUtil.d(TAG, "${msgStr}.isSingleSong = $isSingleSong")
+        if (isSingleSong) {
+            playerFragment?.mPresenter?.let {
+                it.pausePlay()
+                it.playingParam.singleSongPlayingStatus = 0  // exit playing single song
+                callingComponentName?.let { callIt ->
+                    Intent().apply {
+                        component = callIt
+                        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                        startActivity(this)
+                    }
+                }
+                LogUtil.d(TAG, "${msgStr}.preparedStatus = " +
+                        "${it.playingParam.preparedStatus}")
+            }
+            return
+        }
+        // exit application
+        playerFragment?.mPresenter?.apply {
+            stopPlay(PlayerConstants.STOPPED_BY_USER)
+        }
+        finishThisActivity()
     }
     // Finish implementing interface PlaySongs
 

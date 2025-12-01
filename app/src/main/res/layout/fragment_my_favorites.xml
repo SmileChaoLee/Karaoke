@@ -114,14 +114,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="2">
             <ImageButton
-                android:id="@+id/appsImageButton"
+                android:id="@+id/exitImageButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:src="@drawable/app_list"
+                android:src="@drawable/power_button"
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_gravity="center">

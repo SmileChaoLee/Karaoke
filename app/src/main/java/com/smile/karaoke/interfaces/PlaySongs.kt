@@ -8,4 +8,5 @@ interface PlaySongs {
     fun isSoftDecoderFirst(): Boolean
     fun switchBetweenSoftAndHardDecoder()
     fun showSmileAppsActivity()
+    fun returnToPrevious(isSingleSong : Boolean = false)
 }

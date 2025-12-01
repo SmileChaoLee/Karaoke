@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".fragments.OpenFileFragment">
+    tools:context="youtube.fragments.SearchVideosFragment">
 
     <LinearLayout
-        android:id="@+id/openFileButtonLayout"
+        android:id="@+id/searchButtonLayout"
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:layout_width="0dp"
@@ -20,30 +20,31 @@
         app:layout_constrainedWidth="true"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="1.0"
-        android:weightSum="9">
+        android:weightSum="8">
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="7"
-            android:weightSum="7">
+            android:layout_weight="6"
+            android:weightSum="6">
             <ImageButton
-                android:id="@+id/openFileBackKeyButton"
+                android:id="@+id/searchButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
                 android:background="@drawable/file_menu_item_background_color"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:src="@drawable/back_key"
+                android:src="@drawable/search"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 tools:ignore="NestedWeights">
             </ImageButton>
             <ImageButton
-                android:id="@+id/openFileSelectAllButton"
+                android:id="@+id/searchSelectAllButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
@@ -53,11 +54,12 @@
                 android:src="@drawable/select_all"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
             <ImageButton
-                android:id="@+id/openFileUnselectButton"
+                android:id="@+id/searchUnselectButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
@@ -68,25 +70,12 @@
                 android:src="@drawable/unselect"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
             <ImageButton
-                android:id="@+id/openFileSwitchDecoderButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/emptyString"
-                android:background="@drawable/file_menu_item_background_color"
-                android:scaleType="centerInside"
-                android:adjustViewBounds="true"
-                android:src="@drawable/hard_decoder"
-                android:focusable="true"
-                android:clickable="true"
-                android:layout_gravity="center"
-                android:layout_weight="1">
-            </ImageButton>
-            <ImageButton
-                android:id="@+id/openFilePlaySelectedButton"
+                android:id="@+id/searchPlaySelectedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/emptyString"
@@ -96,6 +85,7 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -110,6 +100,7 @@
                 android:src="@drawable/add_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -125,6 +116,7 @@
                 android:src="@drawable/show_video"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -143,43 +135,47 @@
                 android:background="@drawable/file_menu_item_background_color"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:src="@drawable/power_button"
+                android:src="@drawable/app_list"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/searchEditTextView"
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/openFilePathTextViewLayout"
+        android:id="@+id/searchEditTextViewLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/lightGray"
-        app:layout_constraintTop_toBottomOf="@id/openFileButtonLayout"
+        app:layout_constraintTop_toBottomOf="@id/searchButtonLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-        <TextView
-            android:id="@+id/pathTextView"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/searchEditTextView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="normal"
-            android:textColor="@android:color/black"
-            android:background="@android:color/transparent">
-        </TextView>
+            android:autofillHints=""
+            android:inputType="textMultiLine"
+            android:textColor="@color/blue"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@android:drawable/editbox_background"
+            tools:ignore="LabelFor">
+        </EditText>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/openFilesRecyclerView"
+        android:id="@+id/searchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
         android:focusable="true"
         android:clickable="true"
         android:descendantFocusability ="afterDescendants"
-        app:layout_constraintTop_toBottomOf="@+id/openFilePathTextViewLayout"
+        app:layout_constraintTop_toBottomOf="@id/searchEditTextViewLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

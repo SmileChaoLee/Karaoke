@@ -8,5 +8,4 @@ object CommonConstants {
     const val EDIT_ACTION = "EDIT"
     const val DELETE_ACTION = "DELETE"
     const val PLAY_ACTION = "PLAYING"
-    const val IS_BUTTON_PLAY = "IsButtonPlay"
 }
