@@ -9,7 +9,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.smile.karaoke.constants.PlayerConstants
-import com.smile.karaoke.models.MySingleTon.orderedSongs
+import com.smile.karaoke.models.MySingleton.orderedSongs
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.presenters.PlayerBasePresenter

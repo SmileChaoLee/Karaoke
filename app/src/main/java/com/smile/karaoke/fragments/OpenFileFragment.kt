@@ -23,7 +23,7 @@ import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -54,11 +54,11 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         super.onCreate(savedInstanceState)
 
         // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
-        LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleTon.currentPath}")
+        LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleton.currentPath}")
 
         activity?.applicationContext?.externalCacheDirs?.let {
             LogUtil.d(TAG, "externalCacheDirs = $it, externalCacheDirs.size = ${it.size}")
-            MySingleTon.rootPathSet.clear()
+            MySingleton.rootPathSet.clear()
             for (element in it) {
                 LogUtil.d(TAG, "externalCacheDirs.element = $element")
                 element?.absolutePath?.let { pathIt ->
@@ -66,7 +66,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                         if (indexIt >= 0) {
                             pathIt.substring(0, indexIt).let {subIt ->
                                 LogUtil.d(TAG, "element.substring(0, indexIt) = $subIt")
-                                MySingleTon.rootPathSet.add(subIt)
+                                MySingleton.rootPathSet.add(subIt)
                             }
                         }
                     }
@@ -81,10 +81,10 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 intent?.action?.let {
                     if (it == SEARCH_FOLDER_COMPLETED) {
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
-                        pathTextView?.text = MySingleTon.currentPath
+                        pathTextView?.text = MySingleton.currentPath
                         myRecyclerViewAdapter?.myNotifyDataSetChanged()
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
-                        if (MySingleTon.fileList.isEmpty()) {
+                        if (MySingleton.fileList.isEmpty()) {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                             val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
@@ -105,7 +105,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
 
-        LogUtil.i(TAG, "onCreate.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+        LogUtil.i(TAG, "onCreate.FileDesList.fileList.size = ${MySingleton.fileList.size}")
     }
 
     override fun onCreateView(
@@ -180,17 +180,17 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
         v?.requestFocus()
-        if (MySingleTon.fileList[position].file.isFile) {
-            MySingleTon.fileList[position].selected = !MySingleTon.fileList[position].selected
+        if (MySingleton.fileList[position].file.isFile) {
+            MySingleton.fileList[position].selected = !MySingleton.fileList[position].selected
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
             return
         }
-        MySingleTon.currentPath = MySingleTon.fileList[position].file.path
+        MySingleton.currentPath = MySingleton.fileList[position].file.path
         searchCurrentFolder()
     }
 
     fun clearFileList() {
-        MySingleTon.fileList.clear()
+        MySingleton.fileList.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
     }
 
@@ -198,10 +198,10 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "searchCurrentFolder")
         searchCompleted = false
         lifecycleScope.launch(Dispatchers.IO) {
-            val tempList: ArrayList<FileDescription> = ArrayList(MySingleTon.maxFiles)
-            MySingleTon.currentPath.let {
+            val tempList: ArrayList<FileDescription> = ArrayList(MySingleton.MAX_FILES)
+            MySingleton.currentPath.let {
                 if (it == "/") {
-                    for (element in MySingleTon.rootPathSet) {
+                    for (element in MySingleton.rootPathSet) {
                         LogUtil.d(TAG, "searchCurrentFolder.element = $element")
                         tempList.add(FileDescription(File(element),
                             null, false))
@@ -232,11 +232,11 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     }
                 }
             }
-            MySingleTon.fileList.clear()
-            MySingleTon.fileList.addAll(tempList)
-            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleTon.fileList.size}")
+            MySingleton.fileList.clear()
+            MySingleton.fileList.addAll(tempList)
+            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleton.fileList.size}")
 
-            for (fileDes in MySingleTon.fileList) {
+            for (fileDes in MySingleton.fileList) {
                 LogUtil.d(TAG, "searchCurrentFolder.file = ${fileDes.file}")
             }
 
@@ -253,20 +253,20 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun setClickListeners() {
         backKeyButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            if (MySingleTon.currentPath == "/") return@setOnClickListener
-            MySingleTon.currentPath =
-                if (MySingleTon.rootPathSet.contains(MySingleTon.currentPath)) "/"
+            if (MySingleton.currentPath == "/") return@setOnClickListener
+            MySingleton.currentPath =
+                if (MySingleton.rootPathSet.contains(MySingleton.currentPath)) "/"
                 else {
-                    val index = MySingleTon.currentPath.lastIndexOf('/')
-                    if (index >= 0 ) MySingleTon.currentPath.substring(0, index) else "/"
+                    val index = MySingleton.currentPath.lastIndexOf('/')
+                    if (index >= 0 ) MySingleton.currentPath.substring(0, index) else "/"
                 }
-            if (MySingleTon.currentPath.isEmpty()) MySingleTon.currentPath = "/"
+            if (MySingleton.currentPath.isEmpty()) MySingleton.currentPath = "/"
             searchCurrentFolder()
         }
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.fileList.size) {
-                MySingleTon.fileList[i].run {
+            for (i in 0 until MySingleton.fileList.size) {
+                MySingleton.fileList[i].run {
                     if (!file.isDirectory && !selected) {
                         selected = true
                         myRecyclerViewAdapter?.notifyItemChanged(i)
@@ -276,8 +276,8 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         }
         unselectButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.fileList.size) {
-                MySingleTon.fileList[i].run {
+            for (i in 0 until MySingleton.fileList.size) {
+                MySingleton.fileList[i].run {
                     if (!file.isDirectory && selected) {
                         selected = false
                         myRecyclerViewAdapter?.notifyItemChanged(i)
@@ -309,13 +309,13 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                             song.included = "1"
                             val numRecords = songListSQLite.recordsOfPlayList()
                             LogUtil.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
-                            if (numRecords < MySingleTon.MAX_SONGS) {
+                            if (numRecords < MySingleton.MAX_SONGS) {
                                 songListSQLite.addSongToSongList(song)
                             } else {
                                 // excess max number of favorites
                                 ScreenUtil.showToast(activity,
                                     getString(R.string.excess_max) +
-                                            " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                            " ${MySingleton.MAX_SONGS}", textFontSize,
                                     Toast.LENGTH_SHORT)
                                 break
                             }
@@ -347,7 +347,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "initFilesRecyclerView() is called")
         activity?.let {
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
-                this, MySingleTon.fileList,
+                this, MySingleton.fileList,
                 textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)
             filesRecyclerView?.adapter = myRecyclerViewAdapter

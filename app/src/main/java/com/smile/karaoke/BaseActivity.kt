@@ -28,7 +28,7 @@ import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.fragments.TablayoutFragment
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.interfaces.PlaySongs
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.smileapps.SmileAppsActivity
@@ -72,7 +72,7 @@ abstract class BaseActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG,"onCreate")
         settingBeforeCreate()
-        MySingleTon.clearSingleton()
+        MySingleton.clearSingleton()
         super.onCreate(savedInstanceState)
         // disabling the touch events
         touchDisabled = true
@@ -269,7 +269,7 @@ abstract class BaseActivity : AppCompatActivity(),
             unregisterReceiver(baseReceiver)
         }
         interstitialAd?.releaseInterstitial()
-        MySingleTon.clearSingleton()
+        MySingleton.clearSingleton()
         // clear the screen on, added on 2021-02-18
         window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -383,8 +383,8 @@ abstract class BaseActivity : AppCompatActivity(),
         LogUtil.i(TAG, "${msgStr}.songs.size" +
                 " = ${songs.size}")
         if (songs.isNotEmpty()) {
-            MySingleTon.orderedSongs.clear()
-            MySingleTon.orderedSongs.addAll(songs)
+            MySingleton.orderedSongs.clear()
+            MySingleton.orderedSongs.addAll(songs)
             playerFragment?.let {
                 it.mPresenter.playingParam.isAutoPlay = false
                 it.mPresenter.autoPlaySongList()

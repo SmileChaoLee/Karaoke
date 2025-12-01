@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
 import com.smile.karaoke.R
 import com.smile.karaoke.models.FileDescription
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.utilities.ContentUriUtil
 import com.smile.karaoke.utilities.LogUtil
 
@@ -38,7 +38,7 @@ class SafPickerFragment: ComOpenFragment() {
                         requireActivity(),
                         it
                     )
-                    MySingleTon.fileList.clear()
+                    MySingleton.fileList.clear()
                     for (uri in uriList) {
                         LogUtil.d(TAG, "openDocumentLauncher.result.uri = $uri")
                         val file = ContentUriUtil.getFileFromContentUri(activity, uri)
@@ -59,9 +59,9 @@ class SafPickerFragment: ComOpenFragment() {
                                 ex
                             )
                         }
-                        MySingleTon.fileList.add(FileDescription(file, bm, true))
+                        MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
-                    LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleTon.fileList.size}")
+                    LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
                     startPlaySelectedSong(activity, "openDocumentLauncher")
                 }
             }

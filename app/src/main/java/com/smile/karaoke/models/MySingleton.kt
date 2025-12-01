@@ -1,23 +1,19 @@
 package com.smile.karaoke.models
 
-import android.util.Log
+object MySingleton {
 
-object MySingleTon {
-    private const val TAG = "MySingleTon"
-
-    const val MAX_SONGS : Int = 100;
+    const val MAX_SONGS : Int = 100
     val favorites : ArrayList<SongDescription> = ArrayList(MAX_SONGS)
     val selectedFavorites : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
     val backupSelectedId : ArrayList<Int> = ArrayList(MAX_SONGS)
     val orderedSongs : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
     // moved from FileDesList
-    const val maxFiles : Int = 500;
-    val fileList : ArrayList<FileDescription> = ArrayList(maxFiles)
+    const val MAX_FILES : Int = 500
+    val fileList : ArrayList<FileDescription> = ArrayList(MAX_FILES)
     val rootPathSet : java.util.HashSet<String> = HashSet()
     var currentPath = "/"
 
     fun clearSingleton() {
-        Log.d(TAG, "clearSingleton()")
         favorites.clear()
         selectedFavorites.clear()
         backupSelectedId.clear()

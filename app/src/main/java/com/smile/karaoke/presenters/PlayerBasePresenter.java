@@ -13,7 +13,7 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.PlayerConstants;
-import com.smile.karaoke.models.MySingleTon;
+import com.smile.karaoke.models.MySingleton;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.models.SongInfo;
 import com.smile.karaoke.services.BasePlayService;
@@ -110,9 +110,9 @@ public abstract class PlayerBasePresenter {
 
     public void autoPlaySongList() {
         LogUtil.d(TAG, "autoPlaySongList.orderedSongs.size = "
-                + MySingleTon.INSTANCE.getOrderedSongs().size());
+                + MySingleton.INSTANCE.getOrderedSongs().size());
         mCanShowNotSupportedFormat = true;
-        if (!MySingleTon.INSTANCE.getOrderedSongs().isEmpty()) {
+        if (!MySingleton.INSTANCE.getOrderedSongs().isEmpty()) {
             // next song that will be played, which the index is 0
             // start playing video from list
             mPlayingParam.setCurrentSongIndex(-1);
@@ -172,8 +172,8 @@ public abstract class PlayerBasePresenter {
             } else orderedSongs = (ArrayList<SongInfo>)savedInstanceState.getSerializable(PlayerConstants.OrderedSongsState);
             LogUtil.d(TAG, "initializeVariablesBase.orderedSongs = " + orderedSongs);
             if (orderedSongs != null) {
-                MySingleTon.INSTANCE.getOrderedSongs().clear();
-                MySingleTon.INSTANCE.getOrderedSongs().addAll(orderedSongs);
+                MySingleton.INSTANCE.getOrderedSongs().clear();
+                MySingleton.INSTANCE.getOrderedSongs().addAll(orderedSongs);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 mMediaUri = savedInstanceState.getParcelable(PlayerConstants.MediaUriState,
@@ -279,8 +279,8 @@ public abstract class PlayerBasePresenter {
         LogUtil.d(TAG, "setAutoPlayStatusAndAction.songList.size() = " + songList.size());
         boolean isAutoPlay = false;
         if (!songList.isEmpty()) {
-            MySingleTon.INSTANCE.getOrderedSongs().clear();
-            MySingleTon.INSTANCE.getOrderedSongs().addAll(songList);
+            MySingleton.INSTANCE.getOrderedSongs().clear();
+            MySingleton.INSTANCE.getOrderedSongs().addAll(songList);
             mPlayingParam.setAutoPlay(true);
             autoPlaySongList();
             mPresentView.showPlayerView();
@@ -303,7 +303,7 @@ public abstract class PlayerBasePresenter {
 
     public void playPreviousSong() {
         LogUtil.d(TAG, "playPreviousSong");
-        int orderedSongsSize = MySingleTon.INSTANCE.getOrderedSongs().size();
+        int orderedSongsSize = MySingleton.INSTANCE.getOrderedSongs().size();
         if (orderedSongsSize <= 1 ) {
             LogUtil.d(TAG, "playPreviousSong.orderedSongsSize <= 1, only one song in the list");
             // only one file in the play list
@@ -347,7 +347,7 @@ public abstract class PlayerBasePresenter {
 
     public void playNextSong() {
         LogUtil.d(TAG, "playNextSong");
-        int orderedSongsSize = MySingleTon.INSTANCE.getOrderedSongs().size();
+        int orderedSongsSize = MySingleton.INSTANCE.getOrderedSongs().size();
         int currentIndex = mPlayingParam.getCurrentSongIndex();
         int repeatStatus = mPlayingParam.getRepeatStatus();
         if (orderedSongsSize <= 1 ) {
@@ -395,8 +395,8 @@ public abstract class PlayerBasePresenter {
                     mPlayingParam.setAutoPlay(false);
                     // added on 2020-12-08
                     // set orderedSongs that only contains song info from SongListActivity
-                    MySingleTon.INSTANCE.getOrderedSongs().clear();
-                    MySingleTon.INSTANCE.getOrderedSongs().add(mSingleSongInfo);
+                    MySingleton.INSTANCE.getOrderedSongs().clear();
+                    MySingleton.INSTANCE.getOrderedSongs().add(mSingleSongInfo);
                     mSingleSongInfo = new SongInfo();    // reset for cycle playing
                     autoPlaySongList();
                 }
@@ -596,16 +596,16 @@ public abstract class PlayerBasePresenter {
                 setMediaUri(null);
                 // remove the song that is unable to be played
                 LogUtil.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
-                        + MySingleTon.INSTANCE.getOrderedSongs().size());
+                        + MySingleton.INSTANCE.getOrderedSongs().size());
                 int currentIndexOfList = mPlayingParam.getCurrentSongIndex();
                 LogUtil.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.currentIndexOfList = "
                         + currentIndexOfList);
                 if (currentIndexOfList >= 0) {
-                    MySingleTon.INSTANCE.getOrderedSongs().remove(currentIndexOfList);
+                    MySingleton.INSTANCE.getOrderedSongs().remove(currentIndexOfList);
                     mPlayingParam.setCurrentSongIndex(--currentIndexOfList);
                 }
                 LogUtil.d(TAG, msgStr + ".PlaybackStateCompat.STATE_ERROR.orderedSongs.size() = "
-                        + MySingleTon.INSTANCE.getOrderedSongs().size());
+                        + MySingleton.INSTANCE.getOrderedSongs().size());
                 startAutoPlay(false);
                 break;
             default:
@@ -618,8 +618,8 @@ public abstract class PlayerBasePresenter {
 
     public void saveInstanceState(@NonNull Bundle outState) {
         outState.putInt(PlayerConstants.NumberOfVideoTracksState, mNumberOfVideoTracks);
-        LogUtil.i(TAG, "saveInstanceState.orderedSongs = " + MySingleTon.INSTANCE.getOrderedSongs());
-        ArrayList<SongInfo> orderedSongs = new ArrayList<>(MySingleTon.INSTANCE.getOrderedSongs());
+        LogUtil.i(TAG, "saveInstanceState.orderedSongs = " + MySingleton.INSTANCE.getOrderedSongs());
+        ArrayList<SongInfo> orderedSongs = new ArrayList<>(MySingleton.INSTANCE.getOrderedSongs());
         outState.putSerializable(PlayerConstants.OrderedSongsState, orderedSongs);
         outState.putParcelable(PlayerConstants.MediaUriState, mMediaUri);
         outState.putParcelable(PlayerConstants.PlayingParamState, mPlayingParam);

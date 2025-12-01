@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.core.net.toUri
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
@@ -36,7 +36,7 @@ open class ComOpenFragment: ItemsBaseFragment() {
     fun getSongs(songListSQLite : SongListSQLite, msg : String): ArrayList<SongInfo> {
         val songs = ArrayList<SongInfo>().also {songIt ->
             var index = 0
-            for (fileDes in MySingleTon.fileList) {
+            for (fileDes in MySingleton.fileList) {
                 if (fileDes.selected) {
                     val path = fileDes.file.path
                     LogUtil.d(TAG, "$msg.file.path = $path")
@@ -58,11 +58,11 @@ open class ComOpenFragment: ItemsBaseFragment() {
                     }
                     songIt.add(song)
                     index++
-                    if (index >= MySingleTon.MAX_SONGS) {
+                    if (index >= MySingleton.MAX_SONGS) {
                         // excess the max
                         ScreenUtil.showToast(
                             activity, getString(R.string.excess_max) +
-                                    " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                    " ${MySingleton.MAX_SONGS}", textFontSize,
                             Toast.LENGTH_SHORT)
                         break
                     }

@@ -24,7 +24,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.interfaces.PlayMyFavorites
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseAccessUtil
@@ -75,13 +75,13 @@ class FavoritesFragment : ItemsBaseFragment(),
                         if (intent.getBooleanExtra(EXCESS_YN, false)) {
                             ScreenUtil.showToast(
                                     activity, getString(R.string.excess_max) +
-                                    " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                    " ${MySingleton.MAX_SONGS}", textFontSize,
                                 Toast.LENGTH_SHORT)
                         }
-                        if (MySingleTon.favorites.isNotEmpty()) {
-                            for (fav in MySingleTon.favorites) {
+                        if (MySingleton.favorites.isNotEmpty()) {
+                            for (fav in MySingleton.favorites) {
                                 LogUtil.d(TAG, "BroadcastReceiver.onReceive.fav.song.id = ${fav.song.id}")
-                                if (MySingleTon.backupSelectedId.contains(fav.song.id)) {
+                                if (MySingleton.backupSelectedId.contains(fav.song.id)) {
                                     LogUtil.d(TAG, "BroadcastReceiver.onReceive.contains")
                                     fav.song.included = "1"
                                 }
@@ -109,7 +109,7 @@ class FavoritesFragment : ItemsBaseFragment(),
             }
         }
 
-        LogUtil.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleTon.favorites.size}")
+        LogUtil.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleton.favorites.size}")
     }
 
     override fun onCreateView(
@@ -187,7 +187,7 @@ class FavoritesFragment : ItemsBaseFragment(),
     // implementing FavoriteRecyclerViewAdapter.FavItemListener
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
-        MySingleTon.favorites[position].apply {
+        MySingleton.favorites[position].apply {
             song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
@@ -195,17 +195,17 @@ class FavoritesFragment : ItemsBaseFragment(),
 
     override fun startEditSongInfo(position: Int) {
         LogUtil.i(TAG, "startEditSongInfo.position = $position")
-        val listIt = listOf(MySingleTon.favorites[position].song)
+        val listIt = listOf(MySingleton.favorites[position].song)
         LogUtil.d(TAG, "editButton.listIt.size = ${listIt.size}")
         if (listIt.isNotEmpty()) {
             playMyFavorites?.let {playIt ->
                 intentForFavoriteListActivity().apply {
                     playIt.onSavePlayingState(component)
-                    MySingleTon.backupSelectedFavorites()
+                    MySingleton.backupSelectedFavorites()
                     LogUtil.i(TAG, "startEditSongInfo.backupSelectedId.size" +
-                            "= ${MySingleTon.backupSelectedId.size}")
-                    MySingleTon.selectedFavorites.clear()
-                    MySingleTon.selectedFavorites.addAll(listIt)
+                            "= ${MySingleton.backupSelectedId.size}")
+                    MySingleton.selectedFavorites.clear()
+                    MySingleton.selectedFavorites.addAll(listIt)
                     editSongsActivityLauncher.launch(this)
                 }
             }
@@ -214,7 +214,7 @@ class FavoritesFragment : ItemsBaseFragment(),
     // end of implementing FavoriteRecyclerViewAdapter.FavItemListener
 
     fun clearFavoriteList() {
-        MySingleTon.favorites.clear()
+        MySingleton.favorites.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
     }
 
@@ -223,7 +223,7 @@ class FavoritesFragment : ItemsBaseFragment(),
         searchCompleted = false
         Thread {
             var excessYn = false
-            val tempList: ArrayList<SongDescription> = ArrayList(MySingleTon.MAX_SONGS)
+            val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
             activity?.let {
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
                     var index = 0
@@ -245,7 +245,7 @@ class FavoritesFragment : ItemsBaseFragment(),
                         element.included = "0"
                         tempList.add(SongDescription(element, bm))
                         index++
-                        if (index >= MySingleTon.MAX_SONGS) {
+                        if (index >= MySingleton.MAX_SONGS) {
                             // excess the max
                             excessYn = true
                             break
@@ -253,9 +253,9 @@ class FavoritesFragment : ItemsBaseFragment(),
                     }
                 }
             }
-            MySingleTon.favorites.clear()
-            MySingleTon.favorites.addAll(tempList)
-            LogUtil.d(TAG, "searchFavorites.MySingleTon.favorites.size = ${MySingleTon.favorites.size}")
+            MySingleton.favorites.clear()
+            MySingleton.favorites.addAll(tempList)
+            LogUtil.d(TAG, "searchFavorites.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
 
             activity?.let {
                 LocalBroadcastManager.getInstance(it).apply {
@@ -272,8 +272,8 @@ class FavoritesFragment : ItemsBaseFragment(),
     override fun setClickListeners() {
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.favorites.size) {
-                MySingleTon.favorites[i].run {
+            for (i in 0 until MySingleton.favorites.size) {
+                MySingleton.favorites[i].run {
                     song.included = "1"
                     myRecyclerViewAdapter?.notifyItemChanged(i)
                 }
@@ -281,8 +281,8 @@ class FavoritesFragment : ItemsBaseFragment(),
         }
         unselectButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleTon.favorites.size) {
-                MySingleTon.favorites[i].run {
+            for (i in 0 until MySingleton.favorites.size) {
+                MySingleton.favorites[i].run {
                     song.included = "0"
                     myRecyclerViewAdapter?.notifyItemChanged(i)
                 }
@@ -300,15 +300,15 @@ class FavoritesFragment : ItemsBaseFragment(),
             // open the files to play
             val songs = ArrayList<SongInfo>().also { songIt ->
                 var index = 0
-                for (i in 0 until MySingleTon.favorites.size) {
-                    if (MySingleTon.favorites[i].song.included == "1") {
-                        songIt.add(MySingleTon.favorites[i].song)
+                for (i in 0 until MySingleton.favorites.size) {
+                    if (MySingleton.favorites[i].song.included == "1") {
+                        songIt.add(MySingleton.favorites[i].song)
                         index++
-                        if (index >= MySingleTon.MAX_SONGS) {
+                        if (index >= MySingleton.MAX_SONGS) {
                             // excess the max
                             ScreenUtil.showToast(
                                 activity, getString(R.string.excess_max) +
-                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                        " ${MySingleton.MAX_SONGS}", textFontSize,
                                 Toast.LENGTH_SHORT)
                             break
                         }
@@ -344,7 +344,7 @@ class FavoritesFragment : ItemsBaseFragment(),
         LogUtil.i(TAG, "initFavoriteRecyclerView")
         activity?.let {
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(
-                    this, MySingleTon.favorites,
+                    this, MySingleton.favorites,
                 resources.configuration.orientation,
                 textFontSize,
                 videoThumbnailsWidth, videoThumbnailsHeight)

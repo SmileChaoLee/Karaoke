@@ -53,7 +53,7 @@ import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.interfaces.PlaySongs
-import com.smile.karaoke.models.MySingleTon
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.presenters.PlayerBasePresenter
@@ -237,7 +237,7 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
-        MySingleTon.clearSingleton()
+        MySingleton.clearSingleton()
         activity?.let {
             textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
             fontScale = ScreenUtil.getPxFontScale(activity)
@@ -639,7 +639,7 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
         super.onDestroy()
-        MySingleTon.clearSingleton()
+        MySingleton.clearSingleton()
         // cancel the timer
         mPresenter.removeMsgFromDurationBarHandler()
         controllerTimerHandler.removeCallbacksAndMessages(null)
@@ -950,10 +950,10 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.let { pIt ->
                 val index = pIt.playingParam.currentSongIndex
                 LogUtil.d(TAG,"heartImageButton.onClick.currentSongIndex = $index")
-                if (index>=0 && MySingleTon.orderedSongs.size>index) {
+                if (index>=0 && MySingleton.orderedSongs.size>index) {
                     activity?.let {
                         SongListSQLite(it.applicationContext).also { sqlIt ->
-                            MySingleTon.orderedSongs[index].run {
+                            MySingleton.orderedSongs[index].run {
                                 // check if this file is already in database
                                 if (sqlIt.findOneSongByUriString(filePath) == null) {
                                     LogUtil.d(TAG, "heartImageButton.onClick.findOneSongByUriString() is null")
