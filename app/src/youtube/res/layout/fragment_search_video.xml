@@ -135,7 +135,7 @@
                 android:background="@drawable/file_menu_item_background_color"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:src="@drawable/app_list"
+                android:src="@drawable/power_button"
                 android:focusable="true"
                 android:clickable="true"
                 android:nextFocusDown="@id/searchEditTextView"

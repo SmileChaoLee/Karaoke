@@ -92,8 +92,8 @@ class YouTubeService : BasePlayService() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 LogUtil.d(TAG, "YouTubePlayerListener.onReady")
                 // mYouTubePlayer = youTubePlayer   // will be set from YouTubeFragment
-                val videoId = "hPNJ7Ge6-uk"
-                youTubePlayer.loadVideo(videoId, 0f)
+                // val videoId = "hPNJ7Ge6-uk"
+                // youTubePlayer.loadVideo(videoId, 0f)
             }
 
             override fun onStateChange(

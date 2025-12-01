@@ -1,6 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,13 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.scale
-import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
@@ -28,7 +24,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.interfaces.PlayMyFavorites
-import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleTon
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
@@ -37,7 +32,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class FavoritesFragment : Fragment(),
+class FavoritesFragment : ItemsBaseFragment(),
     FavoriteRecyclerViewAdapter.FavItemListener {
 
     companion object {
@@ -46,41 +41,24 @@ class FavoritesFragment : Fragment(),
         private const val EXCESS_YN = "ExcessYN"
     }
 
-    var fragmentView : View? = null
-    private var textFontSize = 0.0f
-    private var videoThumbnailsWidth = 0
-    private var videoThumbnailsHeight = 0
-    private var playSongs: PlaySongs? = null
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
     private var myRecyclerViewAdapter : FavoriteRecyclerViewAdapter? = null
     private lateinit var editSongsActivityLauncher: ActivityResultLauncher<Intent>
     private lateinit var broadcastReceiver: BroadcastReceiver
-    private var searchCompleted = true
-    private lateinit var mediaRetriever: MediaMetadataRetriever
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
-    var showVideoButton: ImageButton? = null
-    private var exitImageButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
-        arguments?.let {}
         activity?.let {
-            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
-            videoThumbnailsWidth = (textFontSize * 3.0f).toInt()
-            videoThumbnailsHeight = (textFontSize * 2.0f).toInt()
-            if (it is PlaySongs) playSongs = it
-            LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
             if (it is PlayMyFavorites) playMyFavorites = it
             LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
         }
-
-        mediaRetriever = MediaMetadataRetriever()
 
         editSongsActivityLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()){
@@ -146,94 +124,23 @@ class FavoritesFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onViewCreated")
-        super.onViewCreated(view, savedInstanceState)
-        fragmentView = view
 
         view.let {
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
             selectAllButton = it.findViewById(R.id.favoriteSelectAllButton)
-            selectAllButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until MySingleTon.favorites.size) {
-                    MySingleTon.favorites[i].run {
-                        song.included = "1"
-                        myRecyclerViewAdapter?.notifyItemChanged(i)
-                    }
-                }
-            }
             unselectButton = it.findViewById(R.id.favoriteUnselectButton)
-            unselectButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                for (i in 0 until MySingleTon.favorites.size) {
-                    MySingleTon.favorites[i].run {
-                        song.included = "0"
-                        myRecyclerViewAdapter?.notifyItemChanged(i)
-                    }
-                }
-            }
             switchDecoderButton = it.findViewById(R.id.favoriteSwitchDecoderButton)
             setupSwitchDecoderButton()
-            switchDecoderButton?.let {switchIt ->
-                switchIt.setOnClickListener {
-                    if (!searchCompleted) return@setOnClickListener // searching
-                    playSongs?.switchBetweenSoftAndHardDecoder()
-                    setupSwitchDecoderButton()
-                }
-            }
             playSelectedButton = it.findViewById(R.id.favoritePlaySelectedButton)
-            playSelectedButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                // open the files to play
-                val songs = ArrayList<SongInfo>().also { songIt ->
-                    var index = 0
-                    for (i in 0 until MySingleTon.favorites.size) {
-                        if (MySingleTon.favorites[i].song.included == "1") {
-                            songIt.add(MySingleTon.favorites[i].song)
-                            index++
-                            if (index >= MySingleTon.MAX_SONGS) {
-                                // excess the max
-                                ScreenUtil.showToast(
-                                        activity, getString(R.string.excess_max) +
-                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
-                                    Toast.LENGTH_SHORT)
-                                break
-                            }
-                        }
-                    }
-                }
-                if (songs.isEmpty()) {
-                    ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
-                        textFontSize,
-                        Toast.LENGTH_SHORT)
-                } else {
-                    playSongs?.playSelectedSongList(ArrayList(songs))
-                }
-            }
             showVideoButton = it.findViewById(R.id.showVideoImageButton)
             showVideoButton?.visibility = View.VISIBLE
-            showVideoButton?.setOnClickListener {
-                if (!searchCompleted) return@setOnClickListener // searching
-                playSongs?.switchToPlayerView()
-            }
             exitImageButton = it.findViewById(R.id.exitImageButton)
             exitImageButton?.visibility = View.VISIBLE
-            exitImageButton?.setOnClickListener {
-                playSongs?.returnToPrevious()
-            }
-
-            it.isFocusable = true
-            it.isFocusableInTouchMode = true
-            it.requestFocus()
-            it.setOnKeyListener {
-                    _, keyCode, event ->
-                showVideoButton?.requestFocus()
-                return@setOnKeyListener false
-            }
         }
-
-        setButtonsSize()
         initFavoriteRecyclerView()
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onStart() {
@@ -362,36 +269,71 @@ class FavoritesFragment : Fragment(),
         }.start()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setButtonsSize() {
-        val buttonWidth = (textFontSize*1.5f).toInt()
-        var percentWidth = 1.0f
-        if (resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) {
-            percentWidth = 0.6f
+    override fun setClickListeners() {
+        selectAllButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            for (i in 0 until MySingleTon.favorites.size) {
+                MySingleTon.favorites[i].run {
+                    song.included = "1"
+                    myRecyclerViewAdapter?.notifyItemChanged(i)
+                }
+            }
         }
-        val buttonLayout = fragmentView?.findViewById<LinearLayout>(R.id.favoriteListButtonLayout)
-        val constrainParam = buttonLayout?.layoutParams as ConstraintLayout.LayoutParams
-        constrainParam.constrainedWidth = true
-        constrainParam.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
-        constrainParam.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-        constrainParam.matchConstraintPercentWidth = percentWidth
-        buttonLayout.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            LogUtil.d(TAG, "setButtonsSize.setOnTouchListener.hasFocus() = $hasFocus")
+        unselectButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            for (i in 0 until MySingleTon.favorites.size) {
+                MySingleTon.favorites[i].run {
+                    song.included = "0"
+                    myRecyclerViewAdapter?.notifyItemChanged(i)
+                }
+            }
+        }
+        switchDecoderButton?.let {switchIt ->
+            switchIt.setOnClickListener {
+                if (!searchCompleted) return@setOnClickListener // searching
+                playSongs?.switchBetweenSoftAndHardDecoder()
+                setupSwitchDecoderButton()
+            }
+        }
+        playSelectedButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            // open the files to play
+            val songs = ArrayList<SongInfo>().also { songIt ->
+                var index = 0
+                for (i in 0 until MySingleTon.favorites.size) {
+                    if (MySingleTon.favorites[i].song.included == "1") {
+                        songIt.add(MySingleTon.favorites[i].song)
+                        index++
+                        if (index >= MySingleTon.MAX_SONGS) {
+                            // excess the max
+                            ScreenUtil.showToast(
+                                activity, getString(R.string.excess_max) +
+                                        " ${MySingleTon.MAX_SONGS}", textFontSize,
+                                Toast.LENGTH_SHORT)
+                            break
+                        }
+                    }
+                }
+            }
+            if (songs.isEmpty()) {
+                ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
+                    textFontSize,
+                    Toast.LENGTH_SHORT)
+            } else {
+                playSongs?.playSelectedSongList(ArrayList(songs))
+            }
         }
 
-        var linearParam = selectAllButton?.layoutParams as LinearLayout.LayoutParams
-        linearParam.width = buttonWidth
-        linearParam.height = buttonWidth
-        linearParam.setMargins(0, 0, 0, 0)
-        unselectButton?.layoutParams = linearParam
-        switchDecoderButton?.layoutParams = linearParam
-        playSelectedButton?.layoutParams = linearParam
-        showVideoButton?.layoutParams = linearParam
+        super.setClickListeners()
+    }
 
-        linearParam = exitImageButton?.layoutParams as LinearLayout.LayoutParams
-        linearParam.width = buttonWidth
-        linearParam.height = buttonWidth
-        linearParam.setMargins(0, 0, 0, 0)
+    override fun setButtonsSize() {
+        buttonLayout = fragmentView?.findViewById(R.id.favoriteListButtonLayout)
+        super.setButtonsSize()
+        selectAllButton?.layoutParams = buttonParam
+        unselectButton?.layoutParams = buttonParam
+        switchDecoderButton?.layoutParams = buttonParam
+        playSelectedButton?.layoutParams = buttonParam
     }
 
     private fun intentForFavoriteListActivity(): Intent {

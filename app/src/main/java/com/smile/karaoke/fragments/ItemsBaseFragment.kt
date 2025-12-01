@@ -14,10 +14,10 @@ import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-open class BaseFragment : Fragment() {
+open class ItemsBaseFragment : Fragment() {
 
     companion object {
-        private const val TAG : String = "BaseFragment"
+        private const val TAG : String = "ItemsBaseFragment"
     }
     var searchCompleted = true
     var fragmentView : View? = null

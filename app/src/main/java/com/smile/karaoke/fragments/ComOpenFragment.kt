@@ -11,7 +11,7 @@ import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
-open class ComOpenFragment: BaseFragment() {
+open class ComOpenFragment: ItemsBaseFragment() {
 
     companion object {
         private const val TAG = "ComOpenFragment"

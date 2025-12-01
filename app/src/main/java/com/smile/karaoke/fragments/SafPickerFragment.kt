@@ -2,7 +2,6 @@ package com.smile.karaoke.fragments
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.scale
 import com.smile.karaoke.R
 import com.smile.karaoke.models.FileDescription
