@@ -16,7 +16,7 @@ import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
-import videoplayer.Presenters.VlcPlayerPresenter
+import videoplayer.presenters.VlcPlayerPresenter
 import videoplayer.services.VlcPlayService
 import videoplayer.services.VlcPlayService.LocalBinder
 

@@ -1,4 +1,4 @@
-package videoplayer.Presenters;
+package videoplayer.presenters;
 
 import java.util.ArrayList;
 import android.content.Intent;

@@ -7,6 +7,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media3.common.util.UnstableApi
+import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.PlayerConstants
 import com.smile.karaoke.services.BasePlayService
@@ -17,10 +18,9 @@ import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.util.VLCVideoLayout
-import videoplayer.Callbacks.VlcMediaControllerCallback
-import videoplayer.Callbacks.VlcMediaSessionCallback
-import videoplayer.Listeners.VlcPlayerListener
-import videoplayer.Presenters.VlcPlayerPresenter
+import videoplayer.callbacks.VlcMediaSessionCallback
+import videoplayer.listeners.VlcPlayerListener
+import videoplayer.presenters.VlcPlayerPresenter
 
 @UnstableApi
 class VlcPlayService : BasePlayService() {
@@ -32,7 +32,6 @@ class VlcPlayService : BasePlayService() {
     // private lateinit var audioManager: AudioManager
     // private var curAudioVolume by Delegates.notNull<Int>()
     private var mediaSessionCallback: VlcMediaSessionCallback? = null
-    private var controllerCallback: VlcMediaControllerCallback? = null
     var presenter : VlcPlayerPresenter? = null
     var libVLC: LibVLC? = null
     var vlcPlayer: MediaPlayer? = null
@@ -292,10 +291,12 @@ class VlcPlayService : BasePlayService() {
 
     override fun initMediaCallback() {
         LogUtil.i(TAG, "initMediaCallback")
-        mediaSessionCallback = VlcMediaSessionCallback(this@VlcPlayService)
-        mediaSessionCompat?.setCallback(mediaSessionCallback)
-        controllerCallback = VlcMediaControllerCallback(this@VlcPlayService)
-        mediaControllerCompat?.registerCallback(controllerCallback!!)
+        presenter?.let {
+            mediaSessionCallback = VlcMediaSessionCallback(this@VlcPlayService)
+            mediaSessionCompat?.setCallback(mediaSessionCallback)
+            controllerCallback = MediaControllerCallback(it)
+            mediaControllerCompat?.registerCallback(controllerCallback!!)
+        }
     }
 
     override fun isPlaying(): Boolean {

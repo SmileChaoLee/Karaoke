@@ -1,4 +1,4 @@
-package videoplayer.Callbacks;
+package videoplayer.callbacks;
 
 import android.net.Uri;
 import android.os.Build;
@@ -11,7 +11,7 @@ import com.smile.karaoke.constants.PlayerConstants;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.utilities.LogUtil;
 import org.videolan.libvlc.interfaces.IMedia;
-import videoplayer.Presenters.VlcPlayerPresenter;
+import videoplayer.presenters.VlcPlayerPresenter;
 import videoplayer.services.VlcPlayService;
 
 @UnstableApi

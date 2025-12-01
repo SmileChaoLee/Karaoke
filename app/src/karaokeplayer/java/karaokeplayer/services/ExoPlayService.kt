@@ -24,9 +24,9 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.extractor.DefaultExtractorsFactory
+import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.CommonConstants
 import karaokeplayer.audioProcessors.StereoVolumeAudioProcessor
-import karaokeplayer.callbacks.ExoMediaControllerCallback
 import karaokeplayer.callbacks.ExoMediaSessionCallback
 import karaokeplayer.cast.SwitchPlayer
 import karaokeplayer.exoRenderersFactory.MyRenderersFactory
@@ -46,7 +46,6 @@ class ExoPlayService : BasePlayService() {
     // var currPlayer: Player? = null
     private var stereoVolumeAudioProcessor: StereoVolumeAudioProcessor? = null
     private var mediaSessionCallback: ExoMediaSessionCallback? = null
-    private var controllerCallback: ExoMediaControllerCallback? = null
     private var exoPlayerListener: ExoPlayerListener? = null
     private var castPlayerListener: CastPlayerListener? = null
     private lateinit var switchPlayer: SwitchPlayer
@@ -456,7 +455,7 @@ class ExoPlayService : BasePlayService() {
             mediaSessionCallback = ExoMediaSessionCallback(it, this@ExoPlayService)
             LogUtil.d(TAG,"initMediaCallback.mediaSessionCallback = $mediaSessionCallback")
             mediaSessionCompat?.setCallback(mediaSessionCallback)
-            controllerCallback = ExoMediaControllerCallback(it)
+            controllerCallback = MediaControllerCallback(it)
             LogUtil.d(TAG,"initMediaCallback.controllerCallback = $controllerCallback")
             mediaControllerCompat?.registerCallback(controllerCallback!!)
         }

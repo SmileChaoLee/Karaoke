@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.SmileAppBase
+import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.chromecast.SetupChromeCast
 import com.smile.karaoke.chromecast.WebServerAndCast
 import com.smile.karaoke.utilities.LogUtil
@@ -44,6 +45,7 @@ abstract class BasePlayService : Service() {
 
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
+    var controllerCallback: MediaControllerCallback? = null
     var isCastSessionAvailable = false
     val webServerAndCast = WebServerAndCast()
     var castContext: CastContext? = null

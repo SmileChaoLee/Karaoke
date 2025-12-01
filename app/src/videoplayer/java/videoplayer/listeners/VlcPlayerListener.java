@@ -1,4 +1,4 @@
-package videoplayer.Listeners;
+package videoplayer.listeners;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -10,7 +10,7 @@ import com.smile.karaoke.constants.PlayerConstants;
 import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.utilities.LogUtil;
 import org.videolan.libvlc.MediaPlayer;
-import videoplayer.Presenters.VlcPlayerPresenter;
+import videoplayer.presenters.VlcPlayerPresenter;
 import videoplayer.services.VlcPlayService;
 
 @OptIn(markerClass = UnstableApi.class)
