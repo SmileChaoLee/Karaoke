@@ -3,9 +3,6 @@ package karaokeplayer.presenters;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.media.session.PlaybackStateCompat;
 import java.util.ArrayList;
 import androidx.annotation.NonNull;
 
@@ -28,25 +25,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     private TrackSelectionParameters mTrackSelectionParameters;
     // instances of the following members have to be saved when configuration changed
     private ArrayList<Integer[]> audioTrackIndicesList = new ArrayList<>();
-    private final Handler durationSeekBarHandler = new Handler(Looper.getMainLooper());
-    private final Runnable durationSeekBarRunnable = new Runnable() {
-        final String msgStr = "durationSeekBarRunnable";
-        @Override
-        public synchronized void run() {
-            durationSeekBarHandler.removeCallbacksAndMessages(null);
-            if (getPlayService() != null) {
-                int playbackState = mPlayingParam.getCurrentPlaybackState();
-                LogUtil.d(TAG, msgStr + ".playbackState = " + playbackState);
-                if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
-                    // PlaybackStateCompat.STATE_PLAYING = 3
-                    LogUtil.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
-                    mPresentView.update_Player_duration_seekbar_progress(
-                            (int) getPlayService().getCurrentPosition());
-                }
-            }
-            durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000);
-        }
-    };
 
     public interface ExoPlayerPresentView extends BasePresentView {
         void setVideoPlayerView();
@@ -165,8 +143,6 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public synchronized void startDurationBarHandler() {
-        // start monitor player_duration_seekbar
-        // delay 200ms
         durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000);
     }
 
@@ -241,8 +217,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         // update the duration on controller UI
-        LogUtil.d(TAG, msgStr + ".update_Player_duration_seekbar");
-        mPresentView.update_Player_duration_seekbar((float)getPlayService().getMediaDuration());
+        LogUtil.d(TAG, msgStr + ".initPlayerDurationSeekbar");
+        mPresentView.initPlayerDurationSeekbar((float)getPlayService().getMediaDuration());
     }
 
     @Override

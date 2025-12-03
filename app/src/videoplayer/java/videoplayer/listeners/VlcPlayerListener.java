@@ -69,7 +69,7 @@ public class VlcPlayerListener implements MediaPlayer.EventListener {
                 int playbackState = playingParam.getCurrentPlaybackState();
                 LogUtil.d(TAG, "onEvent.setMediaPlaybackState(" + playbackState + ")");
                 mPlayService.setPlayerTime(playingParam.getCurrentAudioPosition());
-                presenter.getPresentView().update_Player_duration_seekbar_progress(
+                presenter.getPresentView().updatePlayerDurationSeekbarProgress(
                         (int) playingParam.getCurrentAudioPosition());
                 playingParam.setPreparedStatus(1);  // just prepared
                 mPlayService.setMediaPlaybackState(playbackState);

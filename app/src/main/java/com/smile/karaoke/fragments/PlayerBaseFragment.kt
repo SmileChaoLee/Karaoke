@@ -1068,8 +1068,10 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         playerDurationSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                LogUtil.d(TAG, "playerDurationSeekbar.onProgressChanged.progress = $progress")
                 // update the duration on controller UI
-                mPresenter.onDurationSeekBarProgressChanged(progress, fromUser)
+                // mPresenter.onDurationSeekBarProgressChanged(progress, fromUser)
+                onDurationSeekBarProgressChanged(progress, fromUser)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -1143,9 +1145,10 @@ abstract class PlayerBaseFragment : Fragment(),
                             }
                             LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.currentAudioPosition = $currentAudioPosition")
                             LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.progress = $progress")
-                            mPresenter.onDurationSeekBarProgressChanged(progress.toInt(),
-                                true)
-                            update_Player_duration_seekbar_progress(progress.toInt())
+                            // onDurationSeekBarProgressChanged(progress.toInt(),
+                            //     true)
+                            playService.setPlayerTime(progress)
+                            updatePlayerDurationSeekbarProgress(progress.toInt())
                             showSupportToolbarAudioControl() // show the player buttons
                         }
                     }
@@ -1203,13 +1206,15 @@ abstract class PlayerBaseFragment : Fragment(),
         playMediaImageButton?.setImageResource(R.drawable.pause_media_button_image)
     }
 
-    override fun setPlayingTimeTextView(playingTimeString: String?) {
-        playingTimeTextView?.text = playingTimeString
+    override fun initPlayerDurationSeekbar(duration: Float) {
+        LogUtil.d(TAG, "initPlayerDurationSeekbar")
+        playerDurationSeekbar?.progress = 0
+        updateDurationTextView(duration)
     }
 
-    override fun update_Player_duration_seekbar(duration: Float) {
+    override fun updateDurationTextView(duration: Float) {
+        LogUtil.d(TAG, "updateDurationTextView")
         var durationTmp = duration
-        playerDurationSeekbar?.progress = 0
         playerDurationSeekbar?.max = durationTmp.toInt()
         durationTmp /= 1000.0f // seconds
         val minutes = (durationTmp / 60.0f).toInt() // minutes
@@ -1219,7 +1224,38 @@ abstract class PlayerBaseFragment : Fragment(),
         durationTimeTextView?.text = durationString
     }
 
-    override fun update_Player_duration_seekbar_progress(progress: Int) {
+    override fun onDurationSeekBarProgressChanged(progress: Int, fromUser: Boolean) {
+        val msgString = "onDurationSeekBarProgressChanged"
+        LogUtil.d(TAG, msgString)
+        if (playService == null) {
+            LogUtil.d(TAG, "$msgString.playService is null")
+            return
+        }
+        LogUtil.d(TAG, "$msgString.progress = $progress")
+        val positionTime = progress / 1000.0f // seconds
+        val minutes = (positionTime / 60.0f).toInt() // minutes
+        val seconds = positionTime.toInt() - (minutes * 60)
+        val playingTimeString = String.format(
+            Locale.ENGLISH,
+            "%3d:%02d", minutes, seconds
+        )
+
+        playingTimeTextView?.text = playingTimeString
+        mPresenter.playingParam.currentAudioPosition = progress.toLong()
+        LogUtil.d(TAG, "$msgString.fromUser = $fromUser")
+        if (fromUser) {
+            val isSeekable = playService.isSeekable()
+            LogUtil.d(TAG, "$msgString.isSeekable = $isSeekable")
+            if (isSeekable) {
+                LogUtil.d(TAG, "$msgString.playService.setPlayerTime()")
+                playService.setPlayerTime(progress.toLong())
+            }
+        }
+    }
+
+    override fun updatePlayerDurationSeekbarProgress(progress: Int) {
+        val msgString = "updatePlayerDurationSeekbarProgress"
+        LogUtil.d(TAG, "$msgString.progress = $progress")
         playerDurationSeekbar?.progress = progress
     }
 

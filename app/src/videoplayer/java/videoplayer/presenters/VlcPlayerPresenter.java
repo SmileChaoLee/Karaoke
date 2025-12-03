@@ -11,7 +11,6 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
-import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.MyPlayerConstants;
@@ -32,27 +31,6 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     private final VlcPresentView mPresentView;
     // instances of the following members have to be saved when configuration changed
     private ArrayList<Integer> audioTrackIndicesList = new ArrayList<>();
-
-    private final Handler durationBarHandler = new Handler(Looper.getMainLooper());
-    private final Runnable durationBarRunnable = new Runnable() {
-        final String msgStr = "durationSeekBarRunnable";
-        @Override
-        public synchronized void run() {
-            durationBarHandler.removeCallbacksAndMessages(null);
-            if (getPlayService() != null) {
-                int playbackState = mPlayingParam.getCurrentPlaybackState();
-                LogUtil.d(TAG, msgStr + ".playbackState = " + playbackState);
-                LogUtil.d(TAG, msgStr + ".getMediaDuration() = " + getPlayService().getMediaDuration());
-                if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
-                    // PlaybackStateCompat.STATE_PLAYING = 3
-                    LogUtil.d(TAG, msgStr + ".update_Player_duration_seekbar_progress");
-                    mPresentView.update_Player_duration_seekbar_progress(
-                            (int) getPlayService().getCurrentPosition());
-                }
-            }
-            durationBarHandler.postDelayed(durationBarRunnable, 1000);
-        }
-    };
 
     public VlcPlayerPresenter(VlcPresentView presentView) {
         super(presentView);
@@ -118,7 +96,8 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         LogUtil.i(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
         if (getPlayService() != null) {
             if (getPlayService().getVlcPlayer() != null) {
-                mPlayingParam.setCurrentAudioPosition(getPlayService().getVlcPlayer().getTime());
+                // mPlayingParam.setCurrentAudioPosition(getPlayService().getVlcPlayer().getTime());
+                mPlayingParam.setCurrentAudioPosition(getPlayService().getCurrentPosition());
             } else {
                 mPlayingParam.setCurrentAudioPosition(0);
             }
@@ -159,12 +138,12 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     public void startDurationBarHandler() {
         // start monitor player_duration_seekbar
         // delay 200ms
-        durationBarHandler.postDelayed(durationBarRunnable, 1000);
+        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000);
     }
 
     @Override
     public void removeMsgFromDurationBarHandler() {
-        durationBarHandler.removeCallbacksAndMessages(null);
+        durationSeekBarHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -260,7 +239,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
         mPresentView.buildAudioTrackMenuItem(numOfAudioTracks);
         mPresentView.setVideoWindowSize();
-        mPresentView.update_Player_duration_seekbar(getPlayService().getMediaDuration());
+        mPresentView.initPlayerDurationSeekbar(getPlayService().getMediaDuration());
     }
 
     @Override
