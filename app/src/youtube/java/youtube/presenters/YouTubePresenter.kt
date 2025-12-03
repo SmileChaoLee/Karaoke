@@ -8,7 +8,7 @@ import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.utilities.LogUtil
 
 @OptIn(UnstableApi::class)
-class YouTubePresenter(val youTubePresentView: YouTubePresentView)
+class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
     : PlayerBasePresenter(youTubePresentView) {
 
     companion object {
@@ -43,11 +43,11 @@ class YouTubePresenter(val youTubePresentView: YouTubePresentView)
     }
 
     override fun startDurationBarHandler() {
-        LogUtil.d(TAG, "startDurationBarHandler")
+        durationSeekBarHandler.postDelayed(durationSeekBarRunnable, 1000)
     }
 
     override fun removeMsgFromDurationBarHandler() {
-        LogUtil.d(TAG, "removeMsgFromDurationBarHandler")
+        durationSeekBarHandler.removeCallbacksAndMessages(null)
     }
 
     override fun setAudioActionSubMenu() {

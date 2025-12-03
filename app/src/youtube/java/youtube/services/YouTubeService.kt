@@ -8,11 +8,11 @@ import androidx.media3.common.util.UnstableApi
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.*
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.FullscreenListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
+import karaokeplayer.services.ExoPlayService
 import youtube.callbacks.YouTubeSessionCallback
 import youtube.listeners.FScreenListener
 import youtube.listeners.PlayerListener
@@ -29,7 +29,8 @@ class YouTubeService : BasePlayService() {
     // private var curAudioVolume by Delegates.notNull<Int>()
     private var mediaSessionCallback: YouTubeSessionCallback? = null
     var presenter : YouTubePresenter? = null
-    var youTubeView: YouTubePlayerView? = null
+    private var duration = 0L
+    private var currentAudioPosition = 0L
     var mYouTubePlayer: YouTubePlayer? = null
     lateinit var playerListener: YouTubePlayerListener
     lateinit var fullscreenListener: FullscreenListener
@@ -194,7 +195,12 @@ class YouTubeService : BasePlayService() {
     }
 
     override fun setPlayerTime(progress: Long) {
+        // progress is measured by millisecond
         LogUtil.d(TAG, "setPlayerTime.progress = $progress")
+        mYouTubePlayer?.apply {
+            val seconds = progress / 1000f
+            seekTo(seconds)
+        }
     }
 
     override fun isSeekable(): Boolean {
@@ -223,19 +229,24 @@ class YouTubeService : BasePlayService() {
 
     override fun setAudioVolume(volumeTmp: Float) {
         LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
-        // mYouTubePlayer?.setVolume(volumeTmp.toInt())
+        mYouTubePlayer?.setVolume((volumeTmp * 100f).toInt())
+    }
+
+    fun setMediaDuration(duration: Long) {
+        this.duration = duration
     }
 
     override fun getMediaDuration(): Long {
-        val len = 0L
-        LogUtil.d(TAG, "getMediaDuration.len")
-        return len
+        return duration
+    }
+
+    fun setCurrentPosition(currentPosition: Long) {
+        currentAudioPosition = currentPosition
     }
 
     override fun getCurrentPosition(): Long {
-        val time = 0L
-        LogUtil.d(TAG, "getCurrentPosition.time")
-        return time
+        LogUtil.d(TAG, "getCurrentPosition")
+        return currentAudioPosition
     }
 
     override fun getPlaybackState(): Int {
@@ -248,14 +259,14 @@ class YouTubeService : BasePlayService() {
     }
 
     override fun specificPlayerReplayMedia(currentAudioPosition: Long) {
+        val logStr = "specificPlayerReplayMedia"
+        LogUtil.i(TAG, "$logStr.currentAudioPosition = $currentAudioPosition")
         // song is playing, paused, or finished playing
         // switchAudioToVocal() // implement after VlcPlayer can be run
         mYouTubePlayer?.apply {
-            presenter?.playingParam?.let {
-                if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) {
-                    play()
-                }
-            }
+            val seconds = currentAudioPosition / 1000f
+            seekTo(seconds)
+            play()
         }
     }
 

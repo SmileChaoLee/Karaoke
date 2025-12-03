@@ -83,11 +83,14 @@ class PlayerListener (private val playService: YouTubeService) :
     }
 
     override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
-        LogUtil.d(TAG, "onCurrentSecond.second = $second")
+        // LogUtil.d(TAG, "onCurrentSecond.second = $second")
+        playService.setCurrentPosition((second * 1000f).toLong())
     }
 
     override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
+        // duration is measured in seconds
         LogUtil.d(TAG, "onVideoDuration.duration = $duration")
+        playService.setMediaDuration((duration * 1000f).toLong())
     }
 
     override fun onVideoLoadedFraction(youTubePlayer: YouTubePlayer, loadedFraction: Float) {
