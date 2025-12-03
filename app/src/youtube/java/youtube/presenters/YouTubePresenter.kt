@@ -18,7 +18,17 @@ class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
     interface YouTubePresentView: BasePresentView {
         // fun initYouTubePlayer()
         fun setVideoWindowSize()
+        fun hideYoutubeFeatures()
     }
+
+    fun setVideoWindowSize() {
+        youTubePresentView.setVideoWindowSize()
+    }
+
+    fun hideYoutubeFeatures() {
+        youTubePresentView.hideYoutubeFeatures()
+    }
+
 
     // implementing methods of YouTubePresenter.YouTubePresentView
     override fun initializeVariables(

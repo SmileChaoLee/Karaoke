@@ -20,6 +20,10 @@ import com.smile.karaoke.utilities.LogUtil
 import youtube.presenters.YouTubePresenter
 import youtube.services.YouTubeService
 
+import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
+import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
+// import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
+
 @OptIn(UnstableApi::class)
 class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView {
 
@@ -30,8 +34,8 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     private lateinit var presenter: YouTubePresenter
     private var playService: YouTubeService? = null
     private var youTubeView: YouTubePlayerView? = null
-    private var youTubeViewWidth = 200
-    private var youTubeViewHeight = 200
+    // private var youTubeViewWidth = 200
+    // private var youTubeViewHeight = 200
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -70,8 +74,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         if (mPlayServiceIntent != null) {
             activity?.stopService(mPlayServiceIntent)
         }
-        if (playService != null) {
-            val ps = playService!!
+        playService?.let { ps ->
             youTubeView?.removeFullscreenListener(ps.fullscreenListener)
             youTubeView?.removeYouTubePlayerListener(ps.playerListener)
             youTubeView?.release()
@@ -89,22 +92,24 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         }
     }
 
-    private fun hideYoutubeFeatures(yView: YouTubePlayerView, player: YouTubePlayer) {
+    private fun hideYoutubeFeatures(yView: YouTubePlayerView?, player: YouTubePlayer?) {
+        LogUtil.d(TAG, "hideYoutubeFeatures")
+        if (yView == null || player == null) return
+        LogUtil.d(TAG, "hideYoutubeFeatures. parameters are not null")
         val default = DefaultPlayerUiController(
             yView,
             player
         )
-        default.setVideoTitle("")
-        default.showVideoTitle(false)
-        default.showUi(false)
-        default.showYouTubeButton(false)
-        default.showSeekBar(false)
-        default.showDuration(false)
-        default.showUi(false)
-        default.showCurrentTime(false)
-        default.showMenuButton(false)
-        default.showFullscreenButton(false)
-        default.showPlayPauseButton(false)
+        // default.setVideoTitle("")
+        // default.showVideoTitle(false)
+        // default.showYouTubeButton(false)
+        // default.showSeekBar(false)
+        // default.showDuration(false)
+        // default.showCurrentTime(false)
+        // default.showMenuButton(false)
+        // default.showFullscreenButton(false)
+        // default.showPlayPauseButton(false)
+        // default.showBufferingProgress(false)
         default.showUi(false)
         val defaultUI = default.rootView
         // Set the now-correctly-modified UI
@@ -140,6 +145,41 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
                 parent.addView(toolbarAudioAdsLayout)
             }
         }
+    }
+
+    private fun initializeCastPlayer() {
+        // Create a ChromecastConnectionListener
+        val connectionListener = object : ChromecastConnectionListener {
+            override fun onChromecastConnecting() {
+                // Optional: Show a "connecting" message to the user
+            }
+
+            override fun onChromecastConnected(chromecastYouTubePlayerContext: ChromecastYouTubePlayerContext) {
+                // This is the key part! A connection has been established.
+                initializeCastPlayer(chromecastYouTubePlayerContext)
+            }
+
+            override fun onChromecastDisconnected() {
+                // Connection lost. Switch back to the local player.
+                // playerContainer.removeAllViews()
+                // playerContainer.addView(youTubePlayerView)
+            }
+        }
+
+        // Initialize the ChromecastYouTubePlayerContext
+        /*
+        ChromecastYouTubePlayerContext(
+            null,
+            connectionListener
+        )
+        */
+    }
+
+    private fun initializeCastPlayer(chromecastYouTubePlayerContext: ChromecastYouTubePlayerContext) {
+        // The context is ready. Now initialize the player with it.
+        if (playService == null) return
+        val ps = playService!!
+        chromecastYouTubePlayerContext.initialize(ps.playerListener)
     }
 
     // implement YouTubePresenter.YouTubePresentView
@@ -189,13 +229,17 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     override fun setVideoWindowSize() {
         val logStr = "setVideoWindowSize"
         LogUtil.i(TAG, logStr)
-        youTubeViewWidth = screenSizeX
-        LogUtil.d(TAG, "$logStr.youTubeViewWidth = $youTubeViewWidth")
+        // youTubeViewWidth = screenSizeX
+        // LogUtil.d(TAG, "$logStr.youTubeViewWidth = $youTubeViewWidth")
         // youTubeViewHeight = (screenSizeY * (1f - audioCtrlViewHighPercent())).toInt()
-        youTubeViewHeight = screenSizeY
-        LogUtil.d(TAG, "$logStr.youTubeViewHeight = $youTubeViewHeight")
-        val nLayParams = FrameLayout.LayoutParams(youTubeViewWidth, youTubeViewHeight)
+        // youTubeViewHeight = screenSizeY
+        // LogUtil.d(TAG, "$logStr.youTubeViewHeight = $youTubeViewHeight")
+        val nLayParams = FrameLayout.LayoutParams(screenSizeX, screenSizeY)
         nLayParams.gravity = Gravity.CENTER
         youTubeView?.layoutParams = nLayParams
+    }
+
+    override fun hideYoutubeFeatures() {
+        hideYoutubeFeatures(youTubeView, playService?.mYouTubePlayer)
     }
 }

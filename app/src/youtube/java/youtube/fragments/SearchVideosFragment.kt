@@ -1,5 +1,6 @@
 package youtube.fragments
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +8,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import coil.size.Size
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
@@ -40,6 +46,12 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var searchEditTextView: EditText? = null
     private var searchRecyclerView: RecyclerView? = null
     private var myRecyclerViewAdapter : YouTubeRecyclerAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.i(TAG, "onCreate")
+        super.onCreate(savedInstanceState)
+        YouSingleton.videos.clear()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,12 +105,14 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
+        YouSingleton.videos.clear()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
         mediaRetriever.release()
+        YouSingleton.videos.clear()
     }
 
     fun searchYouTubeVideos(searchTerm: String) {
@@ -113,12 +127,9 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 searchTerm)
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             for (item in videoList.items) {
-                LogUtil.d(TAG, "$logStr.videoId = ${item.id.videoId}")
-                LogUtil.d(TAG, "$logStr.title = ${item.snippet.title}")
+                // LogUtil.d(TAG, "$logStr.videoId = ${item.id.videoId}")
+                // LogUtil.d(TAG, "$logStr.title = ${item.snippet.title}")
                 YouSingleton.videos.add(convertItemToSongDes(item))
-            }
-            for (song in YouSingleton.videos) {
-                LogUtil.d(TAG, "$logStr.song.songName = ${song.song.songName}")
             }
             // update the UI
             withContext(Dispatchers.Main) {
@@ -126,6 +137,41 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 searchCompleted = true
             }
         }
+    }
+
+    private suspend fun convertItemToSongDes(item: VideoItem): SongDescription {
+        LogUtil.d(TAG, "convertItemToSongDes")
+        val songInfo = SongInfo()
+        val act = activity?: return SongDescription(songInfo, null)
+        val imageLoader = act.imageLoader
+        item.id.videoId?.let {
+            var bm: Bitmap? = null
+            songInfo.apply {
+                songName = item.snippet.title
+                filePath = it
+                included = "0"
+                val url = item.snippet.thumbnails.medium.url
+                val request = ImageRequest.Builder(act)
+                    .data(url)
+                    // Set size to original to get the full image size, or specify a custom Size
+                    .size(Size.ORIGINAL)
+                    // Disabling hardware bitmaps is often needed if you intend to modify the bitmap
+                    .allowHardware(false)
+                    .build()
+                try {
+                    val result = imageLoader.execute(request)
+                    if (result is SuccessResult) {
+                        // Convert the resulting Drawable to a Bitmap
+                        bm = result.drawable.toBitmap()
+                    }
+                } catch (e: Exception) {
+                    LogUtil.e(TAG, "convertItemToSongDes.Exception: ", e)
+                }
+            }
+            return SongDescription(songInfo, bm)
+        }
+
+        return SongDescription(songInfo, null)
     }
 
     override fun onItemClick(v: View?, position: Int) {
@@ -226,21 +272,5 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             searchRecyclerView?.adapter = myRecyclerViewAdapter
             searchRecyclerView?.layoutManager = MyLinearLayoutManager(context)
         }
-    }
-
-    private fun convertItemToSongDes(item: VideoItem): SongDescription {
-        val songInfo = SongInfo()
-        LogUtil.d(TAG, "convertItemToSongDes")
-        item.id.videoId?.let {
-            songInfo.apply {
-                songName = item.snippet.title
-                filePath = it
-                included = "0"
-                val bm = item.snippet.thumbnails.medium
-            }
-            return SongDescription(songInfo, null)
-        }
-
-        return SongDescription(songInfo, null)
     }
 }

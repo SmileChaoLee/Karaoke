@@ -242,6 +242,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
+    implementation 'io.coil-kt:coil:2.7.0'
     /*
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
     implementation("io.ktor:ktor-server-cio-jvm:3.2.0")  // CIO engine for Ktor
@@ -273,6 +274,8 @@ dependencies {
                             "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:custom-ui:13.0.0")
+                    dependencies.add(variant.name + "Implementation",
+                        "com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.32")
                 }
                 if (flavor.name.containsIgnoreCase("videoplayer")   // includes videoplayer2
                         || flavor.name.containsIgnoreCase("karaoketvplayer")

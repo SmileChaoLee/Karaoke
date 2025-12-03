@@ -57,7 +57,9 @@ class PlayerListener (private val playService: YouTubeService) :
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED)
             }
             PlayerConstants.PlayerState.ENDED -> {
+                LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_STOPPED")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+                // playService.hideYoutubeFeatures()    // screen will be black after this
             }
             PlayerConstants.PlayerState.UNSTARTED -> {
                 LogUtil.d(TAG, "onStateChange.UNSTARTED.send No event")

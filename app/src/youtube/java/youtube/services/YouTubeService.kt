@@ -12,7 +12,6 @@ import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
-import karaokeplayer.services.ExoPlayService
 import youtube.callbacks.YouTubeSessionCallback
 import youtube.listeners.FScreenListener
 import youtube.listeners.PlayerListener
@@ -102,16 +101,18 @@ class YouTubeService : BasePlayService() {
         LogUtil.i(TAG, "releaseYouTubePlayer.youTubePlayer = $mYouTubePlayer")
     }
 
-    fun setVideoPlayerView() {
-        LogUtil.i(TAG,"setVideoPlayerView.youTubePlayer = $mYouTubePlayer")
-    }
-
     fun removeVideoPlayerView() {
         LogUtil.i(TAG,"removeVideoPlayerView.youTubePlayer = $mYouTubePlayer")
     }
 
     fun setVideoWindowSize() {
         LogUtil.i(TAG,"setVideoWindowSize.youTubePlayer = $mYouTubePlayer")
+        presenter?.setVideoWindowSize()
+    }
+
+    fun hideYoutubeFeatures() {
+        LogUtil.d(TAG,"hideYoutubeFeatures.youTubePlayer = $mYouTubePlayer")
+        presenter?.hideYoutubeFeatures()
     }
 
     fun prepare(videoId: String) {
