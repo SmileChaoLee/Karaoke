@@ -25,7 +25,7 @@ object RestApiSync {
                     "snippet", // part
                     searchTerm, // query (q)
                     "video", // type
-                    25 // maxResults
+                    50 // maxResults    // used to be 25
                 ).execute()
             LogUtil.e(TAG, "getVideoList.response = $response")
             return response.body() ?: VideoList(items = emptyList())
