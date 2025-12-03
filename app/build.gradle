@@ -24,8 +24,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 991
-        versionName "9.91"
+        versionCode 993
+        versionName "9.93"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -233,6 +233,14 @@ dependencies {
 
     implementation files('libs/smilelibraries-release.aar')
     implementation files('libs/NativeTemplatesModels-release.aar')
+
+    // ... other dependencies
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    // For coroutines (optional, but recommended for modern Android development)
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
     /*
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
