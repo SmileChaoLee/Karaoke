@@ -166,8 +166,11 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             }
         }
         playSelectedButton?.setOnClickListener {
+            val logStr = "playSelectedButton.setOnClickListener"
+            LogUtil.i(TAG, logStr)
             if (!searchCompleted) return@setOnClickListener // searching
             // open the files to play
+            LogUtil.i(TAG, "$logStr.searchCompleted")
             val songs = ArrayList<SongInfo>().also { songIt ->
                 var index = 0
                 for (i in 0 until YouSingleton.videos.size) {
@@ -185,6 +188,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                     }
                 }
             }
+            LogUtil.i(TAG, "$logStr.songs.size = ${songs.size}")
             if (songs.isEmpty()) {
                 ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
                     textFontSize,
@@ -201,6 +205,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
 
     override fun setButtonsSize() {
+        LogUtil.i(TAG, "setButtonsSize")
         buttonLayout = fragmentView?.findViewById(R.id.searchButtonLayout)
         super.setButtonsSize()
         searchButton?.layoutParams = buttonParam

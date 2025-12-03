@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
-import android.view.View
 import androidx.media3.common.util.UnstableApi
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.*
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.FullscreenListener
@@ -15,6 +14,8 @@ import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
 import youtube.callbacks.YouTubeSessionCallback
+import youtube.listeners.FScreenListener
+import youtube.listeners.PlayerListener
 import youtube.presenters.YouTubePresenter
 
 @UnstableApi
@@ -88,94 +89,12 @@ class YouTubeService : BasePlayService() {
     }
     */
 
-    fun initPlayerListener(): YouTubePlayerListener {
-        return object : YouTubePlayerListener {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onReady")
-                // mYouTubePlayer = youTubePlayer   // will be set from YouTubeFragment
-                // val videoId = "hPNJ7Ge6-uk"
-                // youTubePlayer.loadVideo(videoId, 0f)
-            }
-
-            override fun onStateChange(
-                youTubePlayer: YouTubePlayer,
-                state: PlayerConstants.PlayerState
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onStateChange.state = $state")
-                if (state == PlayerConstants.PlayerState.VIDEO_CUED) {
-                    LogUtil.d(TAG, "YouTubePlayerListener.onStateChange.start play")
-                    // mYouTubePlayer?.play()
-                }
-            }
-
-            override fun onPlaybackQualityChange(
-                youTubePlayer: YouTubePlayer,
-                playbackQuality: PlayerConstants.PlaybackQuality
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onPlaybackQualityChange")
-            }
-
-            override fun onPlaybackRateChange(
-                youTubePlayer: YouTubePlayer,
-                playbackRate: PlayerConstants.PlaybackRate
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onPlaybackRateChange")
-            }
-
-            override fun onError(
-                youTubePlayer: YouTubePlayer,
-                error: PlayerConstants.PlayerError
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onError")
-            }
-
-            override fun onCurrentSecond(
-                youTubePlayer: YouTubePlayer,
-                second: Float
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onCurrentSecond")
-            }
-
-            override fun onVideoDuration(
-                youTubePlayer: YouTubePlayer,
-                duration: Float
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onVideoDuration")
-            }
-
-            override fun onVideoLoadedFraction(
-                youTubePlayer: YouTubePlayer,
-                loadedFraction: Float
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onVideoLoadedFraction")
-            }
-
-            override fun onVideoId(
-                youTubePlayer: YouTubePlayer,
-                videoId: String
-            ) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onVideoId.videoId = $videoId")
-            }
-
-            override fun onApiChange(youTubePlayer: YouTubePlayer) {
-                LogUtil.d(TAG, "YouTubePlayerListener.onApiChange")
-            }
-        }
+    private fun initPlayerListener(): YouTubePlayerListener {
+        return PlayerListener(this@YouTubeService)
     }
 
-    fun initFullscreenListener(): FullscreenListener {
-        return object: FullscreenListener {
-            override fun onEnterFullscreen(
-                fullscreenView: View,
-                exitFullscreen: () -> Unit
-            ) {
-                LogUtil.d(TAG, "FullscreenListener.onEnterFullscreen")
-            }
-
-            override fun onExitFullscreen() {
-                LogUtil.d(TAG, "FullscreenListener.onExitFullscreen")
-            }
-        }
+    private fun initFullscreenListener(): FullscreenListener {
+       return FScreenListener(this@YouTubeService)
     }
 
     private fun releaseYouTubePlayer() {
@@ -217,7 +136,7 @@ class YouTubeService : BasePlayService() {
 
     override fun onPlay() {
         LogUtil.i(TAG, "onPlay.youTubePlayer = $mYouTubePlayer")
-        mYouTubePlayer?.playVideoAt(0)
+        mYouTubePlayer?.play()
     }
 
     override fun onPause() {
@@ -227,10 +146,31 @@ class YouTubeService : BasePlayService() {
 
     override fun onStop() {
         LogUtil.i(TAG, "onStop.youTubePlayer = $mYouTubePlayer")
-        val playbackState = presenter?.playingParam?.currentPlaybackState
-        if (playbackState == PlaybackStateCompat.STATE_PLAYING ||
-            playbackState == PlaybackStateCompat.STATE_PAUSED) {
-            mYouTubePlayer?.pause()
+        // YouTubePlayer does not have stop() method
+        presenter?.playingParam?.let {
+            val playbackState = it.currentPlaybackState
+            if (playbackState == PlaybackStateCompat.STATE_PAUSED) {
+                LogUtil.d(TAG, "onStop.seekTo()")
+                mYouTubePlayer?.seekTo(0f)
+                // use the following method because seekTo() does not
+                // trigger any event, so update the playback state manually
+                if (it.finishState == MyPlayerConstants.STOPPED_BY_USER) {
+                    // stopPlay(MyPlayerConstants.STOPPED_BY_USER)
+                    LogUtil.d(TAG, "onStop.send PlaybackStateCompat.STATE_NONE")
+                    setMediaPlaybackState(PlaybackStateCompat.STATE_NONE)
+                } else {
+                    // stopPlay(MyPlayerConstants.FINISHED_BY_PROGRAM)
+                    LogUtil.d(TAG, "onStop.send PlaybackStateCompat.STATE_STOPPED")
+                    setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+                }
+            } else if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
+                mYouTubePlayer?.let { player ->
+                    LogUtil.d(TAG, "onStop.player.pause()")
+                    player.pause()
+                    LogUtil.d(TAG, "onStop.player.seekTo()")
+                    player.seekTo(0f)
+                }
+            }
         }
     }
 

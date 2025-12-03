@@ -380,8 +380,7 @@ abstract class BaseActivity : AppCompatActivity(),
     // implementing interface PlaySongs
     override fun playSelectedSongList(songs: ArrayList<SongInfo>) {
         val msgStr = "playSelectedSongList"
-        LogUtil.i(TAG, "${msgStr}.songs.size" +
-                " = ${songs.size}")
+        LogUtil.i(TAG, "${msgStr}.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
             MySingleton.orderedSongs.clear()
             MySingleton.orderedSongs.addAll(songs)

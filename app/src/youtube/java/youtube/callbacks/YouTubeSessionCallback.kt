@@ -11,7 +11,6 @@ import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.utilities.LogUtil
-import youtube.presenters.YouTubePresenter
 import youtube.services.YouTubeService
 
 @UnstableApi
@@ -20,12 +19,6 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
 
     companion object {
         const val TAG: String = "YouTubeSessionCallback"
-    }
-
-    private var presenter: YouTubePresenter? = null
-
-    init {
-        presenter = playService.presenter
     }
 
     @Synchronized
@@ -49,6 +42,7 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
     @OptIn(UnstableApi::class)
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
+        val presenter = playService.presenter
         LogUtil.d(TAG, "onPrepareFromUri().Uri = $uri")
         LogUtil.d(TAG, "onPrepareFromUri().Uri.path = ${uri.path}")
         val playingParam: PlayingParameters? = presenter?.playingParam
@@ -98,11 +92,11 @@ class YouTubeSessionCallback(private val playService: YouTubeService)
             }
             PlaybackStateCompat.STATE_PLAYING -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
-                // playService.onPlay()
+                playService.onPlay()
             }
             MyPlayerConstants.PREPARE_MEDIA -> {
                 LogUtil.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
-                // playService.onPlay()
+                playService.onPlay()
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
