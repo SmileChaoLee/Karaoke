@@ -111,6 +111,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         // default.showPlayPauseButton(false)
         // default.showBufferingProgress(false)
         default.showUi(false)
+        default.showBufferingProgress(true)
         val defaultUI = default.rootView
         // Set the now-correctly-modified UI
         yView.setCustomPlayerUi(defaultUI)
