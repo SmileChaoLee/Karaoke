@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 
@@ -44,6 +45,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
     private var searchEditTextView: EditText? = null
+    private var loadingMsgTextView: TextView? = null
     private var searchRecyclerView: RecyclerView? = null
     private var myRecyclerViewAdapter : YouTubeRecyclerAdapter? = null
 
@@ -78,6 +80,9 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             showVideoButton?.visibility = View.VISIBLE
             exitImageButton = it.findViewById(R.id.exitImageButton)
             exitImageButton?.visibility = View.VISIBLE
+            loadingMsgTextView = it.findViewById(R.id.loadingMsgTextView)
+            ScreenUtil.resizeTextSize(loadingMsgTextView, textFontSize * 2f)
+            loadingMsgTextView?.visibility = View.GONE
             searchRecyclerView = it.findViewById(R.id.searchRecyclerView)
             searchRecyclerView?.setHasFixedSize(true)
         }
@@ -121,6 +126,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         if (searchTerm.isEmpty()) return
         searchCompleted = false
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
+        searchRecyclerView?.visibility = View.INVISIBLE
+        loadingMsgTextView?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
             YouSingleton.videos.clear()
             val videoList = RestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
@@ -134,6 +141,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             // update the UI
             withContext(Dispatchers.Main) {
                 myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                loadingMsgTextView?.visibility = View.GONE
+                searchRecyclerView?.visibility = View.VISIBLE
                 searchCompleted = true
             }
         }
