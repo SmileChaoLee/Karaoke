@@ -34,31 +34,15 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this)
-
         // must be after ExoPlayerPresenter(this)
         super.onCreate(savedInstanceState)
-
-        /*
-        var isAutoPlay = false
-        arguments?.let {
-            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
-        }
-
-        // must be after super.onCreate(savedInstanceState)
-        activity?.let {
-            mPlayServiceIntent = Intent(it, ExoPlayService::class.java)
-            val callingIntent: Intent? = it.intent
-            LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
-            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
-        }
-        */
-
         LogUtil.i(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
+        LogUtil.i(TAG, "onViewCreated.finished")
     }
 
     override fun onResume() {

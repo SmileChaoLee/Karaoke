@@ -90,7 +90,8 @@ abstract class PlayerBaseFragment : Fragment(),
     private var fontScale = 0f
     var toastTextSize = 0f
     var playerViewLinearLayout: LinearLayout? = null
-    var toolbarAudioAdsLayout: LinearLayout? = null
+    var toolbarAudioLayout: LinearLayout? = null
+    var adsMsgLayout: LinearLayout? = null
     private var supportToolbar // use customized ToolBar
             : androidx.appcompat.widget.Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
@@ -322,7 +323,8 @@ abstract class PlayerBaseFragment : Fragment(),
             playerViewLinearLayout = it.findViewById(R.id.playerViewLinearLayout)
             supportToolbar = it.findViewById(R.id.player_view_toolbar)
             supportToolbar?.visibility = View.VISIBLE
-            toolbarAudioAdsLayout = it.findViewById(R.id.toolbarAudioAdsLayout)
+            toolbarAudioLayout = it.findViewById(R.id.toolbarAudioLayout)
+            adsMsgLayout = it.findViewById(R.id.adsMsgLayout)
 
             audioControllerView = it.findViewById(R.id.audioControllerView)
             volumeImageButton = it.findViewById(R.id.volumeImageButton)
@@ -1275,6 +1277,7 @@ abstract class PlayerBaseFragment : Fragment(),
                     || numVideoTracks == 0
                     || playService.isCastSessionAvailable) {
                     // Not playing, No video tracks, or casting session is available
+                    LogUtil.d(TAG, "${msgStr}.nativeTemplate?.showNativeAd()")
                     nativeAdViewVisibility = View.VISIBLE
                     nativeTemplate?.showNativeAd()
                     // hide the banner ad

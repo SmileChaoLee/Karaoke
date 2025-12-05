@@ -15,13 +15,19 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/toolbarAudioAdsLayout"
+        android:id="@+id/toolbarAudioLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent">
-
         <include layout="@layout/toolbar_audio_controller_layout" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/adsMsgLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
         <include layout="@layout/banner_ads_message_layout" />
     </LinearLayout>
 

@@ -56,7 +56,6 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         LogUtil.i(TAG, "onViewCreated.finished")
     }
 
-
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
@@ -88,6 +87,25 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
             }
             release()
         }
+    }
+
+    override fun getPlayServiceIntent(): Intent {
+        return Intent(activity, YouTubeService::class.java)
+    }
+
+    override fun onPlayServiceConnected(service: IBinder) {
+        LogUtil.i(TAG, "onPlayServiceConnected")
+        val binder = service as YouTubeService.LocalBinder
+        playService = binder.getService()
+        playService?.presenter = this.presenter
+        playService?.initMediaControllerCompat(this.presenter)
+        initYouTubePlayerView()
+        initChromecastContext()
+        LogUtil.d(TAG, "onPlayServiceConnected.Video player view")
+        // Video player view
+        // setVideoPlayerView()
+        LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
+        presenter.playSongPlayedBeforeActivityCreated()
     }
 
     private fun isEnableView(view: View, isEnable: Boolean) {
@@ -149,11 +167,14 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
                 val parent = viewIt.parent as ViewGroup
                 LogUtil.d(TAG, "$logStr.parent = $parent")
                 parent.removeView(viewIt)
-                parent.removeView(toolbarAudioAdsLayout)
+                parent.removeView(adsMsgLayout)
+                parent.removeView(toolbarAudioLayout)
                 // rearrange the view order in the FrameLayout
+                // this order does not have banner ad, must be fixed
                 parent.addView(it)
                 parent.addView(viewIt)
-                parent.addView(toolbarAudioAdsLayout)
+                parent.addView(toolbarAudioLayout)
+                parent.addView(adsMsgLayout)
             }
         }
     }
@@ -188,25 +209,6 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         LogUtil.i(TAG, "setupMenuItems")
     }
 
-    override fun getPlayServiceIntent(): Intent {
-        return Intent(activity, YouTubeService::class.java)
-    }
-
-    override fun onPlayServiceConnected(service: IBinder) {
-        LogUtil.i(TAG, "onPlayServiceConnected")
-        val binder = service as YouTubeService.LocalBinder
-        playService = binder.getService()
-        playService?.presenter = this.presenter
-        playService?.initMediaControllerCompat(this.presenter)
-        initYouTubePlayerView()
-        initChromecastContext()
-        LogUtil.d(TAG, "onPlayServiceConnected.Video player view")
-        // Video player view
-        // setVideoPlayerView()
-        LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
-        presenter.playSongPlayedBeforeActivityCreated()
-    }
-
     override fun audioChannelButtonListener() {
         LogUtil.i(TAG, "audioChannelButtonListener")
     }
@@ -221,6 +223,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     }
 
     // Implement YouTubePresenter.YouTubePresentView
+    // End of implementing YouTubePresenter.YouTubePresentView
     private fun setVideoWindowSize() {
         val logStr = "setVideoWindowSize"
         LogUtil.i(TAG, logStr)

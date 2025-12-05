@@ -34,26 +34,9 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate() is called")
         presenter = VlcPlayerPresenter(this)
-
         // must be after VlcPlayerPresenter(this)
         super.onCreate(savedInstanceState)
-
-        /*
-        arguments?.let {
-            isAutoPlay = it.getBoolean(PlayerConstants.IS_AUTOPLAY_STATE, false)
-        }
-
-        // must be after super.onCreate(savedInstanceState)
-        activity?.let {
-            mPlayServiceIntent = Intent(it, VlcPlayService::class.java)
-            val callingIntent: Intent? = it.intent
-            LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
-            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
-        }
-        */
-
         castContext = null  // disable cast for VLC player for now
-
         LogUtil.i(TAG, "onCreate.finished")
     }
 

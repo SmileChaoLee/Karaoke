@@ -57,5 +57,10 @@ class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
         LogUtil.d(TAG, "getNumberOfAudioTracks")
         return 1    // temporary
     }
+
+    override fun getNumberOfVideoTracks(): Int {
+        LogUtil.d(TAG, "getNumberOfVideoTracks")
+        return 1    // temporary
+    }
     // end of implementing methods of YouTubePresenter.YouTubePresentView
 }

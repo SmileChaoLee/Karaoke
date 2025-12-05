@@ -11,8 +11,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.youtube.fragments.SearchVideosFragment
 import com.smile.youtube.fragments.YouTubeFragment
-
-
 @OptIn(UnstableApi::class)
 class YouTubeActivity : BaseActivity() {
 
@@ -22,12 +20,6 @@ class YouTubeActivity : BaseActivity() {
     }
 
     private val searchFragment = SearchVideosFragment()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.d(TAG, "onCreate")
-        super.onCreate(savedInstanceState)
-        LogUtil.d(TAG, "onCreate.finished")
-    }
 
     override fun getFragment(): YouTubeFragment {
         LogUtil.d(TAG, "getFragment")
