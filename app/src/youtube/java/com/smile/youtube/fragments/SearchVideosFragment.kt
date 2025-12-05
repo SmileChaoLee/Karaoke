@@ -150,7 +150,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 songName = item.snippet.title
                 filePath = it
                 included = "0"
-                val url = item.snippet.thumbnails.medium.url
+                val url = item.snippet.thumbnails.default.url
                 val request = ImageRequest.Builder(act)
                     .data(url)
                     // Set size to original to get the full image size, or specify a custom Size
