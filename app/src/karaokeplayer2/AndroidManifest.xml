@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="karaokeplayer2.SmileKaraoke2App"
+        android:name="com.smile.karaokeplayer2.SmileKaraoke2App"
         android:allowBackup="true"
         android:icon="@drawable/karaoke_app_icon"
         android:banner="@drawable/karaoke_app_icon"
@@ -28,7 +28,7 @@
             android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
-            android:name="karaokeplayer2.Ph2PlayerActivity"
+            android:name="com.smile.karaokeplayer2.Ph2PlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name="karaokeplayer2.Tv2PlayerActivity"
+            android:name="com.smile.karaokeplayer2.Tv2PlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,22 +46,22 @@
         </activity>
 
         <activity
-            android:name="karaokeplayer.ExoPlayerActivity"
+            android:name="com.smile.karaokeplayer.ExoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <activity
-            android:name="videoplayer.VlcPlayerActivity"
+            android:name="com.smile.videoplayer.VlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <service
-            android:name="karaokeplayer.services.ExoPlayService"
+            android:name="com.smile.karaokeplayer.services.ExoPlayService"
             android:exported="false" />
         <service
-            android:name="videoplayer.services.VlcPlayService"
+            android:name="com.smile.videoplayer.services.VlcPlayService"
             android:exported="false" />
 
     </application>

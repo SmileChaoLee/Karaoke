@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="karaokeplayer.SmileKaraokeApp"
+        android:name="com.smile.karaokeplayer_app_activity.SmileKaraokeApp"
         android:icon="@drawable/karaoke_app_icon"
         android:banner="@drawable/karaoke_app_icon"
         android:roundIcon="@drawable/karaoke_app_icon"
@@ -25,7 +25,7 @@
             android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
-            android:name="karaokeplayer.PhExoPlayerActivity"
+            android:name="com.smile.karaokeplayer_app_activity.PhExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name="karaokeplayer.TvExoPlayerActivity"
+            android:name="com.smile.karaokeplayer_app_activity.TvExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,13 +43,23 @@
         </activity>
 
         <activity
-            android:name="karaokeplayer.ExoPlayerActivity"
+            android:name="com.smile.karaokeplayer.ExoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name="com.smile.youtube.YouTubeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <service
-            android:name="karaokeplayer.services.ExoPlayService"
+            android:name="com.smile.karaokeplayer.services.ExoPlayService"
+            android:exported="false">
+        </service>
+        <service
+            android:name="com.smile.youtube.services.YouTubeService"
             android:exported="false">
         </service>
 

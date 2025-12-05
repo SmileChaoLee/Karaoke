@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="videoplayer2.SmileVideo2App"
+        android:name="com.smile.videoplayer2.SmileVideo2App"
         android:icon="@drawable/video_app_icon"
         android:banner="@drawable/video_app_icon"
         android:roundIcon="@drawable/video_app_icon"
@@ -25,7 +25,7 @@
             android:value="ca-app-pub-8354869049759576~5376732060" />
 
         <activity
-            android:name="videoplayer2.FPhVlcPlayerActivity"
+            android:name="com.smile.videoplayer2.FPhVlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -35,7 +35,7 @@
         </activity>
 
         <activity
-            android:name="videoplayer2.FTvVlcPlayerActivity"
+            android:name="com.smile.videoplayer2.FTvVlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -45,13 +45,13 @@
         </activity>
 
         <activity
-            android:name="videoplayer.VlcPlayerActivity"
+            android:name="com.smile.videoplayer.VlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <service
-            android:name="videoplayer.services.VlcPlayService"
+            android:name="com.smile.videoplayer.services.VlcPlayService"
             android:exported="false">
         </service>
 

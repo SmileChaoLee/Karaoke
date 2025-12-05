@@ -34,10 +34,7 @@ class SafPickerFragment: ComOpenFragment() {
             ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.let {
-                    val uriList = ContentUriUtil.getUrisList(
-                        requireActivity(),
-                        it
-                    )
+                    val uriList = ContentUriUtil.getUrisList(requireActivity(),it)
                     MySingleton.fileList.clear()
                     for (uri in uriList) {
                         LogUtil.d(TAG, "openDocumentLauncher.result.uri = $uri")
@@ -48,20 +45,18 @@ class SafPickerFragment: ComOpenFragment() {
                         LogUtil.d(TAG, "openDocumentLauncher.result.file.path = ${file.path}")
                         try {
                             mediaRetriever.setDataSource(file.path)
-                            bm = mediaRetriever.getFrameAtTime(
-                                0,
-                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                            )
+                            bm = mediaRetriever.getFrameAtTime(0,
+                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                                 ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                         } catch (ex: Exception) {
-                            LogUtil.e(
-                                TAG, "openDocumentLauncher.setDataSource.Exception:",
-                                ex
-                            )
+                            LogUtil.e(TAG, "openDocumentLauncher.setDataSource.Exception:",ex)
                         }
                         MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
+                    // play the selected songs later because the activity life cycle
+                    // BaseActivity will be coming back from invisible and similar to
+                    // coming back from background, need to be fixed
                     startPlaySelectedSong(activity, "openDocumentLauncher")
                 }
             }

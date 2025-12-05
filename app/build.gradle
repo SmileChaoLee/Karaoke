@@ -42,12 +42,6 @@ android {
             dimension = "karaoke"
             applicationId = "com.smile.videoplayer"
         }
-        create("videoplayer2") {
-            // for Amazon app store only
-            // has same package name with "videoplayer"
-            dimension = "karaoke"
-            applicationId = "com.smile.videoplayer"
-        }
         create("karaoketvplayer") {
             dimension = "karaoke"
             applicationId = "com.smile.karaoketvplayer"
@@ -59,7 +53,15 @@ android {
             dimension = "karaoke"
             applicationId = "com.smile.karaokeplayer"
         }
+        create("videoplayer2") {
+            // for Amazon app store only
+            // has same package name with "videoplayer"
+            dimension = "karaoke"
+            applicationId = "com.smile.videoplayer"
+        }
     }
+
+    println("projectDir = ${project.projectDir}")
 
     sourceSets {
         main {
@@ -70,36 +72,28 @@ android {
             }
         }
         karaokeplayer {
-            java {
-                srcDirs += "src/karaokeplayer/java"
-            }
-            res.srcDirs += "src/karaokeplayer/res"
+            java.srcDirs += ["src/karaokeplayer/java", "src/karaokeplayer_app_activity/java",
+                             "src/youtube/java"]
+            res.srcDirs += ["src/karaokeplayer/res", "src/youtube/res"]
             manifest {
                 srcFile "src/karaokeplayer/AndroidManifest.xml"
             }
         }
 
         videoplayer {
-            java.srcDirs += "src/videoplayer/java"
-            res.srcDirs += "src/videoplayer/res"
+            java.srcDirs += ["src/videoplayer/java", "src/videoplayer_app_activity/java",
+                             "src/youtube/java"]
+            res.srcDirs += ["src/videoplayer/res", "src/youtube/res"]
             manifest {
                 srcFile "src/videoplayer/AndroidManifest.xml"
             }
         }
 
-        videoplayer2 {
-            java.srcDirs += ["src/videoplayer/java", "src/videoplayer2/java"]
-            res.srcDirs += ["src/videoplayer/res", "src/videoplayer2/res"]
-            manifest {
-                srcFile "src/videoplayer2/AndroidManifest.xml"
-            }
-        }
-
         karaoketvplayer {
             java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java",
-                             "src/youtube/java", "src/videoplayer/java"]
+                             "src/videoplayer/java", "src/youtube/java"]
             res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res",
-                            "src/youtube/res", "src/videoplayer/res"]
+                            "src/videoplayer/res", "src/youtube/res"]
             manifest {
                 srcFile "src/karaoketvplayer/AndroidManifest.xml"
             }
@@ -113,16 +107,15 @@ android {
                 srcFile "src/karaokeplayer2/AndroidManifest.xml"
             }
         }
-    }
 
-    /*
-    variantFilter { variant ->
-        def flavorName = variant.getFlavors().get(0).name
-        if (flavorName != "flavor1") {
-            dependencies.add(flavorName + "Implementation", "com.example:some-library:1.0.0")
+        videoplayer2 {
+            java.srcDirs += ["src/videoplayer2/java", "src/videoplayer/java"]
+            res.srcDirs += ["src/videoplayer/res", "src/videoplayer2/res"]
+            manifest {
+                srcFile "src/videoplayer2/AndroidManifest.xml"
+            }
         }
     }
-    */
 
     buildTypes {
         release {
@@ -268,7 +261,9 @@ dependencies {
                     // dependencies.add(variant.name + "Implementation", project(":extension-vp9"))
                     // Note: You use the full variant name (e.g., "karaokeplayerDebugImplementation")
                 }
-                if (flavor.name.containsIgnoreCase("karaoketvplayer")) {
+                if (flavor.name.containsIgnoreCase("karaoketvplayer")
+                        || flavor.name.containsIgnoreCase("karaokeplayer")
+                        || flavor.name.containsIgnoreCase("videoplayer")) {
                     // Check for latest version
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")

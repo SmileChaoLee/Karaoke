@@ -69,6 +69,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
     abstract fun getVlcButtonName(): String
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
+
+    open fun hasYouTubePlayer() = true
     open fun startYouTubePlayer() {}
 
     private var screenSize = Point(0, 0)
@@ -229,10 +231,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private fun startVlcActivity() {
         startVlcPlayer()
-    }
-
-    open fun hasYouTubePlayer(): Boolean {
-        return false
     }
 
     @Composable
@@ -452,13 +450,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
-                if (BuildConfig.DEBUG) {
-                    if (hasYouTubePlayer()) {
-                        YouTubeButton(
-                            modifier = Modifier.weight(1.0f),
-                            buttonWidth, buttonHeight, textLineHeight
-                        )
-                    }
+                if (hasYouTubePlayer()) {
+                    YouTubeButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
                 }
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
@@ -466,13 +462,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
-                    if (BuildConfig.DEBUG) {
-                        if (hasYouTubePlayer()) {
-                            YouTubeButton(
-                                modifier = Modifier.weight(1.0f),
-                                buttonWidth, buttonHeight, textLineHeight
-                            )
-                        }
+                    if (hasYouTubePlayer()) {
+                        YouTubeButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
                     }
                 }
             }

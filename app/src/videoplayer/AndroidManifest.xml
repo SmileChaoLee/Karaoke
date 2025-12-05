@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="videoplayer.SmileVideoApp"
+        android:name="com.smile.videoplayer_app_activity.SmileVideoApp"
         android:icon="@drawable/video_app_icon"
         android:banner="@drawable/video_app_icon"
         android:roundIcon="@drawable/video_app_icon"
@@ -25,7 +25,7 @@
             android:value="ca-app-pub-8354869049759576~5376732060" />
 
         <activity
-            android:name="videoplayer.PhVlcPlayerActivity"
+            android:name="com.smile.videoplayer_app_activity.PhVlcPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name="videoplayer.TvVlcPlayerActivity"
+            android:name="com.smile.videoplayer_app_activity.TvVlcPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,13 +43,23 @@
         </activity>
 
         <activity
-            android:name="videoplayer.VlcPlayerActivity"
+            android:name="com.smile.videoplayer.VlcPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name="com.smile.youtube.YouTubeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <service
-            android:name="videoplayer.services.VlcPlayService"
+            android:name="com.smile.videoplayer.services.VlcPlayService"
+            android:exported="false">
+        </service>
+        <service
+            android:name="com.smile.youtube.services.YouTubeService"
             android:exported="false">
         </service>
 
