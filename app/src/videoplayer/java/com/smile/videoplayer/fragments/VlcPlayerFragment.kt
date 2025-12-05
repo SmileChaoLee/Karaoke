@@ -66,11 +66,11 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         presenter.playingParam.let {
             LogUtil.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             LogUtil.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
-            LogUtil.d(TAG, "onStart.isSingleSongOpened = ${it.singleSongPlayingStatus}")
+            LogUtil.d(TAG, "onStart.singleSongPlayingStatus = ${it.singleSongPlayingStatus}")
             LogUtil.d(TAG, "onStart.wentToFavorite = ${it.wentToFavorite}")
             if (!it.wentToFavorite) {   // not back from favorite activity
                 if (!it.isPlaySingleSong || it.singleSongPlayingStatus == 2) {
-                    // isSingleSongOpened = 2 means playing single song
+                    // singleSongPlayingStatus = 2 means playing single song
                     LogUtil.d(TAG, "onStart.playSongPlayedBeforeActivityCreated")
                     presenter.playSongPlayedBeforeActivityCreated()
                 }

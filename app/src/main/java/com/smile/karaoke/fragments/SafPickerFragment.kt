@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
 import com.smile.karaoke.R
+import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.utilities.ContentUriUtil
@@ -24,14 +25,20 @@ class SafPickerFragment: ComOpenFragment() {
         private const val TAG = "SafPickerFragment"
     }
 
+    private var playMyFavorites: PlayMyFavorites? = null
     private lateinit var openDocumentLauncher: ActivityResultLauncher<Intent>
     private var pickerButton: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is PlayMyFavorites) playMyFavorites = it
+            LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
+        }
         openDocumentLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) { result ->
+            playMyFavorites?.restorePlayingState()
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.let {
                     val uriList = ContentUriUtil.getUrisList(requireActivity(),it)
@@ -54,12 +61,10 @@ class SafPickerFragment: ComOpenFragment() {
                         MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
-
                     // play the selected songs later because the activity life cycle
                     // BaseActivity will be coming back from invisible and similar to
                     // coming back from background, need to be fixed
                     startPlaySelectedSong(activity, "openDocumentLauncher")
-
                 }
             }
         }
@@ -90,6 +95,7 @@ class SafPickerFragment: ComOpenFragment() {
     override fun setClickListeners() {
         pickerButton?.setOnClickListener {
             val intent = ContentUriUtil.intentForSelectFile(false)
+            playMyFavorites?.onSavePlayingState(intent.component)
             openDocumentLauncher.launch(intent)
         }
         super.setClickListeners()
