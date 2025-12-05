@@ -54,10 +54,12 @@ class SafPickerFragment: ComOpenFragment() {
                         MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
+
                     // play the selected songs later because the activity life cycle
                     // BaseActivity will be coming back from invisible and similar to
                     // coming back from background, need to be fixed
                     startPlaySelectedSong(activity, "openDocumentLauncher")
+
                 }
             }
         }
