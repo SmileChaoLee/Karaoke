@@ -123,7 +123,6 @@ class OpenFilesRecyclerViewAdapter(
     }
 
     override fun getItemCount(): Int {
-        LogUtil.d(TAG, "getItemCount().size = ${mList.size}")
         return mList.size
     }
 

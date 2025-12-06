@@ -110,7 +110,6 @@ class YouTubeRecyclerAdapter (
     }
 
     override fun getItemCount(): Int {
-        LogUtil.d(TAG, "getItemCount().mList.size = ${mList.size}")
         return mList.size
     }
 
