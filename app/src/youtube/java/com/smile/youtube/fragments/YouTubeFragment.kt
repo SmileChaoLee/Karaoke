@@ -47,6 +47,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         presenter = YouTubePresenter(this)
         // must be after YouTubePresenter(this)
         super.onCreate(savedInstanceState)
+        castContext = null  // disable cast for VLC player for now
         LogUtil.i(TAG, "onCreate.finished")
     }
 

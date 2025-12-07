@@ -76,6 +76,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             unselectButton = it.findViewById(R.id.searchUnselectButton)
             playSelectedButton = it.findViewById(R.id.searchPlaySelectedButton)
             addToFavoriteButton = it.findViewById(R.id.addToFavoriteButton)
+            addToFavoriteButton?.visibility = View.INVISIBLE    // for now, will support later
             showVideoButton = it.findViewById(R.id.showVideoImageButton)
             showVideoButton?.visibility = View.VISIBLE
             exitImageButton = it.findViewById(R.id.exitImageButton)
