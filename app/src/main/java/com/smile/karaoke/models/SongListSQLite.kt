@@ -35,8 +35,7 @@ class SongListSQLite(myContext: Context) : SQLiteOpenHelper(
                 database.execSQL(sqlString)
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "Exception in onUpgrade().")
-            ex.printStackTrace()
+            Log.e(TAG, "Exception in onUpgrade().", ex)
         }
     }
 
@@ -79,7 +78,7 @@ class SongListSQLite(myContext: Context) : SQLiteOpenHelper(
         try {
             // get only one record
             val cur = database.query(tableName, null, null, null, null, null, null, "1")
-            cur?.run {
+            cur.run {
                 val index = getColumnIndex(columnName)
                 if (index != -1) {
                     // exist
@@ -237,7 +236,7 @@ class SongListSQLite(myContext: Context) : SQLiteOpenHelper(
             try {
                 val whereClause = "$filePath = \"$uriString\""
                 val cur = it.query(tableName, null, whereClause, null, null, null, null)
-                cur?.run {
+                cur.run {
                     if (moveToFirst()) {
                         val id = getInt(0)
                         val songName = getString(1)
@@ -248,7 +247,7 @@ class SongListSQLite(myContext: Context) : SQLiteOpenHelper(
                         val vocalChannel = getInt(6)
                         val included = getString(7)
                         songInfo = SongInfo(id, songName, filePath, musicTrackNo,
-                                musicChannel, vocalTrackNo, vocalChannel, included)
+                            musicChannel, vocalTrackNo, vocalChannel, included)
                     }
                     close()
                 }

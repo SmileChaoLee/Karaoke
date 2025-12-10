@@ -27,6 +27,8 @@
             android:orientation="horizontal"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:divider="@drawable/layout_horizontal_divider"
+            android:showDividers="end"
             android:layout_weight="5"
             android:weightSum="5">
             <ImageButton
@@ -40,9 +42,11 @@
                 android:src="@drawable/select_all"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center"
                 android:layout_marginEnd="10sp"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                tools:ignore="NestedWeights">
             </ImageButton>
             <ImageButton
                 android:id="@+id/favoriteUnselectButton"
@@ -56,6 +60,7 @@
                 android:src="@drawable/unselect"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center"
                 android:layout_marginEnd="10sp"
                 android:layout_weight="1">
@@ -71,6 +76,7 @@
                 android:src="@drawable/hard_decoder"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center"
                 android:layout_marginEnd="10sp"
                 android:layout_weight="1">
@@ -86,6 +92,7 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center"
                 android:layout_marginEnd="20sp"
                 android:layout_weight="1">
@@ -102,6 +109,7 @@
                 android:src="@drawable/show_video"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center"
                 android:visibility="visible"
                 android:layout_weight="1">
@@ -124,6 +132,7 @@
                 android:src="@drawable/power_button"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusDown="@id/myListRecyclerView"
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>

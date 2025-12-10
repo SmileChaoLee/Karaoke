@@ -1,6 +1,5 @@
 package com.smile.karaoke
 
-import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi

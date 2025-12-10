@@ -32,7 +32,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import java.io.File
 
-class FavoritesFragment : ItemsBaseFragment(),
+open class FavoritesFragment : ItemsBaseFragment(),
     FavoriteRecyclerViewAdapter.FavItemListener {
 
     companion object {
@@ -48,7 +48,7 @@ class FavoritesFragment : ItemsBaseFragment(),
     private lateinit var broadcastReceiver: BroadcastReceiver
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
-    private var switchDecoderButton: ImageButton? = null
+    var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,8 +87,11 @@ class FavoritesFragment : ItemsBaseFragment(),
                                 }
                             }
                             myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                            myListRecyclerView?.visibility = View.VISIBLE
                         } else {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
+                            myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                            myListRecyclerView?.visibility = View.GONE
                             // Change the focus
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                             val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
@@ -128,6 +131,7 @@ class FavoritesFragment : ItemsBaseFragment(),
         view.let {
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
+            myListRecyclerView?.visibility = View.GONE
             selectAllButton = it.findViewById(R.id.favoriteSelectAllButton)
             unselectButton = it.findViewById(R.id.favoriteUnselectButton)
             switchDecoderButton = it.findViewById(R.id.favoriteSwitchDecoderButton)
@@ -146,19 +150,20 @@ class FavoritesFragment : ItemsBaseFragment(),
     override fun onStart() {
         super.onStart()
         LogUtil.i(TAG, "onStart")
+        searchFavorites()   // has to be in onResume()
     }
 
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
         setupSwitchDecoderButton()
-        searchFavorites()   // has to be in onResume()
+        // searchFavorites()   // has to be in onResume()
     }
 
     override fun onPause() {
         super.onPause()
         LogUtil.i(TAG, "onPause")
-        clearFavoriteList()
+        // clearFavoriteList()
     }
 
     override fun onStop() {
@@ -216,6 +221,7 @@ class FavoritesFragment : ItemsBaseFragment(),
     fun clearFavoriteList() {
         MySingleton.favorites.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        myListRecyclerView?.visibility = View.GONE
     }
 
     fun searchFavorites() {
@@ -353,7 +359,7 @@ class FavoritesFragment : ItemsBaseFragment(),
         }
     }
 
-    fun setupSwitchDecoderButton() {
+    open fun setupSwitchDecoderButton() {
         LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             playSongs?.let {

@@ -254,6 +254,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             }
         }
         addToFavoriteButton?.setOnClickListener {
+            it.requestFocus()
             if (!searchCompleted) return@setOnClickListener // searching
         }
 

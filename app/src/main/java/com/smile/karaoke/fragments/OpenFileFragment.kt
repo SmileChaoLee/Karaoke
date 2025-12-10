@@ -83,9 +83,11 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
                         pathTextView?.text = MySingleton.currentPath
                         myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                        filesRecyclerView?.visibility = View.VISIBLE
                         LogUtil.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
                         if (MySingleton.fileList.isEmpty()) {
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
+                            filesRecyclerView?.visibility = View.GONE
                             val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                             val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
                             LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
@@ -114,7 +116,8 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         savedInstanceState: Bundle?
     ): View? {
         LogUtil.i(TAG, "onCreateView")
-        return inflater.inflate(R.layout.fragment_open_file, container, false)
+        return inflater.inflate(R.layout.fragment_open_file,
+            container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -122,6 +125,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         view.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
+            filesRecyclerView?.visibility = View.GONE
             pathTextView = it.findViewById(R.id.pathTextView)
             ScreenUtil.resizeTextSize(pathTextView, textFontSize)
             backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
@@ -192,6 +196,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     fun clearFileList() {
         MySingleton.fileList.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        filesRecyclerView?.visibility = View.GONE
     }
 
     fun searchCurrentFolder() {
