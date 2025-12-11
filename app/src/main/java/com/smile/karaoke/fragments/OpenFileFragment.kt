@@ -1,9 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
@@ -16,7 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.scale
 import androidx.lifecycle.lifecycleScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
@@ -29,19 +24,19 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
-        private const val SEARCH_FOLDER_COMPLETED = "SearchCurrentFolder"
     }
 
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
+    private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
-    private lateinit var broadcastReceiver: BroadcastReceiver
     private var backKeyButton: ImageButton? = null
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
@@ -73,40 +68,6 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 }
             }
         }
-
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                LogUtil.i(TAG, "BroadcastReceiver.onReceive")
-                val focusView = activity?.currentFocus
-                intent?.action?.let {
-                    if (it == SEARCH_FOLDER_COMPLETED) {
-                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.SEARCH_FOLDER_COMPLETED")
-                        pathTextView?.text = MySingleton.currentPath
-                        myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                        filesRecyclerView?.visibility = View.VISIBLE
-                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.focusView = $focusView")
-                        if (MySingleton.fileList.isEmpty()) {
-                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.fileList is empty")
-                            filesRecyclerView?.visibility = View.GONE
-                            val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
-                            val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
-                            backKeyButton?.requestFocus()
-                        }
-                        searchCompleted = true  // searching thread finished
-                    }
-                }
-            }
-        }.also { broadcastReceiver = it }
-        activity?.let {
-            LocalBroadcastManager.getInstance(it).apply {
-                LogUtil.d(TAG, "LocalBroadcastManager.registerReceiver")
-                registerReceiver(broadcastReceiver, IntentFilter().apply {
-                    addAction(SEARCH_FOLDER_COMPLETED)
-                })
-            }
-        }
-
         LogUtil.i(TAG, "onCreate.FileDesList.fileList.size = ${MySingleton.fileList.size}")
     }
 
@@ -126,6 +87,9 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
             filesRecyclerView?.visibility = View.GONE
+            loadingMsgTextView = it.findViewById(R.id.loadingMsgTextView)
+            ScreenUtil.resizeTextSize(loadingMsgTextView, textFontSize * 2f)
+            loadingMsgTextView?.visibility = View.GONE
             pathTextView = it.findViewById(R.id.pathTextView)
             ScreenUtil.resizeTextSize(pathTextView, textFontSize)
             backKeyButton = it.findViewById(R.id.openFileBackKeyButton)
@@ -148,35 +112,30 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onStart() {
         super.onStart()
         LogUtil.i(TAG, "onStart")
+        setupSwitchDecoderButton()
+        searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
-        setupSwitchDecoderButton()
-        searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onPause() {
         super.onPause()
         LogUtil.i(TAG, "onPause")
-        clearFileList()
     }
 
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
+        clearFileList()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
         clearFileList()
-        activity?.let {
-            LocalBroadcastManager.getInstance(it).apply {
-                unregisterReceiver(broadcastReceiver)
-            }
-        }
         mediaRetriever.release()
     }
 
@@ -200,23 +159,26 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     }
 
     fun searchCurrentFolder() {
-        LogUtil.i(TAG, "searchCurrentFolder")
+        val logStr = "searchCurrentFolder"
+        LogUtil.i(TAG, logStr)
         searchCompleted = false
+        filesRecyclerView?.visibility = View.GONE
+        loadingMsgTextView?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
             val tempList: ArrayList<FileDescription> = ArrayList(MySingleton.MAX_FILES)
             MySingleton.currentPath.let {
                 if (it == "/") {
                     for (element in MySingleton.rootPathSet) {
-                        LogUtil.d(TAG, "searchCurrentFolder.element = $element")
+                        LogUtil.d(TAG, "$logStr.element = $element")
                         tempList.add(FileDescription(File(element),
                             null, false))
                     }
                 } else {
                     try {
                         File(it).listFiles()?.also { fIt ->
-                            LogUtil.d(TAG, "searchCurrentFolder.file.list().size() = ${fIt.size}")
+                            LogUtil.d(TAG, "$logStr.file.list().size() = ${fIt.size}")
                             for (f in fIt) {
-                                LogUtil.d(TAG, "searchCurrentFolder.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
+                                LogUtil.d(TAG, "$logStr.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
                                 var bm: Bitmap? = null
                                 if (!f.isDirectory) {
                                     try {
@@ -225,7 +187,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                                             MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                                             ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                                     } catch (ex: Exception) {
-                                        LogUtil.e(TAG, "searchCurrentFolder.setDataSource.Exception:",
+                                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:",
                                                 ex)
                                     }
                                 }
@@ -233,24 +195,29 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                             }
                         }
                     } catch (ex: Exception) {
-                        LogUtil.e(TAG, "searchCurrentFolder.Exception", ex )
+                        LogUtil.e(TAG, "$logStr.Exception", ex )
                     }
                 }
             }
             MySingleton.fileList.clear()
             MySingleton.fileList.addAll(tempList)
-            LogUtil.d(TAG, "searchCurrentFolder.FileDesList.fileList.size = ${MySingleton.fileList.size}")
+            LogUtil.d(TAG, "$logStr.FileDesList.fileList.size = ${MySingleton.fileList.size}")
 
-            for (fileDes in MySingleton.fileList) {
-                LogUtil.d(TAG, "searchCurrentFolder.file = ${fileDes.file}")
-            }
-
-            activity?.let {
-                LocalBroadcastManager.getInstance(it).apply {
-                    sendBroadcast(Intent().apply {
-                        action = SEARCH_FOLDER_COMPLETED
-                    })
+            // Update the UI
+            withContext(Dispatchers.Main) {
+                pathTextView?.text = MySingleton.currentPath
+                myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                filesRecyclerView?.visibility = View.VISIBLE
+                loadingMsgTextView?.visibility = View.GONE
+                if (MySingleton.fileList.isEmpty()) {
+                    LogUtil.d(TAG, "$logStr.MySingleTon.fileList is empty")
+                    filesRecyclerView?.visibility = View.GONE
+                    val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
+                    val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
+                    LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
+                    backKeyButton?.requestFocus()
                 }
+                searchCompleted = true  // searching thread finished
             }
         }
     }

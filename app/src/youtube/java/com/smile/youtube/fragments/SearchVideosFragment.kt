@@ -45,8 +45,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
     private var searchEditTextView: EditText? = null
-    private var loadingMsgTextView: TextView? = null
     private var searchRecyclerView: RecyclerView? = null
+    private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : YouTubeRecyclerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +86,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             loadingMsgTextView?.visibility = View.GONE
             searchRecyclerView = it.findViewById(R.id.searchRecyclerView)
             searchRecyclerView?.setHasFixedSize(true)
+            searchRecyclerView?.visibility = View.GONE
         }
 
         initRecyclerAdapter()
@@ -127,7 +128,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         if (searchTerm.isEmpty()) return
         searchCompleted = false
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
-        searchRecyclerView?.visibility = View.INVISIBLE
+        searchRecyclerView?.visibility = View.GONE
         loadingMsgTextView?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
             YouSingleton.videos.clear()
@@ -143,7 +144,11 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             withContext(Dispatchers.Main) {
                 myRecyclerViewAdapter?.myNotifyDataSetChanged()
                 loadingMsgTextView?.visibility = View.GONE
-                searchRecyclerView?.visibility = View.VISIBLE
+                if (YouSingleton.videos.isEmpty()) {
+                    searchRecyclerView?.visibility = View.GONE
+                } else {
+                    searchRecyclerView?.visibility = View.VISIBLE
+                }
                 searchCompleted = true
             }
         }

@@ -139,17 +139,36 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myListRecyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
-        android:focusable="true"
-        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@+id/favoriteListButtonLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-    </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/myListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:focusable="true"
+            android:clickable="true"
+            android:descendantFocusability ="afterDescendants">
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/loadingMsgTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/loadingStr"
+            android:textStyle="normal"
+            android:textColor="@color/yellow"
+            android:visibility="gone"
+            android:gravity="center"
+            android:background="@android:color/transparent">
+        </TextView>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

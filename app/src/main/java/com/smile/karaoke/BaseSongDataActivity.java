@@ -160,6 +160,11 @@ public class BaseSongDataActivity extends AppCompatActivity {
             }
         });
 
+        final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
+        ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize);
+        edit_exitEditSongButton.setOnClickListener(view ->
+                returnToPreviousWithResult(Activity.RESULT_CANCELED));
+
         final Button edit_saveOneSongButton = findViewById(R.id.edit_saveOneSongButton);
         ScreenUtil.resizeTextSize(edit_saveOneSongButton, textFontSize);
         edit_saveOneSongButton.setOnClickListener(view -> {
@@ -202,10 +207,6 @@ public class BaseSongDataActivity extends AppCompatActivity {
                 returnToPreviousWithResult(Activity.RESULT_OK);
             }
         });
-
-        final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
-        ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize);
-        edit_exitEditSongButton.setOnClickListener(view -> returnToPreviousWithResult(Activity.RESULT_CANCELED));
 
         if (crudAction == null) {
             LogUtil.d(TAG, "onCreate.crudAction = null");

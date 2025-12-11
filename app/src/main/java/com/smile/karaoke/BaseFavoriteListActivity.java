@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class BaseFavoriteListActivity extends AppCompatActivity
         implements SelectedFavoriteAdapter.OnRecyclerItemClickListener {
 
-    private static final String TAG = "BFavoriteListActivity";
+    private static final String TAG = "BFavListActivity";
     private final String CrudActionState = "CrudAction";
     private final String PositionEditState = "PositionEdit";
     private SongListSQLite songListSQLite;
@@ -43,6 +43,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
     private String currentAction = CommonConstants.EDIT_ACTION;
     private float weightSum = 0.f;
     private LinearLayout favoriteListLinearLayout;
+    private Button exitFavoriteListButton;
     private LinearLayout favoritesTitleLayout;
     private LinearLayout favoritesExitButtonLayout;
     private RecyclerView myListRecyclerView;
@@ -61,7 +62,7 @@ public class BaseFavoriteListActivity extends AppCompatActivity
 
         TextView myFavoritesTextView = findViewById(R.id.myFavoritesTextView);
         ScreenUtil.resizeTextSize(myFavoritesTextView, textFontSize);
-        Button exitFavoriteListButton = findViewById(R.id.exitFavoriteListButton);
+        exitFavoriteListButton = findViewById(R.id.exitFavoriteListButton);
         ScreenUtil.resizeTextSize(exitFavoriteListButton, textFontSize);
         exitFavoriteListButton.setOnClickListener(v -> returnToPrevious());
 
@@ -91,14 +92,17 @@ public class BaseFavoriteListActivity extends AppCompatActivity
             MySingleton.INSTANCE.getSelectedFavorites().addAll(tempList);
         }
 
-        editFavoritesLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+        editFavoritesLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result == null) {
-                        return;
+                    LogUtil.d(TAG, "editFavoritesLauncher.result");
+                    if (result != null) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            LogUtil.d(TAG, "editFavoritesLauncher.updateFavoriteList");
+                            updateFavoriteList(result.getData());
+                        }
                     }
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        updateFavoriteList(result.getData());
-                    }
+                    exitFavoriteListButton.post(() -> exitFavoriteListButton.requestFocus());
                 });
 
         LogUtil.d(TAG, "onCreate.FavoriteSingleTon.INSTANCE.getSelectedList().size() = " +

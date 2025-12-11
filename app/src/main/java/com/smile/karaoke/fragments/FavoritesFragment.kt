@@ -1,9 +1,6 @@
 package com.smile.karaoke.fragments
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
@@ -13,11 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
 import com.smile.karaoke.R
@@ -30,6 +28,9 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 open class FavoritesFragment : ItemsBaseFragment(),
@@ -43,9 +44,9 @@ open class FavoritesFragment : ItemsBaseFragment(),
 
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
+    private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : FavoriteRecyclerViewAdapter? = null
     private lateinit var editSongsActivityLauncher: ActivityResultLauncher<Intent>
-    private lateinit var broadcastReceiver: BroadcastReceiver
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
     var switchDecoderButton: ImageButton? = null
@@ -64,52 +65,6 @@ open class FavoritesFragment : ItemsBaseFragment(),
             ActivityResultContracts.StartActivityForResult()){
             playMyFavorites?.restorePlayingState()
             searchFavorites()
-        } // update the UI
-
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                LogUtil.i(TAG, "BroadcastReceiver.onReceive")
-                intent?.action?.let {
-                    if (it == SEARCH_FAVORITES_COMPLETED) {
-                        LogUtil.d(TAG, "BroadcastReceiver.onReceive.SearchFavorites")
-                        if (intent.getBooleanExtra(EXCESS_YN, false)) {
-                            ScreenUtil.showToast(
-                                    activity, getString(R.string.excess_max) +
-                                    " ${MySingleton.MAX_SONGS}", textFontSize,
-                                Toast.LENGTH_SHORT)
-                        }
-                        if (MySingleton.favorites.isNotEmpty()) {
-                            for (fav in MySingleton.favorites) {
-                                LogUtil.d(TAG, "BroadcastReceiver.onReceive.fav.song.id = ${fav.song.id}")
-                                if (MySingleton.backupSelectedId.contains(fav.song.id)) {
-                                    LogUtil.d(TAG, "BroadcastReceiver.onReceive.contains")
-                                    fav.song.included = "1"
-                                }
-                            }
-                            myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                            myListRecyclerView?.visibility = View.VISIBLE
-                        } else {
-                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.MySingleTon.favorites is empty")
-                            myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                            myListRecyclerView?.visibility = View.GONE
-                            // Change the focus
-                            val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
-                            val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                            LogUtil.d(TAG, "BroadcastReceiver.onReceive.isKeyDown = $isKeyDown")
-                            showVideoButton?.requestFocus()
-                        }
-                        searchCompleted = true  // searching thread finished
-                    }
-                }
-            }
-        }.also { broadcastReceiver = it }
-        activity?.let {
-            LocalBroadcastManager.getInstance(it).apply {
-                LogUtil.d(TAG, "LocalBroadcastManager.registerReceiver")
-                registerReceiver(broadcastReceiver, IntentFilter().apply {
-                    addAction(SEARCH_FAVORITES_COMPLETED)
-                })
-            }
         }
 
         LogUtil.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleton.favorites.size}")
@@ -132,6 +87,9 @@ open class FavoritesFragment : ItemsBaseFragment(),
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
             myListRecyclerView?.setHasFixedSize(true)
             myListRecyclerView?.visibility = View.GONE
+            loadingMsgTextView = it.findViewById(R.id.loadingMsgTextView)
+            ScreenUtil.resizeTextSize(loadingMsgTextView, textFontSize * 2f)
+            loadingMsgTextView?.visibility = View.GONE
             selectAllButton = it.findViewById(R.id.favoriteSelectAllButton)
             unselectButton = it.findViewById(R.id.favoriteUnselectButton)
             switchDecoderButton = it.findViewById(R.id.favoriteSwitchDecoderButton)
@@ -181,11 +139,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onStop")
-        activity?.let {
-            LocalBroadcastManager.getInstance(it).apply {
-                unregisterReceiver(broadcastReceiver)
-            }
-        }
+        clearFavoriteList()
         mediaRetriever.release()
     }
 
@@ -225,27 +179,30 @@ open class FavoritesFragment : ItemsBaseFragment(),
     }
 
     fun searchFavorites() {
-        LogUtil.i(TAG, "searchFavorites")
+        val logStr = "searchFavorites"
+        LogUtil.i(TAG, logStr)
         searchCompleted = false
-        Thread {
+        myListRecyclerView?.visibility = View.GONE
+        loadingMsgTextView?.visibility = View.VISIBLE
+        lifecycleScope.launch(Dispatchers.IO) {
             var excessYn = false
             val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
             activity?.let {
                 DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
                     var index = 0
                     for (element in sqlIt) {
-                        LogUtil.d(TAG, "searchFavorites.element.included = ${element.included}")
-                        LogUtil.d(TAG, "searchFavorites.element.filePath = ${element.filePath}")
+                        LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
+                        LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                         var bm: Bitmap? = null
                         try {
                             val path = File(element.filePath!!).path
-                            LogUtil.d(TAG, "searchFavorites.path = $path")
+                            LogUtil.d(TAG, "$logStr.path = $path")
                             mediaRetriever.setDataSource(element.filePath)
                             bm = mediaRetriever.getFrameAtTime(0,
                                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                                 ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                         } catch (ex: Exception) {
-                            LogUtil.e(TAG, "searchFavorites.setDataSource.Exception:",
+                            LogUtil.e(TAG, "$logStr.setDataSource.Exception:",
                                 ex)
                         }
                         element.included = "0"
@@ -261,18 +218,40 @@ open class FavoritesFragment : ItemsBaseFragment(),
             }
             MySingleton.favorites.clear()
             MySingleton.favorites.addAll(tempList)
-            LogUtil.d(TAG, "searchFavorites.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
+            LogUtil.d(TAG, "$logStr.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
 
-            activity?.let {
-                LocalBroadcastManager.getInstance(it).apply {
-                    sendBroadcast(Intent().apply {
-                        action = SEARCH_FAVORITES_COMPLETED
-                        putExtra(EXCESS_YN,excessYn)
-                    })
+            // Update the UI
+            withContext(Dispatchers.Main) {
+                loadingMsgTextView?.visibility = View.GONE
+                if (excessYn) {
+                    ScreenUtil.showToast(
+                        activity, getString(R.string.excess_max) +
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                        Toast.LENGTH_SHORT)
                 }
+                if (MySingleton.favorites.isNotEmpty()) {
+                    for (fav in MySingleton.favorites) {
+                        LogUtil.d(TAG, "$logStr.fav.song.id = ${fav.song.id}")
+                        if (MySingleton.backupSelectedId.contains(fav.song.id)) {
+                            LogUtil.d(TAG, "$logStr.contains")
+                            fav.song.included = "1"
+                        }
+                    }
+                    myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                    myListRecyclerView?.visibility = View.VISIBLE
+                } else {
+                    LogUtil.d(TAG, "$logStr.MySingleTon.favorites is empty")
+                    myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                    myListRecyclerView?.visibility = View.GONE
+                    // Change the focus
+                    val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
+                    val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
+                    LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
+                    showVideoButton?.requestFocus()
+                }
+                searchCompleted = true  // searching thread finished
             }
-
-        }.start()
+        }
     }
 
     override fun setClickListeners() {
