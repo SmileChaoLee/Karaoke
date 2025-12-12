@@ -15,12 +15,14 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
+import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
@@ -37,11 +39,31 @@ open class FavoritesFragment : ItemsBaseFragment(),
     FavoriteRecyclerViewAdapter.FavItemListener {
 
     companion object {
-        private const val TAG : String = "FavoritesFragment"
-        private const val SEARCH_FAVORITES_COMPLETED = "SearchFavorites"
-        private const val EXCESS_YN = "ExcessYN"
+        private const val TAG: String = "FavoritesFragment"
+        private const val IS_DECODER_VISIBLE = "is_decoder_visible"
+        private const val DATABASE_NAME = "database_name"
+
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param isDecoderVisible Is switchDecoderButton visible
+         * @param databaseName Name of the favorite database
+         * @return A new instance of fragment MyDetailFragment.
+         */
+        fun newInstance(isDecoderVisible: Boolean, databaseName: String): FavoritesFragment {
+            return FavoritesFragment().apply {
+                Bundle().also {
+                    it.putBoolean(IS_DECODER_VISIBLE, isDecoderVisible)
+                    it.putString(DATABASE_NAME, databaseName)
+                    arguments = it
+                }
+            }
+        }
     }
 
+    private var isDecoderVisible = true
+    private var databaseName = CommonConstants.FAVORITE_DB_NAME
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
@@ -55,6 +77,11 @@ open class FavoritesFragment : ItemsBaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+
+        arguments?.let { bundle ->
+            isDecoderVisible = bundle.getBoolean(IS_DECODER_VISIBLE, true)
+            databaseName = bundle.getString(DATABASE_NAME,CommonConstants.FAVORITE_DB_NAME)
+        }
 
         activity?.let {
             if (it is PlayMyFavorites) playMyFavorites = it
@@ -195,7 +222,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
                         LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                         var bm: Bitmap? = null
                         try {
-                            val path = File(element.filePath!!).path
+                            val path = File(element.filePath).path
                             LogUtil.d(TAG, "$logStr.path = $path")
                             mediaRetriever.setDataSource(element.filePath)
                             bm = mediaRetriever.getFrameAtTime(0,
@@ -338,9 +365,10 @@ open class FavoritesFragment : ItemsBaseFragment(),
         }
     }
 
-    open fun setupSwitchDecoderButton() {
+    fun setupSwitchDecoderButton() {
         LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
+            visibility = if (isDecoderVisible) View.VISIBLE else View.GONE
             playSongs?.let {
                 setImageResource(
                     if (it.isSoftDecoderFirst()) R.drawable.soft_decoder
