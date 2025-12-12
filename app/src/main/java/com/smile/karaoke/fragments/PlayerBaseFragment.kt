@@ -43,6 +43,7 @@ import androidx.core.graphics.scale
 import androidx.core.view.get
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.ads.nativetemplates.TemplateView
@@ -66,6 +67,9 @@ import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.abs
 
@@ -475,7 +479,12 @@ abstract class PlayerBaseFragment : Fragment(),
                 // print the original check status
                 LogUtil.d(TAG, "autoPlayMenuItem?.isChecked = ${it.isChecked}")
                 if (!it.isChecked) {
-                    it.isChecked = mPresenter.setAutoPlayStatusAndAction()
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val songs = getFavoriteSongs()
+                        withContext(Dispatchers.Main) {
+                            it.isChecked = mPresenter.setAutoPlayStatusAndAction(songs)
+                        }
+                    }
                 } else {
                     mPresenter.stopAutoPlay()
                     it.isChecked = false
@@ -1429,15 +1438,18 @@ abstract class PlayerBaseFragment : Fragment(),
         return activity?.isFinishing ?: true
     }
 
-    override fun getFavoriteSongs(): ArrayList<SongInfo> {
-        return DatabaseAccessUtil.readSavedSongList(
-            activity, true)
-    }
-
     override fun getFragment(): Fragment {
         return this
     }
     // end of implementing PlayerBasePresenter.BasePresentView
+
+    private suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
+        LogUtil.d(TAG, "getFavoriteSongs")
+        activity?.let {
+            return DatabaseAccessUtil.readSavedSongList(it, true)
+        }
+        return ArrayList()
+    }
 
     private fun setScreenOrientation(orientation: Int) {
         orgOrientation = resources.configuration.orientation

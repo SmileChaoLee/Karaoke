@@ -188,7 +188,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
             var excessYn = false
             val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
             activity?.let {
-                DatabaseAccessUtil.readSavedSongList(it, false)?.also { sqlIt ->
+                DatabaseAccessUtil.readSavedSongList(it, false).also { sqlIt ->
                     var index = 0
                     for (element in sqlIt) {
                         LogUtil.d(TAG, "$logStr.element.included = ${element.included}")

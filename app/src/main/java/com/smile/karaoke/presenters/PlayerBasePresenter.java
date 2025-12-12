@@ -59,7 +59,6 @@ public abstract class PlayerBasePresenter {
         void showToastNoNext();
         void showToastNotSupported();
         boolean isActivityFinishing();
-        ArrayList<SongInfo> getFavoriteSongs();
         Fragment getFragment();
     }
 
@@ -276,13 +275,12 @@ public abstract class PlayerBasePresenter {
         mPresentView.setImageButtonStatus();
     }
 
-    public boolean setAutoPlayStatusAndAction() {
-        ArrayList<SongInfo> songList = mPresentView.getFavoriteSongs();
-        LogUtil.d(TAG, "setAutoPlayStatusAndAction.songList.size() = " + songList.size());
+    public boolean setAutoPlayStatusAndAction(ArrayList<SongInfo> songs) {
+        LogUtil.d(TAG, "setAutoPlayStatusAndAction.songs.size() = " + songs.size());
         boolean isAutoPlay = false;
-        if (!songList.isEmpty()) {
+        if (!songs.isEmpty()) {
             MySingleton.INSTANCE.getOrderedSongs().clear();
-            MySingleton.INSTANCE.getOrderedSongs().addAll(songList);
+            MySingleton.INSTANCE.getOrderedSongs().addAll(songs);
             mPlayingParam.setAutoPlay(true);
             autoPlaySongList();
             mPresentView.showPlayerView();

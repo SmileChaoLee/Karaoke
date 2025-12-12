@@ -5,7 +5,7 @@ object MySingleton {
     const val MAX_SONGS : Int = 100
     val favorites : ArrayList<SongDescription> = ArrayList(MAX_SONGS)
     val selectedFavorites : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
-    val backupSelectedId : ArrayList<Int> = ArrayList(MAX_SONGS)
+    val backupSelectedId : ArrayList<Int?> = ArrayList(MAX_SONGS)
     val orderedSongs : ArrayList<SongInfo> = ArrayList(MAX_SONGS)
     // moved from FileDesList
     const val MAX_FILES : Int = 500
