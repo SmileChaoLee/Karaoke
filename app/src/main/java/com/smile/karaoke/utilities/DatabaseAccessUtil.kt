@@ -1,7 +1,6 @@
 package com.smile.karaoke.utilities
 
 import android.content.Context
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.roomdatabase.FavSongDatabase
@@ -17,11 +16,11 @@ object DatabaseAccessUtil {
         return playlist
     }
 
-    suspend fun readSavedSongList(callingContext: Context, isIncluded: Boolean): ArrayList<SongInfo> {
+    suspend fun readSavedSongList(callingContext: Context,
+                                  dbName: String, isIncluded: Boolean): ArrayList<SongInfo> {
         LogUtil.d(TAG, "readSavedSongList")
-        val db = FavSongDatabase.getDatabase(callingContext, CommonConstants.FAVORITE_DB_NAME)
+        val db = FavSongDatabase.getDatabase(callingContext, dbName)
         val playlist = db.readPlaylist(isIncluded)
-        LogUtil.d(TAG, "readSavedSongList.db.close()")
         db.close()
         return playlist
     }

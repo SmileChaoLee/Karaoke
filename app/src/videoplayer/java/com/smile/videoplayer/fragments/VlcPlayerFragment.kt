@@ -12,7 +12,10 @@ import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.R
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
+import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
@@ -109,12 +112,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     // implement abstract methods of super class
-    override fun setCurrentPlayerToPlayerView() {
-        // do nothing for now
-    }
-
-    override fun getPlayService(): VlcPlayService? {
-        return playService
+    override fun getPlayerPresenter() : VlcPlayerPresenter {
+        return presenter
     }
 
     override fun setupMenuItems() {
@@ -137,10 +136,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         presenter.playSongPlayedBeforeActivityCreated()
     }
 
-    override fun getPlayerPresenter() : VlcPlayerPresenter {
-        return presenter
-    }
-
     override fun audioChannelButtonListener() {
         // not support yet
         activity?.let {
@@ -149,9 +144,26 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
                 Toast.LENGTH_SHORT)
         }
     }
-    // end of implementing methods of super class
+
+    override suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
+        LogUtil.d(TAG, "getFavoriteSongs")
+        activity?.let {
+            return DatabaseAccessUtil.readSavedSongList(it,
+                CommonConstants.FAVORITE_DB_NAME, true)
+        }
+        return ArrayList()
+    }
+    // end of implementing abstract methods of super class
 
     // Implement VlcPlayerPresenter.VlcPresentView
+    override fun setCurrentPlayerToPlayerView() {
+        // do nothing for now
+    }
+
+    override fun getPlayService(): VlcPlayService? {
+        return playService
+    }
+
     override fun setVideoWindowSize() {
         LogUtil.i(TAG, "setVideoWindowSize")
         playService?.apply {

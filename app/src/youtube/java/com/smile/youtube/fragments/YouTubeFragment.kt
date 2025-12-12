@@ -21,9 +21,12 @@ import com.smile.youtube.presenters.YouTubePresenter
 import com.smile.youtube.services.YouTubeService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
+import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.youtube.listeners.FScreenListener
 import com.smile.youtube.listeners.YTCastPlayerListener
 import com.smile.youtube.listeners.YTPlayerListener
+import com.smile.youtube.yt_constants.YTConstants
 
 @OptIn(UnstableApi::class)
 class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView {
@@ -198,9 +201,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         chromecastContext?.initialize(castPlayerListener!!)
     }
 
-    // implement YouTubePresenter.YouTubePresentView
-    // end of implementing YouTubePresenter.YouTubePresentView
-
+    // implement abstract methods of super class
     override fun getPlayerPresenter(): PlayerBasePresenter? {
         LogUtil.i(TAG, "getPlayerPresenter")
         return presenter
@@ -214,6 +215,17 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         LogUtil.i(TAG, "audioChannelButtonListener")
     }
 
+    override suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
+        LogUtil.d(TAG, "getFavoriteSongs")
+        activity?.let {
+            return DatabaseAccessUtil.readSavedSongList(it,
+                YTConstants.YT_FAV_DB_NAME, true)
+        }
+        return ArrayList()
+    }
+    // end of implementing abstract methods of super class
+
+    // Implement YouTubePresenter.YouTubePresentView
     override fun setCurrentPlayerToPlayerView() {
         LogUtil.i(TAG, "setCurrentPlayerToPlayerView")
     }
@@ -222,9 +234,8 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         LogUtil.i(TAG, "getPlayService")
         return playService
     }
-
-    // Implement YouTubePresenter.YouTubePresentView
     // End of implementing YouTubePresenter.YouTubePresentView
+
     private fun setVideoWindowSize() {
         val logStr = "setVideoWindowSize"
         LogUtil.i(TAG, logStr)

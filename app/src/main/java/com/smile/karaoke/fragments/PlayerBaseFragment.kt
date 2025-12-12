@@ -59,7 +59,6 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
-import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
@@ -177,6 +176,7 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun getPlayServiceIntent(): Intent?
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun audioChannelButtonListener()
+    abstract suspend fun getFavoriteSongs(): ArrayList<SongInfo>
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -1442,14 +1442,6 @@ abstract class PlayerBaseFragment : Fragment(),
         return this
     }
     // end of implementing PlayerBasePresenter.BasePresentView
-
-    private suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
-        LogUtil.d(TAG, "getFavoriteSongs")
-        activity?.let {
-            return DatabaseAccessUtil.readSavedSongList(it, true)
-        }
-        return ArrayList()
-    }
 
     private fun setScreenOrientation(orientation: Int) {
         orgOrientation = resources.configuration.orientation

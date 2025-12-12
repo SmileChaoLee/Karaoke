@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
-import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseFavoriteListActivity
@@ -71,7 +70,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
     private lateinit var editSongsActivityLauncher: ActivityResultLauncher<Intent>
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
-    var switchDecoderButton: ImageButton? = null
+    private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -215,7 +214,8 @@ open class FavoritesFragment : ItemsBaseFragment(),
             var excessYn = false
             val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
             activity?.let {
-                DatabaseAccessUtil.readSavedSongList(it, false).also { sqlIt ->
+                DatabaseAccessUtil.readSavedSongList(it,
+                    databaseName, false).also { sqlIt ->
                     var index = 0
                     for (element in sqlIt) {
                         LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
