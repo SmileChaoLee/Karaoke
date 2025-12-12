@@ -12,12 +12,15 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
+import androidx.lifecycle.lifecycleScope
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.utilities.ContentUriUtil
 import com.smile.karaoke.utilities.LogUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SafPickerFragment: ComOpenFragment() {
 
@@ -63,8 +66,10 @@ class SafPickerFragment: ComOpenFragment() {
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
                     // play the selected songs later because the activity life cycle
                     // BaseActivity will be coming back from invisible and similar to
-                    // coming back from background, need to be fixed
-                    startPlaySelectedSong(activity, "openDocumentLauncher")
+                    // coming back from background
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        startPlaySelectedSong(activity, "openDocumentLauncher")
+                    }
                 }
             }
         }

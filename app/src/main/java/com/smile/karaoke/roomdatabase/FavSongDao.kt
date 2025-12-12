@@ -15,6 +15,9 @@ interface FavSongDao {
     @Query("SELECT * FROM ${FavSongDatabase.TABLE_NAME}")
     suspend fun getAllSongs(): List<SongInfo>
 
+    @Query("SELECT COUNT(*) FROM ${FavSongDatabase.TABLE_NAME}")
+    suspend fun recordsOfPlayList(): Int
+
     @Query("SELECT * FROM ${FavSongDatabase.TABLE_NAME} WHERE id = :songId")
     suspend fun getSongById(songId: Long): SongInfo?
 

@@ -7,9 +7,11 @@ import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.models.SongListSQLite
+import com.smile.karaoke.roomdatabase.FavSongDatabase
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 open class ComOpenFragment: ItemsBaseFragment() {
 
@@ -17,23 +19,25 @@ open class ComOpenFragment: ItemsBaseFragment() {
         private const val TAG = "ComOpenFragment"
     }
 
-    fun startPlaySelectedSong(act: Activity?, msg: String) {
+    suspend fun startPlaySelectedSong(act: Activity?, msg: String) {
         if (act == null) return
-        val songListSQLite = SongListSQLite(act)
-        getSongs(songListSQLite, msg).let { songsIt ->
+        val db = FavSongDatabase.getDatabase(act, CommonConstants.FAVORITE_DB_NAME)
+        getSongs(db, msg).let { songsIt ->
             if (songsIt.isEmpty()) {
-                ScreenUtil.showToast(
-                    act,
-                    getString(R.string.noFilesSelectedString),
-                    textFontSize,Toast.LENGTH_SHORT)
+                withContext(Dispatchers.Main) {
+                    ScreenUtil.showToast(
+                        act,
+                        getString(R.string.noFilesSelectedString),
+                        textFontSize,Toast.LENGTH_SHORT)
+                }
             } else {
                 playSongs?.playSelectedSongList(ArrayList(songsIt))
             }
         }
-        songListSQLite.closeDatabase()
+        db.close()
     }
 
-    fun getSongs(songListSQLite : SongListSQLite, msg : String): ArrayList<SongInfo> {
+    suspend fun getSongs(db : FavSongDatabase, msg : String): ArrayList<SongInfo> {
         val songs = ArrayList<SongInfo>().also {songIt ->
             var index = 0
             for (fileDes in MySingleton.fileList) {
@@ -51,7 +55,7 @@ open class ComOpenFragment: ItemsBaseFragment() {
                         vocalChannel = CommonConstants.STEREO
                         included = "0"
                     }
-                    songListSQLite.findOneSongByUriString(fileUri)?.apply {
+                    db.findOneSongByFilepath(fileUri)?.apply {
                         LogUtil.d(TAG, "$msg.found")
                         included = "1"
                         song = this
@@ -60,10 +64,12 @@ open class ComOpenFragment: ItemsBaseFragment() {
                     index++
                     if (index >= MySingleton.MAX_SONGS) {
                         // excess the max
-                        ScreenUtil.showToast(
-                            activity, getString(R.string.excess_max) +
-                                    " ${MySingleton.MAX_SONGS}", textFontSize,
-                            Toast.LENGTH_SHORT)
+                        withContext(Dispatchers.Main) {
+                            ScreenUtil.showToast(
+                                activity, getString(R.string.excess_max) +
+                                        " ${MySingleton.MAX_SONGS}", textFontSize,
+                                Toast.LENGTH_SHORT)
+                        }
                         break
                     }
                 }

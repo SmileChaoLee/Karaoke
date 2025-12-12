@@ -56,9 +56,10 @@ import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
+import com.smile.karaoke.roomdatabase.FavSongDatabase
+import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
@@ -176,7 +177,8 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun getPlayServiceIntent(): Intent?
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun audioChannelButtonListener()
-    abstract suspend fun getFavoriteSongs(): ArrayList<SongInfo>
+    abstract fun getFavDatabaseName(): String
+
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -958,24 +960,24 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         heartImageButton?.setOnClickListener { it->
             // add this media file to my favorite
-            mPresenter.let { pIt ->
-                val index = pIt.playingParam.currentSongIndex
-                LogUtil.d(TAG,"heartImageButton.onClick.currentSongIndex = $index")
-                if (index>=0 && MySingleton.orderedSongs.size>index) {
-                    activity?.let {
-                        SongListSQLite(it.applicationContext).also { sqlIt ->
-                            MySingleton.orderedSongs[index].run {
-                                // check if this file is already in database
-                                if (sqlIt.findOneSongByUriString(filePath) == null) {
-                                    LogUtil.d(TAG, "heartImageButton.onClick.findOneSongByUriString() is null")
-                                    included = "1"
-                                    sqlIt.addSongToSongList(this)
-                                }
-                            }
-                            sqlIt.closeDatabase()
+            val index = mPresenter.playingParam.currentSongIndex
+            LogUtil.d(TAG,"heartImageButton.onClick.currentSongIndex = $index")
+            if (index>=0 && MySingleton.orderedSongs.size>index) {
+                activity?.let { actIt ->
+                    val songInfo = MySingleton.orderedSongs[index]
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val db = FavSongDatabase.getDatabase(actIt,getFavDatabaseName())
+                        // check if this file is already in database
+                        if (db.findOneSongByFilepath(songInfo.filePath) == null) {
+                            songInfo.included = "1"
+                            db.favSongDao().addSongToSongList(songInfo)
                         }
-                        ScreenUtil.showToast(it, getString(R.string.add_to_favorites), textFontSize,
-                            ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
+                        db.close()
+                        withContext(Dispatchers.Main) {
+                            ScreenUtil.showToast(actIt, getString(R.string.add_to_favorites), textFontSize,
+                                ScreenUtil.FontSize_Pixel_Type,
+                                Toast.LENGTH_SHORT)
+                        }
                     }
                 }
             }
@@ -1442,6 +1444,15 @@ abstract class PlayerBaseFragment : Fragment(),
         return this
     }
     // end of implementing PlayerBasePresenter.BasePresentView
+
+    private suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
+        LogUtil.d(TAG, "getFavoriteSongs")
+        activity?.let {
+            return DatabaseAccessUtil.readSavedSongList(it,
+                getFavDatabaseName(),true)
+        }
+        return ArrayList()
+    }
 
     private fun setScreenOrientation(orientation: Int) {
         orgOrientation = resources.configuration.orientation

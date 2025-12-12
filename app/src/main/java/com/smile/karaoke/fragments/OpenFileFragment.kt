@@ -16,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
-import com.smile.karaoke.models.SongListSQLite
+import com.smile.karaoke.roomdatabase.FavSongDatabase
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
@@ -267,37 +268,49 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         }
         playSelectedButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            // open the files to play
-            startPlaySelectedSong(activity, "playSelectedButton")
+            lifecycleScope.launch(Dispatchers.Main) {
+                // open the files to play
+                startPlaySelectedSong(activity, "playSelectedButton")
+            }
         }
         addToFavoriteButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            activity?.let {activityIt ->
-                val songListSQLite = SongListSQLite(activityIt)
-                getSongs(songListSQLite, "addToFavoriteButton").also { songsIt ->
+            val act = activity ?: return@setOnClickListener
+            lifecycleScope.launch(Dispatchers.IO) {
+                val db = FavSongDatabase.getDatabase(act,
+                    CommonConstants.FAVORITE_DB_NAME)
+                getSongs(db, "addToFavoriteButton").also { songsIt ->
                     var toastMsg = getString(R.string.noFilesSelectedString)
                     if (songsIt.isNotEmpty()) {
                         for (song in songsIt) {
                             song.included = "1"
-                            val numRecords = songListSQLite.recordsOfPlayList()
+                            val numRecords = db.recordsOfPlayList()
                             LogUtil.d(TAG, "addToFavoriteButton.recordsOfPlayList() = $numRecords")
                             if (numRecords < MySingleton.MAX_SONGS) {
-                                songListSQLite.addSongToSongList(song)
+                                db.addSongToSongList(song)
                             } else {
                                 // excess max number of favorites
-                                ScreenUtil.showToast(activity,
-                                    getString(R.string.excess_max) +
-                                            " ${MySingleton.MAX_SONGS}", textFontSize,
-                                    Toast.LENGTH_SHORT)
+                                withContext(Dispatchers.Main) {
+                                    ScreenUtil.showToast(
+                                        activity,
+                                        getString(R.string.excess_max) +
+                                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
                                 break
                             }
                         }
                         toastMsg = getString(R.string.add_to_favorites)
                     }
-                    ScreenUtil.showToast(activity, toastMsg, textFontSize,
-                        Toast.LENGTH_SHORT)
+                    withContext(Dispatchers.Main) {
+                        ScreenUtil.showToast(
+                            activity, toastMsg, textFontSize,
+                            Toast.LENGTH_SHORT
+                        )
+                    }
                 }
-                songListSQLite.closeDatabase()
+                db.close()
             }
         }
 

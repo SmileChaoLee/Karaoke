@@ -14,8 +14,6 @@ import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
-import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
@@ -145,13 +143,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         }
     }
 
-    override suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
-        LogUtil.d(TAG, "getFavoriteSongs")
-        activity?.let {
-            return DatabaseAccessUtil.readSavedSongList(it,
-                CommonConstants.FAVORITE_DB_NAME, true)
-        }
-        return ArrayList()
+    override fun getFavDatabaseName(): String {
+        return CommonConstants.FAVORITE_DB_NAME
     }
     // end of implementing abstract methods of super class
 

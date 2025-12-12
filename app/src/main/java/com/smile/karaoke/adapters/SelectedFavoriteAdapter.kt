@@ -34,33 +34,6 @@ class SelectedFavoriteAdapter (
 
     companion object {
         private const val TAG = "SelectedFavAdapter"
-        /*
-        private var viewAdapter : SelectedFavoriteAdapter? = null
-        @JvmStatic
-        fun getInstance(itemClickListener: OnRecyclerItemClickListener,
-                        songListSQLite : SongListSQLite,
-                        mList: java.util.ArrayList<SongInfo>,
-                        textFontSize: Float,
-                        yellow2Color: Int, yellow3Color: Int) : SelectedFavoriteAdapter {
-
-            LogUtil.d(TAG, "getInstance.viewAdapter = $viewAdapter, mList.size = ${mList.size}")
-            if (viewAdapter == null) {
-                viewAdapter = SelectedFavoriteAdapter(itemClickListener, songListSQLite,
-                        mList, textFontSize, yellow2Color, yellow3Color)
-            } else {
-                viewAdapter?.let {
-                    it.itemClickListener = itemClickListener
-                    it.songListSQLite = songListSQLite
-                    it.mList = mList
-                    it.textFontSize = textFontSize
-                    it.yellow2Color = yellow2Color
-                    it.yellow3Color = yellow3Color
-                }
-            }
-
-            return viewAdapter!!
-        }
-        */
     }
 
     class MyViewHolder(itemView: View, itemClickListener : OnRecyclerItemClickListener, textFontSize: Float)

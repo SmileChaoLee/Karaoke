@@ -64,6 +64,16 @@ abstract class FavSongDatabase : RoomDatabase() {
         }
     }
 
+    suspend fun recordsOfPlayList(): Int {
+        LogUtil.i(TAG, "recordsOfPlayList")
+        try {
+            return favSongDao().recordsOfPlayList()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "recordsOfPlayList.Exception: ", ex)
+            return 0
+        }
+    }
+
     suspend fun getSongById(songId: Long): SongInfo? {
         LogUtil.i(TAG, "getSongById")
         try {
@@ -81,7 +91,7 @@ abstract class FavSongDatabase : RoomDatabase() {
             list = if (isIncluded) {
                 ArrayList(favSongDao().readPlaylist("1"))
             } else {
-                ArrayList(favSongDao().getAllSongs())
+                getAllSongs()
             }
         } catch (ex: Exception) {
             LogUtil.e(TAG, "readPlaylist.Exception: ", ex)
