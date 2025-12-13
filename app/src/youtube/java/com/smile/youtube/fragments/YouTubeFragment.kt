@@ -21,8 +21,6 @@ import com.smile.youtube.presenters.YouTubePresenter
 import com.smile.youtube.services.YouTubeService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
-import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.utilities.DatabaseAccessUtil
 import com.smile.youtube.listeners.FScreenListener
 import com.smile.youtube.listeners.YTCastPlayerListener
 import com.smile.youtube.listeners.YTPlayerListener
@@ -91,25 +89,6 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
             }
             release()
         }
-    }
-
-    override fun getPlayServiceIntent(): Intent {
-        return Intent(activity, YouTubeService::class.java)
-    }
-
-    override fun onPlayServiceConnected(service: IBinder) {
-        LogUtil.i(TAG, "onPlayServiceConnected")
-        val binder = service as YouTubeService.LocalBinder
-        playService = binder.getService()
-        playService?.presenter = this.presenter
-        playService?.initMediaControllerCompat(this.presenter)
-        initYouTubePlayerView()
-        initChromecastContext()
-        LogUtil.d(TAG, "onPlayServiceConnected.Video player view")
-        // Video player view
-        // setVideoPlayerView()
-        LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
-        presenter.playSongPlayedBeforeActivityCreated()
     }
 
     private fun isEnableView(view: View, isEnable: Boolean) {
@@ -211,17 +190,31 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         LogUtil.i(TAG, "setupMenuItems")
     }
 
+    override fun getPlayServiceIntent(): Intent {
+        return Intent(activity, YouTubeService::class.java)
+    }
+
+    override fun onPlayServiceConnected(service: IBinder) {
+        LogUtil.i(TAG, "onPlayServiceConnected")
+        val binder = service as YouTubeService.LocalBinder
+        playService = binder.getService()
+        playService?.presenter = this.presenter
+        playService?.initMediaControllerCompat(this.presenter)
+        initYouTubePlayerView()
+        initChromecastContext()
+        LogUtil.d(TAG, "onPlayServiceConnected.Video player view")
+        // Video player view
+        // setVideoPlayerView()
+        LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
+        presenter.playSongPlayedBeforeActivityCreated()
+    }
+
     override fun audioChannelButtonListener() {
         LogUtil.i(TAG, "audioChannelButtonListener")
     }
 
-    override suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
-        LogUtil.d(TAG, "getFavoriteSongs")
-        activity?.let {
-            return DatabaseAccessUtil.readSavedSongList(it,
-                YTConstants.YT_FAV_DB_NAME, true)
-        }
-        return ArrayList()
+    override fun getFavDatabaseName(): String {
+        return YTConstants.YT_FAV_DB_NAME
     }
     // end of implementing abstract methods of super class
 

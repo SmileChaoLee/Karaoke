@@ -46,6 +46,7 @@ class SafPickerFragment: ComOpenFragment() {
                 result.data?.let {
                     val uriList = ContentUriUtil.getUrisList(requireActivity(),it)
                     MySingleton.fileList.clear()
+                    // convert uriList to MySingleton.fileList
                     for (uri in uriList) {
                         LogUtil.d(TAG, "openDocumentLauncher.result.uri = $uri")
                         val file = ContentUriUtil.getFileFromContentUri(activity, uri)
@@ -68,7 +69,7 @@ class SafPickerFragment: ComOpenFragment() {
                     // BaseActivity will be coming back from invisible and similar to
                     // coming back from background
                     lifecycleScope.launch(Dispatchers.Main) {
-                        startPlaySelectedSong(activity, "openDocumentLauncher")
+                        startPlaySelectedSong(activity)
                     }
                 }
             }

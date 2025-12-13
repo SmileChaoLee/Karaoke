@@ -26,7 +26,7 @@ import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
-import com.smile.karaoke.utilities.DatabaseAccessUtil
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
@@ -214,7 +214,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
             var excessYn = false
             val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
             activity?.let {
-                DatabaseAccessUtil.readSavedSongList(it,
+                DatabaseUtil.readSavedFavorites(it,
                     databaseName, false).also { sqlIt ->
                     var index = 0
                     for (element in sqlIt) {

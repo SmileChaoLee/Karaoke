@@ -58,8 +58,7 @@ import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
-import com.smile.karaoke.roomdatabase.FavSongDatabase
-import com.smile.karaoke.utilities.DatabaseAccessUtil
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.MyBannerTool
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
@@ -964,19 +963,16 @@ abstract class PlayerBaseFragment : Fragment(),
             LogUtil.d(TAG,"heartImageButton.onClick.currentSongIndex = $index")
             if (index>=0 && MySingleton.orderedSongs.size>index) {
                 activity?.let { actIt ->
-                    val songInfo = MySingleton.orderedSongs[index]
                     lifecycleScope.launch(Dispatchers.IO) {
-                        val db = FavSongDatabase.getDatabase(actIt,getFavDatabaseName())
-                        // check if this file is already in database
-                        if (db.findOneSongByFilepath(songInfo.filePath) == null) {
-                            songInfo.included = "1"
-                            db.favSongDao().addSongToSongList(songInfo)
-                        }
-                        db.close()
-                        withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(actIt, getString(R.string.add_to_favorites), textFontSize,
-                                ScreenUtil.FontSize_Pixel_Type,
-                                Toast.LENGTH_SHORT)
+                        if (DatabaseUtil.addSongToFavorites(actIt, getFavDatabaseName(),
+                            MySingleton.orderedSongs[index])) {
+                            withContext(Dispatchers.Main) {
+                                ScreenUtil.showToast(
+                                    actIt, getString(R.string.add_to_favorites), textFontSize,
+                                    ScreenUtil.FontSize_Pixel_Type,
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
                         }
                     }
                 }
@@ -1448,7 +1444,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private suspend fun getFavoriteSongs(): ArrayList<SongInfo> {
         LogUtil.d(TAG, "getFavoriteSongs")
         activity?.let {
-            return DatabaseAccessUtil.readSavedSongList(it,
+            return DatabaseUtil.readSavedFavorites(it,
                 getFavDatabaseName(),true)
         }
         return ArrayList()
