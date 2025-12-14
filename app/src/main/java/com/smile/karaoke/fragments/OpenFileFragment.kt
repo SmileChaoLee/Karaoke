@@ -20,10 +20,8 @@ import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
-import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.karaoke.utilities.SongUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -279,7 +277,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity ?: return@setOnClickListener
             lifecycleScope.launch(Dispatchers.IO) {
-                val songs = SongUtil.fileDescriptionsToSongList(MySingleton.fileList)
+                val songs = fileDescriptionsToSongList(MySingleton.fileList)
                 if (songs.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(act,
