@@ -79,23 +79,31 @@ class BaseSongDataActivity : AppCompatActivity() {
         numList.add("6")
         numList.add("7")
         numList.add("8")
+
         val audioMusicTrackAdapter = SpinnerAdapter(
             this, R.layout.spinner_item_layout,
             R.id.spinnerTextView, numList, textFontSize
         )
+        // audioMusicTrackAdapter.setDropDownViewResource(R.layout.spinner_item_layout)
+
         val audioVocalTrackAdapter = SpinnerAdapter(
             this, R.layout.spinner_item_layout,
             R.id.spinnerTextView, numList, textFontSize
         )
+        // audioVocalTrackAdapter.setDropDownViewResource(R.layout.spinner_item_layout)
+
         val aList = ArrayList<String?>(SmileAppBase.audioChannelMap.values)
         val audioMusicChannelAdapter = SpinnerAdapter(
             this, R.layout.spinner_item_layout,
             R.id.spinnerTextView, aList, textFontSize
         )
+        // audioMusicChannelAdapter.setDropDownViewResource(R.layout.spinner_item_layout)
+
         val audioVocalChannelAdapter = SpinnerAdapter(
             this, R.layout.spinner_item_layout,
             R.id.spinnerTextView, aList, textFontSize
         )
+        // audioVocalChannelAdapter.setDropDownViewResource(R.layout.spinner_item_layout)
 
         val titleStringTextView = findViewById<TextView>(R.id.edit_titleStringTextView)
         ScreenUtil.resizeTextSize(titleStringTextView, textFontSize)
@@ -106,7 +114,7 @@ class BaseSongDataActivity : AppCompatActivity() {
         val filePathStringTextView = findViewById<TextView>(R.id.edit_filePathStringTextView)
         ScreenUtil.resizeTextSize(filePathStringTextView, textFontSize)
         filePathEditText = findViewById(R.id.edit_filePathEditText)
-        filePathEditText?.setEnabled(false)
+        filePathEditText?.isEnabled = false
         ScreenUtil.resizeTextSize(filePathEditText, textFontSize)
         filePathEditText?.setText(mSongInfo.filePath)
         karaokeSettingLayout = findViewById(R.id.karaokeSettingLayout)
@@ -115,7 +123,7 @@ class BaseSongDataActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.edit_musicTrackStringTextView)
         ScreenUtil.resizeTextSize(musicTrackStringTextView, textFontSize)
         musicTrackSpinner = findViewById(R.id.edit_musicTrackSpinner)
-        musicTrackSpinner?.setAdapter(audioMusicTrackAdapter)
+        musicTrackSpinner?.adapter = audioMusicTrackAdapter
         mSongInfo.musicTrackNo?.let {
             musicTrackSpinner?.setSelection(it - 1)
         } ?: musicTrackSpinner?.setSelection(0)
@@ -123,13 +131,13 @@ class BaseSongDataActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.edit_musicChannelStringTextView)
         ScreenUtil.resizeTextSize(musicChannelStringTextView, textFontSize)
         musicChannelSpinner = findViewById(R.id.edit_musicChannelSpinner)
-        musicChannelSpinner?.setAdapter(audioMusicChannelAdapter)
+        musicChannelSpinner?.adapter = audioMusicChannelAdapter
         musicChannelSpinner?.setSelection(mSongInfo.musicChannel?: CommonConstants.STEREO)
         val vocalTrackStringTextView =
             findViewById<TextView>(R.id.edit_vocalTrackStringTextView)
         ScreenUtil.resizeTextSize(vocalTrackStringTextView, textFontSize)
         vocalTrackSpinner = findViewById(R.id.edit_vocalTrackSpinner)
-        vocalTrackSpinner?.setAdapter(audioVocalTrackAdapter)
+        vocalTrackSpinner?.adapter = audioVocalTrackAdapter
         mSongInfo.vocalTrackNo?.let {
             vocalTrackSpinner?.setSelection(it - 1)
         } ?: vocalTrackSpinner?.setSelection(0)
@@ -138,7 +146,7 @@ class BaseSongDataActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.edit_vocalChannelStringTextView)
         ScreenUtil.resizeTextSize(vocalChannelStringTextView, textFontSize)
         vocalChannelSpinner = findViewById(R.id.edit_vocalChannelSpinner)
-        vocalChannelSpinner?.setAdapter(audioVocalChannelAdapter)
+        vocalChannelSpinner?.adapter = audioVocalChannelAdapter
         vocalChannelSpinner?.setSelection(mSongInfo.vocalChannel?: CommonConstants.STEREO)
 
         karaokeSettingLayout?.visibility = View.VISIBLE

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:drawable/spinner_background"
     android:spinnerMode="dropdown"
+    android:dropDownSelector="@drawable/spinner_item_focus_color"
     android:overlapAnchor="false"
     android:dropDownVerticalOffset="0dp"
     android:layout_margin="5dp"

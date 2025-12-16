@@ -1,65 +1,45 @@
-package com.smile.karaoke.adapters;
+package com.smile.karaoke.adapters
 
-import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import com.smile.smilelibraries.utilities.ScreenUtil
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class SpinnerAdapter(
+    context: Context,
+    private val resource: Int,
+    private val textViewResourceId: Int,
+    private val objects: List<String?>,
+    private val textFontSize: Float
+) : ArrayAdapter<String?>(context, resource, textViewResourceId, objects) {
 
-import com.smile.karaoke.R;
-import com.smile.smilelibraries.utilities.ScreenUtil;
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
 
-import java.util.List;
-
-public class SpinnerAdapter extends ArrayAdapter {
-
-    private final Activity mActivity;
-    private final int mTextViewResourceId;
-    private final float mTextFontSize;
-
-    @SuppressWarnings("unchecked")
-    public SpinnerAdapter(@NonNull Context context, int resource, int textViewResourceId,
-                          @NonNull List objects, float textSize) {
-        super(context, resource, textViewResourceId, objects);
-        mActivity = (Activity)context;
-        mTextViewResourceId = textViewResourceId;
-        mTextFontSize = textSize;
+    // This method is for the "closed" spinner view (the selected item)
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val view = super.getView(position, convertView, parent)
+        val textView = view.findViewById<TextView>(textViewResourceId)
+        ScreenUtil.resizeTextSize(textView, textFontSize)
+        return view
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = super.getView(position, convertView, parent);
-        if (getCount() == 0) {
-            return view;
-        }
+    // --- THIS IS THE IMPORTANT PART ---
+    // This method is for each item in the dropdown list
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+        // Inflate a new view, ignoring convertView to ensure the background is always applied
+        // val view = inflater.inflate(resource, parent, false)
+        val view = convertView ?: inflater.inflate(resource, parent, false)
+        // Find the TextView inside the layout
+        val textView = view.findViewById<TextView>(textViewResourceId)
+        // Set the text for the current item
+        textView.text = getItem(position)
+        // Apply the text size
+        ScreenUtil.resizeTextSize(textView, textFontSize)
 
-        TextView itemTextView = view.findViewById(mTextViewResourceId);
-        ScreenUtil.resizeTextSize(itemTextView, mTextFontSize);
-
-        return view;
-    }
-
-    @NonNull
-    @Override
-    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // View view = super.getView(position, convertView, parent);
-        View view = mActivity.getLayoutInflater().inflate(R.layout.spinner_dropdown_item_layout, parent, false);
-
-        if (getCount() == 0) {
-            return view;
-        }
-
-        if (view != null) {
-            TextView itemTextView = view.findViewById(R.id.customSpinnerTextView);
-            itemTextView.setText(getItem(position).toString());
-            ScreenUtil.resizeTextSize(itemTextView, mTextFontSize);
-        }
-
-        return view;
+        return view
     }
 }
+

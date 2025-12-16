@@ -1,0 +1,9 @@
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:drawable="@color/colorAccent" />
+    <item android:state_pressed="true" android:drawable="@color/red" />
+    <!-- State for the currently selected item in the dropdown -->
+    <item android:state_activated="true" android:drawable="@color/yellow" />
+    <item android:drawable="@android:color/transparent" />
+</selector>
+
