@@ -1,9 +1,11 @@
 package com.smile.karaoke.fragments
 
+import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -17,11 +19,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaoke.BaseFavoriteListActivity
+import com.smile.karaoke.BaseSongDataActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
 import com.smile.karaoke.adapters.MyLinearLayoutManager
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
@@ -67,7 +70,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
     private var myListRecyclerView : RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : FavoriteRecyclerViewAdapter? = null
-    private lateinit var editSongsActivityLauncher: ActivityResultLauncher<Intent>
+    private lateinit var editSongInfoLauncher: ActivityResultLauncher<Intent>
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
@@ -87,10 +90,31 @@ open class FavoritesFragment : ItemsBaseFragment(),
             LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
         }
 
-        editSongsActivityLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()){
+        editSongInfoLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
             playMyFavorites?.restorePlayingState()
-            searchFavorites()
+            if (result.resultCode == RESULT_CANCELED) return@registerForActivityResult
+            val act = activity ?: return@registerForActivityResult
+            result.data?.extras?.let {
+                val action = it.getString(CommonConstants.CRUD_ACTION)
+                LogUtil.d(TAG, "editSongInfoLauncher.action = $action")
+                val song = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                        it.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
+                            SongInfo::class.java)
+                    else it.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE)
+                if (song == null) return@registerForActivityResult
+                lifecycleScope.launch(Dispatchers.IO) {
+                    if (action == CommonConstants.SAVE_ACTION) {
+                        val updNum = DatabaseUtil.updateOneSongFromSongList(act, databaseName, song)
+                        LogUtil.d(TAG, "editSongInfoLauncher.save.updNum = $updNum")
+                    } else if (action == CommonConstants.DELETE_ACTION) {
+                        val delNum = DatabaseUtil.deleteOneSongFromSongList(act, databaseName, song)
+                        LogUtil.d(TAG, "editSongInfoLauncher.delete.delNum = $delNum")
+                    }
+                    LogUtil.d(TAG, "editSongInfoLauncher.searchFavorites()")
+                    searchFavorites()
+                }
+            }
         }
 
         LogUtil.d(TAG, "onCreate.FavoriteSingleTon.favoriteList.size = ${MySingleton.favorites.size}")
@@ -126,6 +150,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
             exitImageButton = it.findViewById(R.id.exitImageButton)
             exitImageButton?.visibility = View.VISIBLE
         }
+        searchFavorites()
         initFavoriteRecyclerView()
 
         super.onViewCreated(view, savedInstanceState)
@@ -134,26 +159,23 @@ open class FavoritesFragment : ItemsBaseFragment(),
     override fun onStart() {
         super.onStart()
         LogUtil.i(TAG, "onStart")
-        searchFavorites()   // has to be in onResume()
     }
 
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
         setupSwitchDecoderButton()
-        // searchFavorites()   // has to be in onResume()
     }
 
     override fun onPause() {
         super.onPause()
         LogUtil.i(TAG, "onPause")
-        // clearFavoriteList()
     }
 
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-        clearFavoriteList()
+        // clearFavoriteList()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -180,25 +202,23 @@ open class FavoritesFragment : ItemsBaseFragment(),
 
     override fun startEditSongInfo(position: Int) {
         LogUtil.i(TAG, "startEditSongInfo.position = $position")
-        val listIt = listOf(MySingleton.favorites[position].song)
-        LogUtil.d(TAG, "editButton.listIt.size = ${listIt.size}")
-        if (listIt.isNotEmpty()) {
-            playMyFavorites?.let {playIt ->
-                intentForFavoriteListActivity().apply {
-                    playIt.onSavePlayingState(component)
-                    MySingleton.backupSelectedFavorites()
-                    LogUtil.i(TAG, "startEditSongInfo.backupSelectedId.size" +
-                            "= ${MySingleton.backupSelectedId.size}")
-                    MySingleton.selectedFavorites.clear()
-                    MySingleton.selectedFavorites.addAll(listIt)
-                    editSongsActivityLauncher.launch(this)
-                }
+        val song = MySingleton.favorites[position].song
+        val act = activity?: return
+        playMyFavorites?.let { playIt ->
+            Intent(act, BaseSongDataActivity::class.java).apply {
+                playIt.onSavePlayingState(component)
+                MySingleton.backupSelectedFavorites()
+                LogUtil.i(TAG, "startEditSongInfo.backupSelectedId.size" +
+                        "= ${MySingleton.backupSelectedId.size}")
+                putExtra(MyPlayerConstants.SINGLE_SONG_INFO_STATE, song)
+                editSongInfoLauncher.launch(this@apply)
             }
         }
     }
     // end of implementing FavoriteRecyclerViewAdapter.FavItemListener
 
     fun clearFavoriteList() {
+        LogUtil.i(TAG, "clearFavoriteList")
         MySingleton.favorites.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
         myListRecyclerView?.visibility = View.GONE
@@ -207,77 +227,76 @@ open class FavoritesFragment : ItemsBaseFragment(),
     fun searchFavorites() {
         val logStr = "searchFavorites"
         LogUtil.i(TAG, logStr)
-        searchCompleted = false
-        myListRecyclerView?.visibility = View.GONE
-        loadingMsgTextView?.visibility = View.VISIBLE
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            val act = activity?: return@launch
+            searchCompleted = false
+            myListRecyclerView?.visibility = View.GONE
+            loadingMsgTextView?.visibility = View.VISIBLE
             var excessYn = false
-            val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
-            activity?.let {
-                DatabaseUtil.readSavedFavorites(it,
-                    databaseName, false).also { sqlIt ->
-                    var index = 0
-                    for (element in sqlIt) {
-                        LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
-                        LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
-                        var bm: Bitmap? = null
-                        try {
-                            val path = File(element.filePath).path
-                            LogUtil.d(TAG, "$logStr.path = $path")
-                            mediaRetriever.setDataSource(element.filePath)
-                            bm = mediaRetriever.getFrameAtTime(0,
-                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
-                        } catch (ex: Exception) {
-                            LogUtil.e(TAG, "$logStr.setDataSource.Exception:",
-                                ex)
-                        }
-                        element.included = "0"
-                        tempList.add(SongDescription(element, bm))
-                        index++
-                        if (index >= MySingleton.MAX_SONGS) {
-                            // excess the max
-                            excessYn = true
-                            break
-                        }
+            withContext(Dispatchers.IO) {
+                val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
+                val songs = DatabaseUtil.readSavedFavorites(act, databaseName, false)
+                var index = 0
+                for (element in songs) {
+                    LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
+                    LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
+                    var bm: Bitmap? = null
+                    try {
+                        val path = File(element.filePath).path
+                        LogUtil.d(TAG, "$logStr.path = $path")
+                        mediaRetriever.setDataSource(element.filePath)
+                        bm = mediaRetriever.getFrameAtTime(
+                            0,
+                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                        )?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                    } catch (ex: Exception) {
+                        LogUtil.e(
+                            TAG, "$logStr.setDataSource.Exception:",
+                            ex
+                        )
+                    }
+                    element.included = "0"
+                    tempList.add(SongDescription(element, bm))
+                    index++
+                    if (index >= MySingleton.MAX_SONGS) {
+                        // excess the max
+                        excessYn = true
+                        break
                     }
                 }
+                MySingleton.favorites.clear()
+                MySingleton.favorites.addAll(tempList)
+                LogUtil.d(TAG, "$logStr.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
             }
-            MySingleton.favorites.clear()
-            MySingleton.favorites.addAll(tempList)
-            LogUtil.d(TAG, "$logStr.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
-
             // Update the UI
-            withContext(Dispatchers.Main) {
-                loadingMsgTextView?.visibility = View.GONE
-                if (excessYn) {
-                    ScreenUtil.showToast(
-                        activity, getString(R.string.excess_max) +
-                                " ${MySingleton.MAX_SONGS}", textFontSize,
-                        Toast.LENGTH_SHORT)
-                }
-                if (MySingleton.favorites.isNotEmpty()) {
-                    for (fav in MySingleton.favorites) {
-                        LogUtil.d(TAG, "$logStr.fav.song.id = ${fav.song.id}")
-                        if (MySingleton.backupSelectedId.contains(fav.song.id)) {
-                            LogUtil.d(TAG, "$logStr.contains")
-                            fav.song.included = "1"
-                        }
-                    }
-                    myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                    myListRecyclerView?.visibility = View.VISIBLE
-                } else {
-                    LogUtil.d(TAG, "$logStr.MySingleTon.favorites is empty")
-                    myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                    myListRecyclerView?.visibility = View.GONE
-                    // Change the focus
-                    val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
-                    val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                    LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
-                    showVideoButton?.requestFocus()
-                }
-                searchCompleted = true  // searching thread finished
+            loadingMsgTextView?.visibility = View.GONE
+            if (excessYn) {
+                ScreenUtil.showToast(
+                    activity, getString(R.string.excess_max) +
+                            " ${MySingleton.MAX_SONGS}", textFontSize,
+                    Toast.LENGTH_SHORT)
             }
+            if (MySingleton.favorites.isNotEmpty()) {
+                for (fav in MySingleton.favorites) {
+                    LogUtil.d(TAG, "$logStr.fav.song.id = ${fav.song.id}")
+                    if (MySingleton.backupSelectedId.contains(fav.song.id)) {
+                        LogUtil.d(TAG, "$logStr.contains")
+                        fav.song.included = "1"
+                    }
+                }
+                myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                myListRecyclerView?.visibility = View.VISIBLE
+            } else {
+                LogUtil.d(TAG, "$logStr.MySingleTon.favorites is empty")
+                myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                myListRecyclerView?.visibility = View.GONE
+                // Change the focus
+                val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
+                val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
+                LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
+                showVideoButton?.requestFocus()
+            }
+            searchCompleted = true  // searching thread finished
         }
     }
 
@@ -346,10 +365,6 @@ open class FavoritesFragment : ItemsBaseFragment(),
         unselectButton?.layoutParams = buttonParam
         switchDecoderButton?.layoutParams = buttonParam
         playSelectedButton?.layoutParams = buttonParam
-    }
-
-    private fun intentForFavoriteListActivity(): Intent {
-        return Intent(activity, BaseFavoriteListActivity::class.java)
     }
 
     private fun initFavoriteRecyclerView() {

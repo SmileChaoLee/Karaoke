@@ -8,6 +8,7 @@ import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.roomdatabase.FavSongDatabase
+import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -46,7 +47,8 @@ object DatabaseUtil {
     }
 
     suspend fun addSongsToFavorites(act: Activity, dbName: String,
-                                    songs: ArrayList<SongInfo>): Boolean {
+                                    songs: ArrayList<SongInfo>,
+                                    textFontSize: Float): Boolean {
         val msg = "addSongsToFavorites"
         LogUtil.d(TAG, msg)
         val res = act.resources
@@ -62,20 +64,37 @@ object DatabaseUtil {
                     db.addSongToSongList(song)
                     added = true
                     numRecords++
+                    LogUtil.d(TAG, "$msg.numRecords = $numRecords")
                 }
             } else {
                 LogUtil.d(TAG, "$msg.excess the max")
                 // excess max number of favorites
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(act,
+                    ScreenUtil.showToast(act,
                         res.getString(R.string.excess_max) + ", ${MySingleton.MAX_SONGS}",
-                        Toast.LENGTH_SHORT).show()
+                        textFontSize,Toast.LENGTH_SHORT)
                 }
                 break
             }
         }
         db.close()
         return added
+    }
+
+    suspend fun updateOneSongFromSongList(act: Activity, dbName: String,
+                                          song: SongInfo): Int {
+        val db = FavSongDatabase.getDatabase(act, dbName)
+        val numUpdated = db.updateOneSongFromSongList(song)
+        db.close()
+        return numUpdated
+    }
+
+    suspend fun deleteOneSongFromSongList(act: Activity, dbName: String,
+                                          song: SongInfo): Int {
+        val db = FavSongDatabase.getDatabase(act, dbName)
+        val numDeleted = db.deleteOneSongFromSongList(song)
+        db.close()
+        return numDeleted
     }
 
     suspend fun getSongsToPlay(act: Activity, dbName: String

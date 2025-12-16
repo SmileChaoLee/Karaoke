@@ -105,6 +105,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             exitImageButton = it.findViewById(R.id.exitImageButton)
             exitImageButton?.visibility = View.VISIBLE
         }
+        searchCurrentFolder()
         initFilesRecyclerView()
 
         super.onViewCreated(view, savedInstanceState)
@@ -114,7 +115,6 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         super.onStart()
         LogUtil.i(TAG, "onStart")
         setupSwitchDecoderButton()
-        searchCurrentFolder()   // has to be in onResume()
     }
 
     override fun onResume() {
@@ -130,7 +130,6 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-        clearFileList()
     }
 
     override fun onDestroy() {
@@ -280,19 +279,17 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 val songs = fileDescriptionsToSongList(MySingleton.fileList)
                 if (songs.isEmpty()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(act,
+                        ScreenUtil.showToast(act,
                             getString(R.string.noFilesSelectedString),
-                            Toast.LENGTH_SHORT).show()
+                            textFontSize,Toast.LENGTH_SHORT)
                     }
                 } else {
                     if (DatabaseUtil.addSongsToFavorites(act,
-                            CommonConstants.FAVORITE_DB_NAME, songs)) {
+                            CommonConstants.FAVORITE_DB_NAME, songs, textFontSize)) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                act,
+                            ScreenUtil.showToast(act,
                                 getString(R.string.add_to_favorites),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                textFontSize,Toast.LENGTH_SHORT)
                         }
                     }
                 }

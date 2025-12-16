@@ -111,8 +111,7 @@
             android:layout_height="0dp"
             android:gravity="center_vertical"
             android:layout_weight="20">
-            <include layout="@layout/edit_save_one_song_button_layout" />
-            <include layout="@layout/edit_exit_edit_song_button_layout" />
+            <include layout="@layout/save_delete_exit_buttons_layout" />
         </RelativeLayout>
 
     </LinearLayout>

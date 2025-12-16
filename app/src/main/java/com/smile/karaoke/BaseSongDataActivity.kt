@@ -1,380 +1,290 @@
-package com.smile.karaoke;
+package com.smile.karaoke
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.Editable;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Intent
+import android.graphics.Color
+import android.os.Build
+import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.smile.karaoke.adapters.SpinnerAdapter
+import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.constants.MyPlayerConstants
+import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import com.smile.karaoke.adapters.SpinnerAdapter;
-import com.smile.karaoke.constants.CommonConstants;
-import com.smile.karaoke.constants.MyPlayerConstants;
-import com.smile.karaoke.models.SongInfo;
-import com.smile.karaoke.models.SongListSQLite;
-import com.smile.karaoke.utilities.LogUtil;
-import com.smile.smilelibraries.utilities.ScreenUtil;
+class BaseSongDataActivity : AppCompatActivity() {
 
-import java.util.ArrayList;
-import java.util.Objects;
+    companion object {
+        private const val TAG = "BaseSongDataActivity"
+    }
 
-public class BaseSongDataActivity extends AppCompatActivity {
+    private var textFontSize = 0f
+    private var toastTextSize = 0f
+    private var titleNameEditText: EditText? = null
+    private var filePathEditText: EditText? = null
+    private var musicTrackSpinner: Spinner? = null
+    private var musicChannelSpinner: Spinner? = null
+    private var vocalTrackSpinner: Spinner? = null
+    private var vocalChannelSpinner: Spinner? = null
+    private var includedPlaylistCheckBox: CheckBox? = null
+    private var karaokeSettingLayout: LinearLayout? = null
+    private lateinit var mSongInfo: SongInfo
 
-    private static final String TAG = "BaseSongDataActivity";
-    private float toastTextSize;
-    private EditText edit_titleNameEditText;
-    private EditText edit_filePathEditText;
-    private Spinner edit_musicTrackSpinner;
-    private Spinner edit_musicChannelSpinner;
-    private Spinner edit_vocalTrackSpinner;
-    private Spinner edit_vocalChannelSpinner;
-    private CheckBox editIncludedPlaylistCheckBox;
-    protected LinearLayout karaokeSettingLayout;
-    private String crudAction = null;
-    private SongInfo mSongInfo = null;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        LogUtil.d(TAG, "onCreate")
+        setContentView(R.layout.activity_song_data)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        LogUtil.d(TAG, "onCreate() is called.");
-
-        float textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
-        textFontSize *= 0.8f;
-        toastTextSize = 0.9f * textFontSize;
-        Bundle extras;
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
+        textFontSize *= 0.8f
+        toastTextSize = 0.9f * textFontSize
+        val extras: Bundle?
         if (savedInstanceState == null) {
-            Intent callingIntent = getIntent();
-            extras = callingIntent.getExtras();
-            crudAction = callingIntent.getStringExtra(CommonConstants.CRUD_ACTION);
-            LogUtil.d(TAG, "savedInstanceState is null.");
+            extras = intent.extras
+            LogUtil.d(TAG, "savedInstanceState is null.")
         } else {
             // not null, has savedInstanceState
-            extras = savedInstanceState;
-            crudAction = extras.getString(CommonConstants.CRUD_ACTION);
-            LogUtil.d(TAG, "savedInstanceState is not null.");
+            extras = savedInstanceState
+            LogUtil.d(TAG, "savedInstanceState is not null.")
         }
-        if (extras != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                mSongInfo = extras.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
-                        SongInfo.class);
-            else mSongInfo = extras.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE);
+        var song: SongInfo? = null
+        extras?.let {
+            song = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                it.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
+                SongInfo::class.java)
+            else it.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE)
         }
 
-        setContentView(R.layout.activity_song_data);
-
+        if (song == null) returnToPreviousWithResult(RESULT_CANCELED)
+        mSongInfo = song!!
         // ArrayAdapters for spinners
-        ArrayList<String> numList = new ArrayList<>();
-        numList.add("1");
-        numList.add("2");
-        numList.add("3");
-        numList.add("4");
-        numList.add("5");
-        numList.add("6");
-        numList.add("7");
-        numList.add("8");
-        SpinnerAdapter audioMusicTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, numList, textFontSize);
-        SpinnerAdapter audioVocalTrackAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, numList, textFontSize);
-        ArrayList<String> aList = new ArrayList<>(SmileAppBase.audioChannelMap.values());
-        SpinnerAdapter audioMusicChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, aList, textFontSize);
-        SpinnerAdapter audioVocalChannelAdapter = new SpinnerAdapter(this, R.layout.spinner_item_layout,
-                R.id.spinnerTextView, aList, textFontSize);
-        // audioVocalChannelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_layout);
+        val numList = ArrayList<String?>()
+        numList.add("1")
+        numList.add("2")
+        numList.add("3")
+        numList.add("4")
+        numList.add("5")
+        numList.add("6")
+        numList.add("7")
+        numList.add("8")
+        val audioMusicTrackAdapter = SpinnerAdapter(
+            this, R.layout.spinner_item_layout,
+            R.id.spinnerTextView, numList, textFontSize
+        )
+        val audioVocalTrackAdapter = SpinnerAdapter(
+            this, R.layout.spinner_item_layout,
+            R.id.spinnerTextView, numList, textFontSize
+        )
+        val aList = ArrayList<String?>(SmileAppBase.audioChannelMap.values)
+        val audioMusicChannelAdapter = SpinnerAdapter(
+            this, R.layout.spinner_item_layout,
+            R.id.spinnerTextView, aList, textFontSize
+        )
+        val audioVocalChannelAdapter = SpinnerAdapter(
+            this, R.layout.spinner_item_layout,
+            R.id.spinnerTextView, aList, textFontSize
+        )
 
-        TextView edit_titleStringTextView = findViewById(R.id.edit_titleStringTextView);
-        ScreenUtil.resizeTextSize(edit_titleStringTextView, textFontSize);
-        edit_titleNameEditText = findViewById(R.id.edit_titleNameEditText);
-        ScreenUtil.resizeTextSize(edit_titleNameEditText, textFontSize);
-        edit_titleNameEditText.setText(mSongInfo.getSongName());
+        val titleStringTextView = findViewById<TextView>(R.id.edit_titleStringTextView)
+        ScreenUtil.resizeTextSize(titleStringTextView, textFontSize)
+        titleNameEditText = findViewById(R.id.edit_titleNameEditText)
+        ScreenUtil.resizeTextSize(titleNameEditText, textFontSize)
+        titleNameEditText?.setText(mSongInfo.songName)
 
-        TextView edit_filePathStringTextView = findViewById(R.id.edit_filePathStringTextView);
-        ScreenUtil.resizeTextSize(edit_filePathStringTextView, textFontSize);
-        edit_filePathEditText = findViewById(R.id.edit_filePathEditText);
-        edit_filePathEditText.setEnabled(false);
-        ScreenUtil.resizeTextSize(edit_filePathEditText, textFontSize);
-        edit_filePathEditText.setText(mSongInfo.getFilePath());
+        val filePathStringTextView = findViewById<TextView>(R.id.edit_filePathStringTextView)
+        ScreenUtil.resizeTextSize(filePathStringTextView, textFontSize)
+        filePathEditText = findViewById(R.id.edit_filePathEditText)
+        filePathEditText?.setEnabled(false)
+        ScreenUtil.resizeTextSize(filePathEditText, textFontSize)
+        filePathEditText?.setText(mSongInfo.filePath)
+        karaokeSettingLayout = findViewById(R.id.karaokeSettingLayout)
 
-        karaokeSettingLayout = findViewById(R.id.karaokeSettingLayout);
-        //
-        TextView edit_musicTrackStringTextView = findViewById(R.id.edit_musicTrackStringTextView);
-        ScreenUtil.resizeTextSize(edit_musicTrackStringTextView, textFontSize);
-        edit_musicTrackSpinner = findViewById(R.id.edit_musicTrackSpinner);
-        edit_musicTrackSpinner.setAdapter(audioMusicTrackAdapter);
-        edit_musicTrackSpinner.setSelection(mSongInfo.getMusicTrackNo() - 1);
+        val musicTrackStringTextView =
+            findViewById<TextView>(R.id.edit_musicTrackStringTextView)
+        ScreenUtil.resizeTextSize(musicTrackStringTextView, textFontSize)
+        musicTrackSpinner = findViewById(R.id.edit_musicTrackSpinner)
+        musicTrackSpinner?.setAdapter(audioMusicTrackAdapter)
+        mSongInfo.musicTrackNo?.let {
+            musicTrackSpinner?.setSelection(it - 1)
+        } ?: musicTrackSpinner?.setSelection(0)
+        val musicChannelStringTextView =
+            findViewById<TextView>(R.id.edit_musicChannelStringTextView)
+        ScreenUtil.resizeTextSize(musicChannelStringTextView, textFontSize)
+        musicChannelSpinner = findViewById(R.id.edit_musicChannelSpinner)
+        musicChannelSpinner?.setAdapter(audioMusicChannelAdapter)
+        musicChannelSpinner?.setSelection(mSongInfo.musicChannel?: CommonConstants.STEREO)
+        val vocalTrackStringTextView =
+            findViewById<TextView>(R.id.edit_vocalTrackStringTextView)
+        ScreenUtil.resizeTextSize(vocalTrackStringTextView, textFontSize)
+        vocalTrackSpinner = findViewById(R.id.edit_vocalTrackSpinner)
+        vocalTrackSpinner?.setAdapter(audioVocalTrackAdapter)
+        mSongInfo.vocalTrackNo?.let {
+            vocalTrackSpinner?.setSelection(it - 1)
+        } ?: vocalTrackSpinner?.setSelection(0)
 
-        TextView edit_musicChannelStringTextView = findViewById(R.id.edit_musicChannelStringTextView);
-        ScreenUtil.resizeTextSize(edit_musicChannelStringTextView, textFontSize);
-        edit_musicChannelSpinner = findViewById(R.id.edit_musicChannelSpinner);
-        edit_musicChannelSpinner.setAdapter(audioMusicChannelAdapter);
-        edit_musicChannelSpinner.setSelection(mSongInfo.getMusicChannel());
+        val vocalChannelStringTextView =
+            findViewById<TextView>(R.id.edit_vocalChannelStringTextView)
+        ScreenUtil.resizeTextSize(vocalChannelStringTextView, textFontSize)
+        vocalChannelSpinner = findViewById(R.id.edit_vocalChannelSpinner)
+        vocalChannelSpinner?.setAdapter(audioVocalChannelAdapter)
+        vocalChannelSpinner?.setSelection(mSongInfo.vocalChannel?: CommonConstants.STEREO)
 
-        TextView edit_vocalTrackStringTextView = findViewById(R.id.edit_vocalTrackStringTextView);
-        ScreenUtil.resizeTextSize(edit_vocalTrackStringTextView, textFontSize);
-        edit_vocalTrackSpinner = findViewById(R.id.edit_vocalTrackSpinner);
-        edit_vocalTrackSpinner.setAdapter(audioVocalTrackAdapter);
-        edit_vocalTrackSpinner.setSelection(mSongInfo.getVocalTrackNo() - 1);
+        karaokeSettingLayout?.visibility = View.VISIBLE
 
-        TextView edit_vocalChannelStringTextView = findViewById(R.id.edit_vocalChannelStringTextView);
-        ScreenUtil.resizeTextSize(edit_vocalChannelStringTextView, textFontSize);
-        edit_vocalChannelSpinner = findViewById(R.id.edit_vocalChannelSpinner);
-        edit_vocalChannelSpinner.setAdapter(audioVocalChannelAdapter);
-        edit_vocalChannelSpinner.setSelection(mSongInfo.getVocalChannel());
-
-        //
-        // setKaraokeSettingLayoutVisibility();    // abstract method
-        karaokeSettingLayout.setVisibility(View.VISIBLE);
-        //
-
-        TextView editIncludedPlaylistTextView = findViewById(R.id.editIncludedPlayListTextView);
-        ScreenUtil.resizeTextSize(editIncludedPlaylistTextView, textFontSize);
-        editIncludedPlaylistCheckBox = findViewById(R.id.editIncludedPlaylistCheckBox);
-        ScreenUtil.resizeTextSize(editIncludedPlaylistCheckBox, textFontSize);
-        boolean isChecked = Objects.equals(mSongInfo.getIncluded(), "1");
-        editIncludedPlaylistCheckBox.setChecked(isChecked);
-        editIncludedPlaylistCheckBox.setOnCheckedChangeListener((buttonView, isChecked1) -> {
-            editIncludedPlaylistCheckBox.setChecked(isChecked1);
-            editIncludedPlaylistCheckBox.jumpDrawablesToCurrentState();
-        });
-        editIncludedPlaylistCheckBox.setOnFocusChangeListener((v, hasFocus) -> {
+        val includedPlaylistTextView = findViewById<TextView>(R.id.editIncludedPlayListTextView)
+        ScreenUtil.resizeTextSize(includedPlaylistTextView, textFontSize)
+        includedPlaylistCheckBox = findViewById(R.id.editIncludedPlaylistCheckBox)
+        ScreenUtil.resizeTextSize(includedPlaylistCheckBox, textFontSize)
+        val isChecked = mSongInfo.included == "1"
+        includedPlaylistCheckBox?.setChecked(isChecked)
+        includedPlaylistCheckBox?.setOnCheckedChangeListener { buttonView: CompoundButton?,
+                                                                isChecked1: Boolean ->
+            includedPlaylistCheckBox!!.setChecked(isChecked1)
+            includedPlaylistCheckBox!!.jumpDrawablesToCurrentState()
+        }
+        includedPlaylistCheckBox?.setOnFocusChangeListener { v: View?, hasFocus: Boolean ->
             if (hasFocus) {
-                editIncludedPlaylistTextView.setTextColor(Color.RED);
-                // editIncludedPlaylistCheckBox.setBackgroundColor(Color.BLUE);
+                includedPlaylistTextView.setTextColor(Color.RED)
             } else {
-                editIncludedPlaylistTextView.setTextColor(Color.BLACK);
-                // editIncludedPlaylistCheckBox.setBackgroundColor(Color.TRANSPARENT);
+                includedPlaylistTextView.setTextColor(Color.BLACK)
             }
-        });
-
-        final Button edit_exitEditSongButton = findViewById(R.id.edit_exitEditSongButton);
-        ScreenUtil.resizeTextSize(edit_exitEditSongButton, textFontSize);
-        edit_exitEditSongButton.setOnClickListener(view ->
-                returnToPreviousWithResult(Activity.RESULT_CANCELED));
-
-        final Button edit_saveOneSongButton = findViewById(R.id.edit_saveOneSongButton);
-        ScreenUtil.resizeTextSize(edit_saveOneSongButton, textFontSize);
-        edit_saveOneSongButton.setOnClickListener(view -> {
-            final boolean isValid = setSongInfoFromInput(true);
-            SongListSQLite songListSQLite = new SongListSQLite(getApplicationContext());
-            SongInfo songInfo;
-            long databaseResult = -1;
-            if (crudAction == null) return;
-            switch (crudAction.toUpperCase()) {
-                case CommonConstants.EDIT_ACTION:
-                    // = "EDIT". Edit one record
-                    if (isValid) {
-                        songInfo = songListSQLite.findOneSongByUriString(mSongInfo.getFilePath());
-                        if (songInfo == null) {
-                            // not in the database
-                            databaseResult = songListSQLite.updateOneSongFromSongList(mSongInfo);
-                        } else {
-                            // already in the database
-                            // if (songInfo.getFilePath() == mSongInfo.getFilePath()) {
-                            if (songInfo.getId() == mSongInfo.getId()) {
-                                // same record because same id so update
-                                databaseResult = songListSQLite.updateOneSongFromSongList(mSongInfo);
-                            } else {
-                                // different id then duplicate
-                                ScreenUtil.showToast(BaseSongDataActivity.this, getString(R.string.duplicate_in_database),
-                                        toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG);
-                            }
-                        }
-                    }
-                    break;
-                case CommonConstants.DELETE_ACTION:
-                    // = "DELETE". Delete one record
-                    databaseResult = songListSQLite.deleteOneSongFromSongList(mSongInfo);
-                    break;
-            }
-            songListSQLite.closeDatabase();
-
-            if (databaseResult != -1) {
-                LogUtil.d(TAG, "edit_saveOneSongButton.databaseResult != -1");
-                returnToPreviousWithResult(Activity.RESULT_OK);
-            }
-        });
-
-        if (crudAction == null) {
-            LogUtil.d(TAG, "onCreate.crudAction = null");
-            returnToPreviousWithResult(Activity.RESULT_CANCELED);
-            return;
-        }
-        if (mSongInfo == null) {
-            LogUtil.d(TAG, "onCreate.mSongInfo = null");
-            returnToPreviousWithResult(Activity.RESULT_CANCELED);
-            return;
-        }
-        String actionButtonString;
-        switch (crudAction.toUpperCase()) {
-            case CommonConstants.EDIT_ACTION:
-                // = "EDIT". Edit one record
-                actionButtonString = getString(R.string.saveString);
-                enableEditing();
-                break;
-            case CommonConstants.DELETE_ACTION:
-                // = "DELETE". Delete one record
-                actionButtonString = getString(R.string.deleteString);
-                disableEditing();
-                break;
-            default:
-                actionButtonString = "";
-                returnToPreviousWithResult(Activity.RESULT_CANCELED);
         }
 
-        edit_saveOneSongButton.setText(actionButtonString);
-
-        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                LogUtil.d(TAG, "getOnBackPressedDispatcher.handleOnBackPressed");
-                returnToPreviousWithResult(Activity.RESULT_CANCELED);
+        val saveOneSongButton = findViewById<Button>(R.id.saveOneSongButton)
+        ScreenUtil.resizeTextSize(saveOneSongButton, textFontSize)
+        saveOneSongButton.setOnClickListener { view: View? ->
+            val isValid = setSongInfoFromInput(true)
+            if (isValid) {
+                returnToPreviousWithResult(RESULT_OK, CommonConstants.SAVE_ACTION)
             }
-        });
+        }
+
+        val deleteOneSongButton = findViewById<Button>(R.id.deleteOneSongButton)
+        ScreenUtil.resizeTextSize(deleteOneSongButton, textFontSize)
+        deleteOneSongButton.setOnClickListener { view: View? ->
+            returnToPreviousWithResult(RESULT_OK, CommonConstants.DELETE_ACTION)
+        }
+
+        val exitEditSongButton = findViewById<Button>(R.id.exitEditSongButton)
+        ScreenUtil.resizeTextSize(exitEditSongButton, textFontSize)
+        exitEditSongButton.setOnClickListener { view: View? ->
+            returnToPreviousWithResult(RESULT_CANCELED)
+        }
+
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                LogUtil.d(TAG, "getOnBackPressedDispatcher.handleOnBackPressed")
+                returnToPreviousWithResult(RESULT_CANCELED)
+            }
+        })
 
         // Find the LinearLayout by its ID
-        ConstraintLayout songDataLayout = findViewById(R.id.songDataLayout);
+        val songDataLayout = findViewById<ConstraintLayout>(R.id.songDataLayout)
         // Get the ViewTreeObserver for the LinearLayout
         songDataLayout.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Layout has been finished.
-                        // Remove the listener to avoid it being called repeatedly.
-                        // The removeOnGlobalLayoutListener() method is used for API 16 and above.
-                        songDataLayout.getViewTreeObserver()
-                                .removeOnGlobalLayoutListener(this);
-                        // Now it's safe to get the view's dimensions or perform other actions
-                        // that depend on the layout being complete.
-                        // do something after layout finished
-                    }
+            object : OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    // Layout has been finished.
+                    // Remove the listener to avoid it being called repeatedly.
+                    // The removeOnGlobalLayoutListener() method is used for API 16 and above.
+                    songDataLayout.getViewTreeObserver()
+                        .removeOnGlobalLayoutListener(this)
+                    // Now it's safe to get the view's dimensions or perform other actions
+                    // that depend on the layout being complete.
+                    // do something after layout finished
                 }
-        );
+            }
+        )
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        LogUtil.d(TAG, "onResume");
+    override fun onResume() {
+        super.onResume()
+        LogUtil.d(TAG, "onResume")
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LogUtil.d(TAG, "onPause");
+    override fun onPause() {
+        super.onPause()
+        LogUtil.d(TAG, "onPause")
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        LogUtil.d(TAG, "onSaveInstanceState");
-        setSongInfoFromInput(false);
-
-        outState.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
-        outState.putString(CommonConstants.CRUD_ACTION, crudAction);
-
-        super.onSaveInstanceState(outState);
+    override fun onSaveInstanceState(outState: Bundle) {
+        LogUtil.d(TAG, "onSaveInstanceState")
+        setSongInfoFromInput(false)
+        outState.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo)
+        super.onSaveInstanceState(outState)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LogUtil.d(TAG, "onDestroy");
-        mSongInfo = null;
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtil.d(TAG, "onDestroy")
     }
 
-    private void enableEditing() {
-        LogUtil.d(TAG, "enableEditing");
-        edit_titleNameEditText.setEnabled(true);
-        edit_filePathEditText.setEnabled(false);    // disabled all the time
-        edit_musicTrackSpinner.setEnabled(true);
-        edit_musicChannelSpinner.setEnabled(true);
-        edit_vocalTrackSpinner.setEnabled(true);
-        edit_vocalChannelSpinner.setEnabled(true);
-        editIncludedPlaylistCheckBox.setEnabled(true);
+    private fun returnToPreviousWithResult(isOK: Int, actionCode: String = "") {
+        LogUtil.d(TAG, "returnToPreviousWithResult")
+        val returnIntent = Intent()
+        Bundle().apply {
+            putString(CommonConstants.CRUD_ACTION, actionCode)
+            putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo)
+            returnIntent.putExtras(this@apply)
+            // can bundle some data to previous activity
+            setResult(isOK, returnIntent)
+            finish()
+        }
     }
 
-    private void disableEditing() {
-        LogUtil.d(TAG, "disableEditing");
-        edit_titleNameEditText.setEnabled(false);
-        edit_filePathEditText.setEnabled(false);    // disabled all the time
-        edit_musicTrackSpinner.setEnabled(false);
-        edit_musicChannelSpinner.setEnabled(false);
-        edit_vocalTrackSpinner.setEnabled(false);
-        edit_vocalChannelSpinner.setEnabled(false);
-        editIncludedPlaylistCheckBox.setEnabled(false);
-    }
-
-    private void returnToPreviousWithResult(int isOK) {
-        LogUtil.d(TAG, "returnToPreviousWithResult");
-        Intent returnIntent = new Intent();
-        Bundle extras = new Bundle();
-        extras.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, mSongInfo);
-        returnIntent.putExtras(extras);
-
-        setResult(isOK, returnIntent);    // can bundle some data to previous activity
-        finish();
-    }
-
-    private boolean setSongInfoFromInput(boolean hasMessage) {
-        LogUtil.d(TAG, "setSongInfoFromInput");
-        boolean isValid = true;
-
-        String title = "";
-        Editable text = edit_titleNameEditText.getText();
+    private fun setSongInfoFromInput(hasMessage: Boolean): Boolean {
+        LogUtil.d(TAG, "setSongInfoFromInput")
+        var isValid = true
+        var title = ""
+        var text = titleNameEditText?.getText()
         if (text != null) {
-            title = text.toString().trim();
+            title = text.toString().trim { it <= ' ' }
         }
-        text = edit_filePathEditText.getText();
-        String filePath = "";
+        text = filePathEditText?.getText()
+        var filePath = ""
         if (text != null) {
-            filePath = text.toString().trim();
+            filePath = text.toString().trim { it <= ' ' }
         }
 
-        String musicTrack = edit_musicTrackSpinner.getSelectedItem().toString();
-        String musicChannel = edit_musicChannelSpinner.getSelectedItem().toString();
-        String vocalTrack = edit_vocalTrackSpinner.getSelectedItem().toString();
-        String vocalChannel = edit_vocalChannelSpinner.getSelectedItem().toString();
-        String included = editIncludedPlaylistCheckBox.isChecked() ? "1" : "0";
+        val musicTrack = musicTrackSpinner?.getSelectedItem().toString()
+        val musicChannel = musicChannelSpinner?.getSelectedItem().toString()
+        val vocalTrack = vocalTrackSpinner?.getSelectedItem().toString()
+        val vocalChannel = vocalChannelSpinner?.getSelectedItem().toString()
+        val included = if (includedPlaylistCheckBox?.isChecked == true) "1" else "0"
 
-        mSongInfo.setSongName(title);
-        mSongInfo.setFilePath(filePath);
-        mSongInfo.setMusicTrackNo(Integer.parseInt(musicTrack));
-        int channel = CommonConstants.STEREO;
-        Object obj = SmileAppBase.audioChannelReverseMap.get(musicChannel);
-        if (obj != null) {
-            channel = (int) obj;
-        }
-        mSongInfo.setMusicChannel(channel);
-        mSongInfo.setVocalTrackNo(Integer.parseInt(vocalTrack));
-        obj = SmileAppBase.audioChannelReverseMap.get(vocalChannel);
-        channel = CommonConstants.STEREO;
-        if (obj != null) {
-            channel =(int) obj;
-        }
-        mSongInfo.setVocalChannel(channel);
-        mSongInfo.setIncluded(included);
+        mSongInfo.songName = title
+        mSongInfo.filePath = filePath
+        mSongInfo.musicTrackNo = musicTrack.toInt()
+        var channel = SmileAppBase.audioChannelReverseMap[musicChannel]
+        mSongInfo.musicChannel = channel
+        mSongInfo.vocalTrackNo = vocalTrack.toInt()
+        channel = SmileAppBase.audioChannelReverseMap[vocalChannel]
+        mSongInfo.vocalChannel = channel
+        mSongInfo.included = included
 
         if (filePath.isEmpty()) {
-            isValid = false;
+            isValid = false
             if (hasMessage) {
-                ScreenUtil.showToast(this, getString(R.string.filepathEmptyString),
-                        toastTextSize, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT);
+                ScreenUtil.showToast(
+                    this, getString(R.string.filepathEmptyString),
+                    toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                    Toast.LENGTH_SHORT
+                )
             }
         }
 
-        return isValid;
+        return isValid
     }
 }
