@@ -95,7 +95,7 @@ open class YTPlayerListener (private val playService: YouTubeService) :
     }
 
     override fun onVideoLoadedFraction(youTubePlayer: YouTubePlayer, loadedFraction: Float) {
-        LogUtil.d(TAG, "onVideoLoadedFraction.loadedFraction = $loadedFraction")
+        // LogUtil.d(TAG, "onVideoLoadedFraction.loadedFraction = $loadedFraction")
     }
 
     override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {

@@ -61,6 +61,10 @@ android {
             dimension = "karaoke"
             applicationId = "com.smile.videoplayer"
         }
+        create("youtubeplayer") {
+            dimension = "karaoke"
+            applicationId = "com.smile.youtubeplayer"
+        }
     }
 
     // println("projectDir = ${project.projectDir}")
@@ -115,6 +119,14 @@ android {
             res.srcDirs += ["src/videoplayer/res", "src/videoplayer2/res"]
             manifest {
                 srcFile "src/videoplayer2/AndroidManifest.xml"
+            }
+        }
+
+        youtubeplayer {
+            java.srcDirs += ["src/youtube/java"]
+            res.srcDirs += ["src/youtube/res"]
+            manifest {
+                srcFile "src/youtube/AndroidManifest.xml"
             }
         }
     }
@@ -225,7 +237,7 @@ dependencies {
     implementation 'androidx.media3:media3-cast:1.8.0'  // for exoplayer and vlcplayer
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
 
-    implementation 'com.android.billingclient:billing-ktx:8.2.0'
+    implementation 'com.android.billingclient:billing-ktx:8.2.1'
 
     implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.1'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
@@ -247,7 +259,7 @@ dependencies {
     ksp 'androidx.room:room-compiler:2.8.4'
     implementation 'androidx.room:room-runtime:2.8.4'
     // implementation 'androidx.room:room-common-jvm:2.8.3'
-
+    // implementation 'androidx.media3:media3-session:1.8.0'
     /*
     implementation("io.ktor:ktor-server-core-jvm:3.2.0") // Or latest version
     implementation("io.ktor:ktor-server-cio-jvm:3.2.0")  // CIO engine for Ktor
@@ -275,7 +287,8 @@ dependencies {
                 }
                 if (flavor.name.containsIgnoreCase("karaoketvplayer")
                         || flavor.name.containsIgnoreCase("karaokeplayer")
-                        || flavor.name.containsIgnoreCase("videoplayer")) {
+                        || flavor.name.containsIgnoreCase("videoplayer")
+                        || flavor.name.containsIgnoreCase("youtubeplayer")) {
                     // Check for latest version
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")

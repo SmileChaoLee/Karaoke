@@ -14,12 +14,17 @@ import com.smile.youtube.fragments.YouTubeFragment
 import com.smile.youtube.yt_constants.YTConstants
 
 @OptIn(UnstableApi::class)
-class YouTubeActivity : BaseActivity() {
+open class YouTubeActivity : BaseActivity() {
 
     companion object {
-        private const val TAG : String = "YouTubeActivity"
         private const val SEARCH_FRAGMENT_TAG : String = "SEARCH_VIDEOS"
         private const val YT_FAV_FRAGMENT_TAG : String = "YT_FAVORITE"
+    }
+    private var mTAG : String = "YouTubeActivity"
+
+    fun setTag(tag: String) {
+        LogUtil.d(mTAG, "setTag.tag = $tag")
+        mTAG = tag
     }
 
     private val searchFragment = SearchVideosFragment()
@@ -27,7 +32,7 @@ class YouTubeActivity : BaseActivity() {
         false, YTConstants.YT_FAV_DB_NAME)
 
     override fun getFragment(): YouTubeFragment {
-        LogUtil.d(TAG, "getFragment")
+        LogUtil.d(mTAG, "getFragment")
         return YouTubeFragment()
     }
 
@@ -38,32 +43,32 @@ class YouTubeActivity : BaseActivity() {
                 tab?.let {
                     when (it.position) {
                         0-> {
-                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
+                            LogUtil.d(mTAG, "OnTabSelectedListener.onTabSelected.position = 0")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
                                 replace(containerId, searchFragment, SEARCH_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         1-> {
-                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            LogUtil.d(mTAG, "OnTabSelectedListener.onTabSelected.position = 1")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
                                 replace(containerId, ytFavFragment, YT_FAV_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         else->{
-                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.others")
+                            LogUtil.d(mTAG, "OnTabSelectedListener.onTabSelected.others")
                         }
                     }
                 }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                LogUtil.d(TAG, "OnTabSelectedListener.onTabUnselected")
+                LogUtil.d(mTAG, "OnTabSelectedListener.onTabUnselected")
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                LogUtil.d(TAG, "OnTabSelectedListener.onTabReselected")
+                LogUtil.d(mTAG, "OnTabSelectedListener.onTabReselected")
             }
 
         })
@@ -80,17 +85,17 @@ class YouTubeActivity : BaseActivity() {
 
     override fun becomeVisible(tabLayout: TabLayout) {
         val index = tabLayout.selectedTabPosition
-        LogUtil.d(TAG, "becomeVisible.index = $index")
-        LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
+        LogUtil.d(mTAG, "becomeVisible.index = $index")
+        LogUtil.d(mTAG, "becomeVisible.currentFocus = $currentFocus")
         val tabView = tabLayout.getTabAt(index)?.view
         tabView?.let {
             when (index) {
                 0 -> {
-                    LogUtil.d(TAG, "becomeVisible.index.0")
+                    LogUtil.d(mTAG, "becomeVisible.index.0")
                     it.post { searchFragment.showVideoButton?.requestFocus() }
                 }
                 1 -> {
-                    LogUtil.d(TAG, "becomeVisible.index.1")
+                    LogUtil.d(mTAG, "becomeVisible.index.1")
                     it.post { ytFavFragment.showVideoButton?.requestFocus() }
                 }
             }
@@ -98,6 +103,6 @@ class YouTubeActivity : BaseActivity() {
     }
 
     override fun becomeInVisible() {
-        LogUtil.d(TAG, "becomeInVisible")
+        LogUtil.d(mTAG, "becomeInVisible")
     }
 }
