@@ -63,6 +63,8 @@ android {
         }
         create("youtubeplayer") {
             dimension = "karaoke"
+            versionCode 105
+            versionName "1.05"
             applicationId = "com.smile.youtubeplayer"
         }
     }
