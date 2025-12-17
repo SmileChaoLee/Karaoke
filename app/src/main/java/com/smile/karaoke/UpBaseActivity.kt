@@ -1,5 +1,6 @@
 package com.smile.karaoke
 
+import android.app.Activity
 import androidx.annotation.OptIn
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
@@ -9,6 +10,7 @@ import com.smile.karaoke.fragments.FavoritesFragment
 import com.smile.karaoke.fragments.OpenFileFragment
 import com.smile.karaoke.fragments.SafPickerFragment
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.karaoke.utilities.PermissionUtil
 
 @OptIn(UnstableApi::class)
 abstract class UpBaseActivity: BaseActivity() {
@@ -23,6 +25,12 @@ abstract class UpBaseActivity: BaseActivity() {
     private val openFragment = OpenFileFragment()
     private val safPickerFragment = SafPickerFragment()
     private val favoriteFragment = FavoritesFragment()
+
+    override fun askPermissions(activity: Activity): Boolean {
+        LogUtil.d(TAG, "askPermissions")
+        return PermissionUtil.askPermissions(this@UpBaseActivity,
+            true)
+    }
 
     override fun setTabs(activity: FragmentActivity?, tabLayout: TabLayout, containerId: Int) {
         val tabText = arrayOf(getString(R.string.open_files),
