@@ -22,31 +22,30 @@ object PermissionUtil {
     fun askPermissions(activity: Activity, checkMediaPermission: Boolean = true): Boolean {
         val logStr = "askPermissions"
         LogUtil.d(TAG, "$logStr.checkMediaPermission = $checkMediaPermission")
-        permissionExternalStorage =
-            (ActivityCompat.checkSelfPermission(activity.applicationContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED)
+        permissionExternalStorage = if (checkMediaPermission) {
+            (ActivityCompat.checkSelfPermission(
+                activity.applicationContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED)
+        } else {
+            true    // no need to ask permission
+        }
         LogUtil.d(TAG, "$logStr.permissionExternalStorage = $permissionExternalStorage")
         if (!permissionExternalStorage) {
-            val permissions: Array<String>
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissions = arrayOf(
+            val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO,
                     Manifest.permission.READ_MEDIA_AUDIO
                 )
-                permissionExternalStorage = !checkMediaPermission   // no need to ask permission
             } else {
-                permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
-            LogUtil.d(TAG, "$logStr.permissionExternalStorage = $permissionExternalStorage")
-            if (!permissionExternalStorage) {
-                ActivityCompat.requestPermissions(
-                    activity,
-                    permissions,
-                    PERMISSION_WRITE_EXTERNAL_CODE
-                )
-            }
+            ActivityCompat.requestPermissions(
+                activity,
+                permissions,
+                PERMISSION_WRITE_EXTERNAL_CODE
+            )
         }
 
         askIgnoreOptimizationsBattery(activity)
