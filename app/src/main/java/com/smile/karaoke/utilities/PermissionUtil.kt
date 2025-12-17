@@ -14,29 +14,41 @@ import androidx.core.net.toUri
 
 object PermissionUtil {
 
-    const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
+    private const val TAG = "PermissionUtil"
+    private const val PERMISSION_WRITE_EXTERNAL_CODE = 0x11
 
     private var permissionExternalStorage = false
 
-    fun askPermissions(activity: Activity): Boolean {
+    fun askPermissions(activity: Activity, checkMediaPermission: Boolean = false): Boolean {
+        val logStr = "askPermissions"
+        LogUtil.d(TAG, "$logStr.checkMediaPermission = $checkMediaPermission")
         permissionExternalStorage =
             (ActivityCompat.checkSelfPermission(activity.applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED)
+        LogUtil.d(TAG, "$logStr.permissionExternalStorage = $permissionExternalStorage")
         if (!permissionExternalStorage) {
-            val permissions : Array<String> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            ActivityCompat.requestPermissions(activity,
-                permissions,
-                PERMISSION_WRITE_EXTERNAL_CODE
-            )
+            val permissions: Array<String>
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissions = arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO
+                )
+                permissionExternalStorage = !checkMediaPermission   // no need to ask permission
+            } else {
+                permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+            LogUtil.d(TAG, "$logStr.permissionExternalStorage = $permissionExternalStorage")
+            if (!permissionExternalStorage) {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    permissions,
+                    PERMISSION_WRITE_EXTERNAL_CODE
+                )
+            }
         }
+
         askIgnoreOptimizationsBattery(activity)
 
         return permissionExternalStorage
@@ -44,11 +56,14 @@ object PermissionUtil {
 
     fun onRequestPermResult(requestCode: Int,
                             grantResults: IntArray): Boolean {
+        LogUtil.d(TAG, "onRequestPermResult")
         if (requestCode == PERMISSION_WRITE_EXTERNAL_CODE) {
+            LogUtil.d(TAG, "onRequestPermResult.requestCode")
             val rLen = grantResults.size
             permissionExternalStorage =
                 rLen > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
         }
+        LogUtil.d(TAG, "onRequestPermResult.permissionExternalStorage = $permissionExternalStorage")
         return permissionExternalStorage
     }
 

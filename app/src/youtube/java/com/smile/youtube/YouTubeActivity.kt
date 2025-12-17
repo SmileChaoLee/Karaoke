@@ -1,6 +1,8 @@
 package com.smile.youtube
 
+import android.app.Activity
 import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
@@ -9,6 +11,7 @@ import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.fragments.FavoritesFragment
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.youtube.fragments.SearchVideosFragment
 import com.smile.youtube.fragments.YouTubeFragment
 import com.smile.youtube.yt_constants.YTConstants
@@ -31,10 +34,18 @@ open class YouTubeActivity : BaseActivity() {
     private val ytFavFragment = FavoritesFragment.newInstance(
         false, YTConstants.YT_FAV_DB_NAME)
 
+    // implement abstract methods of BackActivity
     override fun getFragment(): YouTubeFragment {
         LogUtil.d(mTAG, "getFragment")
         return YouTubeFragment()
     }
+
+    override fun askPermissions(activity: Activity): Boolean {
+        LogUtil.d(mTAG, "askPermissions")
+        return PermissionUtil.askPermissions(this@YouTubeActivity,
+            false)
+    }
+    // End of implementing abstract methods of BackActivity
 
     override fun setTabs(activity: FragmentActivity?, tabLayout: TabLayout, containerId: Int) {
         val tabText = arrayOf(getString(R.string.search_videos), getString(R.string.my_favorites))

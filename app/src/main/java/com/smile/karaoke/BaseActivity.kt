@@ -1,5 +1,6 @@
 package com.smile.karaoke
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -67,6 +68,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
+    abstract fun askPermissions(activity: Activity): Boolean
     open fun needInterstitialAd() = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,7 +175,9 @@ abstract class BaseActivity : AppCompatActivity(),
         })
 
         // Asking user's permissions
-        permissionExternalStorage = PermissionUtil.askPermissions(this@BaseActivity)
+        LogUtil.d(TAG, "askPermissions(this@BaseActivity)")
+        permissionExternalStorage = askPermissions(this@BaseActivity)
+        // permissionExternalStorage = PermissionUtil.askPermissions(this@BaseActivity)
 
         // user consent for personal data collection
         // val deviceHashedId = "8F6C5B0830E624E8D8BFFB5853B4EDDD" // for debug test
