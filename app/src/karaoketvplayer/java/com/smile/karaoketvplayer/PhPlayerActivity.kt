@@ -1,13 +1,14 @@
 package com.smile.karaoketvplayer
 
 import android.content.Intent
+import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.videoplayer.VlcPlayerActivity
-import com.smile.youtube.HasYouTubeActivity
+import com.smile.youtube.YouTubeActivity
 
-open class PhPlayerActivity : HasYouTubeActivity() {
+open class PhPlayerActivity : BasePlayerActivity() {
 
     private var mTAG : String = "PhPlayerActivity"
 
@@ -18,6 +19,21 @@ open class PhPlayerActivity : HasYouTubeActivity() {
 
     override fun getAppName(): String {
         return resources.getString(R.string.karaoke_tv_app_name)
+    }
+
+    override fun hasYouTubePlayer(): Boolean {
+        return true
+    }
+
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer")
+        Intent(
+            this@PhPlayerActivity,
+            YouTubeActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            youTubeLauncher.launch(it)
+        }
     }
 
     override fun getExoButtonName(): String {

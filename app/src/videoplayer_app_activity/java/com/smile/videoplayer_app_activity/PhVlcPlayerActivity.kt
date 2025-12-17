@@ -1,13 +1,13 @@
 package com.smile.videoplayer_app_activity
 
 import android.content.Intent
+import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.AppLinkUtil
 import com.smile.videoplayer.VlcPlayerActivity
-import com.smile.youtube.HasYouTubeActivity
 
-open class PhVlcPlayerActivity : HasYouTubeActivity() {
+open class PhVlcPlayerActivity : BasePlayerActivity() {
 
     private var mTAG : String = "PhVlcPlayerActivity"
     fun setTag(tag: String) {
@@ -17,6 +17,16 @@ open class PhVlcPlayerActivity : HasYouTubeActivity() {
 
     override fun getAppName(): String {
         return resources.getString(R.string.video_app_name)
+    }
+
+    override fun hasYouTubePlayer(): Boolean {
+        return true
+    }
+
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer()")
+        AppLinkUtil.startAppLinkOnStore(this@PhVlcPlayerActivity,
+            AppLinkUtil.YOUTUBE_LINK)
     }
 
     override fun getExoButtonName(): String {

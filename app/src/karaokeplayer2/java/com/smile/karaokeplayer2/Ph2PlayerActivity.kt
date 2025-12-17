@@ -25,6 +25,11 @@ open class Ph2PlayerActivity : BasePlayerActivity() {
         return false
     }
 
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer()")
+        // do nothing
+    }
+
     override fun getExoButtonName(): String {
         return resources.getString(R.string.exoPlayerName)
     }
@@ -53,10 +58,5 @@ open class Ph2PlayerActivity : BasePlayerActivity() {
             loadingMessage.value = getString(R.string.loadingStr)
             vlcLauncher.launch(it)
         }
-    }
-
-    override fun startYouTubePlayer() {
-        LogUtil.i(mTAG, "startYouTubePlayer()")
-        // do nothing
     }
 }

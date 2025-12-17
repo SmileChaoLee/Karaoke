@@ -70,8 +70,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
 
-    open fun hasYouTubePlayer() = true
-    open fun startYouTubePlayer() {}
+    abstract fun hasYouTubePlayer(): Boolean
+    abstract fun startYouTubePlayer()
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false

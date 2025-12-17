@@ -1,13 +1,13 @@
 package com.smile.karaokeplayer_app_activity
 
 import android.content.Intent
+import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.smilelibraries.utilities.AppLinkUtil
-import com.smile.youtube.HasYouTubeActivity
 
-open class PhExoPlayerActivity : HasYouTubeActivity() {
+open class PhExoPlayerActivity : BasePlayerActivity() {
 
     private var mTAG : String = "PhExoPlayerActivity"
     fun setTag(tag: String) {
@@ -17,6 +17,16 @@ open class PhExoPlayerActivity : HasYouTubeActivity() {
 
     override fun getAppName(): String {
         return resources.getString(R.string.karaoke_app_name)
+    }
+
+    override fun hasYouTubePlayer(): Boolean {
+        return true
+    }
+
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer()")
+        AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
+            AppLinkUtil.YOUTUBE_LINK)
     }
 
     override fun getExoButtonName(): String {
