@@ -19,7 +19,7 @@ object PermissionUtil {
 
     private var permissionExternalStorage = false
 
-    fun askPermissions(activity: Activity, checkMediaPermission: Boolean = false): Boolean {
+    fun askPermissions(activity: Activity, checkMediaPermission: Boolean = true): Boolean {
         val logStr = "askPermissions"
         LogUtil.d(TAG, "$logStr.checkMediaPermission = $checkMediaPermission")
         permissionExternalStorage =
