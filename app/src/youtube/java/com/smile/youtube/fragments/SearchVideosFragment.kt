@@ -9,14 +9,9 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.graphics.drawable.toBitmap
 
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import coil.size.Size
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLinearLayoutManager
@@ -25,6 +20,7 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
+import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.youtube.adapters.YouTubeRecyclerAdapter
@@ -163,30 +159,14 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "convertItemToSongDes")
         val songInfo = SongInfo()
         val act = activity?: return SongDescription(songInfo, null)
-        val imageLoader = act.imageLoader
         item.id.videoId?.let {
             var bm: Bitmap? = null
             songInfo.apply {
                 songName = item.snippet.title
                 filePath = it
                 included = "0"
-                val url = item.snippet.thumbnails.default.url
-                val request = ImageRequest.Builder(act)
-                    .data(url)
-                    // Set size to original to get the full image size, or specify a custom Size
-                    .size(Size.ORIGINAL)
-                    // Disabling hardware bitmaps is often needed if you intend to modify the bitmap
-                    .allowHardware(false)
-                    .build()
-                try {
-                    val result = imageLoader.execute(request)
-                    if (result is SuccessResult) {
-                        // Convert the resulting Drawable to a Bitmap
-                        bm = result.drawable.toBitmap()
-                    }
-                } catch (e: Exception) {
-                    LogUtil.e(TAG, "convertItemToSongDes.Exception: ", e)
-                }
+                bitmapUrl = item.snippet.thumbnails.default.url
+                bm = ImageUtil.getBitmapFromUri(act, bitmapUrl)
             }
             return SongDescription(songInfo, bm)
         }

@@ -30,12 +30,12 @@ import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
+import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 open class FavoritesFragment : ItemsBaseFragment(),
     FavoriteRecyclerViewAdapter.FavItemListener {
@@ -242,13 +242,19 @@ open class FavoritesFragment : ItemsBaseFragment(),
                     LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                     var bm: Bitmap? = null
                     try {
-                        val path = File(element.filePath).path
-                        LogUtil.d(TAG, "$logStr.path = $path")
-                        mediaRetriever.setDataSource(element.filePath)
-                        bm = mediaRetriever.getFrameAtTime(
-                            0,
-                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                        )?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                        // val path = File(element.filePath).path
+                        // LogUtil.d(TAG, "$logStr.path = $path")
+                        if(isDecoderVisible) {
+                            mediaRetriever.setDataSource(element.filePath)
+                            bm = mediaRetriever.getFrameAtTime(
+                                0,
+                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                            )?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                        } else {
+                            // used by YouTubePlayer
+                            LogUtil.d(TAG, "$logStr.element.YouTubePlayer")
+                            bm = ImageUtil.getBitmapFromUri(act, element.bitmapUrl)
+                        }
                     } catch (ex: Exception) {
                         LogUtil.e(
                             TAG, "$logStr.setDataSource.Exception:",
