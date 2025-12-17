@@ -24,12 +24,14 @@ import com.smile.karaoke.fragments.ItemsBaseFragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.youtube.adapters.YouTubeRecyclerAdapter
 import com.smile.youtube.models.VideoItem
 import com.smile.youtube.models.YouSingleton
 import com.smile.youtube.retrofit.RestApiSync
+import com.smile.youtube.yt_constants.YTConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,7 +54,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        YouSingleton.videos.clear()
+        // YouSingleton.videos.clear() moved to YouTubeActivity
     }
 
     override fun onCreateView(
@@ -76,7 +78,6 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             unselectButton = it.findViewById(R.id.searchUnselectButton)
             playSelectedButton = it.findViewById(R.id.searchPlaySelectedButton)
             addToFavoriteButton = it.findViewById(R.id.addToFavoriteButton)
-            addToFavoriteButton?.visibility = View.INVISIBLE    // for now, will support later
             showVideoButton = it.findViewById(R.id.showVideoImageButton)
             showVideoButton?.visibility = View.VISIBLE
             exitImageButton = it.findViewById(R.id.exitImageButton)
@@ -88,7 +89,6 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             searchRecyclerView?.setHasFixedSize(true)
             searchRecyclerView?.visibility = View.GONE
         }
-
         initRecyclerAdapter()
 
         super.onViewCreated(view, savedInstanceState)
@@ -112,14 +112,13 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-        YouSingleton.videos.clear()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
         mediaRetriever.release()
-        YouSingleton.videos.clear()
+        // YouSingleton.videos.clear() moved to YouTubeActivity
     }
 
     fun searchYouTubeVideos(searchTerm: String) {
@@ -142,15 +141,21 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             }
             // update the UI
             withContext(Dispatchers.Main) {
-                myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                loadingMsgTextView?.visibility = View.GONE
-                if (YouSingleton.videos.isEmpty()) {
-                    searchRecyclerView?.visibility = View.GONE
-                } else {
-                    searchRecyclerView?.visibility = View.VISIBLE
-                }
+                updateSearchRecyclerView()
                 searchCompleted = true
             }
+        }
+    }
+
+    private fun updateSearchRecyclerView() {
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        loadingMsgTextView?.visibility = View.GONE
+        if (YouSingleton.videos.isEmpty()) {
+            searchRecyclerView?.visibility = View.GONE
+            searchButton?.post { searchButton?.requestFocus() }
+        } else {
+            searchRecyclerView?.visibility = View.VISIBLE
+            searchRecyclerView?.post { searchRecyclerView?.requestFocus() }
         }
     }
 
@@ -201,12 +206,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     // overriding BaseFragment's methods
     override fun setClickListeners() {
         searchButton?.setOnClickListener {
-            if (!searchCompleted) return@setOnClickListener // searching
-            // start searching video
-            searchEditTextView?.let { editIt ->
-                val searchTerm = editIt.text.toString()
-                searchYouTubeVideos(searchTerm)
-            }
+            startSearchVideos()
         }
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
@@ -232,23 +232,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             if (!searchCompleted) return@setOnClickListener // searching
             // open the files to play
             LogUtil.i(TAG, "$logStr.searchCompleted")
-            val songs = ArrayList<SongInfo>().also { songIt ->
-                var index = 0
-                for (i in 0 until YouSingleton.videos.size) {
-                    if (YouSingleton.videos[i].song.included == "1") {
-                        songIt.add(YouSingleton.videos[i].song)
-                        index++
-                        if (index >= YouSingleton.MAX_SONGS) {
-                            // excess the max
-                            ScreenUtil.showToast(
-                                activity, getString(R.string.excess_max) +
-                                        " ${YouSingleton.MAX_SONGS}", textFontSize,
-                                Toast.LENGTH_SHORT)
-                            break
-                        }
-                    }
-                }
-            }
+            val songs = videosToSongs()
             LogUtil.i(TAG, "$logStr.songs.size = ${songs.size}")
             if (songs.isEmpty()) {
                 ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
@@ -261,9 +245,51 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         addToFavoriteButton?.setOnClickListener {
             it.requestFocus()
             if (!searchCompleted) return@setOnClickListener // searching
+            val act = activity?: return@setOnClickListener
+            val songs = videosToSongs()
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (DatabaseUtil.addSongsToFavorites(act,YTConstants.YT_FAV_DB_NAME, songs, textFontSize)) {
+                    withContext(Dispatchers.Main) {
+                        ScreenUtil.showToast(act,
+                            getString(R.string.add_to_favorites),
+                            textFontSize,Toast.LENGTH_SHORT)
+                    }
+                }
+            }
         }
 
         super.setClickListeners()
+    }
+
+    private fun startSearchVideos() {
+        LogUtil.i(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
+        if (!searchCompleted) return
+        // start searching video
+        searchEditTextView?.let { editIt ->
+            val searchTerm = editIt.text.toString()
+            searchYouTubeVideos(searchTerm)
+        }
+    }
+
+    private fun videosToSongs(): ArrayList<SongInfo> {
+        LogUtil.i(TAG, "videosToSongs")
+        return ArrayList<SongInfo>().also { songIt ->
+            var index = 0
+            for (i in 0 until YouSingleton.videos.size) {
+                if (YouSingleton.videos[i].song.included == "1") {
+                    songIt.add(YouSingleton.videos[i].song)
+                    index++
+                    if (index >= YouSingleton.MAX_SONGS) {
+                        // excess the max
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.excess_max) +
+                                    " ${YouSingleton.MAX_SONGS}", textFontSize,
+                            Toast.LENGTH_SHORT)
+                        break
+                    }
+                }
+            }
+        }
     }
 
     override fun setButtonsSize() {
@@ -280,6 +306,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     private fun initRecyclerAdapter() {
         LogUtil.i(TAG, "initRecyclerAdapter")
+        val size = YouSingleton.videos.size
+        LogUtil.i(TAG, "initRecyclerAdapter.size = $size")
         activity?.let {
             myRecyclerViewAdapter = YouTubeRecyclerAdapter(
                 this, YouSingleton.videos,
@@ -288,6 +316,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             )
             searchRecyclerView?.adapter = myRecyclerViewAdapter
             searchRecyclerView?.layoutManager = MyLinearLayoutManager(context)
+            updateSearchRecyclerView()
         }
     }
 }

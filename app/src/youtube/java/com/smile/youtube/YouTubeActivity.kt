@@ -1,8 +1,8 @@
 package com.smile.youtube
 
 import android.app.Activity
+import android.os.Bundle
 import androidx.annotation.OptIn
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
@@ -14,6 +14,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.youtube.fragments.SearchVideosFragment
 import com.smile.youtube.fragments.YouTubeFragment
+import com.smile.youtube.models.YouSingleton
 import com.smile.youtube.yt_constants.YTConstants
 
 @OptIn(UnstableApi::class)
@@ -33,6 +34,17 @@ open class YouTubeActivity : BaseActivity() {
     private val searchFragment = SearchVideosFragment()
     private val ytFavFragment = FavoritesFragment.newInstance(
         false, YTConstants.YT_FAV_DB_NAME)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        LogUtil.d(mTAG, "onCreate")
+        YouSingleton.videos.clear() // moved from SearchVideosFragment
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtil.i(mTAG, "onDestroy")
+        YouSingleton.videos.clear() // moved from SearchVideosFragment
+    }
 
     // implement abstract methods of BackActivity
     override fun getFragment(): YouTubeFragment {
