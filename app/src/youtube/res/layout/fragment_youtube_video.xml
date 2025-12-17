@@ -162,6 +162,8 @@
             android:textColor="@color/my_editbox_textcolor"
             android:focusable="true"
             android:clickable="true"
+            android:nextFocusRight="@id/searchEditTextView"
+            android:nextFocusLeft="@id/searchEditTextView"
             android:background="@drawable/my_editbox_background"
             tools:ignore="LabelFor">
         </EditText>
