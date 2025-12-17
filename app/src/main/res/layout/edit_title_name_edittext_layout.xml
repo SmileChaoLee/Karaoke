@@ -17,6 +17,7 @@
         android:autofillHints=""
         android:inputType="textMultiLine"
         android:textColor="@color/my_editbox_textcolor"
+        android:textCursorDrawable="@drawable/my_custom_cursor"
         android:textStyle="normal"
         android:focusable="true"
         android:clickable="true"
