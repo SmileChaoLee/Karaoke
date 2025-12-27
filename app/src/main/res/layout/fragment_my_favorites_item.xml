@@ -1,64 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5sp"
     android:baselineAligned="false"
-    android:orientation="horizontal"
-    android:background="@android:color/black"
-    android:weightSum="10">
+    android:focusable="true"
+    android:clickable="true"
+    android:background="@android:color/black">
 
     <LinearLayout
         android:id="@+id/myListInfoLayout"
-        android:orientation="horizontal"
-        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
         android:clickable="true"
-        android:layout_weight="8">
+        android:nextFocusDown="@id/myListEditButton">
         <android.widget.ImageView
             android:id="@+id/myListVideoImageView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:focusable="false"
             android:clickable="false"
             android:background="@android:color/transparent"
-            android:layout_gravity="center_vertical|start"
+            android:layout_gravity="center"
             android:visibility="visible">
         </android.widget.ImageView>
         <TextView android:id="@+id/myListNameTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textScaleX="1.0"
             android:textStyle="bold|italic"
             android:textColor="@android:color/white"
-            android:layout_gravity="center_vertical|start"
+            android:gravity="center"
             android:visibility="visible">
         </TextView>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/myListEditLayout"
-        android:orientation="vertical"
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/myListEditButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2">
-        <ImageButton
-            android:id="@+id/myListEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/emptyString"
-            android:background="@drawable/file_menu_item_background_color"
-            android:scaleType="centerInside"
-            android:adjustViewBounds="true"
-            android:src="@drawable/edit_image"
-            android:focusable="true"
-            android:clickable="true"
-            android:layout_gravity="center_vertical|end"
-            android:visibility="visible">
-        </ImageButton>
-    </LinearLayout>
+        android:contentDescription="@string/emptyString"
+        android:background="@drawable/file_menu_item_background_color"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:src="@drawable/edit_image"
+        app:tint="@color/blue"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/myListInfoLayout"
+        android:nextFocusLeft="@id/myListInfoLayout"
+        android:nextFocusRight="@id/myListInfoLayout"
+        android:layout_gravity="center"
+        android:visibility="visible">
+    </ImageButton>
 
 </LinearLayout>

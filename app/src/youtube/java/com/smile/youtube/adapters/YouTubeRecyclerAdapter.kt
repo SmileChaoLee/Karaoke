@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
@@ -19,11 +18,8 @@ import java.util.ArrayList
 class YouTubeRecyclerAdapter (
     private val itemListener : RecyclerItemListener,
     private val mList:  ArrayList<SongDescription>,
-    private val textFontSize: Float,
-    private val videoThumbnailsWidth: Int,
-    private val videoThumbnailsHeight: Int)
-
-    : RecyclerView.Adapter<YouTubeRecyclerAdapter.MyViewHolder>() {
+    private val textFontSize: Float
+): RecyclerView.Adapter<YouTubeRecyclerAdapter.MyViewHolder>() {
     companion object {
         private const val TAG = "YouTubeRecAdapter"
     }
@@ -33,8 +29,6 @@ class YouTubeRecyclerAdapter (
 
     class MyViewHolder(itemView: View,
                        textFontSize: Float,
-                       videoThumbnailsWidth: Int,
-                       videoThumbnailsHeight: Int,
                        itemListener : RecyclerItemListener)
         : RecyclerView.ViewHolder(itemView) {
 
@@ -42,6 +36,10 @@ class YouTubeRecyclerAdapter (
         val songNameTextView: TextView
         init {
             LogUtil.d(TAG, "MyViewHolder")
+
+            songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
+            songNameTextView = itemView.findViewById(R.id.myListNameTextView)
+            ScreenUtil.resizeTextSize(songNameTextView,textFontSize * 0.5f)
 
             itemView.setOnClickListener {view ->
                 LogUtil.d(TAG, "MyViewHolder.infoLayout.setOnClickListener")
@@ -53,14 +51,6 @@ class YouTubeRecyclerAdapter (
                 itemListener.onItemViewFocusChanged(
                     v, bindingAdapterPosition, hasFocus)
             }
-
-            songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
-            val nLayoutParams = songVideoImageView.layoutParams as LinearLayout.LayoutParams
-            nLayoutParams.width = videoThumbnailsWidth
-            nLayoutParams.height = videoThumbnailsHeight
-            songNameTextView = itemView.findViewById(R.id.myListNameTextView)
-            ScreenUtil.resizeTextSize(songNameTextView,
-                textFontSize * 0.5f)
         }
     }
 
@@ -70,8 +60,7 @@ class YouTubeRecyclerAdapter (
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_youtube_video_item,
             parent, false)
-        return MyViewHolder(fileView, textFontSize,
-            videoThumbnailsWidth, videoThumbnailsHeight, itemListener)
+        return MyViewHolder(fileView, textFontSize,itemListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -79,15 +68,12 @@ class YouTubeRecyclerAdapter (
         val item = mList[position]
         holder.apply {
             songVideoImageView.setImageBitmap(item.bm)
-            LogUtil.d(TAG, "onBindViewHolder.item.song.songName = ${item.song.songName}")
-            val songName = item.song.songName?.trim()?: ""
-            LogUtil.d(TAG, "onBindViewHolder.songName = $songName")
+            val songName = item.song.songName.trim()
             songNameTextView.apply {
                 text = songName.ifEmpty { "No Name" }
                 if (item.song.included == "1") setTextColor(Color.GREEN)
                 else setTextColor(Color.WHITE)
             }
-
             itemView.setBackgroundColor(itemListener.myBackgroundColor(position))
 
             if (isDataSetChanged) {

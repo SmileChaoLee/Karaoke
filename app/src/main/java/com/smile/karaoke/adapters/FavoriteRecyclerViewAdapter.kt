@@ -1,7 +1,6 @@
 package com.smile.karaoke.adapters
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -20,12 +19,8 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 class FavoriteRecyclerViewAdapter (
     private val itemListener : FavItemListener,
     private val mList:  java.util.ArrayList<SongDescription>,
-    private val orientation: Int,
-    private val textFontSize: Float,
-    private val videoThumbnailsWidth: Int,
-    private val videoThumbnailsHeight: Int)
-
-    : RecyclerView.Adapter<FavoriteRecyclerViewAdapter.MyViewHolder>() {
+    private val textFontSize: Float
+): RecyclerView.Adapter<FavoriteRecyclerViewAdapter.MyViewHolder>() {
     companion object {
         private const val TAG = "FaRecyclerVAdapter"
     }
@@ -38,10 +33,7 @@ class FavoriteRecyclerViewAdapter (
     private var isDataSetChanged = true
 
     class MyViewHolder(itemView: View,
-                       orientation: Int,
                        textFontSize: Float,
-                       videoThumbnailsWidth: Int,
-                       videoThumbnailsHeight: Int,
                        itemListener : FavItemListener)
         : RecyclerView.ViewHolder(itemView) {
 
@@ -52,17 +44,7 @@ class FavoriteRecyclerViewAdapter (
         init {
             LogUtil.d(TAG, "MyViewHolder")
 
-            var infoLayoutWeight = 8f
-            if (orientation != Configuration.ORIENTATION_PORTRAIT) {
-                infoLayoutWeight = 9f
-            }
             infoLayout = itemView.findViewById(R.id.myListInfoLayout)
-            var nLayoutParams = infoLayout.layoutParams as LinearLayout.LayoutParams
-            nLayoutParams.weight = infoLayoutWeight
-            val myListEditLayout = itemView.findViewById<LinearLayout>(R.id.myListEditLayout)
-            nLayoutParams = myListEditLayout.layoutParams as LinearLayout.LayoutParams
-            nLayoutParams.weight = 10f - infoLayoutWeight
-
             infoLayout.setOnClickListener {view ->
                 LogUtil.d(TAG, "MyViewHolder.infoLayout.setOnClickListener")
                 itemListener.onItemClick(
@@ -75,19 +57,15 @@ class FavoriteRecyclerViewAdapter (
             }
 
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
-            nLayoutParams = songVideoImageView.layoutParams as LinearLayout.LayoutParams
-            nLayoutParams.width = videoThumbnailsWidth
-            nLayoutParams.height = videoThumbnailsHeight
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView,
                 textFontSize * 0.5f)
 
             val buttonWidth = (textFontSize*1.5f).toInt()
             editButton = itemView.findViewById(R.id.myListEditButton)
-            nLayoutParams = editButton.layoutParams as LinearLayout.LayoutParams
+            val nLayoutParams = editButton.layoutParams as LinearLayout.LayoutParams
             nLayoutParams.width = buttonWidth
             nLayoutParams.height = buttonWidth
-
 
             editButton.setOnClickListener {
                 LogUtil.d(TAG, "MyViewHolder.editButton.setOnClickListener")
@@ -111,8 +89,7 @@ class FavoriteRecyclerViewAdapter (
         val layoutInflater = LayoutInflater.from(parent.context)
         val fileView = layoutInflater.inflate(R.layout.fragment_my_favorites_item,
             parent, false)
-        return MyViewHolder(fileView, orientation, textFontSize,
-            videoThumbnailsWidth, videoThumbnailsHeight, itemListener)
+        return MyViewHolder(fileView, textFontSize, itemListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -120,7 +97,7 @@ class FavoriteRecyclerViewAdapter (
         val item = mList[position]
         holder.apply {
             songVideoImageView.setImageBitmap(item.bm)
-            val songName = item.song.songName?.trim()?: ""
+            val songName = item.song.songName.trim()
             songNameTextView.apply {
                 text = songName.ifEmpty { "No Name" }
                 if (item.song.included == "1") setTextColor(Color.GREEN)

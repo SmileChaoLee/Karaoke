@@ -1,9 +1,10 @@
 package com.smile.karaoke.adapters
 
 import android.content.Context
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 
-class MyLinearLayoutManager(ctx: Context?): LinearLayoutManager(ctx) {
+class MyLayoutManager(ctx: Context?, count: Int): GridLayoutManager(ctx,
+    count) {
 
     /*
     override fun onInterceptFocusSearch(focused: View, direction: Int): View? {

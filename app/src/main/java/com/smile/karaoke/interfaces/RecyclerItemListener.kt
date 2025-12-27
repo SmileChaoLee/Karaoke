@@ -17,7 +17,10 @@ interface RecyclerItemListener {
     }
 
     fun myBackgroundColor(position: Int): Int {
+        /*
         return if (position % 2 == 0) Color.BLACK
         else SmileAppBase.transparentLightGray
+        */
+        return Color.BLACK
     }
 }

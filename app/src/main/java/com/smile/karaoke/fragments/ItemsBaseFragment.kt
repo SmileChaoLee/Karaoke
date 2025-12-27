@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -39,8 +40,10 @@ open class ItemsBaseFragment : Fragment() {
         arguments?.let { }
         activity?.let {
             textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
-            videoThumbnailsWidth = (textFontSize * 3.0f).toInt()
-            videoThumbnailsHeight = (textFontSize * 2.0f).toInt()
+            val screen = ScreenUtil.getScreenSize(it)
+            val aWidth = screen.x.toFloat() / gridSpanCount().toFloat()
+            videoThumbnailsWidth = aWidth.toInt()
+            videoThumbnailsHeight = videoThumbnailsWidth
             if (it is PlaySongs) playSongs = it
             LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
         }
@@ -77,6 +80,20 @@ open class ItemsBaseFragment : Fragment() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
         mediaRetriever.release()
+    }
+
+    fun gridSpanCount(): Int {
+        val spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            CommonConstants.PHONE_SPAN_COUNT
+        else {
+            val deviceType = ScreenUtil.getDeviceType(activity)
+            if (deviceType == ScreenUtil.DEVICE_TYPE_ANDROID_TV) {
+                CommonConstants.TV_SPAN_COUNT
+            } else {
+                CommonConstants.TABLET_SPAN_COUNT
+            }
+        }
+        return spanCount
     }
 
     open fun setClickListeners() {

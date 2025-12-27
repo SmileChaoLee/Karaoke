@@ -4,10 +4,10 @@ import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BaseSongDataActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.FavoriteRecyclerViewAdapter
-import com.smile.karaoke.adapters.MyLinearLayoutManager
+import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
@@ -165,6 +165,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
         super.onResume()
         LogUtil.i(TAG, "onResume")
         setupSwitchDecoderButton()
+        setProperFocus()
     }
 
     override fun onPause() {
@@ -189,6 +190,22 @@ open class FavoritesFragment : ItemsBaseFragment(),
         LogUtil.i(TAG, "onStop")
         clearFavoriteList()
         mediaRetriever.release()
+    }
+
+    private fun setProperFocus() {
+        if (MySingleton.favorites.isEmpty()) {
+            myListRecyclerView?.visibility = View.GONE
+            showVideoButton?.post { showVideoButton?.requestFocus() }
+        } else {
+            myListRecyclerView?.visibility = View.VISIBLE
+            myListRecyclerView?.post { myListRecyclerView?.requestFocus() }
+        }
+    }
+
+    private fun updateRecyclerView() {
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        loadingMsgTextView?.visibility = View.GONE
+        setProperFocus()
     }
 
     // implementing FavoriteRecyclerViewAdapter.FavItemListener
@@ -237,30 +254,26 @@ open class FavoritesFragment : ItemsBaseFragment(),
                 val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
                 val songs = DatabaseUtil.readSavedFavorites(act, databaseName, false)
                 var index = 0
+                val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
                 for (element in songs) {
                     LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
                     LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                     var bm: Bitmap? = null
                     try {
-                        // val path = File(element.filePath).path
-                        // LogUtil.d(TAG, "$logStr.path = $path")
                         if(isDecoderVisible) {
                             mediaRetriever.setDataSource(element.filePath)
-                            bm = mediaRetriever.getFrameAtTime(
-                                0,
-                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                            )?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                            bm = mediaRetriever.getFrameAtTime(0,
+                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                         } else {
                             // used by YouTubePlayer
                             LogUtil.d(TAG, "$logStr.element.YouTubePlayer")
                             bm = ImageUtil.getBitmapFromUri(act, element.bitmapUrl)
                         }
                     } catch (ex: Exception) {
-                        LogUtil.e(
-                            TAG, "$logStr.setDataSource.Exception:",
-                            ex
-                        )
+                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:", ex)
                     }
+                    if (bm == null) bm = fileBm
+                    bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                     element.included = "0"
                     tempList.add(SongDescription(element, bm))
                     index++
@@ -290,18 +303,21 @@ open class FavoritesFragment : ItemsBaseFragment(),
                         fav.song.included = "1"
                     }
                 }
-                myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                myListRecyclerView?.visibility = View.VISIBLE
+                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                // myListRecyclerView?.visibility = View.VISIBLE
             } else {
                 LogUtil.d(TAG, "$logStr.MySingleTon.favorites is empty")
-                myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                myListRecyclerView?.visibility = View.GONE
+                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                // myListRecyclerView?.visibility = View.GONE
                 // Change the focus
+                /*
                 val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
                 val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
                 LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
                 showVideoButton?.requestFocus()
+                */
             }
+            updateRecyclerView()
             searchCompleted = true  // searching thread finished
         }
     }
@@ -376,13 +392,11 @@ open class FavoritesFragment : ItemsBaseFragment(),
     private fun initFavoriteRecyclerView() {
         LogUtil.i(TAG, "initFavoriteRecyclerView")
         activity?.let {
-            myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(
-                    this, MySingleton.favorites,
-                resources.configuration.orientation,
-                textFontSize,
-                videoThumbnailsWidth, videoThumbnailsHeight)
+            myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(this,
+                MySingleton.favorites, textFontSize)
             myListRecyclerView?.adapter = myRecyclerViewAdapter
-            myListRecyclerView?.layoutManager = MyLinearLayoutManager(context)
+            myListRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
+            updateRecyclerView()
         }
     }
 

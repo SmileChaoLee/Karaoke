@@ -1,9 +1,9 @@
 package com.smile.karaoke.fragments
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import androidx.core.graphics.scale
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
-import com.smile.karaoke.adapters.MyLinearLayoutManager
+import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
@@ -120,6 +120,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
+        setProperFocus()
     }
 
     override fun onPause() {
@@ -139,6 +140,22 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         mediaRetriever.release()
     }
 
+    private fun setProperFocus() {
+        if (MySingleton.fileList.isEmpty()) {
+            filesRecyclerView?.visibility = View.GONE
+            backKeyButton?.post { backKeyButton?.requestFocus() }
+        } else {
+            filesRecyclerView?.visibility = View.VISIBLE
+            filesRecyclerView?.post { filesRecyclerView?.requestFocus() }
+        }
+    }
+
+    private fun updateRecyclerView() {
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        loadingMsgTextView?.visibility = View.GONE
+        setProperFocus()
+    }
+
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
@@ -146,10 +163,10 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         if (MySingleton.fileList[position].file.isFile) {
             MySingleton.fileList[position].selected = !MySingleton.fileList[position].selected
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
-            return
+        } else {
+            MySingleton.currentPath = MySingleton.fileList[position].file.path
+            searchCurrentFolder()
         }
-        MySingleton.currentPath = MySingleton.fileList[position].file.path
-        searchCurrentFolder()
     }
 
     fun clearFileList() {
@@ -167,14 +184,16 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         lifecycleScope.launch(Dispatchers.IO) {
             val tempList: ArrayList<FileDescription> = ArrayList(MySingleton.MAX_FILES)
             MySingleton.currentPath.let {
+                val dirBm = BitmapFactory.decodeResource(resources, R.drawable.folder_open_icon)
                 if (it == "/") {
+                    val bm = dirBm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                     for (element in MySingleton.rootPathSet) {
                         LogUtil.d(TAG, "$logStr.element = $element")
-                        tempList.add(FileDescription(File(element),
-                            null, false))
+                        tempList.add(FileDescription(File(element), bm, false))
                     }
                 } else {
                     try {
+                        val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
                         File(it).listFiles()?.also { fIt ->
                             LogUtil.d(TAG, "$logStr.file.list().size() = ${fIt.size}")
                             for (f in fIt) {
@@ -185,12 +204,14 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                                         mediaRetriever.setDataSource(f.path)
                                         bm = mediaRetriever.getFrameAtTime(0,
                                             MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                            ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                                     } catch (ex: Exception) {
-                                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:",
-                                                ex)
+                                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:", ex)
                                     }
+                                    if (bm == null) bm = fileBm
+                                } else {
+                                    bm = dirBm
                                 }
+                                bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                                 tempList.add(FileDescription(f, bm, false))
                             }
                         }
@@ -206,9 +227,11 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             // Update the UI
             withContext(Dispatchers.Main) {
                 pathTextView?.text = MySingleton.currentPath
-                myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                filesRecyclerView?.visibility = View.VISIBLE
-                loadingMsgTextView?.visibility = View.GONE
+                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
+                updateRecyclerView()
+                // filesRecyclerView?.visibility = View.VISIBLE
+                // loadingMsgTextView?.visibility = View.GONE
+                /*
                 if (MySingleton.fileList.isEmpty()) {
                     LogUtil.d(TAG, "$logStr.MySingleTon.fileList is empty")
                     filesRecyclerView?.visibility = View.GONE
@@ -217,6 +240,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
                     backKeyButton?.requestFocus()
                 }
+                */
                 searchCompleted = true  // searching thread finished
             }
         }
@@ -273,6 +297,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
         addToFavoriteButton?.setOnClickListener {
+            LogUtil.d(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity ?: return@setOnClickListener
             lifecycleScope.launch(Dispatchers.IO) {
@@ -314,11 +339,10 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "initFilesRecyclerView() is called")
         activity?.let {
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
-                this, MySingleton.fileList,
-                textFontSize,
-                videoThumbnailsWidth, videoThumbnailsHeight)
+                this, MySingleton.fileList, textFontSize)
             filesRecyclerView?.adapter = myRecyclerViewAdapter
-            filesRecyclerView?.layoutManager = MyLinearLayoutManager(context)
+            filesRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
+            updateRecyclerView()
         }
     }
 

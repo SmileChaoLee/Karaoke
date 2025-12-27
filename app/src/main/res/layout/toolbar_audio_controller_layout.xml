@@ -40,6 +40,10 @@
                 android:src="@drawable/non_volume"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/volumeImageButton"
+                android:nextFocusLeft="@id/volumeImageButton"
+                android:nextFocusRight="@id/previousMediaImageButton"
+                android:nextFocusDown="@id/repeatImageButton"
                 android:layout_gravity="center"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
@@ -55,6 +59,8 @@
                 android:src="@drawable/previous_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/volumeImageButton"
+                android:nextFocusRight="@id/playMediaImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -67,6 +73,8 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/previousMediaImageButton"
+                android:nextFocusRight="@id/replayMediaImageButton"
                 android:visibility="visible"
                 android:layout_gravity="center"
                 android:background="@drawable/main_menu_item_background_color">
@@ -83,6 +91,8 @@
                 android:src="@drawable/replay_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/playMediaImageButton"
+                android:nextFocusRight="@id/stopMediaImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -97,6 +107,8 @@
                 android:src="@drawable/stop_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/replayMediaImageButton"
+                android:nextFocusRight="@id/nextMediaImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -111,6 +123,8 @@
                 android:src="@drawable/next_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/stopMediaImageButton"
+                android:nextFocusRight="@id/heartImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -125,6 +139,8 @@
                 android:src="@drawable/heart"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/nextMediaImageButton"
+                android:nextFocusRight="@id/actionMenuImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -139,6 +155,10 @@
                 android:src="@drawable/circle_and_three_dots"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
+                android:nextFocusLeft="@id/heartImageButton"
+                android:nextFocusRight="@id/actionMenuImageButton"
+                android:nextFocusDown="@id/media_route_button"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
         </LinearLayout>
@@ -163,6 +183,10 @@
                 android:src="@drawable/phone_portrait"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/volumeImageButton"
+                android:nextFocusLeft="@id/orientationImageButton"
+                android:nextFocusRight="@id/repeatImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -177,6 +201,9 @@
                 android:src="@drawable/repeat_no"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/orientationImageButton"
+                android:nextFocusRight="@id/switchToMusicImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -191,6 +218,9 @@
                 android:src="@drawable/music_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/repeatImageButton"
+                android:nextFocusRight="@id/switchToVocalImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -205,6 +235,9 @@
                 android:src="@drawable/vocal_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/switchToMusicImageButton"
+                android:nextFocusRight="@id/hideVideoImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -219,6 +252,9 @@
                 android:src="@drawable/hide_video"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/switchToVocalImageButton"
+                android:nextFocusRight="@id/audioChannelImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -233,6 +269,9 @@
                 android:src="@drawable/audio_channel_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/hideVideoImageButton"
+                android:nextFocusRight="@id/audioTrackImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -247,6 +286,9 @@
                 android:src="@drawable/audio_track_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusLeft="@id/audioChannelImageButton"
+                android:nextFocusRight="@id/media_route_button"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <include layout="@layout/media_route_button_layout" />
@@ -281,6 +323,8 @@
                 android:padding="0dp"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/hideVideoImageButton"
+                android:nextFocusDown="@id/player_duration_seekbar"
                 android:layout_gravity="center"
                 android:thumbOffset="0dp"
                 android:indeterminate="false"

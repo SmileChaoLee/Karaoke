@@ -1,6 +1,7 @@
 package com.smile.youtube.fragments
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +10,13 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.scale
 
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.R
-import com.smile.karaoke.adapters.MyLinearLayoutManager
+import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.fragments.ItemsBaseFragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.SongDescription
@@ -24,7 +26,6 @@ import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.youtube.adapters.YouTubeRecyclerAdapter
-import com.smile.youtube.models.VideoItem
 import com.smile.youtube.models.YouSingleton
 import com.smile.youtube.retrofit.RestApiSync
 import com.smile.youtube.yt_constants.YTConstants
@@ -98,6 +99,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     override fun onResume() {
         super.onResume()
         LogUtil.i(TAG, "onResume")
+        setProperFocus()
     }
 
     override fun onPause() {
@@ -114,13 +116,13 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy")
         mediaRetriever.release()
-        // YouSingleton.videos.clear() moved to YouTubeActivity
     }
 
     fun searchYouTubeVideos(searchTerm: String) {
         val logStr = "searchYouTubeVideos"
         LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
         if (searchTerm.isEmpty()) return
+        val act = activity?: return
         searchCompleted = false
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
         searchRecyclerView?.visibility = View.GONE
@@ -130,22 +132,35 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             val videoList = RestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
                 searchTerm)
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
+            val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
+            var songInfo: SongInfo
+            var bm: Bitmap?
             for (item in videoList.items) {
-                // LogUtil.d(TAG, "$logStr.videoId = ${item.id.videoId}")
-                // LogUtil.d(TAG, "$logStr.title = ${item.snippet.title}")
-                YouSingleton.videos.add(convertItemToSongDes(item))
+                songInfo = SongInfo()
+                bm = null
+                item.id.videoId?.let {
+                    songInfo.apply {
+                        songName = item.snippet.title
+                        filePath = it
+                        included = "0"
+                        bitmapUrl = item.snippet.thumbnails.default.url
+                        bm = ImageUtil.getBitmapFromUri(act, bitmapUrl)
+                    }
+                }
+                if (bm == null) bm = fileBm
+                bm = bm.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                val songDes = SongDescription(songInfo, bm)
+                YouSingleton.videos.add(songDes)
             }
             // update the UI
             withContext(Dispatchers.Main) {
-                updateSearchRecyclerView()
+                updateRecyclerView()
                 searchCompleted = true
             }
         }
     }
 
-    private fun updateSearchRecyclerView() {
-        myRecyclerViewAdapter?.myNotifyDataSetChanged()
-        loadingMsgTextView?.visibility = View.GONE
+    private fun setProperFocus() {
         if (YouSingleton.videos.isEmpty()) {
             searchRecyclerView?.visibility = View.GONE
             searchButton?.post { searchButton?.requestFocus() }
@@ -155,23 +170,10 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
     }
 
-    private suspend fun convertItemToSongDes(item: VideoItem): SongDescription {
-        LogUtil.d(TAG, "convertItemToSongDes")
-        val songInfo = SongInfo()
-        val act = activity?: return SongDescription(songInfo, null)
-        item.id.videoId?.let {
-            var bm: Bitmap? = null
-            songInfo.apply {
-                songName = item.snippet.title
-                filePath = it
-                included = "0"
-                bitmapUrl = item.snippet.thumbnails.default.url
-                bm = ImageUtil.getBitmapFromUri(act, bitmapUrl)
-            }
-            return SongDescription(songInfo, bm)
-        }
-
-        return SongDescription(songInfo, null)
+    private fun updateRecyclerView() {
+        myRecyclerViewAdapter?.myNotifyDataSetChanged()
+        loadingMsgTextView?.visibility = View.GONE
+        setProperFocus()
     }
 
     override fun onItemClick(v: View?, position: Int) {
@@ -180,7 +182,6 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
-
     }
 
     // overriding BaseFragment's methods
@@ -289,14 +290,11 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         val size = YouSingleton.videos.size
         LogUtil.i(TAG, "initRecyclerAdapter.size = $size")
         activity?.let {
-            myRecyclerViewAdapter = YouTubeRecyclerAdapter(
-                this, YouSingleton.videos,
-                textFontSize,
-                videoThumbnailsWidth, videoThumbnailsHeight
-            )
+            myRecyclerViewAdapter = YouTubeRecyclerAdapter(this,
+                YouSingleton.videos, textFontSize)
             searchRecyclerView?.adapter = myRecyclerViewAdapter
-            searchRecyclerView?.layoutManager = MyLinearLayoutManager(context)
-            updateSearchRecyclerView()
+            searchRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
+            updateRecyclerView()
         }
     }
 }

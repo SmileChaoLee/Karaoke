@@ -601,6 +601,7 @@ abstract class PlayerBaseFragment : Fragment(),
         MyBannerTool.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
         startAndBindPlayService()
+        hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
     }
 
     override fun onPause() {

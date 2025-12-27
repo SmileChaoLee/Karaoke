@@ -10,4 +10,7 @@ object CommonConstants {
     const val DELETE_ACTION = "DELETE"
     const val PLAY_ACTION = "PLAYING"
     const val FAVORITE_DB_NAME = "songDatabase.db"
+    const val PHONE_SPAN_COUNT = 2
+    const val TABLET_SPAN_COUNT = 6
+    const val TV_SPAN_COUNT = 8
 }

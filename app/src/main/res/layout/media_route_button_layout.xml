@@ -4,5 +4,12 @@
     android:id="@+id/media_route_button"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="gone">
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusUp="@id/actionMenuImageButton"
+    android:nextFocusLeft="@id/audioTrackImageButton"
+    android:nextFocusRight="@id/media_route_button"
+    android:nextFocusDown="@id/player_duration_seekbar"
+    android:visibility="gone"
+    android:background="@drawable/main_menu_item_background_color">
 </androidx.mediarouter.app.MediaRouteButton>

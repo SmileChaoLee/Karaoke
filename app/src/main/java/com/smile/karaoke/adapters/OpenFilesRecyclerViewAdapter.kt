@@ -17,9 +17,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 class OpenFilesRecyclerViewAdapter(
     private val itemListener : RecyclerItemListener,
     private val mList : java.util.ArrayList<FileDescription>,
-    private val textFontSize: Float,
-    private val videoThumbnailsWidth: Int,
-    private val videoThumbnailsHeight: Int)
+    private val textFontSize: Float)
 
     : RecyclerView.Adapter<OpenFilesRecyclerViewAdapter.MyViewHolder>() {
 
@@ -30,19 +28,21 @@ class OpenFilesRecyclerViewAdapter(
         private const val TAG = "FilesRecyclerVAdapter"
     }
 
-    class MyViewHolder(itemView: View,
-                       itemListener : RecyclerItemListener)
-        : RecyclerView.ViewHolder(itemView) {
-        val folderImageView: ImageView
+    class MyViewHolder(
+        itemView: View,
+        textFontSize: Float,
+        private val itemListener : RecyclerItemListener
+    ): RecyclerView.ViewHolder(itemView) {
         val fileNameTextView: TextView
         val videoImageView: ImageView
         init {
             LogUtil.d(TAG, "MyViewHolder")
-            folderImageView = itemView.findViewById(R.id.folderImageView)
             fileNameTextView = itemView.findViewById(R.id.openFileNameTextView)
             fileNameTextView.visibility = View.VISIBLE
+            ScreenUtil.resizeTextSize(fileNameTextView,textFontSize * 0.5f)
             videoImageView = itemView.findViewById(R.id.videoImageView)
             videoImageView.visibility = View.VISIBLE
+
             itemView.setOnClickListener { view ->
                 LogUtil.d(TAG, "setOnClickListener.position = $bindingAdapterPosition")
                 itemListener.onItemClick(
@@ -60,8 +60,9 @@ class OpenFilesRecyclerViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         LogUtil.d(TAG, "onCreateViewHolder.mList.size = ${mList.size}")
         val layoutInflater = LayoutInflater.from(parent.context)
-        val fileView = layoutInflater.inflate(R.layout.fragment_open_file_item, parent, false)
-        return MyViewHolder(fileView, itemListener)
+        val fileView = layoutInflater.inflate(R.layout.fragment_open_file_item,
+            parent, false)
+        return MyViewHolder(fileView, textFontSize, itemListener)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -70,36 +71,11 @@ class OpenFilesRecyclerViewAdapter(
         LogUtil.d(TAG, "onBindViewHolder.item.filename = ${item.file.name}")
         holder.apply {
             videoImageView.setImageBitmap(item.bm)
-            fileNameTextView.apply {
-                text = item.file.name
-                setTextColor(Color.WHITE)
-                if (item.selected) setTextColor(Color.GREEN)
+            fileNameTextView.let {
+                it.text = item.file.name
+                it.setTextColor(Color.WHITE)
+                if (item.selected) it.setTextColor(Color.GREEN)
             }
-            if (item.file.isDirectory) {
-                folderImageView.visibility = View.VISIBLE
-                ScreenUtil.resizeTextSize(fileNameTextView,
-                    textFontSize * 0.8f)
-                videoImageView.visibility = View.GONE
-                LogUtil.d(TAG, "onBindViewHolder.item.file isDirectory")
-            } else {
-                folderImageView.visibility = View.GONE
-                ScreenUtil.resizeTextSize(fileNameTextView,
-                    textFontSize * 0.5f)
-                videoImageView.visibility = View.VISIBLE
-                LogUtil.d(TAG, "onBindViewHolder.item.file not isDirectory")
-            }
-
-            var layoutParams: ViewGroup.MarginLayoutParams = folderImageView.layoutParams
-                    as ViewGroup.MarginLayoutParams
-            layoutParams.width = (textFontSize * 2.0f).toInt()
-            layoutParams.height = layoutParams.width
-            folderImageView.layoutParams = layoutParams
-
-            layoutParams = videoImageView.layoutParams
-                    as ViewGroup.MarginLayoutParams
-            layoutParams.width = videoThumbnailsWidth
-            layoutParams.height = videoThumbnailsHeight
-
             itemView.setBackgroundColor(itemListener.myBackgroundColor(position))
 
             if (isDataSetChanged) {

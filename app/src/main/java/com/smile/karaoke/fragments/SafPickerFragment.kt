@@ -3,6 +3,7 @@ package com.smile.karaoke.fragments
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,6 +48,7 @@ class SafPickerFragment: ComOpenFragment() {
                     val uriList = ContentUriUtil.getUrisList(requireActivity(),it)
                     MySingleton.fileList.clear()
                     // convert uriList to MySingleton.fileList
+                    val dirBm = BitmapFactory.decodeResource(resources, R.drawable.folder_open_icon)
                     for (uri in uriList) {
                         LogUtil.d(TAG, "openDocumentLauncher.result.uri = $uri")
                         val file = ContentUriUtil.getFileFromContentUri(activity, uri)
@@ -58,10 +60,11 @@ class SafPickerFragment: ComOpenFragment() {
                             mediaRetriever.setDataSource(file.path)
                             bm = mediaRetriever.getFrameAtTime(0,
                                 MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                ?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                         } catch (ex: Exception) {
                             LogUtil.e(TAG, "openDocumentLauncher.setDataSource.Exception:",ex)
                         }
+                        if (bm == null) bm = dirBm
+                        bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                         MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
@@ -96,6 +99,12 @@ class SafPickerFragment: ComOpenFragment() {
         }
 
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LogUtil.i(TAG, "onResume")
+        pickerButton?.post {  pickerButton?.requestFocus() }
     }
 
     override fun setClickListeners() {
