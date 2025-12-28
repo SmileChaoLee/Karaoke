@@ -69,7 +69,7 @@
     <string name="duplicate_in_database">Duplicate in database</string>
     <string name="play_video">Video</string>
     <string name="open_files">Open</string>
-    <string name="files_picker">FilePicker</string>
+    <string name="files_picker">Picker</string>
     <string name="start_picker">Start Picker</string>
     <string name="search_videos">SearCh Videos</string>
     <string name="unknown">Unkonwn</string>
