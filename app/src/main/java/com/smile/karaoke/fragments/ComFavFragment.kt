@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -30,42 +29,23 @@ import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
-import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class FavoritesFragment : ItemsBaseFragment(),
+abstract class ComFavFragment : ItemsBaseFragment(),
     FavoriteRecyclerViewAdapter.FavItemListener {
 
     companion object {
-        private const val TAG: String = "FavoritesFragment"
-        private const val IS_DECODER_VISIBLE = "is_decoder_visible"
-        private const val DATABASE_NAME = "database_name"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param isDecoderVisible Is switchDecoderButton visible
-         * @param databaseName Name of the favorite database
-         * @return A new instance of fragment MyDetailFragment.
-         */
-        fun newInstance(isDecoderVisible: Boolean, databaseName: String): FavoritesFragment {
-            return FavoritesFragment().apply {
-                Bundle().also {
-                    it.putBoolean(IS_DECODER_VISIBLE, isDecoderVisible)
-                    it.putString(DATABASE_NAME, databaseName)
-                    arguments = it
-                }
-            }
-        }
+        private const val TAG: String = "ComFavFragment"
     }
 
-    private var isDecoderVisible = true
-    private var databaseName = CommonConstants.FAVORITE_DB_NAME
+    abstract fun decoderButtonVisibility(): Int
+    abstract suspend fun getVideoThumbNail(song: SongInfo): Bitmap?
+    abstract fun getFavDatabaseName(): String
+
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
@@ -79,11 +59,6 @@ open class FavoritesFragment : ItemsBaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-
-        arguments?.let { bundle ->
-            isDecoderVisible = bundle.getBoolean(IS_DECODER_VISIBLE, true)
-            databaseName = bundle.getString(DATABASE_NAME,CommonConstants.FAVORITE_DB_NAME)
-        }
 
         activity?.let {
             if (it is PlayMyFavorites) playMyFavorites = it
@@ -105,10 +80,12 @@ open class FavoritesFragment : ItemsBaseFragment(),
                 if (song == null) return@registerForActivityResult
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (action == CommonConstants.SAVE_ACTION) {
-                        val updNum = DatabaseUtil.updateOneSongFromSongList(act, databaseName, song)
+                        val updNum = DatabaseUtil.updateOneSongFromSongList(act,
+                            getFavDatabaseName(), song)
                         LogUtil.d(TAG, "editSongInfoLauncher.save.updNum = $updNum")
                     } else if (action == CommonConstants.DELETE_ACTION) {
-                        val delNum = DatabaseUtil.deleteOneSongFromSongList(act, databaseName, song)
+                        val delNum = DatabaseUtil.deleteOneSongFromSongList(act,
+                            getFavDatabaseName(), song)
                         LogUtil.d(TAG, "editSongInfoLauncher.delete.delNum = $delNum")
                     }
                     LogUtil.d(TAG, "editSongInfoLauncher.searchFavorites()")
@@ -252,26 +229,14 @@ open class FavoritesFragment : ItemsBaseFragment(),
             var excessYn = false
             withContext(Dispatchers.IO) {
                 val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
-                val songs = DatabaseUtil.readSavedFavorites(act, databaseName, false)
+                val songs = DatabaseUtil.readSavedFavorites(act,
+                    getFavDatabaseName(), false)
                 var index = 0
                 val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
                 for (element in songs) {
                     LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
                     LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
-                    var bm: Bitmap? = null
-                    try {
-                        if(isDecoderVisible) {
-                            mediaRetriever.setDataSource(element.filePath)
-                            bm = mediaRetriever.getFrameAtTime(0,
-                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                        } else {
-                            // used by YouTubePlayer
-                            LogUtil.d(TAG, "$logStr.element.YouTubePlayer")
-                            bm = ImageUtil.getBitmapFromUri(act, element.bitmapUrl)
-                        }
-                    } catch (ex: Exception) {
-                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:", ex)
-                    }
+                    var bm = getVideoThumbNail(element)
                     if (bm == null) bm = fileBm
                     bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                     element.included = "0"
@@ -322,6 +287,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
         }
     }
 
+    // overriding the methods of ItemsBaseFragment
     override fun setClickListeners() {
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
@@ -388,6 +354,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
         switchDecoderButton?.layoutParams = buttonParam
         playSelectedButton?.layoutParams = buttonParam
     }
+    // end of overriding the methods of ItemsBaseFragment
 
     private fun initFavoriteRecyclerView() {
         LogUtil.i(TAG, "initFavoriteRecyclerView")
@@ -403,7 +370,7 @@ open class FavoritesFragment : ItemsBaseFragment(),
     fun setupSwitchDecoderButton() {
         LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
-            visibility = if (isDecoderVisible) View.VISIBLE else View.GONE
+            visibility = decoderButtonVisibility()
             playSongs?.let {
                 setImageResource(
                     if (it.isSoftDecoderFirst()) R.drawable.soft_decoder

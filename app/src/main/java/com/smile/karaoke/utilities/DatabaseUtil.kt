@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import com.smile.karaoke.R
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
@@ -21,6 +22,10 @@ object DatabaseUtil {
         playlist = songListSQLite.readPlaylist(isIncluded)
         songListSQLite.closeDatabase()
         return playlist
+    }
+
+    fun getFavDatabaseName(): String {
+        return CommonConstants.FAVORITE_DB_NAME
     }
 
     suspend fun readSavedFavorites(act: Activity,

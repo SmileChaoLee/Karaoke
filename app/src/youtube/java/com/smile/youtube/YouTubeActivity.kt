@@ -9,13 +9,12 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.R
-import com.smile.karaoke.fragments.FavoritesFragment
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.youtube.fragments.SearchVideosFragment
+import com.smile.youtube.fragments.YTFavFragment
 import com.smile.youtube.fragments.YouTubeFragment
 import com.smile.youtube.models.YouSingleton
-import com.smile.youtube.yt_constants.YTConstants
 
 @OptIn(UnstableApi::class)
 open class YouTubeActivity : BaseActivity() {
@@ -32,8 +31,7 @@ open class YouTubeActivity : BaseActivity() {
     }
 
     private val searchFragment = SearchVideosFragment()
-    private val ytFavFragment = FavoritesFragment.newInstance(
-        false, YTConstants.YT_FAV_DB_NAME)
+    private val ytFavFragment = YTFavFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

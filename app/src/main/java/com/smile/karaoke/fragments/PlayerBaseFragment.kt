@@ -60,7 +60,7 @@ import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.presenters.PlayerBasePresenter.BasePresentView
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.karaoke.utilities.MyBannerTool
+import com.smile.karaoke.utilities.CommonUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.models.ExitAppTimer
 import com.smile.smilelibraries.privacy_policy.PrivacyPolicyUtil
@@ -177,7 +177,6 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun audioChannelButtonListener()
     abstract fun getFavDatabaseName(): String
-
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -598,7 +597,7 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerTool.setVisible(bannerAdsLayout
+        CommonUtil.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
         startAndBindPlayService()
         hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
@@ -637,7 +636,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 showBannerAd()
             }
         }
-        MyBannerTool.setVisible(bannerAdsLayout
+        CommonUtil.setVisible(bannerAdsLayout
             , nativeAdViewVisibility)
 
         super.onConfigurationChanged(newConfig)
@@ -887,7 +886,7 @@ abstract class PlayerBaseFragment : Fragment(),
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            MyBannerTool.setVisible(bannerAdsLayout
+            CommonUtil.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
         fragmentView?.requestFocus()
@@ -1293,14 +1292,14 @@ abstract class PlayerBaseFragment : Fragment(),
                     bannerAdsLayout?.visibility = View.GONE
                 } else {
                     hideNativeAd()
-                    MyBannerTool.setVisible(bannerAdsLayout
+                    CommonUtil.setVisible(bannerAdsLayout
                         , nativeAdViewVisibility)
                 }
             }
         } else {
             LogUtil.d(TAG, "${msgStr}.View.INVISIBLE")
             // show the banner ad if in the right place
-            MyBannerTool.setVisible(bannerAdsLayout
+            CommonUtil.setVisible(bannerAdsLayout
                 , nativeAdViewVisibility)
         }
     }
@@ -1391,6 +1390,7 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         LogUtil.d(TAG, "showPlayerView.fragmentView?.requestFocus()")
         fragmentView?.requestFocus()
+        hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
     }
 
     override fun showToastNoFilesSelected() {

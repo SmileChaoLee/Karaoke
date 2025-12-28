@@ -13,11 +13,13 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import androidx.room.DatabaseView
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaokeplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.services.ExoPlayService
 import com.smile.karaoke.fragments.PlayerBaseFragment
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -192,7 +194,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun getFavDatabaseName(): String {
-        return CommonConstants.FAVORITE_DB_NAME
+        return DatabaseUtil.getFavDatabaseName()
     }
-// end of implementing abstract methods of super class
+    // end of implementing abstract methods of super class
 }

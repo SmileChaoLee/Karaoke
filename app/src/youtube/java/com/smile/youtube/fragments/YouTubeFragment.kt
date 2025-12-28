@@ -21,10 +21,10 @@ import com.smile.youtube.presenters.YouTubePresenter
 import com.smile.youtube.services.YouTubeService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
+import com.smile.youtube.YTUtil
 import com.smile.youtube.listeners.FScreenListener
 import com.smile.youtube.listeners.YTCastPlayerListener
 import com.smile.youtube.listeners.YTPlayerListener
-import com.smile.youtube.yt_constants.YTConstants
 
 @OptIn(UnstableApi::class)
 class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView {
@@ -214,7 +214,7 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     }
 
     override fun getFavDatabaseName(): String {
-        return YTConstants.YT_FAV_DB_NAME
+        return YTUtil.getFavDatabaseName()
     }
     // end of implementing abstract methods of super class
 

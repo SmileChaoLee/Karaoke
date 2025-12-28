@@ -25,6 +25,7 @@ import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.youtube.YTUtil
 import com.smile.youtube.adapters.YouTubeRecyclerAdapter
 import com.smile.youtube.models.YouSingleton
 import com.smile.youtube.retrofit.RestApiSync
@@ -143,7 +144,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                         songName = item.snippet.title
                         filePath = it
                         included = "0"
-                        bitmapUrl = item.snippet.thumbnails.default.url
+                        bitmapUrl = item.snippet.thumbnails.high.url
                         bm = ImageUtil.getBitmapFromUri(act, bitmapUrl)
                     }
                 }
@@ -181,6 +182,37 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         YouSingleton.videos[position].apply {
             song.included = if (song.included == "1") "0" else "1"
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
+        }
+    }
+
+    private fun startSearchVideos() {
+        LogUtil.i(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
+        if (!searchCompleted) return
+        // start searching video
+        searchEditTextView?.let { editIt ->
+            val searchTerm = editIt.text.toString()
+            searchYouTubeVideos(searchTerm)
+        }
+    }
+
+    private fun videosToSongs(): ArrayList<SongInfo> {
+        LogUtil.i(TAG, "videosToSongs")
+        return ArrayList<SongInfo>().also { songIt ->
+            var index = 0
+            for (i in 0 until YouSingleton.videos.size) {
+                if (YouSingleton.videos[i].song.included == "1") {
+                    songIt.add(YouSingleton.videos[i].song)
+                    index++
+                    if (index >= YouSingleton.MAX_SONGS) {
+                        // excess the max
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.excess_max) +
+                                    " ${YouSingleton.MAX_SONGS}", textFontSize,
+                            Toast.LENGTH_SHORT)
+                        break
+                    }
+                }
+            }
         }
     }
 
@@ -242,37 +274,6 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         super.setClickListeners()
     }
 
-    private fun startSearchVideos() {
-        LogUtil.i(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
-        if (!searchCompleted) return
-        // start searching video
-        searchEditTextView?.let { editIt ->
-            val searchTerm = editIt.text.toString()
-            searchYouTubeVideos(searchTerm)
-        }
-    }
-
-    private fun videosToSongs(): ArrayList<SongInfo> {
-        LogUtil.i(TAG, "videosToSongs")
-        return ArrayList<SongInfo>().also { songIt ->
-            var index = 0
-            for (i in 0 until YouSingleton.videos.size) {
-                if (YouSingleton.videos[i].song.included == "1") {
-                    songIt.add(YouSingleton.videos[i].song)
-                    index++
-                    if (index >= YouSingleton.MAX_SONGS) {
-                        // excess the max
-                        ScreenUtil.showToast(
-                            activity, getString(R.string.excess_max) +
-                                    " ${YouSingleton.MAX_SONGS}", textFontSize,
-                            Toast.LENGTH_SHORT)
-                        break
-                    }
-                }
-            }
-        }
-    }
-
     override fun setButtonsSize() {
         LogUtil.i(TAG, "setButtonsSize")
         buttonLayout = fragmentView?.findViewById(R.id.searchButtonLayout)
@@ -283,7 +284,12 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         playSelectedButton?.layoutParams = buttonParam
         addToFavoriteButton?.layoutParams = buttonParam
     }
-    // end of overriding BaseFragment's methods
+
+    override fun gridSpanCount(): Int {
+        val act = activity ?: return 1
+        return YTUtil.gridSpanCount(act)
+    }
+    // end of overriding the methods of ItemsBaseFragment
 
     private fun initRecyclerAdapter() {
         LogUtil.i(TAG, "initRecyclerAdapter")

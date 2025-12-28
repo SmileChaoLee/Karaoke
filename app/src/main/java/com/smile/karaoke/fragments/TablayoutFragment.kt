@@ -12,7 +12,7 @@ import com.google.android.material.tabs.TabLayout
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.karaoke.utilities.MyBannerTool
+import com.smile.karaoke.utilities.CommonUtil
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
 import com.smile.smilelibraries.utilities.ScreenUtil
 
@@ -66,7 +66,7 @@ class TablayoutFragment : Fragment() {
             toastTextSize = textFontSize * 0.7f
             showBannerAd()
         }
-        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
+        CommonUtil.setVisible(bannerLayoutForTab, View.GONE)
 
         playTabLayout = view.findViewById(R.id.fragmentsTabLayout)
         playTabLayout?.let {
@@ -80,7 +80,7 @@ class TablayoutFragment : Fragment() {
         LogUtil.i(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         showBannerAd()
-        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
+        CommonUtil.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onStart() {
@@ -92,7 +92,7 @@ class TablayoutFragment : Fragment() {
         LogUtil.i(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        MyBannerTool.setVisible(bannerLayoutForTab, View.GONE)
+        CommonUtil.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {

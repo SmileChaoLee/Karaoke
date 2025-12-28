@@ -246,6 +246,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         }
     }
 
+    // overriding the methods of ItemsBaseFragment
     override fun setClickListeners() {
         backKeyButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
@@ -334,6 +335,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         playSelectedButton?.layoutParams = buttonParam
         addToFavoriteButton?.layoutParams = buttonParam
     }
+    // end of overriding the methods of ItemsBaseFragment
 
     private fun initFilesRecyclerView() {
         LogUtil.i(TAG, "initFilesRecyclerView() is called")

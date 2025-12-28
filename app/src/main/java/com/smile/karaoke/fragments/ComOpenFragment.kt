@@ -8,6 +8,7 @@ import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.CommonUtil
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -19,6 +20,13 @@ open class ComOpenFragment: ItemsBaseFragment() {
     companion object {
         private const val TAG = "ComOpenFragment"
     }
+
+    // overriding the methods of ItemsBaseFragment
+    override fun gridSpanCount(): Int {
+        val act = activity ?: return 1
+        return CommonUtil.gridSpanCount(act)
+    }
+    // end of overriding the methods of ItemsBaseFragment
 
     suspend fun startPlaySelectedSong(act: Activity?) {
         LogUtil.d(TAG, "startPlaySelectedSong.act = $act")

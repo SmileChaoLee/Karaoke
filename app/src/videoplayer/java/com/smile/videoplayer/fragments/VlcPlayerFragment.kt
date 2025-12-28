@@ -14,6 +14,7 @@ import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
@@ -144,7 +145,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     override fun getFavDatabaseName(): String {
-        return CommonConstants.FAVORITE_DB_NAME
+        return DatabaseUtil.getFavDatabaseName()
     }
     // end of implementing abstract methods of super class
 
