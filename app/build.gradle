@@ -237,7 +237,7 @@ dependencies {
     implementation 'androidx.media3:media3-cast:1.9.0'  // for exoplayer and vlcplayer
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
 
-    implementation 'com.android.billingclient:billing-ktx:8.2.1'
+    implementation 'com.android.billingclient:billing-ktx:8.3.0'
 
     implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.1'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
