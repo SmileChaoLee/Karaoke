@@ -21,6 +21,7 @@ import com.smile.youtube.presenters.YouTubePresenter
 import com.smile.youtube.services.YouTubeService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.smile.youtube.YTUtil
 import com.smile.youtube.listeners.FScreenListener
 import com.smile.youtube.listeners.YTCastPlayerListener
@@ -130,9 +131,20 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     private fun initYouTubePlayerView() {
         val logStr = "initYouTubePlayerView"
         LogUtil.i(TAG, logStr)
+        val act = activity ?: return
         val ps = playService ?: return
-        youTubeView = YouTubePlayerView(presenter.activity)
+        val options = IFramePlayerOptions.Builder(act)
+            .controls(0)
+            .ccLoadPolicy(0) // 1 enables captions by default, 0 disables
+            // .langPref("en")
+            .build()
+        youTubeView = YouTubePlayerView(act)
         youTubeView?.let {
+            it.enableAutomaticInitialization = false    // a must for initialize()
+            ytPlayerListener = YTPlayerListener(ps)
+            it.initialize(ytPlayerListener!!, options)
+            fScreenListener = FScreenListener()
+            it.addFullscreenListener(fScreenListener!!)
             setVideoWindowSize()
             lifecycle.addObserver(it)
             it.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
@@ -142,10 +154,6 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
                     hideYoutubeFeatures(it, youTubePlayer)
                 }
             })
-            ytPlayerListener = YTPlayerListener(ps)
-            it.addYouTubePlayerListener(ytPlayerListener!!)
-            fScreenListener = FScreenListener()
-            it.addFullscreenListener(fScreenListener!!)
             playerViewLinearLayout?.let { viewIt ->
                 val parent = viewIt.parent as ViewGroup
                 LogUtil.d(TAG, "$logStr.parent = $parent")
@@ -180,14 +188,15 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
         chromecastContext?.initialize(castPlayerListener!!)
     }
 
-    // implement abstract methods of super class
+    // overriding methods of super class
     override fun getPlayerPresenter(): PlayerBasePresenter? {
         LogUtil.i(TAG, "getPlayerPresenter")
         return presenter
     }
 
     override fun setupMenuItems() {
-        LogUtil.i(TAG, "setupMenuItems")
+        channelMenuItem?.isVisible = false
+        channelMenuItem?.isEnabled = false
     }
 
     override fun getPlayServiceIntent(): Intent {
@@ -216,7 +225,19 @@ class YouTubeFragment: PlayerBaseFragment(), YouTubePresenter.YouTubePresentView
     override fun getFavDatabaseName(): String {
         return YTUtil.getFavDatabaseName()
     }
-    // end of implementing abstract methods of super class
+
+    override fun switchToMusicVisibility(): Int {
+        return View.GONE
+    }
+
+    override fun switchToVocalVisibility(): Int {
+        return View.GONE
+    }
+
+    override fun audioChannelVisibility(): Int {
+        return View.GONE
+    }
+    // end of overriding methods of super class
 
     // Implement YouTubePresenter.YouTubePresentView
     override fun setCurrentPlayerToPlayerView() {

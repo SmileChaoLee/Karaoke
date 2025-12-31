@@ -5,9 +5,84 @@
       <config />
     </shared>
     <layouts>
+      <layout url="file://$USER_HOME$/Android/Sdk/platforms/android-36/data/res/drawable/btn_default.xml">
+        <config>
+          <theme>@android:style/Theme.Material.Light</theme>
+        </config>
+      </layout>
+      <layout url="file://$USER_HOME$/Android/Sdk/platforms/android-36/data/res/drawable/editbox_background.xml">
+        <config>
+          <theme>@android:style/Theme.Material.Light</theme>
+        </config>
+      </layout>
+      <layout url="file://$USER_HOME$/Android/Sdk/platforms/android-36/data/res/drawable/spinner_background.xml">
+        <config>
+          <theme>@android:style/Theme.Material.Light</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/color/my_editbox_textcolor.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/duration_seekbar_progress_drawable.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/file_menu_item_background_color.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/layout_horizontal_divider.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/main_menu_item_background_color.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/main_menuitem_color.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/music_image_button_source.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/my_button_background_color.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/my_checkbox_background.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/my_editbox_background.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/spinner_dropdown_selector.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout-land/activity_song_data.xml">
         <config>
           <state>Landscape</state>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_base.xml">
+        <config>
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
@@ -16,12 +91,12 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_favorite_list_item.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/audio_track_channel_buttons_layout.xml">
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_song_data.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
@@ -31,7 +106,12 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/edit_exit_edit_song_button_layout.xml">
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/edit_filepath_edittext_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/edit_filepath_string_textview_layout.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
@@ -62,11 +142,6 @@
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/edit_music_track_string_textview_layout.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/edit_save_one_song_button_layout.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
@@ -126,6 +201,11 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_saf_picker.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tablayout.xml">
         <config>
           <theme>@style/AppTheme</theme>
@@ -136,22 +216,22 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/menu_control_buttons_layout.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/player_control_buttons_layout_backup.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/player_view_toolbar_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/save_delete_exit_buttons_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/spinner_dropdown_item_layout.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/spinner_item_layout.xml">
         <config>
           <theme>@style/AppTheme</theme>
         </config>
@@ -171,28 +251,75 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/activity_youtube_databinding.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/activity_youtube_viewbinding.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/fragment_youtube_video.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/fragment_youtube_video_item.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
     </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Finished the UI of Choosing one of the players, VlcPlayer and ExoPlayer">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/flac/KaraokePlayer.extension-flac.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/av1/KaraokePlayer.extension-av1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/opus/KaraokePlayer.extension-opus.iml" beforeDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Changed the app name to U2B Player">
+      <change afterPath="$PROJECT_DIR$/.idea/AndroidProjectSystem.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/deviceManager.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer/fragments/PlayerBaseViewFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/google-services.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/libs/smilelibraries-debug.aar" beforeDir="false" afterPath="$PROJECT_DIR$/app/libs/smilelibraries-debug.aar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/libs/smilelibraries-release.aar" beforeDir="false" afterPath="$PROJECT_DIR$/app/libs/smilelibraries-release.aar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments/PlayerBaseFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments/PlayerBaseFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/com/smile/videoplayer/fragments/VlcPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/com/smile/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/fragments/YouTubeFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/fragments/YouTubeFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/presenters/YouTubePresenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/presenters/YouTubePresenter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/services/YouTubeService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/services/YouTubeService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/youtube/res/drawable/youtube_app_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/res/drawable/youtube_app_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/arm64-v8a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/arm64-v8a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/armeabi-v7a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/armeabi-v7a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86_64/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86_64/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/arm64-v8a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/arm64-v8a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="module" />
+      <option value="repository" />
+    </option>
+  </component>
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=R9CNA014GWJ)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=27071FDH3000J6)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -201,12 +328,26 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/app">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/extensions/av1">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="KaraokePlayer" type="f1a62948:ProjectNode" />
+                <item name="Karaoke" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Karaoke" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
             </expand>
             <select />
@@ -219,12 +360,12 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="resourceFile" />
-        <option value="Kotlin Interface" />
-        <option value="Kotlin Object" />
         <option value="Class" />
         <option value="valueResourceFile" />
         <option value="layoutResourceFile" />
+        <option value="Kotlin Interface" />
         <option value="Kotlin Class" />
+        <option value="Kotlin Object" />
       </list>
     </option>
   </component>
@@ -253,7 +394,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/SmileChaoLee/KaraokePlayer.git&quot;,
-    &quot;accountId&quot;: &quot;2fe7550c-0016-4123-851b-22988f915ab1&quot;
+    &quot;accountId&quot;: &quot;d6f559d8-4827-4dd8-8ce8-47dc7ac7714c&quot;
   }
 }</component>
   <component name="MarkdownSettingsMigration">
@@ -266,63 +407,77 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2DY8TBZPaNYucyCfv9nMXdm2rd2" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;BundleExportedModule&quot;: &quot;KaraokePlayer.app&quot;,
-    &quot;DEBUGGABLE_DEVICE&quot;: &quot;google-pixel_7-2C141FDH20088Y&quot;,
-    &quot;DEBUGGABLE_PROCESS&quot;: &quot;com.smile.karaokeplayer&quot;,
-    &quot;DEBUGGER_ID&quot;: &quot;Auto&quot;,
-    &quot;ExportBundle.BundlePathForKaraokePlayer.app&quot;: &quot;/home/chaolee/AndroidStudioProjects/KaraokePlayer/app&quot;,
-    &quot;ResourceManagerPrefKey.ModuleName&quot;: &quot;KaraokePlayer.app.main&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHOW_ALL_PROCESSES&quot;: &quot;false&quot;,
-    &quot;ToolWindowRunning Devices.ShowToolbar&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/chaolee/AndroidStudioProjects/KaraokePlayer/app/src/main/res/drawable&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "ApkExportedModule": "Karaoke.app",
+    "BundleExportedModule": "Karaoke.app",
+    "DEBUGGABLE_DEVICE": "google-pixel_7-2C141FDH20088Y",
+    "DEBUGGABLE_PROCESS": "com.smile.karaokeplayer",
+    "DEBUGGER_ID": "Auto",
+    "ExportApk.ApkPathForKaraoke.app": "/home/chaolee/AndroidStudioProjects/Karaoke/app",
+    "ExportBundle.BundlePathForKaraoke.app": "/home/chaolee/AndroidStudioProjects/Karaoke/app",
+    "ExportBundle.BundlePathForKaraokePlayer.app": "/home/chaolee/AndroidStudioProjects/KaraokePlayer/app",
+    "Gradle.Download Sources.executor": "Run",
+    "PROJECT_TRUSTED_KEY": "true",
+    "ResourceManagerPrefKey.ModuleName": "KaraokePlayer.app.main",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "I do mind",
+    "SHOW_ALL_PROCESSES": "false",
+    "ToolWindowRunning Devices.ShowToolbar": "false",
+    "cf.advertisement.text.has.clang-format": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_directory_selection": "/home/chaolee/AndroidStudioProjects/Karaoke/app/src/youtube/res/drawable",
+    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/Karaoke/app/src/youtube/res/drawable",
+    "project.structure.last.edited": "Suggestions",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "device.screenshot",
+    "show.migrate.to.gradle.popup": "false"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;ExportApk.BuildVariants&quot;: [
-      &quot;release&quot;
+  "keyToStringList": {
+    "ExportApk.BuildVariants": [
+      "videoplayer2Release"
     ],
-    &quot;kotlin-gradle-user-dirs&quot;: [
-      &quot;/home/chaolee/.gradle&quot;
+    "com.android.tools.idea.sqlite.queryhistory": [
+      "select * from songList;",
+      "PRAGMA user_version;"
     ]
   }
-}</component>
+}]]></component>
   <component name="PsdUISettings">
     <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/youtube/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments" />
       <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/values-night" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/values" />
-      <recent name="$PROJECT_DIR$/app/src/main/java/com/smile/karaokeplayer" />
+      <recent name="$PROJECT_DIR$/app" />
+      <recent name="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/src/main/res" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
-      <recent name="$PROJECT_DIR$/app/src/debug/res/layout" />
-      <recent name="$PROJECT_DIR$/app/src/videoplayer/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/youtube/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/youtube/java/com/smile" />
+      <recent name="$PROJECT_DIR$/app/src/youtube/res/layout" />
+      <recent name="$PROJECT_DIR$/app/src/youtube" />
+      <recent name="$PROJECT_DIR$/app/src/karaokeplayer2/res/layout" />
     </key>
     <key name="android.template.-1626668842">
       <recent name="com.smile.karaokeplayer" />
@@ -331,22 +486,31 @@
       <recent name="com.smile.karaokeplayer" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
-      <recent name="com.smile.karaokeplayer.models" />
-      <recent name="com.smile.karaokeplayer" />
-      <recent name="" />
-      <recent name="exoplayer.callbacks" />
-      <recent name="com.smile.karaokeplayer.adapters" />
+      <recent name="com.smile.youtube.fragments" />
+      <recent name="com.smile.karaoke.models" />
+      <recent name="com.smile.youtube.roomdatabase" />
+      <recent name="youtube.callbacks" />
+      <recent name="youtube.adapters" />
+    </key>
+    <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="com.smile.videoplayer_app_activity" />
+      <recent name="com.smile.karaokeplayer_app_activity" />
+      <recent name="com.smile.youtube" />
+      <recent name="videoplayer" />
+      <recent name="videoplayer2" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.smile.karaoke.callbacks" />
+      <recent name="karaoketvplayer.presenters" />
       <recent name="com.smile.karaokeplayer.presenters" />
       <recent name="exoplayer.presenters" />
       <recent name="exoplayer.listeners" />
-      <recent name="exoplayer.callbacks" />
     </key>
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
-      <module name="KaraokePlayer.app.main" />
+      <module name="Karaoke.app" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
@@ -354,10 +518,14 @@
       <option name="PM_INSTALL_OPTIONS" value="" />
       <option name="ALL_USERS" value="false" />
       <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
       <option name="CLEAR_APP_STORAGE" value="false" />
       <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
       <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
       <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
@@ -404,7 +572,8 @@
         <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
-      <option name="ACTIVITY_CLASS" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="videoplayer2.FTvVlcPlayerActivity" />
       <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
       <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
       <method v="2">
@@ -764,7 +933,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="129" />
+    <option name="localTasksCounter" value="254" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -846,55 +1015,82 @@
       <path value="$PROJECT_DIR$/extensions/ffmpeg/src/main/jni/ffmpeg" />
       <path value="$PROJECT_DIR$/extensions/opus/src/main/jni/libopus" />
       <path value="$PROJECT_DIR$/extensions/vp9/src/main/jni/libvpx" />
+      <path value="$PROJECT_DIR$/extensions/ffmpeg/src/main/jni/libyuv" />
+      <path value="$PROJECT_DIR$/extensions/flac/src/main/jni/libflac" />
     </ignored-roots>
-    <MESSAGE value="Changed myListButtonLayout to favoriteListButtonLayout" />
-    <MESSAGE value="Fixed replayMedia() bugs" />
-    <MESSAGE value="upgraded the libvlc library to 4.0.0-eap1" />
-    <MESSAGE value="Fixed bugs" />
-    <MESSAGE value="Fixed bugs for playPreviousSong and playNextSong buttons" />
-    <MESSAGE value="1. Fixed the bugs of Android 13&#10;2. Refined codes" />
-    <MESSAGE value="Fixed bugs and refined" />
-    <MESSAGE value="Fixed bugs and refined&#10;Bugs: Video is playing but screen is hold after the app is partially invisible and come back. For instance: phone is ringing and is declined" />
-    <MESSAGE value="Refined the behavior of coming back from background" />
-    <MESSAGE value="Added volume controller buttons" />
-    <MESSAGE value="Refined the behavior coming back from background" />
-    <MESSAGE value="Upgrade the version code" />
-    <MESSAGE value="ExoPlayer works" />
-    <MESSAGE value="Migrated ExoPlayer2 to Androidx.media3" />
-    <MESSAGE value="show interstitial ad after finishes 10 songs" />
-    <MESSAGE value="reversed showing interstitial ad after 10 songs to not showing" />
-    <MESSAGE value="Show Interstitial Ad after 10 songs" />
-    <MESSAGE value="Fixed bugs when coming back from playing single song (from editing favorite list)" />
-    <MESSAGE value="Fixed bugs of playPreviousSong and playNextSong buttons" />
-    <MESSAGE value="Disable the button for 200ms after it is pressed." />
-    <MESSAGE value="Upgraded the version code for releasing to Google Play Store" />
-    <MESSAGE value="Slide (drag) the screen to change duration seekbar" />
-    <MESSAGE value="Remove redundant codes and refine" />
-    <MESSAGE value="Remove redundant codes and fixed bugs" />
-    <MESSAGE value="Finished the UI of Choosing one of the players, VlcPlayer and ExoPlayer" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished the UI of Choosing one of the players, VlcPlayer and ExoPlayer" />
+    <MESSAGE value="Different players can access different database of favorites" />
+    <MESSAGE value="Adding favorite to room database is working for ExoPlayer and VlcPlayer" />
+    <MESSAGE value="Refined add songs to favorites database" />
+    <MESSAGE value="Refined source codes of processing songs" />
+    <MESSAGE value="Save and delete one favorite working and refined source codes" />
+    <MESSAGE value="The items of spinner have focus color" />
+    <MESSAGE value="Fixed bugs: color resource" />
+    <MESSAGE value="Added one more flavor" />
+    <MESSAGE value="Release YouTubePlayer" />
+    <MESSAGE value="Fixed permission issue for YoutubePlayer" />
+    <MESSAGE value="Refined EditText View" />
+    <MESSAGE value="Refined focus of search EditText" />
+    <MESSAGE value="Fixed permission tool" />
+    <MESSAGE value="YouTubePlayer goes to store link&#10;&#10;1. Only karaoketvplayer can start YouTubePlayer" />
+    <MESSAGE value="Decoupled the dependencies" />
+    <MESSAGE value="Fixed permission code" />
+    <MESSAGE value="Keep the search result after switching back from other tabs" />
+    <MESSAGE value="Finished favorites for YouTubePlayer" />
+    <MESSAGE value="Refined the the cursor for EditText View and its focus" />
+    <MESSAGE value="Release version" />
+    <MESSAGE value="Changed app name of YouTubePlayer and upgraded dependencies" />
+    <MESSAGE value="Refined focus of view and changed LinearLayoutManager to GridLayoutManager" />
+    <MESSAGE value="Re-architectured favorite fragments" />
+    <MESSAGE value="Release version code" />
+    <MESSAGE value="Changed the app name to U2B Player" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed the app name to U2B Player" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
+        <entry key="androidx.media3.decoder.flac.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1763228729947" />
+          </value>
+        </entry>
         <entry key="com.smile.karaokeplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1739203233897" />
+            <CheckInfo lastCheckTimestamp="1767033232825" />
           </value>
         </entry>
         <entry key="com.smile.karaokeplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1739203233896" />
+            <CheckInfo lastCheckTimestamp="1767033232828" />
+          </value>
+        </entry>
+        <entry key="com.smile.karaoketvplayer">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767033232934" />
+          </value>
+        </entry>
+        <entry key="com.smile.karaoketvplayer.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767033232830" />
           </value>
         </entry>
         <entry key="com.smile.videoplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1739014331919" />
+            <CheckInfo lastCheckTimestamp="1767033232829" />
           </value>
         </entry>
         <entry key="com.smile.videoplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1739014331923" />
+            <CheckInfo lastCheckTimestamp="1767033232834" />
+          </value>
+        </entry>
+        <entry key="com.smile.youtubeplayer">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767033232936" />
+          </value>
+        </entry>
+        <entry key="com.smile.youtubeplayer.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767033232835" />
           </value>
         </entry>
       </map>

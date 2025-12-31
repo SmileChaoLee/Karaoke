@@ -6,10 +6,11 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.presenters.PlayerBasePresenter
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.youtube.services.YouTubeService
 
 @OptIn(UnstableApi::class)
-class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
-    : PlayerBasePresenter(youTubePresentView) {
+class YouTubePresenter(private val presentView: YouTubePresentView)
+    : PlayerBasePresenter(presentView) {
 
     companion object {
         private const val TAG = "YouTubePresenter"
@@ -19,18 +20,28 @@ class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
         // fun initYouTubePlayer()
     }
 
+    private fun getYTService(): YouTubeService? {
+        return presentView.getPlayService() as? YouTubeService
+    }
+
     // implementing methods of YouTubePresenter.YouTubePresentView
     override fun initializeVariables(
         savedInstanceState: Bundle?,
         callingIntent: Intent?,
-        isAutoPlay: Boolean
-    ) {
+        isAutoPlay: Boolean) {
         LogUtil.d(TAG, "initializeVariables")
         initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay)
     }
 
     override fun setAudioTrackAndChannel(audioTrackIndex: Int, audioChannel: Int) {
-        LogUtil.d(TAG, "setAudioTrackAndChannel")
+        val logStr = "setAudioTrackAndChannel"
+        LogUtil.d(TAG, logStr)
+        val playService = getYTService() ?: return
+        playService.setAudioTrack(audioTrackIndex)
+        mPlayingParam.currentAudioTrackIndexPlayed = audioTrackIndex
+        // select audio channel
+        mPlayingParam.currentChannelPlayed = audioChannel
+        playService.setAudioVolume(mPlayingParam.currentVolume)
     }
 
     override fun switchAudioToMusic() {
@@ -51,11 +62,13 @@ class YouTubePresenter(private val youTubePresentView: YouTubePresentView)
 
     override fun setAudioActionSubMenu() {
         LogUtil.d(TAG, "setAudioActionSubMenu")
+        val numTracks = getNumberOfAudioTracks()
+        presentView.buildAudioTrackMenuItem(numTracks)
     }
 
     override fun getNumberOfAudioTracks(): Int {
         LogUtil.d(TAG, "getNumberOfAudioTracks")
-        return 1    // temporary
+        return 3    // 3 languages, No caption, English, and Local Language
     }
 
     override fun getNumberOfVideoTracks(): Int {

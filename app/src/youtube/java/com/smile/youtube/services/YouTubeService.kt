@@ -12,6 +12,7 @@ import com.smile.karaoke.services.BasePlayService
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.youtube.callbacks.YouTubeSessionCallback
 import com.smile.youtube.presenters.YouTubePresenter
+import java.util.Locale
 
 @UnstableApi
 class YouTubeService : BasePlayService() {
@@ -105,6 +106,21 @@ class YouTubeService : BasePlayService() {
     }
 
     fun setAudioTrack(audioTrackId: Int) {
+        // Try casting it to the internal implementation to see available methods:
+
+        when (audioTrackId) {
+            1 -> {
+                // no caption
+                // mYouTubePlayer?.setOption("captions", "track", "{}")
+            }
+            2 -> {
+                // English, languageCode = "en"
+            }
+            else -> {
+                // local language depending on device setting
+                val languageCode: String = Locale.getDefault().language
+            }
+        }
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {

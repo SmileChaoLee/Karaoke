@@ -113,12 +113,12 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private var orientationImageButton: ImageButton? = null
     private var repeatImageButton: ImageButton? = null
-    private var switchToMusicImageButton: ImageButton? = null
-    private var switchToVocalImageButton: ImageButton? = null
+    var switchToMusicImageButton: ImageButton? = null
+    var switchToVocalImageButton: ImageButton? = null
     private var hideVideoImageButton: ImageButton? = null
     private var actionMenuImageButton: ImageButton? = null
-    private var audioChannelImageButton: ImageButton? = null
-    private var audioTrackImageButton: ImageButton? = null
+    var audioChannelImageButton: ImageButton? = null
+    var audioTrackImageButton: ImageButton? = null
 
     private var mediaRouteButton: MediaRouteButton? = null
     var castContext: CastContext? = null
@@ -903,6 +903,52 @@ abstract class PlayerBaseFragment : Fragment(),
         handler.postDelayed(runnable, (seconds * 1000.0).toLong())
     }
 
+    open fun switchToMusicVisibility(): Int {
+        return View.VISIBLE
+    }
+
+    open fun switchToVocalVisibility(): Int {
+        return View.VISIBLE
+    }
+
+    open fun audioChannelVisibility(): Int {
+        return View.VISIBLE
+    }
+
+    private fun audioTrackListener() {
+        val logStr = "audioTrackImageButton"
+        audioTrackImageButton?.setOnClickListener {
+            mPresenter.playingParam.apply {
+                LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
+                currentAudioTrackIndexPlayed++
+                LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
+                val numAudioTracks = mPresenter.numberOfAudioTracks
+                LogUtil.d(TAG, "$logStr.numAudioTracks = $numAudioTracks")
+                if (currentAudioTrackIndexPlayed > numAudioTracks)
+                    currentAudioTrackIndexPlayed = 1
+                val str: String? =
+                    when (currentAudioTrackIndexPlayed) {
+                        1 -> activity?.getString(R.string.audioTrack1String)
+                        2 -> activity?.getString(R.string.audioTrack2String)
+                        3 -> activity?.getString(R.string.audioTrack3String)
+                        4 -> activity?.getString(R.string.audioTrack4String)
+                        5 -> activity?.getString(R.string.audioTrack5String)
+                        6 -> activity?.getString(R.string.audioTrack6String)
+                        7 -> activity?.getString(R.string.audioTrack7String)
+                        8 -> activity?.getString(R.string.audioTrack8String)
+                        else -> activity?.getString(R.string.unknown)
+                    }
+                ScreenUtil.showToast(activity, str, toastTextSize,
+                    Toast.LENGTH_SHORT)
+                mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed,
+                    currentChannelPlayed)
+            }
+            disableButtonForSometime(it)
+            lastFocusView = audioTrackImageButton
+            fragmentView?.requestFocus()
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setOnClickEvents() {
         volumeImageButton?.setOnClickListener {
@@ -1028,35 +1074,7 @@ abstract class PlayerBaseFragment : Fragment(),
             lastFocusView = audioChannelImageButton
             fragmentView?.requestFocus()
         }
-        audioTrackImageButton?.setOnClickListener {
-            mPresenter.playingParam.apply {
-                LogUtil.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                currentAudioTrackIndexPlayed++
-                LogUtil.d(TAG, "audioTrackImageButton.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                val numAudioTracks = mPresenter.numberOfAudioTracks
-                LogUtil.d(TAG, "audioTrackImageButton.numAudioTracks = $numAudioTracks")
-                if (currentAudioTrackIndexPlayed > numAudioTracks)
-                    currentAudioTrackIndexPlayed = 1
-                val str: String? =
-                    when (currentAudioTrackIndexPlayed) {
-                        1 -> activity?.getString(R.string.audioTrack1String)
-                        2 -> activity?.getString(R.string.audioTrack2String)
-                        3 -> activity?.getString(R.string.audioTrack3String)
-                        4 -> activity?.getString(R.string.audioTrack4String)
-                        5 -> activity?.getString(R.string.audioTrack5String)
-                        6 -> activity?.getString(R.string.audioTrack6String)
-                        7 -> activity?.getString(R.string.audioTrack7String)
-                        8 -> activity?.getString(R.string.audioTrack8String)
-                        else -> activity?.getString(R.string.unknown)
-                    }
-                ScreenUtil.showToast(activity, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
-                    Toast.LENGTH_SHORT)
-                mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed, currentChannelPlayed)
-            }
-            disableButtonForSometime(it)
-            lastFocusView = audioTrackImageButton
-            fragmentView?.requestFocus()
-        }
+        audioTrackListener()
 
         actionMenuImageButton?.setOnClickListener {
             LogUtil.d(TAG, "actionMenuImageButton.setOnClickListener")
@@ -1179,11 +1197,9 @@ abstract class PlayerBaseFragment : Fragment(),
         val playingParam = mPresenter.playingParam
         if (playingParam.currentVolume > 0.0f) volumeImageButton?.setImageResource(R.drawable.non_volume)
         else volumeImageButton?.setImageResource(R.drawable.volume)
-        switchToMusicImageButton?.apply {
-            isEnabled = true
-            visibility = View.VISIBLE
-        }
-        switchToVocalImageButton?.visibility = View.VISIBLE
+        switchToMusicImageButton?.visibility = switchToMusicVisibility()
+        switchToVocalImageButton?.visibility = switchToVocalVisibility()
+        audioChannelImageButton?.visibility = audioChannelVisibility()
         setOrientationImageButton(resources.configuration.orientation)
         // repeatImageButton
         when (playingParam.repeatStatus) {

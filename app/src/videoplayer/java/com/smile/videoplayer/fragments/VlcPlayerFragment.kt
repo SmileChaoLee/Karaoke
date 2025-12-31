@@ -116,7 +116,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     override fun setupMenuItems() {
-        channelMenuItem?.isVisible = true
+        channelMenuItem?.isVisible = false
         channelMenuItem?.isEnabled = false
     }
 
