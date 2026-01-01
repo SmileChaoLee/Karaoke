@@ -6,6 +6,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.AppLinkUtil
 import com.smile.videoplayer.VlcPlayerActivity
+import com.smile.youtube.YouTubeActivity
 
 open class PhVlcPlayerActivity : BasePlayerActivity() {
 
@@ -23,12 +24,24 @@ open class PhVlcPlayerActivity : BasePlayerActivity() {
         return true
     }
 
+    /*
     override fun startYouTubePlayer() {
         LogUtil.i(mTAG, "startYouTubePlayer()")
         AppLinkUtil.startAppLinkOnStore(this@PhVlcPlayerActivity,
             AppLinkUtil.YOUTUBE_LINK)
     }
+    */
 
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer")
+        Intent(
+            this@PhVlcPlayerActivity,
+            YouTubeActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            youTubeLauncher.launch(it)
+        }
+    }
     override fun getExoButtonName(): String {
         return resources.getString(R.string.installKaraokePlayer)
     }

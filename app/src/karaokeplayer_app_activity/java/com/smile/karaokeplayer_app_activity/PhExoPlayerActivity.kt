@@ -6,6 +6,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.smilelibraries.utilities.AppLinkUtil
+import com.smile.youtube.YouTubeActivity
 
 open class PhExoPlayerActivity : BasePlayerActivity() {
 
@@ -23,10 +24,23 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
         return true
     }
 
+    /*
     override fun startYouTubePlayer() {
         LogUtil.i(mTAG, "startYouTubePlayer()")
         AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
             AppLinkUtil.YOUTUBE_LINK)
+    }
+    */
+
+    override fun startYouTubePlayer() {
+        LogUtil.i(mTAG, "startYouTubePlayer")
+        Intent(
+            this@PhExoPlayerActivity,
+            YouTubeActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            youTubeLauncher.launch(it)
+        }
     }
 
     override fun getExoButtonName(): String {
