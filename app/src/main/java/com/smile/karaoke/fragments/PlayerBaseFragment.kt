@@ -626,9 +626,10 @@ abstract class PlayerBaseFragment : Fragment(),
         setOrientationImageButton(newConfig.orientation)
         setButtonsPositionAndSize(newConfig)
         activity?.let {actIt ->
-            screenSizeX = ScreenUtil.getScreenSize(actIt).x
+            val screen = ScreenUtil.getScreenSize(actIt)
+            screenSizeX = screen.x
             LogUtil.i(TAG, "$logStr.screenSizeX = $screenSizeX")
-            screenSizeY = ScreenUtil.getScreenSize(actIt).y
+            screenSizeY = screen.y
             LogUtil.i(TAG, "$logStr.screenSizeY = $screenSizeY")
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
@@ -650,21 +651,14 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
-        super.onDestroy()
         MySingleton.clearSingleton()
         // cancel the timer
         mPresenter.removeMsgFromDurationBarHandler()
         controllerTimerHandler.removeCallbacksAndMessages(null)
         myBannerAdView?.destroy()
         nativeTemplate?.release()
-        /*
-        // clear the screen on, added on 2021-02-18
-        activity?.window?.apply {
-            clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
-        */
         unbindAndStopPlayService()
-        // setupCast?.release()
+        super.onDestroy()
     }
 
     fun onBackPressed() {

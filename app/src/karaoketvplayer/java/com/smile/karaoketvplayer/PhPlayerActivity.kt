@@ -6,7 +6,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.videoplayer.VlcPlayerActivity
-import com.smile.youtube.YouTubeActivity
+import com.smile.u2b.U2bActivity
 
 open class PhPlayerActivity : BasePlayerActivity() {
 
@@ -29,7 +29,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
         LogUtil.i(mTAG, "startYouTubePlayer")
         Intent(
             this@PhPlayerActivity,
-            YouTubeActivity::class.java
+            U2bActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
             youTubeLauncher.launch(it)

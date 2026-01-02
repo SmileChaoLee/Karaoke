@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.youtube.YouTubeActivity"
+            android:name="com.smile.u2b.U2bActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
@@ -64,7 +64,7 @@
             android:exported="false">
         </service>
         <service
-            android:name="com.smile.youtube.services.YouTubeService"
+            android:name="com.smile.u2b.services.U2bService"
             android:exported="false">
         </service>
 

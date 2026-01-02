@@ -5,7 +5,7 @@
     <data>
         <variable
             name="presenter"
-            type="com.smile.youtube.presenters.YouTubePresenter" />
+            type="com.smile.u2b.presenters.U2bPresenter" />
     </data>
     <LinearLayout
         android:orientation="vertical"

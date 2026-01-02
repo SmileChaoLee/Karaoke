@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="com.smile.youtube.SmileYouTubeApp"
+        android:name="com.smile.u2b.SmileU2bApp"
         android:icon="@drawable/youtube_app_icon"
         android:banner="@drawable/youtube_app_icon"
         android:roundIcon="@drawable/youtube_app_icon"
@@ -25,7 +25,7 @@
             android:value="ca-app-pub-8354869049759576~4357648959" />
 
         <activity
-            android:name="com.smile.youtube.PhYTPlayerActivity"
+            android:name="com.smile.u2b.PhU2bPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -35,7 +35,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.youtube.TvYTPlayerActivity"
+            android:name="com.smile.u2b.TvU2bPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -45,13 +45,13 @@
         </activity>
 
         <activity
-            android:name="com.smile.youtube.YouTubeActivity"
+            android:name="com.smile.u2b.U2bActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
 
         <service
-            android:name="com.smile.youtube.services.YouTubeService"
+            android:name="com.smile.u2b.services.U2bService"
             android:exported="false">
         </service>
 
