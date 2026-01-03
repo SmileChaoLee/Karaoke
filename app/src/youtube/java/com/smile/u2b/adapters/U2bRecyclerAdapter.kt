@@ -34,12 +34,15 @@ class U2bRecyclerAdapter (
 
         val songVideoImageView: ImageView
         val songNameTextView: TextView
+        val videoIdTextView: TextView
         init {
             LogUtil.d(TAG, "MyViewHolder")
 
             songVideoImageView = itemView.findViewById(R.id.myListVideoImageView)
             songNameTextView = itemView.findViewById(R.id.myListNameTextView)
             ScreenUtil.resizeTextSize(songNameTextView,textFontSize * 0.5f)
+            videoIdTextView = itemView.findViewById(R.id.myListVideoIdTextView)
+            ScreenUtil.resizeTextSize(videoIdTextView,textFontSize * 0.5f)
 
             itemView.setOnClickListener {view ->
                 LogUtil.d(TAG, "MyViewHolder.infoLayout.setOnClickListener")
@@ -71,6 +74,11 @@ class U2bRecyclerAdapter (
             val songName = item.song.songName.trim()
             songNameTextView.apply {
                 text = songName.ifEmpty { "No Name" }
+                if (item.song.included == "1") setTextColor(Color.GREEN)
+                else setTextColor(Color.WHITE)
+            }
+            videoIdTextView.apply {
+                text = item.song.filePath
                 if (item.song.included == "1") setTextColor(Color.GREEN)
                 else setTextColor(Color.WHITE)
             }

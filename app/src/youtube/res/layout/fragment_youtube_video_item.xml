@@ -13,6 +13,8 @@
         android:id="@+id/myListVideoImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="0sp"
+        android:padding="0sp"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"
         android:focusable="false"
@@ -26,10 +28,21 @@
     <TextView android:id="@+id/myListNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="0sp"
+        android:padding="0sp"
         android:textScaleX="1.0"
         android:textColor="@android:color/white"
         android:gravity="center_horizontal"
         android:visibility="visible">
     </TextView>
-
+    <TextView android:id="@+id/myListVideoIdTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0sp"
+        android:padding="0sp"
+        android:textScaleX="1.0"
+        android:textColor="@android:color/white"
+        android:gravity="center_horizontal"
+        android:visibility="visible">
+    </TextView>
 </LinearLayout>
