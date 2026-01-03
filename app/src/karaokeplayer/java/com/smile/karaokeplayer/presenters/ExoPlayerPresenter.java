@@ -11,6 +11,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.TrackSelectionParameters;
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.MyPlayerConstants;
+import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.presenters.PlayerBasePresenter;
 import com.smile.karaoke.utilities.LogUtil;
 
@@ -103,15 +104,16 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             }
 
             // set audio track
+            PlayingParameters pm = getPlayingParam();
             LogUtil.d(TAG, msgStr + ".audioTrackIndex = " + audioTrackIndex);
-            mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+            pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
             // set audio channel
             LogUtil.d(TAG, msgStr + ".audioChannel = " + audioChannel);
-            mPlayingParam.setCurrentChannelPlayed(audioChannel);
+            pm.setCurrentChannelPlayed(audioChannel);
             LogUtil.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
             if (getPlayService() != null) {
                 LogUtil.d(TAG, msgStr + ".getPlayService().setAudioVolume");
-                getPlayService().setAudioVolume(mPlayingParam.getCurrentVolume());
+                getPlayService().setAudioVolume(pm.getCurrentVolume());
             }
         }
     }
@@ -119,24 +121,26 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void switchAudioToMusic() {
         LogUtil.i(TAG, "switchAudioToMusic");
-        if (!mPlayingParam.isInSongList()) {
+        PlayingParameters pm = getPlayingParam();
+        if (!pm.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = mPlayingParam.getMusicAudioTrackIndex();
-            int audioChannel = mPlayingParam.getMusicAudioChannel();
+            int audioTrack = pm.getMusicAudioTrackIndex();
+            int audioChannel = pm.getMusicAudioChannel();
             setAudioTrackAndChannel(audioTrack, audioChannel);
         }
     }
     @Override
     public void switchAudioToVocal() {
         LogUtil.i(TAG, "switchAudioToVocal");
-        if (!mPlayingParam.isInSongList()) {
+        PlayingParameters pm = getPlayingParam();
+        if (!pm.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = mPlayingParam.getVocalAudioTrackIndex();
-            int audioChannel = mPlayingParam.getVocalAudioChannel();
+            int audioTrack = pm.getVocalAudioTrackIndex();
+            int audioChannel = pm.getVocalAudioChannel();
             setAudioTrackAndChannel(audioTrack, audioChannel);
         }
     }
@@ -159,46 +163,46 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         if (getPlayService() == null) {
             return;
         }
+        PlayingParameters pm = getPlayingParam();
         audioTrackIndicesList.clear();
-        mNumberOfVideoTracks = getPlayService().getPlayingMediaInfo(audioTrackIndicesList);
+        setNumberOfVideoTracks(getPlayService().getPlayingMediaInfo(audioTrackIndicesList));
         int numOfAudioTracks = audioTrackIndicesList.size();
-        LogUtil.d(TAG, msgStr + ".mNumberOfVideoTracks = " + mNumberOfVideoTracks);
+        LogUtil.d(TAG, msgStr + ".mNumberOfVideoTracks = " + getNumberOfVideoTracks());
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
 
         if (numOfAudioTracks == 0) {
-            mPlayingParam.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
-            mPlayingParam.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
+            pm.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
+            pm.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
         } else {
             int audioChannelPlayed, audioTrackIdPlayed;
-            if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong()
-                    || mPlayingParam.isInSongList()) {
-                audioTrackIdPlayed = mPlayingParam.getCurrentAudioTrackIndexPlayed();
-                audioChannelPlayed = mPlayingParam.getCurrentChannelPlayed();
+            if (pm.isAutoPlay() || pm.isPlaySingleSong() || pm.isInSongList()) {
+                audioTrackIdPlayed = pm.getCurrentAudioTrackIndexPlayed();
+                audioChannelPlayed = pm.getCurrentChannelPlayed();
                 LogUtil.d(TAG, msgStr + ".Auto play or playing single song.");
             } else {
                 // for open media. do not know the music track and vocal track
                 LogUtil.d(TAG, msgStr + ".Do not know the music track and vocal track.");
                 // guess
-                audioTrackIdPlayed = mPlayingParam.getCurrentAudioTrackIndexPlayed();
+                audioTrackIdPlayed = pm.getCurrentAudioTrackIndexPlayed();
                 LogUtil.d(TAG, msgStr + ".playingParam.getCurrentAudioTrackIndexPlayed() = " +
                         audioTrackIdPlayed);
-                audioChannelPlayed = mPlayingParam.getCurrentChannelPlayed();
+                audioChannelPlayed = pm.getCurrentChannelPlayed();
                 LogUtil.d(TAG, msgStr + ".playingParam.getCurrentChannelPlayed() = " +
                         audioChannelPlayed);
                 if (numOfAudioTracks >= 2) {
                     // more than 2 audio tracks
-                    mPlayingParam.setVocalAudioTrackIndex(audioTrackIdPlayed);
-                    mPlayingParam.setVocalAudioChannel(audioChannelPlayed);
-                    mPlayingParam.setMusicAudioTrackIndex(audioTrackIdPlayed==1? 2:1);
-                    mPlayingParam.setMusicAudioChannel(audioChannelPlayed);
+                    pm.setVocalAudioTrackIndex(audioTrackIdPlayed);
+                    pm.setVocalAudioChannel(audioChannelPlayed);
+                    pm.setMusicAudioTrackIndex(audioTrackIdPlayed==1? 2:1);
+                    pm.setMusicAudioChannel(audioChannelPlayed);
                 } else {
                     // only one track
                     audioTrackIdPlayed = 1;
-                    mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIdPlayed);
-                    mPlayingParam.setVocalAudioTrackIndex(audioTrackIdPlayed);
-                    mPlayingParam.setMusicAudioTrackIndex(audioTrackIdPlayed);
-                    mPlayingParam.setVocalAudioChannel(CommonConstants.LEFT_CHANNEL);
-                    mPlayingParam.setMusicAudioChannel(CommonConstants.RIGHT_CHANNEL);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIdPlayed);
+                    pm.setVocalAudioTrackIndex(audioTrackIdPlayed);
+                    pm.setMusicAudioTrackIndex(audioTrackIdPlayed);
+                    pm.setVocalAudioChannel(CommonConstants.LEFT_CHANNEL);
+                    pm.setMusicAudioChannel(CommonConstants.RIGHT_CHANNEL);
                 }
             }
 
@@ -229,13 +233,16 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
         LogUtil.i(TAG,"saveInstanceState.getPlayService()");
+        PlayingParameters pm = getPlayingParam();
         if (getPlayService() != null) {
-            mPlayingParam.setCurrentAudioPosition(getPlayService().getCurrentPosition());
+            pm.setCurrentAudioPosition(getPlayService().getCurrentPosition());
         } else {
-            mPlayingParam.setCurrentAudioPosition(0);
+            pm.setCurrentAudioPosition(0);
         }
-        outState.putSerializable(MyPlayerConstants.AudioTrackIndicesListState, audioTrackIndicesList);
-        outState.putBundle(MyPlayerConstants.TrackSelectionParametersState, mTrackSelectionParameters.toBundle());
+        outState.putSerializable(MyPlayerConstants.AudioTrackIndicesListState,
+                audioTrackIndicesList);
+        outState.putBundle(MyPlayerConstants.TrackSelectionParametersState,
+                mTrackSelectionParameters.toBundle());
         super.saveInstanceState(outState);
     }
 }

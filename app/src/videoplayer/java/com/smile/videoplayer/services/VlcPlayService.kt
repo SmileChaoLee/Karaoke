@@ -92,7 +92,7 @@ class VlcPlayService : BasePlayService() {
     fun initVlcPlayer() {
         LogUtil.i(TAG, "initVlcPlayer.presenter = $presenter")
         presenter?.let {
-            libVLC = LibVLC(it.activity)
+            libVLC = LibVLC(it.getActivity())
             vlcPlayer = MediaPlayer(libVLC)
             vlcPlayer?.apply {
                 setEventListener(VlcPlayerListener(this@VlcPlayService))
@@ -140,7 +140,7 @@ class VlcPlayService : BasePlayService() {
         LogUtil.i(TAG,msgStr)
         presenter?.let {
             attachPlayerViews(videoVLCPlayerView)   // must be the first statement
-            it.activity.let { actIt ->
+            it.getActivity()?.let { actIt ->
                 vlcPlayer?.apply {
                     val screenSize = ScreenUtil.getScreenSize(actIt)
                     LogUtil.d(TAG,"${msgStr}.screenSize = ${screenSize.x}, ${screenSize.y}")

@@ -157,7 +157,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private val controllerTimerRunnable = Runnable {
         LogUtil.d(TAG, "controllerTimerRunnable")
         controllerTimerHandler.removeCallbacksAndMessages(null)
-        mPresenter.playingParam?.let {
+        mPresenter.playingParam.let {
             LogUtil.d(TAG, "controllerTimerRunnable.playingParam")
             if (supportToolbar?.visibility == View.VISIBLE) {
                 // hide supportToolbar
@@ -473,7 +473,7 @@ abstract class PlayerBaseFragment : Fragment(),
             // setting if use soft decoder
             playingParam.softDecoderFirst = !playingParam.softDecoderFirst
             softDecoderFirstMenuItem?.isChecked = playingParam.softDecoderFirst
-            playService?.switchDecoder()
+            getPlayService()?.switchDecoder()
         } else if (id == R.id.autoPlay) {
             autoPlayMenuItem?.let {
                 // print the original check status
@@ -529,7 +529,7 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.setAudioTrackAndChannel(8, currentChannelPlayed)
         } else if (id == R.id.channel) {
             val mediaUri = mPresenter.mediaUri
-            val numberOfAudioTracks = mPresenter.numberOfAudioTracks
+            val numberOfAudioTracks = mPresenter.getNumberOfAudioTracks()
             if (mediaUri != null && Uri.EMPTY != mediaUri && numberOfAudioTracks > 0) {
                 leftChannelMenuItem?.isEnabled = true
                 rightChannelMenuItem?.isEnabled = true
@@ -584,7 +584,7 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onStart() {
         LogUtil.i(TAG, "onStart")
         super.onStart()
-        mPresenter.playingParam?.let {
+        mPresenter.playingParam.let {
             LogUtil.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             if (it.preparedStatus == 3) { // running in the background before
                 // set to come back from background
@@ -597,8 +597,11 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        CommonUtil.setVisible(bannerAdsLayout
-            , nativeAdViewVisibility)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            bannerAdsLayout?.visibility = View.GONE
+        } else {
+            CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+        }
         startAndBindPlayService()
         hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
     }
@@ -613,7 +616,7 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onStop() {
         LogUtil.i(TAG, "onStop")
         super.onStop()
-        mPresenter.playingParam?.let {
+        mPresenter.playingParam.let {
             LogUtil.d(TAG, "onStop.isPlaySingleSong = ${it.isPlaySingleSong}")
             it.preparedStatus = 3 // running in background
         }
@@ -637,8 +640,11 @@ abstract class PlayerBaseFragment : Fragment(),
                 showBannerAd()
             }
         }
-        CommonUtil.setVisible(bannerAdsLayout
-            , nativeAdViewVisibility)
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            bannerAdsLayout?.visibility = View.GONE
+        } else {
+            CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+        }
 
         super.onConfigurationChanged(newConfig)
     }
@@ -842,8 +848,9 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     private fun closeFragment() {
-        LogUtil.i(TAG, "closeFragment.isPlaySingleSong = " + mPresenter.playingParam.isPlaySingleSong)
-        playSongs?.returnToPrevious(mPresenter.playingParam.isPlaySingleSong)
+        val pm = mPresenter.playingParam
+        LogUtil.i(TAG, "closeFragment.isPlaySingleSong = " + pm.isPlaySingleSong)
+        playSongs?.returnToPrevious(pm.isPlaySingleSong)
     }
 
     private fun showBannerAd() {
@@ -880,8 +887,11 @@ abstract class PlayerBaseFragment : Fragment(),
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            CommonUtil.setVisible(bannerAdsLayout
-                , nativeAdViewVisibility)
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                bannerAdsLayout?.visibility = View.GONE
+            } else {
+                CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+            }
         }
         fragmentView?.requestFocus()
     }
@@ -916,7 +926,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
                 currentAudioTrackIndexPlayed++
                 LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                val numAudioTracks = mPresenter.numberOfAudioTracks
+                val numAudioTracks = mPresenter.getNumberOfAudioTracks()
                 LogUtil.d(TAG, "$logStr.numAudioTracks = $numAudioTracks")
                 if (currentAudioTrackIndexPlayed > numAudioTracks)
                     currentAudioTrackIndexPlayed = 1
@@ -956,7 +966,7 @@ abstract class PlayerBaseFragment : Fragment(),
                     pIt.currentVolume = 1.0f
                     volumeImageButton?.setImageResource(R.drawable.non_volume)
                 }
-                playService?.setAudioVolume(pIt.currentVolume)
+                getPlayService()?.setAudioVolume(pIt.currentVolume)
             }
             disableButtonForSometime(it)
             lastFocusView = volumeImageButton
@@ -1118,6 +1128,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             }
             it.setOnTouchListener { _, motionEvent ->
+                val playService = getPlayService() ?: return@setOnTouchListener false
                 val posX = motionEvent.x    // keep changing if there is new motionEvent
                 LogUtil.d(TAG, "setOnTouchListener.motionEvent.x = $posX")
                 when (motionEvent.action) {
@@ -1188,15 +1199,15 @@ abstract class PlayerBaseFragment : Fragment(),
     // implementing PlayerBasePresenter.BasePresentView
     override fun setImageButtonStatus() {
         LogUtil.i(TAG, "setImageButtonStatus")
-        val playingParam = mPresenter.playingParam
-        if (playingParam.currentVolume > 0.0f) volumeImageButton?.setImageResource(R.drawable.non_volume)
+        val pm = mPresenter.playingParam
+        if (pm.currentVolume > 0.0f) volumeImageButton?.setImageResource(R.drawable.non_volume)
         else volumeImageButton?.setImageResource(R.drawable.volume)
         switchToMusicImageButton?.visibility = switchToMusicVisibility()
         switchToVocalImageButton?.visibility = switchToVocalVisibility()
         audioChannelImageButton?.visibility = audioChannelVisibility()
         setOrientationImageButton(resources.configuration.orientation)
         // repeatImageButton
-        when (playingParam.repeatStatus) {
+        when (pm.repeatStatus) {
             MyPlayerConstants.NoRepeatPlaying -> {
                 // no repeat but show symbol of repeat all song with transparent background
                 repeatImageButton?.setImageResource(R.drawable.repeat_no)
@@ -1207,13 +1218,13 @@ abstract class PlayerBaseFragment : Fragment(),
                 repeatImageButton?.setImageResource(R.drawable.repeat_all)
         }
         activity?.let {
-            repeatImageButton?.visibility = if (playingParam.isPlaySingleSong) View.GONE else View.VISIBLE
+            repeatImageButton?.visibility = if (pm.isPlaySingleSong) View.GONE else View.VISIBLE
         }
 
         hideVideoImageButton?.apply {
             setImageResource(if (playerViewLinearLayout?.visibility==View.VISIBLE) R.drawable.hide_video
                 else R.drawable.show_video)
-            visibility = if (playingParam.isPlaySingleSong) View.GONE else View.VISIBLE
+            visibility = if (pm.isPlaySingleSong) View.GONE else View.VISIBLE
         }
     }
 
@@ -1244,13 +1255,10 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onDurationSeekBarProgressChanged(progress: Int, fromUser: Boolean) {
-        val msgString = "onDurationSeekBarProgressChanged"
-        LogUtil.d(TAG, msgString)
-        if (playService == null) {
-            LogUtil.d(TAG, "$msgString.playService is null")
-            return
-        }
-        LogUtil.d(TAG, "$msgString.progress = $progress")
+        val msgStr = "onDurationSeekBarProgressChanged"
+        LogUtil.d(TAG, msgStr)
+        val playService = getPlayService() ?: return
+        LogUtil.d(TAG, "$msgStr.progress = $progress")
         val positionTime = progress / 1000.0f // seconds
         val minutes = (positionTime / 60.0f).toInt() // minutes
         val seconds = positionTime.toInt() - (minutes * 60)
@@ -1261,12 +1269,12 @@ abstract class PlayerBaseFragment : Fragment(),
 
         playingTimeTextView?.text = playingTimeString
         mPresenter.playingParam.currentAudioPosition = progress.toLong()
-        LogUtil.d(TAG, "$msgString.fromUser = $fromUser")
+        LogUtil.d(TAG, "$msgStr.fromUser = $fromUser")
         if (fromUser) {
             val isSeekable = playService.isSeekable()
-            LogUtil.d(TAG, "$msgString.isSeekable = $isSeekable")
+            LogUtil.d(TAG, "$msgStr.isSeekable = $isSeekable")
             if (isSeekable) {
-                LogUtil.d(TAG, "$msgString.playService.setPlayerTime()")
+                LogUtil.d(TAG, "$msgStr.playService.setPlayerTime()")
                 playService.setPlayerTime(progress.toLong())
             }
         }
@@ -1282,8 +1290,9 @@ abstract class PlayerBaseFragment : Fragment(),
         // volumeSeekBar?.setProgressAndThumb(mPresenter.currentProgressForVolumeSeekBar)
     }
 
-    override fun showNativeAndHideBannerAd() {
+    override fun showNativeAndHideBannerAd(): Boolean {
         val msgStr = "showNativeAndHideBannerAd"
+        val playService = getPlayService() ?: return false
         if (playerViewLinearLayout?.visibility == View.VISIBLE) {
             LogUtil.d(TAG, "${msgStr}.View.VISIBLE")
             val numVideoTracks =  mPresenter.numberOfVideoTracks
@@ -1291,27 +1300,31 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.playingParam.let {
                 LogUtil.d(TAG, "${msgStr}.playbackState = ${it.currentPlaybackState}")
                 if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING
-                    || numVideoTracks == 0
-                    || playService.isCastSessionAvailable) {
+                    || numVideoTracks == 0 || playService.isCastSessionAvailable) {
                     // Not playing, No video tracks, or casting session is available
-                    LogUtil.d(TAG, "${msgStr}.nativeTemplate?.showNativeAd()")
                     nativeAdViewVisibility = View.VISIBLE
+                    bannerAdsLayout?.visibility = View.GONE // hide the banner ad
                     nativeTemplate?.showNativeAd()
-                    // hide the banner ad
-                    // bannerLinearLayout?.visibility = View.GONE
-                    bannerAdsLayout?.visibility = View.GONE
                 } else {
                     hideNativeAd()
-                    CommonUtil.setVisible(bannerAdsLayout
-                        , nativeAdViewVisibility)
+                    if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        bannerAdsLayout?.visibility = View.GONE
+                    } else {
+                        CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+                    }
                 }
             }
         } else {
             LogUtil.d(TAG, "${msgStr}.View.INVISIBLE")
             // show the banner ad if in the right place
-            CommonUtil.setVisible(bannerAdsLayout
-                , nativeAdViewVisibility)
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                bannerAdsLayout?.visibility = View.GONE
+            } else {
+                CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+            }
         }
+
+        return nativeTemplate != null
     }
 
     override fun hideNativeAd() {
@@ -1447,8 +1460,8 @@ abstract class PlayerBaseFragment : Fragment(),
         return activity?.isFinishing ?: true
     }
 
-    override fun getFragment(): Fragment {
-        return this
+    override fun getRunActivity(): AppCompatActivity? {
+        return activity as? AppCompatActivity
     }
     // end of implementing PlayerBasePresenter.BasePresentView
 

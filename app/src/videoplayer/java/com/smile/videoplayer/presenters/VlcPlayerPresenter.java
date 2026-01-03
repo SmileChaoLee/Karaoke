@@ -2,7 +2,6 @@ package com.smile.videoplayer.presenters;
 
 import java.util.ArrayList;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +13,7 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.smile.karaoke.constants.CommonConstants;
 import com.smile.karaoke.constants.MyPlayerConstants;
+import com.smile.karaoke.models.PlayingParameters;
 import com.smile.karaoke.presenters.PlayerBasePresenter;
 import com.smile.karaoke.utilities.LogUtil;
 
@@ -35,7 +35,6 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     public VlcPlayerPresenter(VlcPresentView presentView) {
         super(presentView);
         mPresentView = presentView;
-        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     public VlcPresentView getPresentView() {
@@ -80,13 +79,14 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 audioTrackIndex = 1;
             }
             int audioTrackId = audioTrackIndicesList.get(audioTrackIndex - 1);
-            LogUtil.d(TAG, "setAudioTrackAndChannel.getPlayService() = " + getPlayService());
+            LogUtil.d(TAG, "setAudioTrackAndChannel.playService = " + getPlayService());
             if (getPlayService() != null) {
+                PlayingParameters pm = getPlayingParam();
                 getPlayService().setAudioTrack(audioTrackId);
-                mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+                pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
                 // select audio channel
-                mPlayingParam.setCurrentChannelPlayed(audioChannel);
-                getPlayService().setAudioVolume(mPlayingParam.getCurrentVolume());
+                pm.setCurrentChannelPlayed(audioChannel);
+                getPlayService().setAudioVolume(pm.getCurrentVolume());
             }
         }
     }
@@ -95,11 +95,11 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     public void saveInstanceState(@NonNull Bundle outState) {
         LogUtil.i(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
         if (getPlayService() != null) {
+            PlayingParameters pm = getPlayingParam();
             if (getPlayService().getVlcPlayer() != null) {
-                // mPlayingParam.setCurrentAudioPosition(getPlayService().getVlcPlayer().getTime());
-                mPlayingParam.setCurrentAudioPosition(getPlayService().getCurrentPosition());
+                pm.setCurrentAudioPosition(getPlayService().getCurrentPosition());
             } else {
-                mPlayingParam.setCurrentAudioPosition(0);
+                pm.setCurrentAudioPosition(0);
             }
         }
         outState.putIntegerArrayList("AudioTrackIndexList", audioTrackIndicesList);
@@ -110,12 +110,13 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void switchAudioToMusic() {
         LogUtil.i(TAG, "switchAudioToMusic");
-        if (!mPlayingParam.isInSongList()) {
+        PlayingParameters pm = getPlayingParam();
+        if (!pm.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = mPlayingParam.getMusicAudioTrackIndex();
-            int audioChannel = mPlayingParam.getMusicAudioChannel();
+            int audioTrack = pm.getMusicAudioTrackIndex();
+            int audioChannel = pm.getMusicAudioChannel();
             setAudioTrackAndChannel(audioTrack, audioChannel);
         }
     }
@@ -124,12 +125,13 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     public void switchAudioToVocal() {
         // do nothing because it does not have this functionality yet
         LogUtil.i(TAG, "switchAudioToVocal() is called.");
-        if (!mPlayingParam.isInSongList()) {
+        PlayingParameters pm = getPlayingParam();
+        if (!pm.isInSongList()) {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = mPlayingParam.getVocalAudioTrackIndex();
-            int audioChannel = mPlayingParam.getVocalAudioChannel();
+            int audioTrack = pm.getVocalAudioTrackIndex();
+            int audioChannel = pm.getVocalAudioChannel();
             setAudioTrackAndChannel(audioTrack, audioChannel);
         }
     }
@@ -181,27 +183,27 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         String msgStr = "getPlayingMediaInfo";
         LogUtil.i(TAG, msgStr);
         int[] result = new int[] {1, CommonConstants.STEREO};
-        mNumberOfVideoTracks = 0;
+        setNumberOfVideoTracks(0);
         int numOfAudioTracks = 0;
         audioTrackIndicesList.clear();
         if (getPlayService() == null || getPlayService().getVlcPlayer() == null) {
             LogUtil.d(TAG, msgStr + ".getPlayService() or vlcPlayer is null");
         } else {
-            mNumberOfVideoTracks = getPlayService().getPlayingMediaInfo(audioTrackIndicesList);
+            setNumberOfVideoTracks(getPlayService().getPlayingMediaInfo(audioTrackIndicesList));
             numOfAudioTracks = audioTrackIndicesList.size();
             LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
+            PlayingParameters pm = getPlayingParam();
             if (numOfAudioTracks == 0) {
-                mPlayingParam.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
-                mPlayingParam.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
+                pm.setCurrentAudioTrackIndexPlayed(MyPlayerConstants.NoAudioTrack);
+                pm.setCurrentChannelPlayed(MyPlayerConstants.NoAudioChannel);
             } else {
                 // currently played audio track
                 int audioTrackIdPlayed = getPlayService().getAudioTrack();
                 int audioTrackIndex = 1;    // default audio track index
                 int audioChannel = CommonConstants.STEREO;
-                if (mPlayingParam.isAutoPlay() || mPlayingParam.isPlaySingleSong()
-                        || mPlayingParam.isInSongList()) {
-                    audioTrackIndex = mPlayingParam.getCurrentAudioTrackIndexPlayed();
-                    audioChannel = mPlayingParam.getCurrentChannelPlayed();
+                if (pm.isAutoPlay() || pm.isPlaySingleSong() || pm.isInSongList()) {
+                    audioTrackIndex = pm.getCurrentAudioTrackIndexPlayed();
+                    audioChannel = pm.getCurrentChannelPlayed();
                 } else {
                     for (int index = 0; index < audioTrackIndicesList.size(); index++) {
                         int audioId = audioTrackIndicesList.get(index);
@@ -221,13 +223,13 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                         // only one track
                         musicAudioTrack = 1;
                     }
-                    mPlayingParam.setVocalAudioTrackIndex(audioTrackIdPlayed);
-                    mPlayingParam.setVocalAudioChannel(audioChannel);
+                    pm.setVocalAudioTrackIndex(audioTrackIdPlayed);
+                    pm.setVocalAudioChannel(audioChannel);
                     // default music is the second track
-                    mPlayingParam.setMusicAudioTrackIndex(musicAudioTrack);
-                    mPlayingParam.setMusicAudioChannel(audioChannel);
-                    mPlayingParam.setCurrentAudioTrackIndexPlayed(audioTrackIdPlayed);
-                    mPlayingParam.setCurrentChannelPlayed(audioChannel);
+                    pm.setMusicAudioTrackIndex(musicAudioTrack);
+                    pm.setMusicAudioChannel(audioChannel);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIdPlayed);
+                    pm.setCurrentChannelPlayed(audioChannel);
                 }
                 result[0] = audioTrackIndex;
                 result[1] = audioChannel;

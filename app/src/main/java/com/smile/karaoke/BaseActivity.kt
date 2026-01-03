@@ -348,7 +348,7 @@ abstract class BaseActivity : AppCompatActivity(),
             playData.clear()
             it.onSaveInstanceState(playData)
             isPlayToPause = false
-            it.mPresenter.playingParam?.let { pIt->
+            it.mPresenter.playingParam.let { pIt->
                 if (pIt.currentPlaybackState == PlaybackStateCompat.STATE_PLAYING) {
                     // playing then pause before going to my favorite activity
                     it.mPresenter.pausePlay()
@@ -412,7 +412,7 @@ abstract class BaseActivity : AppCompatActivity(),
         LogUtil.i(TAG, "switchBetweenSoftAndHardDecoder")
         playerFragment?.let {
             it.mPresenter.playingParam.softDecoderFirst = !it.mPresenter.playingParam.softDecoderFirst
-            it.playService?.switchDecoder()
+            it.getPlayService()?.switchDecoder()
         }
     }
 

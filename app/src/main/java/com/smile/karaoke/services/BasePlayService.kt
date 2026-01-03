@@ -142,7 +142,7 @@ abstract class BasePlayService : Service() {
         if (songInfo == null) {
             return
         }
-        var filePath = songInfo.filePath ?: return
+        var filePath = songInfo.filePath
         filePath = filePath.trim { it <= ' ' }
         LogUtil.d(TAG, "${msgStr}.filePath = $filePath")
         if (filePath == "") {
@@ -152,7 +152,8 @@ abstract class BasePlayService : Service() {
             return
         }
         try {
-            val contentResolver: ContentResolver? = presenter.activity?.contentResolver
+            // val contentResolver: ContentResolver? = presenter.activity?.contentResolver
+            val contentResolver: ContentResolver? = this@BasePlayService.contentResolver
             contentResolver?.let {
                 for (perm in it.persistedUriPermissions) {
                     if (perm.uri == filePath.toUri()) {
@@ -162,7 +163,7 @@ abstract class BasePlayService : Service() {
                 }
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            LogUtil.e(TAG, "${msgStr}.Exception: ", ex)
         }
         var mediaUri = filePath.toUri()
         LogUtil.d(TAG, "${msgStr}. = $mediaUri")
@@ -196,7 +197,7 @@ abstract class BasePlayService : Service() {
     fun initMediaControllerCompat(presenter: PlayerBasePresenter) {
         // Create a MediaControllerCompat
         LogUtil.i(TAG, "initMediaControllerCompat")
-        presenter.activity.let {
+        presenter.getActivity()?.let {
             LogUtil.d(TAG, "initMediaControllerCompat.activity not null")
             mediaSessionCompat?.apply {
                 mediaControllerCompat = MediaControllerCompat(it, this)

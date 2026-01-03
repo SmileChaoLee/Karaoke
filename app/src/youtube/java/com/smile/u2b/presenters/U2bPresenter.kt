@@ -20,6 +20,9 @@ class U2bPresenter(private val presentView: U2bPresentView)
         // nothing for now
     }
 
+    override var numberOfVideoTracks: Int = 1
+        get() = getNumVideoTracks()
+
     private fun getU2bService(): U2bService? {
         return presentView.getPlayService() as? U2bService
     }
@@ -38,10 +41,10 @@ class U2bPresenter(private val presentView: U2bPresentView)
         LogUtil.d(TAG, logStr)
         val playService = getU2bService() ?: return
         playService.setAudioTrack(audioTrackIndex)
-        mPlayingParam.currentAudioTrackIndexPlayed = audioTrackIndex
+        playingParam.currentAudioTrackIndexPlayed = audioTrackIndex
         // select audio channel
-        mPlayingParam.currentChannelPlayed = audioChannel
-        playService.setAudioVolume(mPlayingParam.currentVolume)
+        playingParam.currentChannelPlayed = audioChannel
+        playService.setAudioVolume(playingParam.currentVolume)
     }
 
     override fun switchAudioToMusic() {
@@ -64,16 +67,16 @@ class U2bPresenter(private val presentView: U2bPresentView)
         LogUtil.d(TAG, "setAudioActionSubMenu")
         val numTracks = getNumberOfAudioTracks()
         presentView.buildAudioTrackMenuItem(numTracks)
+        numberOfVideoTracks = getNumVideoTracks()
     }
 
     override fun getNumberOfAudioTracks(): Int {
         LogUtil.d(TAG, "getNumberOfAudioTracks")
         return 3    // 3 languages, No caption, English, and Local Language
     }
-
-    override fun getNumberOfVideoTracks(): Int {
-        LogUtil.d(TAG, "getNumberOfVideoTracks")
-        return 1    // temporary
-    }
     // end of implementing methods of U2bPresenter.U2bPresentView
+
+    private fun getNumVideoTracks(): Int {
+        return 1
+    }
 }

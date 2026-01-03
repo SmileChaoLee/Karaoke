@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import androidx.room.DatabaseView
 import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaokeplayer.presenters.ExoPlayerPresenter
