@@ -8,6 +8,7 @@
     android:baselineAligned="false"
     android:focusable="true"
     android:clickable="true"
+    android:nextFocusUp="@+id/favoritePlaySelectedButton"
     android:background="@android:color/black">
 
     <LinearLayout

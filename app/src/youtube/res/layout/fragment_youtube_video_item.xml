@@ -7,6 +7,7 @@
     android:baselineAligned="false"
     android:focusable="true"
     android:clickable="true"
+    android:nextFocusUp="@+id/searchEditTextView"
     android:background="@android:color/black">
 
     <android.widget.ImageView
@@ -19,8 +20,6 @@
         android:adjustViewBounds="true"
         android:focusable="false"
         android:clickable="false"
-        android:nextFocusLeft="@id/videoImageView"
-        android:nextFocusRight="@id/videoImageView"
         android:background="@android:color/transparent"
         android:layout_gravity="center"
         android:visibility="visible">

@@ -256,7 +256,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             }
         }
         addToFavoriteButton?.setOnClickListener {
-            it.requestFocus()
+            it.post { it.requestFocus() }
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
             val songs = videosToSongs()
@@ -298,6 +298,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         activity?.let {
             myRecyclerViewAdapter = U2bRecyclerAdapter(this,
                 U2bSingleton.videos, textFontSize)
+            searchRecyclerView?.itemAnimator = null
             searchRecyclerView?.adapter = myRecyclerViewAdapter
             searchRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
             updateRecyclerView()

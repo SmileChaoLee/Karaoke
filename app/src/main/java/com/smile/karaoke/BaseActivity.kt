@@ -326,7 +326,7 @@ abstract class BaseActivity : AppCompatActivity(),
         basePlayViewLayout.clearFocus()
         basePlayViewLayout.visibility = View.INVISIBLE
         tablayoutViewLayout.visibility = View.VISIBLE
-        tablayoutViewLayout.requestFocus()
+        tablayoutViewLayout.post { tablayoutViewLayout.requestFocus() }
         tablayoutFragment?.becomeVisible()
     }
 
@@ -335,7 +335,7 @@ abstract class BaseActivity : AppCompatActivity(),
         tablayoutViewLayout.clearFocus()
         tablayoutViewLayout.visibility = View.INVISIBLE
         basePlayViewLayout.visibility = View.VISIBLE
-        basePlayViewLayout.requestFocus()
+        basePlayViewLayout.post { basePlayViewLayout.requestFocus() }
         tablayoutFragment?.becomeInVisible()
     }
     // Finishes interface PlayerBaseViewFragment.PlayBaseFragmentFunc

@@ -361,6 +361,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         activity?.let {
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(this,
                 MySingleton.favorites, textFontSize)
+            myListRecyclerView?.itemAnimator = null
             myListRecyclerView?.adapter = myRecyclerViewAdapter
             myListRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
             updateRecyclerView()

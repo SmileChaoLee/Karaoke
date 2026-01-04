@@ -893,7 +893,6 @@ abstract class PlayerBaseFragment : Fragment(),
                 CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
             }
         }
-        fragmentView?.requestFocus()
     }
 
     private fun disableButtonForSometime(button: View) {
@@ -949,7 +948,6 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             disableButtonForSometime(it)
             lastFocusView = audioTrackImageButton
-            fragmentView?.requestFocus()
         }
     }
 
@@ -970,13 +968,11 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             disableButtonForSometime(it)
             lastFocusView = volumeImageButton
-            fragmentView?.requestFocus()
         }
         previousMediaImageButton?.setOnClickListener {
             mPresenter.playPreviousSong()
             disableButtonForSometime(it)
             lastFocusView = previousMediaImageButton
-            fragmentView?.requestFocus()
         }
         playMediaImageButton?.setOnClickListener {
             if (mPresenter.playingParam.currentPlaybackState ==
@@ -987,25 +983,21 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             disableButtonForSometime(it)
             lastFocusView = playMediaImageButton
-            fragmentView?.requestFocus()
         }
         replayMediaImageButton?.setOnClickListener {
             mPresenter.replayMedia()
             disableButtonForSometime(it)
             lastFocusView = replayMediaImageButton
-            fragmentView?.requestFocus()
         }
         stopMediaImageButton?.setOnClickListener {
             mPresenter.stopPlay(MyPlayerConstants.STOPPED_BY_USER)
             disableButtonForSometime(it)
             lastFocusView = stopMediaImageButton
-            fragmentView?.requestFocus()
         }
         nextMediaImageButton?.setOnClickListener {
             mPresenter.playNextSong()
             disableButtonForSometime(it)
             lastFocusView = nextMediaImageButton
-            fragmentView?.requestFocus()
         }
         heartImageButton?.setOnClickListener { it->
             // add this media file to my favorite
@@ -1029,7 +1021,6 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             disableButtonForSometime(it)
             lastFocusView = heartImageButton
-            fragmentView?.requestFocus()
         }
 
         orientationImageButton?.setOnClickListener {
@@ -1040,25 +1031,21 @@ abstract class PlayerBaseFragment : Fragment(),
             setScreenOrientation(orientation)
             disableButtonForSometime(it)
             lastFocusView = orientationImageButton
-            fragmentView?.requestFocus()
         }
         repeatImageButton?.setOnClickListener {
             mPresenter.setRepeatSongStatus()
             disableButtonForSometime(it)
             lastFocusView = repeatImageButton
-            fragmentView?.requestFocus()
         }
         switchToMusicImageButton?.setOnClickListener {
             mPresenter.switchAudioToMusic()
             disableButtonForSometime(it)
             lastFocusView = switchToMusicImageButton
-            fragmentView?.requestFocus()
         }
         switchToVocalImageButton?.setOnClickListener {
             mPresenter.switchAudioToVocal()
             disableButtonForSometime(it)
             lastFocusView = switchToVocalImageButton
-            fragmentView?.requestFocus()
         }
         hideVideoImageButton?.setOnClickListener {
             LogUtil.d(TAG, "hideVideoImageButton.setOnClickListener")
@@ -1069,14 +1056,12 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             disableButtonForSometime(it)
             lastFocusView = hideVideoImageButton
-            fragmentView?.requestFocus()
         }
 
         audioChannelImageButton?.setOnClickListener {
             audioChannelButtonListener()
             disableButtonForSometime(it)
             lastFocusView = audioChannelImageButton
-            fragmentView?.requestFocus()
         }
         audioTrackListener()
 
@@ -1088,13 +1073,11 @@ abstract class PlayerBaseFragment : Fragment(),
             setTimerToHideSupportAudioControl()   // reset the timer
             disableButtonForSometime(it)
             lastFocusView = actionMenuImageButton
-            fragmentView?.requestFocus()
         }
         actionMenuView?.setOnMenuItemClickListener { item: MenuItem? ->
             item?.let { itemIt->
                 onOptionsItemSelected(itemIt)
                 // lastFocusView = actionMenuView
-                fragmentView?.requestFocus()
             } == true
         }
         playerDurationSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -1113,9 +1096,9 @@ abstract class PlayerBaseFragment : Fragment(),
                 LogUtil.i(TAG, "supportToolbar.onClick() is called.")
                 showSupportToolbarAudioControlSetTimer()
                 if (lastFocusView != null) {
-                    lastFocusView!!.requestFocus()
+                    lastFocusView!!.post { lastFocusView!!.requestFocus() }
                 } else {
-                    actionMenuImageButton?.requestFocus()
+                    actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
                     lastFocusView = actionMenuImageButton
                 }
             }
@@ -1412,7 +1395,6 @@ abstract class PlayerBaseFragment : Fragment(),
             setScreenOrientation(orgOrientation)
         }
         LogUtil.d(TAG, "showPlayerView.fragmentView?.requestFocus()")
-        fragmentView?.requestFocus()
         hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
     }
 

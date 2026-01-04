@@ -212,6 +212,7 @@ class BaseFavoriteListActivity : AppCompatActivity(), OnRecyclerItemClickListene
             textFontSize, yellow2Color, yellow3Color
         )
 
+        myListRecyclerView!!.itemAnimator = null
         myListRecyclerView!!.setAdapter(myRecyclerViewAdapter)
         myListRecyclerView!!.setLayoutManager(object : LinearLayoutManager(this) {
             override fun isAutoMeasureEnabled(): Boolean {

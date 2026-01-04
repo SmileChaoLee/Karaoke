@@ -159,7 +159,6 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
-        v?.requestFocus()
         if (MySingleton.fileList[position].file.isFile) {
             MySingleton.fileList[position].selected = !MySingleton.fileList[position].selected
             myRecyclerViewAdapter?.myNotifyItemChanged(position)
@@ -342,6 +341,7 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         activity?.let {
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
                 this, MySingleton.fileList, textFontSize)
+            filesRecyclerView?.itemAnimator = null
             filesRecyclerView?.adapter = myRecyclerViewAdapter
             filesRecyclerView?.layoutManager = MyLayoutManager(context, gridSpanCount())
             updateRecyclerView()

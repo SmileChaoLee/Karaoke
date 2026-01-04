@@ -65,7 +65,7 @@ abstract class ItemsBaseFragment : Fragment() {
         view.requestFocus()
         view.setOnKeyListener {
                 _, keyCode, event ->
-            showVideoButton?.requestFocus()
+            showVideoButton?.post { showVideoButton?.requestFocus() }
             return@setOnKeyListener false
         }
 

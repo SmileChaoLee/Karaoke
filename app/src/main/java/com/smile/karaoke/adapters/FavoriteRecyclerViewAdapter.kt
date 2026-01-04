@@ -29,6 +29,10 @@ class FavoriteRecyclerViewAdapter (
         fun startEditSongInfo(position: Int)
     }
 
+    init {
+        setHasStableIds(true) // 1. Enable stable IDs
+    }
+
     private var positionUpdated: Int = -1
     private var isDataSetChanged = true
 
@@ -78,7 +82,7 @@ class FavoriteRecyclerViewAdapter (
             }
 
             itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-                infoLayout.requestFocus()
+                infoLayout.post { infoLayout.requestFocus() }
             }
         }
     }
@@ -92,6 +96,18 @@ class FavoriteRecyclerViewAdapter (
         return MyViewHolder(fileView, textFontSize, itemListener)
     }
 
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
+        LogUtil.d(TAG, "onBindViewHolder.3 parameters.position = $position")
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            if (position == positionUpdated) {
+                holder.itemView.post { holder.itemView.requestFocus() }
+                positionUpdated = -1
+            }
+        }
+    }
+
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
@@ -103,17 +119,14 @@ class FavoriteRecyclerViewAdapter (
                 if (item.song.included == "1") setTextColor(Color.GREEN)
                 else setTextColor(Color.WHITE)
             }
-
             itemView.setBackgroundColor(itemListener.myBackgroundColor(position))
 
-            if (isDataSetChanged) {
-                if (position == 0) {
-                    itemView.requestFocus()
-                }
+            if (isDataSetChanged && position == 0) {
+                itemView.post { itemView.requestFocus() }
                 isDataSetChanged = false
             }
             if (position == positionUpdated) {
-                itemView.requestFocus()
+                itemView.post { itemView.requestFocus() }
                 positionUpdated = -1
             }
         }
@@ -129,10 +142,15 @@ class FavoriteRecyclerViewAdapter (
         return mList.size
     }
 
+    // Return a unique ID for each item based on the file path or name
+    override fun getItemId(position: Int): Long {
+        return mList[position].hashCode().toLong()
+    }
+
     fun myNotifyItemChanged(position:Int) {
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
-        notifyItemChanged(position)
+        notifyItemChanged(position, "PAYLOAD_UPDATE")
     }
 
     @SuppressLint("NotifyDataSetChanged")

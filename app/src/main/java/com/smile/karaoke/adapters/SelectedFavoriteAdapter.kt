@@ -22,6 +22,10 @@ class SelectedFavoriteAdapter (
 
     : RecyclerView.Adapter<SelectedFavoriteAdapter.MyViewHolder>() {
 
+    companion object {
+        private const val TAG = "SelectedFavAdapter"
+    }
+
     private var positionUpdated: Int = -1
     private var isDataSetChanged = true
 
@@ -32,8 +36,8 @@ class SelectedFavoriteAdapter (
         fun playSongButtonFunc(position : Int)
     }
 
-    companion object {
-        private const val TAG = "SelectedFavAdapter"
+    init {
+        setHasStableIds(true) // 1. Enable stable IDs
     }
 
     class MyViewHolder(itemView: View, itemClickListener : OnRecyclerItemClickListener, textFontSize: Float)
@@ -133,7 +137,7 @@ class SelectedFavoriteAdapter (
             itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
                 LogUtil.d(TAG, "MyViewHolder.itemView.onFocusChangeListener.hasFocus = $hasFocus")
                 if (hasFocus) {
-                    editSongButton.requestFocus()
+                    editSongButton.post { editSongButton.requestFocus() }
                 }
             }
         }
@@ -146,6 +150,17 @@ class SelectedFavoriteAdapter (
         return MyViewHolder(fileView, itemClickListener, textFontSize)
     }
 
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
+        LogUtil.d(TAG, "onBindViewHolder.3 parameters.position = $position")
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            if (position == positionUpdated) {
+                holder.itemView.post { holder.itemView.requestFocus() }
+                positionUpdated = -1
+            }
+        }
+    }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder().position = $position")
         val singleSongInfo = mList[position]
@@ -170,15 +185,12 @@ class SelectedFavoriteAdapter (
             itemView.setBackgroundColor(if (position % 2 == 0) yellow2Color
             else yellow3Color)
 
-            if (isDataSetChanged) {
-                if (position == 0) {
-                    holder.itemView.requestFocus()
-                }
+            if (isDataSetChanged && position == 0) {
+                itemView.post { itemView.requestFocus() }
                 isDataSetChanged = false
             }
-            
             if (position == positionUpdated) {
-                holder.itemView.requestFocus()
+                itemView.post { itemView.requestFocus() }
                 positionUpdated = -1
             }
         }
@@ -194,10 +206,15 @@ class SelectedFavoriteAdapter (
         return mList.size
     }
 
+    // Return a unique ID for each item based on the file path or name
+    override fun getItemId(position: Int): Long {
+        return mList[position].hashCode().toLong()
+    }
+
     fun myNotifyItemChanged(position:Int) {
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
         isDataSetChanged = true
-        notifyItemChanged(position)
+        notifyItemChanged(position, "PAYLOAD_UPDATE")
     }
 }

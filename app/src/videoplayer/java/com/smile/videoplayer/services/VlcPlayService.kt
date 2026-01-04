@@ -121,7 +121,7 @@ class VlcPlayService : BasePlayService() {
             if (!isAttached) {
                 attachViews(videoVLCPlayerView, null, true, false)
             }
-            videoVLCPlayerView.requestFocus()
+            videoVLCPlayerView.post { videoVLCPlayerView.requestFocus() }
         }
     }
 
