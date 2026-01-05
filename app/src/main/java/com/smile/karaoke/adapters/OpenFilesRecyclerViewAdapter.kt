@@ -69,18 +69,6 @@ class OpenFilesRecyclerViewAdapter(
         return MyViewHolder(fileView, textFontSize, itemListener)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
-        LogUtil.d(TAG, "onBindViewHolder.3 parameters.position = $position")
-        if (payloads.isEmpty()) {
-            super.onBindViewHolder(holder, position, payloads)
-        } else {
-            if (position == positionUpdated) {
-                holder.itemView.post { holder.itemView.requestFocus() }
-                positionUpdated = -1
-            }
-        }
-    }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder.position = $position")
         val item = mList[position]
@@ -123,7 +111,7 @@ class OpenFilesRecyclerViewAdapter(
     fun myNotifyItemChanged(position:Int) {
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
-        notifyItemChanged(position, "PAYLOAD_UPDATE")
+        notifyItemChanged(position)
     }
 
     @SuppressLint("NotifyDataSetChanged")

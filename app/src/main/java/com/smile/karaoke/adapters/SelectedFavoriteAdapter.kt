@@ -149,18 +149,6 @@ class SelectedFavoriteAdapter (
         val fileView = layoutInflater.inflate(R.layout.activity_favorite_list_item, parent, false)
         return MyViewHolder(fileView, itemClickListener, textFontSize)
     }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int, payloads: MutableList<Any>) {
-        LogUtil.d(TAG, "onBindViewHolder.3 parameters.position = $position")
-        if (payloads.isEmpty()) {
-            super.onBindViewHolder(holder, position, payloads)
-        } else {
-            if (position == positionUpdated) {
-                holder.itemView.post { holder.itemView.requestFocus() }
-                positionUpdated = -1
-            }
-        }
-    }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         LogUtil.d(TAG, "onBindViewHolder().position = $position")
         val singleSongInfo = mList[position]
@@ -215,6 +203,6 @@ class SelectedFavoriteAdapter (
         LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
         positionUpdated = position
         isDataSetChanged = true
-        notifyItemChanged(position, "PAYLOAD_UPDATE")
+        notifyItemChanged(position)
     }
 }
