@@ -17,7 +17,7 @@
         android:focusable="true"
         android:clickable="true"
         android:layout_gravity="center"
-        android:src="@drawable/folder_open_icon"
+        android:src="@drawable/cloud_file_icon"
         android:background="@drawable/file_menu_item_background_color"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.3"
