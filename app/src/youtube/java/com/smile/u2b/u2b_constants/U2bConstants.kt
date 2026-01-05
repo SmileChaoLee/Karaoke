@@ -5,4 +5,5 @@ object U2bConstants {
     const val PHONE_SPAN_COUNT = 1
     const val TABLET_SPAN_COUNT = 3
     const val TV_SPAN_COUNT = 4
+    const val KEYWORD_FILENAME = "u2b_keyword"
 }

@@ -33,6 +33,8 @@ import com.smile.u2b.u2b_constants.U2bConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
@@ -88,6 +90,22 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             searchRecyclerView?.visibility = View.GONE
         }
         initRecyclerAdapter()
+        activity?.let { act ->
+            var searchTerm = "Most Popular"
+            try {
+                val fis = act.openFileInput(U2bConstants.KEYWORD_FILENAME)
+                val isr = InputStreamReader(fis)
+                val br = BufferedReader(isr)
+                searchTerm = br.readLine()  // last video id played
+                br.close()
+                isr.close()
+                fis.close()
+            } catch (ex: Exception) {
+                LogUtil.e(TAG, "onViewCreated.Exception", ex)
+            }
+            LogUtil.d(TAG, "onViewCreated.searchTerm = $searchTerm")
+            searchYouTubeVideos(searchTerm)
+        }
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -119,12 +137,31 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         mediaRetriever.release()
     }
 
-    fun searchYouTubeVideos(searchTerm: String) {
+    private fun searchYouTubeVideos(searchTerm: String) {
         val logStr = "searchYouTubeVideos"
         LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
         if (searchTerm.isEmpty()) return
         val act = activity?: return
         searchCompleted = false
+
+        // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
+        try {
+            val fos = act.openFileOutput(
+                U2bConstants.KEYWORD_FILENAME,
+                android.content.Context.MODE_PRIVATE
+            )
+            val savingLine = if (searchTerm[searchTerm.length - 1] != '\n') {
+                searchTerm + "\n"
+            } else {
+                searchTerm
+            }
+            fos.write(savingLine.toByteArray())
+            fos.close()
+            LogUtil.d(TAG, "$logStr.succeeded to save searchTerm to file")
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+        }
+
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
         searchRecyclerView?.visibility = View.GONE
         loadingMsgTextView?.visibility = View.VISIBLE

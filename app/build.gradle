@@ -26,8 +26,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1002
-        versionName "10.02"
+        versionCode 1003
+        versionName "10.03"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,8 +63,8 @@ android {
         }
         create("youtubeplayer") {
             dimension = "karaoke"
-            versionCode 112
-            versionName "1.12"
+            versionCode 113
+            versionName "1.13"
             applicationId = "com.smile.youtubeplayer"
         }
     }

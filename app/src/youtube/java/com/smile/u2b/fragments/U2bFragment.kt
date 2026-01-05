@@ -108,8 +108,9 @@ class U2bFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         u2bPlayerListener = ps.initU2bPlayerListener()
         fScreenListener = ps.initFScreenListener()
         val options = IFramePlayerOptions.Builder(act)
-            .controls(0)
+            .controls(1)
             .ccLoadPolicy(0) // 1 enables captions by default, 0 disables
+            .rel(1)
             // .langPref("en")
             .build()
         youTubeView = ps.initYouTubePlayerView(true)
