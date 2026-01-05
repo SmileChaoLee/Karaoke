@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green"
+    android:orientation="vertical"
+    tools:context=".LanguageListActivity">
+
+    <TextView
+        android:id="@+id/languagesListMenuTextView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:textStyle="bold"
+        android:textColor="@color/darkOrange"
+        android:layout_gravity="center_horizontal|top"
+        android:text="@string/languagesListString"
+        android:gravity="center"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toTopOf="parent" >
+    </TextView>
+
+    <FrameLayout
+        android:id="@+id/languagesListView_Layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/darkYellow"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintTop_toBottomOf="@+id/languagesListMenuTextView" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/languageListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView android:id="@+id/languagesListEmptyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:textColor="@color/blue"
+            android:gravity="center"
+            android:visibility="gone" >
+        </TextView>
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/languagesListReturnButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/returnToPrevious"
+        android:background="@drawable/yellow_square_button"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintBottom_toBottomOf="parent" >
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green"
+    android:orientation="vertical"
+    tools:context=".WordListActivity">
+
+    <TextView
+        android:id="@+id/wordsListMenuTextView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:textStyle="bold"
+        android:textColor="@color/darkOrange"
+        android:text="@string/wordsListString"
+        android:gravity="center"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/wordsListView_Layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/darkYellow"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintTop_toBottomOf="@+id/wordsListMenuTextView" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/wordListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/wordsListReturnButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/returnToPrevious"
+        android:background="@drawable/yellow_square_button"
+        android:textColor="@color/red"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintBottom_toBottomOf="parent" >
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

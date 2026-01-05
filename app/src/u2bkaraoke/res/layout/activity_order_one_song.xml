@@ -1,0 +1,172 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff00ff00"
+    android:weightSum="8" >
+
+    <TextView
+        android:id="@+id/orderOneSongTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        android:textScaleX="1.0"
+        android:textColor="#ff0000ff"
+        android:background="#ff00ff00"
+        android:text="@string/orderOneSongString"
+        android:layout_weight="1" />
+
+     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff90e5c4"
+        android:layout_weight="6">
+
+         <TextView
+             android:id="@+id/inputMessage"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#fffff546"
+             android:background="#ff000000"
+             android:text="@string/computerIdString"
+             android:layout_weight="1" />
+
+         <EditText
+             android:id="@+id/inputComputerId"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:inputType="textCapCharacters"
+             android:maxLength="5"
+             android:hint="在此輸入 (Input ID here)"
+             android:textStyle="bold"
+             android:gravity="left"
+             android:textSize="32sp"
+             android:textScaleX="1.0"
+             android:textColor="#ff000000"
+             android:background="#fffffc75"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/songNameDescription"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ffff0000"
+             android:text="歌名 ( Song Title ) :"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/songName"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ff0000ff"
+             android:text="Song Title"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/songNoDescription"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ffff0000"
+             android:text="歌號 ( Song No. ) :"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/songNo"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ff0000ff"
+             android:text="Song No."
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/singerNameDescription"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ffff0000"
+             android:text="歌星 ( Singer Name ) :"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/singerName"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ff0000ff"
+             android:text="Singer's Name"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/languageNameDescription"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ffff0000"
+             android:text="語言別 ( Language ) :"
+             android:layout_weight="1" />
+
+         <TextView
+             android:id="@+id/languageName"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:gravity="left"
+             android:textSize="22sp"
+             android:textScaleX="1.0"
+             android:textColor="#ff0000ff"
+             android:text="Language"
+             android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:background="#ff25a7ff"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/SubmitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="確定送出\nSubmit"
+            android:textStyle="bold"
+            android:background="@drawable/yellow_square_button"
+            android:textColor="#ffff0000"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/CancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消\nCancel"
+            android:textStyle="bold"
+            android:background="@drawable/yellow_square_button"
+            android:textColor="#ff000000"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+</LinearLayout>

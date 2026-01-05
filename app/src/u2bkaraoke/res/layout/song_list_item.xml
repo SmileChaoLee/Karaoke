@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/darkYellow"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/songName_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintTop_toTopOf="parent"
+        android:weightSum="20">
+        <TextView android:id="@+id/songItem_Layout_positionNoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red"
+            android:layout_weight="1">
+        </TextView>
+        <TextView android:id="@+id/songNaTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/blue"
+            android:layout_weight="19">
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/songNo_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintTop_toBottomOf="@+id/songName_Layout"
+        android:weightSum="6">
+        <TextView android:id="@+id/songNoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textColor="@android:color/black"
+            android:layout_weight="1">
+        </TextView>
+        <TextView android:id="@+id/languageNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/darkRed"
+            android:layout_weight="1">
+        </TextView>
+        <TextView android:id="@+id/singer1NameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/darkGreen"
+            android:layout_weight="2">
+        </TextView>
+        <TextView android:id="@+id/singer2NameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/darkGreen"
+            android:layout_weight="2">
+        </TextView>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
