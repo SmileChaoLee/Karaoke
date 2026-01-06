@@ -86,7 +86,7 @@
         2.Supports audio track switch\n
         3.Supports channel switch\n
         4.Supports Chrome Cast to TV</string>
-    <string name="youTubePlayer">YouTube Player</string>
+    <string name="U2bPlayer">U2B Player</string>
     <string name="currentString">Current</string>
     <string name="loadingStr">Loading …</string>
     <string name="softDecoderFirstStr">SoftDecoder 1st</string>

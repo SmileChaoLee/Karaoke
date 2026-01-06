@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="karaoke_app_name">微笑咔拉OK</string>
-    <string name="video_app_name">微笑視頻播放器</string>
+    <string name="video_app_name">微笑視頻播放程式</string>
     <string name="karaoke_tv_app_name">微笑電視咔拉OK</string>
     <string name="fileString">檔案</string>
     <string name="accessExternalStoragePermissionDeniedString">存取外部儲存裝置被拒絕</string>
@@ -76,8 +76,8 @@
     <string name="add_to_favorites">加入我的最愛</string>
     <string name="excess_max">超過最大數</string>
     <string name="notSupportedString">沒有支援</string>
-    <string name="vlcPlayerName">Vlc播放器</string>
-    <string name="exoPlayerName">Exo播放器</string>
+    <string name="vlcPlayerName">Vlc播放程式</string>
+    <string name="exoPlayerName">Exo播放程式</string>
     <string name="vlcDescription">1.支援大部份的多煤體格式\n
         2.支援音軌切換\n
         3.沒有支援聲道切換\n
@@ -86,11 +86,11 @@
         2.支援音軌切換\n
         3.支援聲道切換\n
         4.支援投射到電視</string>
-    <string name="youTubePlayer">YouTube播放器</string>
+    <string name="U2bPlayer">優2B播放程式</string>
     <string name="currentString">目前使用中</string>
     <string name="loadingStr">載入中 …</string>
     <string name="softDecoderFirstStr">軟解碼優先</string>
     <string name="emptyString">""</string>
-    <string name="installKaraokePlayer">安裝\n咔拉OK播放器</string>
-    <string name="installVideoPlayer">安裝\n視頻播放器</string>
+    <string name="installKaraokePlayer">安裝\n咔拉OK播放程式</string>
+    <string name="installVideoPlayer">安裝\n視頻播放程式</string>
 </resources>

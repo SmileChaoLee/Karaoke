@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.u2b.U2bActivity"
+            android:name="com.smile.u2bplayer.U2bPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
@@ -64,7 +64,7 @@
             android:exported="false">
         </service>
         <service
-            android:name="com.smile.u2b.services.U2bService"
+            android:name="com.smile.u2bplayer.services.U2bService"
             android:exported="false">
         </service>
 

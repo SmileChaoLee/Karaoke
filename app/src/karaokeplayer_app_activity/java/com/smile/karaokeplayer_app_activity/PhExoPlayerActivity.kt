@@ -6,7 +6,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.smilelibraries.utilities.AppLinkUtil
-import com.smile.u2b.U2bActivity
+import com.smile.u2bplayer.U2bPlayerActivity
 
 open class PhExoPlayerActivity : BasePlayerActivity() {
 
@@ -20,26 +20,26 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.karaoke_app_name)
     }
 
-    override fun hasYouTubePlayer(): Boolean {
+    override fun hasU2bPlayer(): Boolean {
         return true
     }
 
     /*
-    override fun startYouTubePlayer() {
-        LogUtil.i(mTAG, "startYouTubePlayer()")
+    override fun startU2bPlayer() {
+        LogUtil.i(mTAG, "startU2bPlayer()")
         AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
-            AppLinkUtil.YOUTUBE_LINK)
+            AppLinkUtil.U2B_PLAYER_LINK)
     }
     */
 
-    override fun startYouTubePlayer() {
-        LogUtil.i(mTAG, "startYouTubePlayer")
+    override fun startU2bPlayer() {
+        LogUtil.i(mTAG, "startU2bPlayer")
         Intent(
             this@PhExoPlayerActivity,
-            U2bActivity::class.java
+            U2bPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
-            youTubeLauncher.launch(it)
+            u2bPlayerLauncher.launch(it)
         }
     }
 

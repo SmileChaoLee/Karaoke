@@ -6,7 +6,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.videoplayer.VlcPlayerActivity
-import com.smile.u2b.U2bActivity
+import com.smile.u2bplayer.U2bPlayerActivity
 
 open class PhPlayerActivity : BasePlayerActivity() {
 
@@ -21,18 +21,18 @@ open class PhPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.karaoke_tv_app_name)
     }
 
-    override fun hasYouTubePlayer(): Boolean {
+    override fun hasU2bPlayer(): Boolean {
         return true
     }
 
-    override fun startYouTubePlayer() {
-        LogUtil.i(mTAG, "startYouTubePlayer")
+    override fun startU2bPlayer() {
+        LogUtil.i(mTAG, "startU2bPlayer")
         Intent(
             this@PhPlayerActivity,
-            U2bActivity::class.java
+            U2bPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
-            youTubeLauncher.launch(it)
+            u2bPlayerLauncher.launch(it)
         }
     }
 

@@ -70,8 +70,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
 
-    abstract fun hasYouTubePlayer(): Boolean
-    abstract fun startYouTubePlayer()
+    abstract fun hasU2bPlayer(): Boolean
+    abstract fun startU2bPlayer()
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
@@ -79,7 +79,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     lateinit var exoLauncher: ActivityResultLauncher<Intent>
     // the following are for VLCPlayer
     lateinit var vlcLauncher: ActivityResultLauncher<Intent>
-    lateinit var youTubeLauncher: ActivityResultLauncher<Intent>
+    lateinit var u2bPlayerLauncher: ActivityResultLauncher<Intent>
     //
     protected val loadingMessage = mutableStateOf("")
     private val backgroundColor = Yellow3
@@ -90,7 +90,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private var isExoEnabled by mutableStateOf(true)
     private var isVlcEnabled by mutableStateOf(true)
-    private var isYouTubeEnabled by mutableStateOf(true)
+    private var isU2bEnabled by mutableStateOf(true)
     private val focusRequester = mutableStateOf(FocusRequester())
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
@@ -133,7 +133,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             loadingMessage.value = ""
         }
 
-        youTubeLauncher = registerForActivityResult(
+        u2bPlayerLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
             LogUtil.d(TAG, "smileAppsLauncher.receive.result = $result")
@@ -216,13 +216,13 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private fun enableMainButtons() {
         isExoEnabled = true
         isVlcEnabled = true
-        isYouTubeEnabled = true
+        isU2bEnabled = true
     }
 
     protected fun disableMainButtons() {
         isExoEnabled = false
         isVlcEnabled = false
-        isYouTubeEnabled = false
+        isU2bEnabled = false
     }
 
     private fun startExoActivity() {
@@ -359,11 +359,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun YouTubeButton(modifier: Modifier = Modifier,
-                      buttonWidth: Float,
-                      buttonHeight: Float,
-                      textLineHeight: TextUnit) {
-        LogUtil.d(TAG, "YouTubeButton")
+    fun U2bButton(modifier: Modifier = Modifier,
+                  buttonWidth: Float,
+                  buttonHeight: Float,
+                  textLineHeight: TextUnit) {
+        LogUtil.d(TAG, "U2bButton")
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -371,12 +371,12 @@ abstract class BasePlayerActivity : ComponentActivity() {
             val isFocused by interactionSource.collectIsFocusedAsState()
             val isClicked = remember { mutableStateOf(false) }
             Button(
-                enabled = isYouTubeEnabled,
+                enabled = isU2bEnabled,
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         isClicked.value = true
                         delay(200)
-                        startYouTubePlayer()
+                        startU2bPlayer()
                         isClicked.value = false
                     }
                 },
@@ -397,7 +397,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     disabledContentColor = buttonContentColor
                 )
             )
-            { Text(text = getString(R.string.youTubePlayer),
+            { Text(text = getString(R.string.U2bPlayer),
                 lineHeight = textLineHeight,
                 fontSize = KaraokeComposable.textFontSize) }
         }
@@ -434,9 +434,9 @@ abstract class BasePlayerActivity : ComponentActivity() {
         if (resources.configuration.orientation
             == Configuration.ORIENTATION_LANDSCAPE) {
             verSpacerWeight = 0.2f
-            horSpacerWeight = if (hasYouTubePlayer()) 0.5f else 2.5f
+            horSpacerWeight = if (hasU2bPlayer()) 0.5f else 2.5f
             buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
-            buttonWidth = if (hasYouTubePlayer()) buttonWidth / 2.0f else buttonWidth
+            buttonWidth = if (hasU2bPlayer()) buttonWidth / 2.0f else buttonWidth
         }
         LogUtil.i(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
         // 1 in 5
@@ -450,8 +450,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 == Configuration.ORIENTATION_PORTRAIT) {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
-                if (hasYouTubePlayer()) {
-                    YouTubeButton(
+                if (hasU2bPlayer()) {
+                    U2bButton(
                         modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight
                     )
@@ -462,8 +462,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
-                    if (hasYouTubePlayer()) {
-                        YouTubeButton(
+                    if (hasU2bPlayer()) {
+                        U2bButton(
                             modifier = Modifier.weight(1.0f),
                             buttonWidth, buttonHeight, textLineHeight
                         )
