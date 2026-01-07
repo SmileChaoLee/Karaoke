@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -63,7 +62,7 @@ class SingerListActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
 
         noResultString = getString(R.string.noResultString)
         failedMessage = getString(R.string.failedMessage)
@@ -99,10 +98,10 @@ class SingerListActivity : AppCompatActivity() {
                 override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
                 override fun afterTextChanged(editable: Editable) {
-                    Log.d(TAG, "addTextChangedListener.afterTextChanged")
+                    LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
                     val content = editable.toString().trim()
                     filterString = if (content.isEmpty()) "" else "SingNa+$content"
-                    Log.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
+                    LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                     pageNo = 1
                     isSearchEditTextChanged = true
                     retrieveSingerList()
@@ -142,7 +141,7 @@ class SingerListActivity : AppCompatActivity() {
     }
 
     private fun retrieveSingerList() {
-        Log.d(TAG, "retrieveSingerList.filterString = $filterString")
+        LogUtil.d(TAG, "retrieveSingerList.filterString = $filterString")
         if (loadingDialog == null) {
             loadingDialog = AlertDialogFragment.newInstance(
                 loadingString,
@@ -167,7 +166,7 @@ class SingerListActivity : AppCompatActivity() {
     }
 
     private fun returnToPrevious() {
-        Log.d(TAG, "returnToPrevious")
+        LogUtil.d(TAG, "returnToPrevious")
         finish()
     }
 
@@ -201,7 +200,7 @@ class SingerListActivity : AppCompatActivity() {
         override fun onResponse(call: Call<SingerList?>, response: Response<SingerList?>) {
             if (loadingDialog != null) loadingDialog!!.dismissAllowingStateLoss()
             loadingDialog = null
-            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
+            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
             singerList = response.body()
             if (!response.isSuccessful || singerList == null) {
                 singerList = SingerList()
@@ -220,7 +219,7 @@ class SingerListActivity : AppCompatActivity() {
                     }
                 } ?: { singerList = SingerList() }
             }
-            Log.d(TAG, "MyRestApi.onResponse.inject()")
+            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
             appCompBuilder
                 .activityModule(this@SingerListActivity)
                 .singerArrayListModule(singerList!!.singers)
@@ -228,7 +227,7 @@ class SingerListActivity : AppCompatActivity() {
                 .inject(this@SingerListActivity)
             mRecyclerView?.setAdapter(myViewAdapter)
             mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
-            Log.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
+            LogUtil.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
             if (isSearchEditTextChanged) {
                 // searchEditText.setFocusable(true);              // needed for requestFocus()
                 // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()

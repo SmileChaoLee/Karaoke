@@ -1,133 +1,127 @@
-package com.smile.u2bkaraoke;
+package com.smile.u2bkaraoke
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.smile.karaoke.R
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
+import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.model.SingerTypeList
+import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.view_adapter.SingerTypeListAdapter
+import retrofit2.Call
+import retrofit2.Response
+import javax.inject.Inject
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class SingerTypeListActivity : AppCompatActivity() {
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.smile.karaoke.R;
-import com.smile.u2bkaraoke.model.Constants;
-import com.smile.u2bkaraoke.model.SingerTypeList;
-import com.smile.u2bkaraoke.retrofit.RestApiAsync;
-import com.smile.u2bkaraoke.view_adapter.SingerTypeListAdapter;
-import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment;
-import com.smile.smilelibraries.utilities.ScreenUtil;
+    companion object {
+        private const val TAG = "SingerTyLstActivity"
+    }
 
-import javax.inject.Inject;
+    private var textFontSize = 0f
+    private var singerTypeListEmptyTextView: TextView? = null
+    private var mRecyclerView: RecyclerView? = null
 
-import retrofit2.Call;
-import retrofit2.Response;
-
-public class SingerTypeListActivity extends AppCompatActivity {
-
-    private static final String TAG = "SingerTypeListActivity";
-    private float textFontSize;
-    private TextView singerTypeListEmptyTextView;
-    private RecyclerView mRecyclerView;
+    @JvmField
     @Inject
-    SingerTypeListAdapter myViewAdapter;
-    private SingerTypeList singerTypeList;
-    private String noResultString;
-    private String failedMessage;
-    private String loadingString;
-    private AlertDialogFragment loadingDialog;
+    var myViewAdapter: SingerTypeListAdapter? = null
+    private var singerTypeList: SingerTypeList? = null
+    private var noResultString: String? = null
+    private var failedMessage: String? = null
+    private var loadingDialog: AlertDialogFragment? = null
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.d(TAG, "onCreate")
 
-        noResultString = getString(R.string.noResultString);
-        failedMessage = getString(R.string.failedMessage);
-        loadingString = getString(R.string.loadingString);
+        noResultString = getString(R.string.noResultString)
+        failedMessage = getString(R.string.failedMessage)
+        val loadingString = getString(R.string.loadingString)
 
-        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_singer_type_list);
+        setContentView(R.layout.activity_singer_type_list)
 
-        final TextView singerTypesListMenuTextView = findViewById(R.id.singerTypesListMenuTextView);
-        ScreenUtil.resizeTextSize(singerTypesListMenuTextView, textFontSize, Constants.FontSize_Scale_Type);
+        val singerTypesListMenuTextView = findViewById<TextView>(R.id.singerTypesListMenuTextView)
+        ScreenUtil.resizeTextSize(singerTypesListMenuTextView, textFontSize)
+        singerTypeListEmptyTextView = findViewById(R.id.singerTypeListEmptyTextView)
+        ScreenUtil.resizeTextSize(singerTypeListEmptyTextView, textFontSize)
+        singerTypeListEmptyTextView?.visibility = View.GONE
+        mRecyclerView = findViewById(R.id.singerTypeListRecyclerView)
+        val singerTypesListReturnButton = findViewById<Button>(R.id.singerTypesListReturnButton)
+        ScreenUtil.resizeTextSize(singerTypesListReturnButton, textFontSize)
+        singerTypesListReturnButton.setOnClickListener { returnToPrevious() }
+        loadingDialog = AlertDialogFragment.newInstance(
+            loadingString,
+            Constants.FontSize_Scale_Type,
+            textFontSize, Color.RED, 0, 0, true
+        )
 
-        singerTypeListEmptyTextView = findViewById(R.id.singerTypeListEmptyTextView);
-        ScreenUtil.resizeTextSize(singerTypeListEmptyTextView, textFontSize, Constants.FontSize_Scale_Type);
-        singerTypeListEmptyTextView.setVisibility(View.GONE);
+        loadingDialog?.show(supportFragmentManager, "LoadingDialogTag")
+        MyRestApi().getAllSingerTypes()
 
-        mRecyclerView = findViewById(R.id.singerTypeListRecyclerView);
-
-        final Button singerTypesListReturnButton = findViewById(R.id.singerTypesListReturnButton);
-        ScreenUtil.resizeTextSize(singerTypesListReturnButton, textFontSize, Constants.FontSize_Scale_Type);
-        singerTypesListReturnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPrevious();
-            }
-        });
-
-        loadingDialog = AlertDialogFragment.newInstance(loadingString,
-                Constants.FontSize_Scale_Type,
-                textFontSize, Color.RED, 0, 0, true);
-
-        loadingDialog.show(getSupportFragmentManager(), "LoadingDialogTag");
-
-        new MyRestApi().getAllSingerTypes();
-    }
-
-    @Override
-    public void onBackPressed() {
-        returnToPrevious();
-    }
-
-    private void returnToPrevious() {
-        Log.d(TAG, "returnToPrevious");
-        finish();
-    }
-
-    private class MyRestApi extends RestApiAsync<SingerTypeList> {
-        @SuppressLint("SetTextI18n")
-        @Override
-        public void onResponse(Call<SingerTypeList> call, Response<SingerTypeList> response) {
-            Log.d(TAG, "MyRestApi.onResponse");
-            loadingDialog.dismissAllowingStateLoss();
-            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = " + response.isSuccessful());
-            if (response.isSuccessful()) {
-                singerTypeList = response.body();
-                if (singerTypeList.getSingerTypes().isEmpty()) {
-                    singerTypeListEmptyTextView.setText(noResultString);
-                    singerTypeListEmptyTextView.setVisibility(View.VISIBLE);
-                } else {
-                    singerTypeListEmptyTextView.setVisibility(View.GONE);
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    returnToPrevious()
                 }
+            })
+    }
+
+    private fun returnToPrevious() {
+        LogUtil.d(TAG, "returnToPrevious")
+        finish()
+    }
+
+    private inner class MyRestApi : RestApiAsync<SingerTypeList?>() {
+        @SuppressLint("SetTextI18n")
+        override fun onResponse(call: Call<SingerTypeList?>, response: Response<SingerTypeList?>) {
+            loadingDialog?.dismissAllowingStateLoss()
+            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
+            if (response.isSuccessful) {
+                singerTypeList = response.body()
+                singerTypeList?.let {
+                    if (it.singerTypes.isEmpty()) {
+                        singerTypeListEmptyTextView?.text = noResultString
+                        singerTypeListEmptyTextView?.visibility = View.VISIBLE
+                    } else {
+                        singerTypeListEmptyTextView?.visibility = View.GONE
+                    }
+                } ?: { singerTypeList = SingerTypeList() }
             } else {
-                singerTypeList = new SingerTypeList();
-                singerTypeListEmptyTextView.setText("MyRestApi.response.isSuccessful() = false.");
-                singerTypeListEmptyTextView.setVisibility(View.VISIBLE);
+                singerTypeList = SingerTypeList()
+                singerTypeListEmptyTextView?.text = "MyRestApi.response.isSuccessful = false."
+                singerTypeListEmptyTextView?.visibility = View.VISIBLE
             }
-            Log.d(TAG, "MyRestApi.onResponse.inject()");
-            U2bKaraokeApp.Companion.getAppCompBuilder()
-                    .activityModule(SingerTypeListActivity.this)
-                    .singerTypeArrayListModule(singerTypeList.getSingerTypes())
-                    .floatModule(textFontSize).build()
-                    .inject(SingerTypeListActivity.this);
-            mRecyclerView.setAdapter(myViewAdapter);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
+            appCompBuilder
+                .activityModule(this@SingerTypeListActivity)
+                .singerTypeArrayListModule(singerTypeList!!.singerTypes)
+                .floatModule(textFontSize).build()
+                .inject(this@SingerTypeListActivity)
+            mRecyclerView?.setAdapter(myViewAdapter)
+            mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
         }
 
-        @Override
-        public void onFailure(Call<SingerTypeList> call, Throwable t) {
-            Log.d(TAG, "MyRestApi.onFailure." + t.toString());
-            loadingDialog.dismissAllowingStateLoss();
-            singerTypeList = new SingerTypeList();
-            singerTypeListEmptyTextView.setText(failedMessage);
-            singerTypeListEmptyTextView.setVisibility(View.VISIBLE);
+        override fun onFailure(call: Call<SingerTypeList?>, t: Throwable) {
+            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
+            loadingDialog?.dismissAllowingStateLoss()
+            singerTypeList = SingerTypeList()
+            singerTypeListEmptyTextView?.text = failedMessage
+            singerTypeListEmptyTextView?.visibility = View.VISIBLE
         }
     }
 }
