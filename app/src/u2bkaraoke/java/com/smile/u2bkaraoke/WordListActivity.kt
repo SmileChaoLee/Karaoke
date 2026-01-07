@@ -1,108 +1,101 @@
-package com.smile.u2bkaraoke;
+package com.smile.u2bkaraoke
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.annotation.SuppressLint
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.util.Pair
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.smile.karaoke.R
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appComponent
+import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.model.Language
+import com.smile.u2bkaraoke.view_adapter.WordListAdapter
+import javax.inject.Inject
 
-import android.os.Bundle;
-import android.util.Pair;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+class WordListActivity : AppCompatActivity() {
 
-import com.smile.karaoke.R;
-import com.smile.u2bkaraoke.model.Constants;
-import com.smile.u2bkaraoke.model.Language;
-import com.smile.smilelibraries.utilities.ScreenUtil;
-import com.smile.u2bkaraoke.view_adapter.WordListAdapter;
+    companion object {
+        private const val TAG = "WordListActivity"
+    }
 
-import android.util.Log;
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
-public class WordListActivity extends AppCompatActivity {
-
-    private static final String TAG = "WordListActivity";
-    private String languageTitle;
-    private float textFontSize;
-    private RecyclerView mRecyclerView;
+    // @JvmField
     @Inject
-    WordListAdapter myViewAdapter;
-    private ArrayList<Pair<Integer, String>> mWordList;
+    lateinit var myViewAdapter: WordListAdapter
 
-    private int orderedFrom = 0;
-    private Language language;
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate.inject()")
+        appComponent.inject(this)
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        Log.d(TAG, "onCreate.inject()");
-        U2bKaraokeApp.Companion.getAppComponent().inject(this);
+        val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
 
-        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
-
-        orderedFrom = Constants.WordsOrdered;
-        String wordsListTitle = getString(R.string.wordsListString);
-        languageTitle = "";
-        Bundle extras = getIntent().getExtras();
+        var orderedFrom = Constants.WordsOrdered
+        val wordsListTitle = getString(R.string.wordsListString)
+        var languageTitle = ""
+        val extras = intent.extras
+        var lang: Language? = null
         if (extras != null) {
-            orderedFrom = extras.getInt(Constants.OrderedFrom, Constants.WordsOrdered);
-            languageTitle = extras.getString(Constants.LanguageTitle).trim();
-            language = extras.getParcelable(Constants.LanguageParcelable);
+            orderedFrom = extras.getInt(Constants.OrderedFrom, Constants.WordsOrdered)
+            languageTitle = extras.getString(Constants.LanguageTitle, "")
+            lang = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                extras.getParcelable(Constants.LanguageParcelable, Language::class.java)
+            } else extras.getParcelable(Constants.LanguageParcelable)
         }
+        val vLanguage = lang ?: Language()
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_word_list);
+        setContentView(R.layout.activity_word_list)
 
-        final TextView wordsListMenuTextView = findViewById(R.id.wordsListMenuTextView);
-        ScreenUtil.resizeTextSize(wordsListMenuTextView, textFontSize, Constants.FontSize_Scale_Type);
-        wordsListMenuTextView.setText(languageTitle + " " + wordsListTitle);
+        val wordsListMenuTextView = findViewById<TextView>(R.id.wordsListMenuTextView)
+        ScreenUtil.resizeTextSize(wordsListMenuTextView, textFontSize)
+        wordsListMenuTextView.text = "$languageTitle $wordsListTitle"
 
-        mWordList = new ArrayList<Pair<Integer, String>>();
-        mWordList.add(new Pair<>(1, getString(R.string.oneWordOrderString)));
-        mWordList.add(new Pair<>(2, getString(R.string.twoWordsOrderString)));
-        mWordList.add(new Pair<>(3, getString(R.string.threeWordsOrderString)));
-        mWordList.add(new Pair<>(4, getString(R.string.fourWordsOrderString)));
-        mWordList.add(new Pair<>(5, getString(R.string.fiveWordsOrderString)));
-        mWordList.add(new Pair<>(6, getString(R.string.sixWordsOrderString)));
-        mWordList.add(new Pair<>(7, getString(R.string.sevenWordsOrderString)));
-        mWordList.add(new Pair<>(8, getString(R.string.eightWordsOrderString)));
-        mWordList.add(new Pair<>(9, getString(R.string.nineWordsOrderString)));
-        mWordList.add(new Pair<>(10, getString(R.string.tenWordsOrderString)));
+        val mWordList = ArrayList<Pair<Int, String>>()
+        mWordList.add(Pair(1, getString(R.string.oneWordOrderString)))
+        mWordList.add(Pair(2, getString(R.string.twoWordsOrderString)))
+        mWordList.add(Pair(3, getString(R.string.threeWordsOrderString)))
+        mWordList.add(Pair(4, getString(R.string.fourWordsOrderString)))
+        mWordList.add(Pair(5, getString(R.string.fiveWordsOrderString)))
+        mWordList.add(Pair(6, getString(R.string.sixWordsOrderString)))
+        mWordList.add(Pair(7, getString(R.string.sevenWordsOrderString)))
+        mWordList.add(Pair(8, getString(R.string.eightWordsOrderString)))
+        mWordList.add(Pair(9, getString(R.string.nineWordsOrderString)))
+        mWordList.add(Pair(10, getString(R.string.tenWordsOrderString)))
 
-        mRecyclerView = findViewById(R.id.wordListRecyclerView);
+        val mRecyclerView = findViewById<RecyclerView>(R.id.wordListRecyclerView)
+        val wordsListReturnButton = findViewById<Button>(R.id.wordsListReturnButton)
+        ScreenUtil.resizeTextSize(wordsListReturnButton, textFontSize)
+        wordsListReturnButton.setOnClickListener { returnToPrevious() }
+        myViewAdapter.setParameters(
+            this@WordListActivity,
+            vLanguage, languageTitle, mWordList, textFontSize
+        )
+        mRecyclerView.setAdapter(myViewAdapter)
+        mRecyclerView.setLayoutManager(LinearLayoutManager(applicationContext))
 
-        final Button wordsListReturnButton = findViewById(R.id.wordsListReturnButton);
-        ScreenUtil.resizeTextSize(wordsListReturnButton, textFontSize, Constants.FontSize_Scale_Type);
-        wordsListReturnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPrevious();
-            }
-        });
-
-        // myViewAdapter = new WordListAdapter(WordListActivity.this,
-        //         language, languageTitle, mWordList, textFontSize);
-        myViewAdapter.setParameters(WordListActivity.this,
-                language, languageTitle, mWordList, textFontSize);
-        mRecyclerView.setAdapter(myViewAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    LogUtil.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
+                    returnToPrevious()
+                }
+            })
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
-    @Override
-    public void onBackPressed() {
-        returnToPrevious();
-    }
-
-    private void returnToPrevious() {
-        finish();
+    private fun returnToPrevious() {
+        finish()
     }
 }
