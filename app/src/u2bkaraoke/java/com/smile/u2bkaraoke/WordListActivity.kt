@@ -3,7 +3,6 @@ package com.smile.u2bkaraoke
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Pair
 import android.widget.Button
 import android.widget.TextView
@@ -32,7 +31,7 @@ class WordListActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate.inject()")
+        LogUtil.d(TAG, "onCreate.inject()")
         appComponent.inject(this)
 
         val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)

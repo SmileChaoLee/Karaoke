@@ -1,150 +1,145 @@
-package com.smile.u2bkaraoke;
+package com.smile.u2bkaraoke
 
-import android.graphics.Color;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.smile.karaoke.R
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
+import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.model.LanguageList
+import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.view_adapter.LanguageListAdapter
+import retrofit2.Call
+import retrofit2.Response
+import javax.inject.Inject
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+class LanguageListActivity : AppCompatActivity() {
 
-import com.smile.karaoke.R;
-import com.smile.u2bkaraoke.model.*;
-import com.smile.u2bkaraoke.retrofit.RestApiAsync;
-import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment;
-import com.smile.smilelibraries.utilities.ScreenUtil;
-import com.smile.u2bkaraoke.view_adapter.LanguageListAdapter;
+    companion object {
+        private const val TAG = "LanguageListActivity"
+    }
 
-import javax.inject.Inject;
+    private var textFontSize = 0f
+    private var languagesListEmptyTextView: TextView? = null
+    private var mRecyclerView: RecyclerView? = null
 
-import retrofit2.Call;
-import retrofit2.Response;
-
-public class LanguageListActivity extends AppCompatActivity {
-    private static final String TAG = "LanguageListActivity";
-    private float textFontSize;
-    private TextView languagesListEmptyTextView;
-    private RecyclerView mRecyclerView;
+    @JvmField
     @Inject
-    LanguageListAdapter myViewAdapter;
-    private LanguageList languageList = null;
-    private String noResultString;
-    private String failedMessage;
-    private String loadingString;
-    private AlertDialogFragment loadingDialog;
+    var myViewAdapter: LanguageListAdapter? = null
+    private var languageList: LanguageList? = null
+    private var noResultString: String? = null
+    private var failedMessage: String? = null
+    private var loadingDialog: AlertDialogFragment? = null
+    private var orderedFrom = 0
 
-    private int orderedFrom;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.d(TAG, "onCreate")
+        noResultString = getString(R.string.noResultString)
+        failedMessage = getString(R.string.failedMessage)
+        val loadingString = getString(R.string.loadingString)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        noResultString = getString(R.string.noResultString);
-        failedMessage = getString(R.string.failedMessage);
-        loadingString = getString(R.string.loadingString);
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
 
-        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
-
-        orderedFrom = Constants.WordsOrdered;
-        Bundle extras = getIntent().getExtras();
+        orderedFrom = Constants.WordsOrdered
+        val extras = intent.extras
         if (extras != null) {
-            orderedFrom = extras.getInt(Constants.OrderedFrom, Constants.WordsOrdered);
+            orderedFrom = extras.getInt(Constants.OrderedFrom, Constants.WordsOrdered)
         }
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_language_list);
+        setContentView(R.layout.activity_language_list)
 
-        TextView menuTextView = findViewById(R.id.languagesListMenuTextView);
-        ScreenUtil.resizeTextSize(menuTextView, textFontSize, Constants.FontSize_Scale_Type);
-        switch (orderedFrom) {
-            case Constants.WordsOrdered:
-                // from main activity (MyActivity)
-                menuTextView.setText(getString(R.string.languagesListString));
-                break;
-            case Constants.NewSongOrdered:
-                menuTextView.setText(getString(R.string.newSOngLanguagesListString));
-                break;
-            case Constants.HotSongOrdered:
-                menuTextView.setText(getString(R.string.hotSongLanguagesListString));
-                break;
+        val menuTextView = findViewById<TextView>(R.id.languagesListMenuTextView)
+        ScreenUtil.resizeTextSize(menuTextView, textFontSize)
+        when (orderedFrom) {
+            Constants.WordsOrdered ->  // from main activity (U2bKkActivity)
+                menuTextView.text = getString(R.string.languagesListString)
+            Constants.NewSongOrdered -> menuTextView.text = getString(R.string.newSOngLanguagesListString)
+            Constants.HotSongOrdered -> menuTextView.text = getString(R.string.hotSongLanguagesListString)
         }
 
-        languagesListEmptyTextView = findViewById(R.id.languagesListEmptyTextView);
-        ScreenUtil.resizeTextSize(languagesListEmptyTextView, textFontSize, Constants.FontSize_Scale_Type);
-        languagesListEmptyTextView.setVisibility(View.GONE);
+        languagesListEmptyTextView = findViewById<TextView>(R.id.languagesListEmptyTextView)
+        ScreenUtil.resizeTextSize(languagesListEmptyTextView, textFontSize)
+        languagesListEmptyTextView?.visibility = View.GONE
 
-        mRecyclerView = findViewById(R.id.languageListRecyclerView);
+        mRecyclerView = findViewById<RecyclerView>(R.id.languageListRecyclerView)
 
-        final Button languagesListReturnButton = findViewById(R.id.languagesListReturnButton);
-        ScreenUtil.resizeTextSize(languagesListReturnButton, textFontSize, Constants.FontSize_Scale_Type);
-        languagesListReturnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPrevious();
-            }
-        });
+        val languagesListReturnButton = findViewById<Button>(R.id.languagesListReturnButton)
+        ScreenUtil.resizeTextSize(languagesListReturnButton, textFontSize)
+        languagesListReturnButton.setOnClickListener { returnToPrevious() }
 
-        loadingDialog = AlertDialogFragment.newInstance(loadingString,
-                Constants.FontSize_Scale_Type,
-                textFontSize, Color.RED, 0, 0, true);
+        loadingDialog = AlertDialogFragment.newInstance(
+            loadingString,
+            Constants.FontSize_Scale_Type,
+            textFontSize, Color.RED, 0, 0, true
+        )
+        loadingDialog?.show(supportFragmentManager, "LoadingDialogTag")
+        MyRestApi().getAllLanguages()
 
-        loadingDialog.show(getSupportFragmentManager(), "LoadingDialogTag");
-
-        new MyRestApi().getAllLanguages();
-    }
-
-    @Override
-    public void onBackPressed() {
-        returnToPrevious();
-    }
-
-    private void returnToPrevious() {
-        Log.d(TAG, "returnToPrevious");
-        finish();
-    }
-
-    private class MyRestApi extends RestApiAsync<LanguageList> {
-        @Override
-        public void onResponse(Call<LanguageList> call, Response<LanguageList> response) {
-            Log.d(TAG, "MyRestApi.onResponse");
-            loadingDialog.dismissAllowingStateLoss();
-            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = " + response.isSuccessful());
-            if (response.isSuccessful()) {
-                languageList = response.body();
-                if (languageList.getLanguages().isEmpty()) {
-                    languagesListEmptyTextView.setText(noResultString);
-                    languagesListEmptyTextView.setVisibility(View.VISIBLE);
-                } else {
-                    languagesListEmptyTextView.setVisibility(View.GONE);
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    LogUtil.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
+                    returnToPrevious()
                 }
+            })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    private fun returnToPrevious() {
+        finish()
+    }
+
+    private inner class MyRestApi : RestApiAsync<LanguageList>() {
+        override fun onResponse(call: Call<LanguageList?>, response: Response<LanguageList?>) {
+            LogUtil.d(TAG, "MyRestApi.onResponse")
+            loadingDialog?.dismissAllowingStateLoss()
+            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = ${response.isSuccessful}")
+            if (response.isSuccessful) {
+                languageList = response.body()
+                languageList?.let {
+                    if (it.languages.isEmpty()) {
+                        languagesListEmptyTextView?.text = noResultString
+                        languagesListEmptyTextView?.visibility = View.VISIBLE
+                    } else {
+                        languagesListEmptyTextView?.visibility = View.GONE
+                    }
+                } ?: run { languageList = LanguageList() }
             } else {
-                languageList = new LanguageList();
-                languagesListEmptyTextView.setText(failedMessage);
-                languagesListEmptyTextView.setVisibility(View.VISIBLE);
+                languageList = LanguageList()
+                languagesListEmptyTextView?.text = failedMessage
+                languagesListEmptyTextView?.visibility = View.VISIBLE
             }
-            // myViewAdapter = new LanguageListAdapter(LanguageListActivity.this,
-            //         languageList.getLanguages(), orderedFrom, textFontSize);
-            Log.d(TAG, "MyRestApi.onResponse.inject()");
-            U2bKaraokeApp.Companion.getAppCompBuilder()
-                    .activityModule(LanguageListActivity.this)
-                    .languageArrayListModule(languageList.getLanguages())
-                    .intModule(orderedFrom)
-                    .floatModule(textFontSize).build()
-                    .inject(LanguageListActivity.this);
-            mRecyclerView.setAdapter(myViewAdapter);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
+            appCompBuilder
+                .activityModule(this@LanguageListActivity)
+                .languageArrayListModule(languageList!!.languages)
+                .intModule(orderedFrom)
+                .floatModule(textFontSize).build()
+                .inject(this@LanguageListActivity)
+            mRecyclerView?.setAdapter(myViewAdapter)
+            mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
         }
 
-        @Override
-        public void onFailure(Call<LanguageList> call, Throwable t) {
-            Log.d(TAG, "MyRestApi.onFailure." + t.toString());
-            loadingDialog.dismissAllowingStateLoss();
-            languageList = new LanguageList();
-            languagesListEmptyTextView.setText(failedMessage);
-            languagesListEmptyTextView.setVisibility(View.VISIBLE);
+        override fun onFailure(call: Call<LanguageList?>, t: Throwable) {
+            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
+            loadingDialog?.dismissAllowingStateLoss()
+            languageList = LanguageList()
+            languagesListEmptyTextView?.text = failedMessage
+            languagesListEmptyTextView?.visibility = View.VISIBLE
         }
     }
 }
