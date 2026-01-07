@@ -1,288 +1,252 @@
-package com.smile.u2bkaraoke;
+package com.smile.u2bkaraoke
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Build
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.smile.karaoke.R
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
+import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.model.SingerList
+import com.smile.u2bkaraoke.model.SingerType
+import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.view_adapter.SingerListAdapter
+import retrofit2.Call
+import retrofit2.Response
+import javax.inject.Inject
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+class SingerListActivity : AppCompatActivity() {
 
-import com.smile.karaoke.R;
-import com.smile.u2bkaraoke.model.Constants;
-import com.smile.u2bkaraoke.model.SingerList;
-import com.smile.u2bkaraoke.model.SingerType;
-import com.smile.u2bkaraoke.retrofit.RestApiAsync;
-import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment;
-import com.smile.smilelibraries.utilities.ScreenUtil;
-import com.smile.u2bkaraoke.view_adapter.SingerListAdapter;
 
-import javax.inject.Inject;
+    companion object {
+        private const val TAG = "SingerListActivity"
+    }
 
-import retrofit2.Call;
-import retrofit2.Response;
+    private var textFontSize = 0f
+    private var searchEditText: EditText? = null
+    private var isSearchEditTextChanged = false
+    private var filterString: String? = null
+    private var singerListEmptyTextView: TextView? = null
+    private var mRecyclerView: RecyclerView? = null
 
-public class SingerListActivity extends AppCompatActivity {
-    private static final String TAG = "SingerListActivity";
-    private float textFontSize;
-    private EditText searchEditText;
-    private boolean isSearchEditTextChanged;
-    private String filterString;
-    private TextView singerListEmptyTextView;
-    private RecyclerView mRecyclerView;
+    @JvmField
     @Inject
-    SingerListAdapter myViewAdapter;
-    private SingerList singerList = null;
-    private SingerType singerType;
+    var myViewAdapter: SingerListAdapter? = null
+    private var singerList: SingerList? = null
+    private var singerType: SingerType? = null
 
-    private int pageNo = 1;
-    private int pageSize = 10;
-    private int totalPages = 0;
-    private String noResultString;
-    private String failedMessage;
-    private String loadingString;
-    private AlertDialogFragment loadingDialog = null;
+    private var pageNo = 1
+    private var pageSize = 10
+    private var totalPages = 0
+    private var noResultString: String? = null
+    private var failedMessage: String? = null
+    private var loadingString: String? = null
+    private var loadingDialog: AlertDialogFragment? = null
 
-    private MyRestApi restApi;
+    private var restApi: MyRestApi? = null
 
     @SuppressLint("SetTextI18n")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
 
-        noResultString = getString(R.string.noResultString);
-        failedMessage = getString(R.string.failedMessage);
-        loadingString = getString(R.string.loadingString);
+        noResultString = getString(R.string.noResultString)
+        failedMessage = getString(R.string.failedMessage)
+        loadingString = getString(R.string.loadingString)
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
 
-        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
-
-        String singerListTitle = getString(R.string.singersListString);
-        String activityTitle = "";
-        Bundle extras = getIntent().getExtras();
-        if (extras != null ) {
-            activityTitle = extras.getString(Constants.SingerListActivityTitle, "").trim();
-            singerType = extras.getParcelable(Constants.SingerTypeParcelable);
+        val singerListTitle = getString(R.string.singersListString)
+        var activityTitle = ""
+        val extras = intent.extras
+        if (extras != null) {
+            activityTitle = extras.getString(Constants.SingerListActivityTitle, "")
+            singerType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                extras.getParcelable(Constants.SingerTypeParcelable, SingerType::class.java)
+            } else extras.getParcelable(Constants.SingerTypeParcelable)
         }
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_singer_list)
 
-        setContentView(R.layout.activity_singer_list);
-
-        final TextView singersListMenuTextView = findViewById(R.id.singersListMenuTextView);
-        ScreenUtil.resizeTextSize(singersListMenuTextView, textFontSize, Constants.FontSize_Scale_Type);
-        singersListMenuTextView.setText(activityTitle + " " + singerListTitle);
-
-        filterString = "";
-        searchEditText = findViewById(R.id.singerSearchEditText);
-        ScreenUtil.resizeTextSize(searchEditText, textFontSize, Constants.FontSize_Scale_Type);
-        LinearLayout.LayoutParams searchEditLp = (LinearLayout.LayoutParams) searchEditText.getLayoutParams();
-        searchEditLp.leftMargin = (int)(textFontSize * 2.0f);
-        searchEditLp.rightMargin = (int)(textFontSize * 5.0f);
-        // searchEditLp.setMargins(100, 0, (int)textFontSize*2, 0);
-        searchEditText.setText(filterString);
-        isSearchEditTextChanged = false;
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Log.d(TAG, "searchEditText.addTextChangedListener.afterTextChanged");
-                String content = editable.toString().trim();
-                filterString = content.isEmpty() ? "" : "SingNa+" + content;
-                Log.d(TAG, "searchEditText.addTextChangedListener.afterTextChanged.filterString = "
-                        + filterString);
-                pageNo = 1;
-                isSearchEditTextChanged = true;
-                // searchEditText.clearFocus();
-                retrieveSingerList();
-            }
-        });
-
-        singerListEmptyTextView = findViewById(R.id.singerListEmptyTextView);
-        ScreenUtil.resizeTextSize(singerListEmptyTextView, textFontSize, Constants.FontSize_Scale_Type);
-        singerListEmptyTextView.setVisibility(View.GONE);
-
-        mRecyclerView = findViewById(R.id.singerListRecyclerView);
-
-        float smallButtonFontSize = textFontSize * 0.7f;
-        final Button firstPageButton = findViewById(R.id.firstPageButton);
-        ScreenUtil.resizeTextSize(firstPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        firstPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firstPage();
-            }
-        });
-
-        final Button previousPageButton = findViewById(R.id.previousPageButton);
-        ScreenUtil.resizeTextSize(previousPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        previousPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previousPage();
-            }
-        });
-
-        final Button nextPageButton = findViewById(R.id.nextPageButton);
-        ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        nextPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextPage();
-            }
-        });
-
-        final Button lastPageButton = findViewById(R.id.lastPageButton);
-        ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        lastPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lastPage();
-            }
-        });
-
-        final Button singersListReturnButton = findViewById(R.id.singersListReturnButton);
-        ScreenUtil.resizeTextSize(singersListReturnButton, textFontSize, Constants.FontSize_Scale_Type);
-        singersListReturnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPrevious();
-            }
-        });
-
-        restApi = new MyRestApi();
-        retrieveSingerList();
-    }
-
-    private void retrieveSingerList() {
-        Log.d(TAG, "retrieveSingerList.filterString = " + filterString);
-        if (loadingDialog == null) {
-            loadingDialog = AlertDialogFragment.newInstance(loadingString,
-                    Constants.FontSize_Scale_Type,
-                    textFontSize, Color.RED, 0, 0, true);
-            loadingDialog.show(getSupportFragmentManager(), "LoadingDialogTag");
-        }
-        if (filterString != null && !filterString.isEmpty()) {
-            restApi.getSingersBySingerType(singerType, pageSize, pageNo, filterString);
-        } else {
-            restApi.getSingersBySingerType(singerType, pageSize, pageNo);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        returnToPrevious();
-    }
-
-    private void returnToPrevious() {
-        Log.d(TAG, "returnToPrevious");
-        finish();
-    }
-
-    private void firstPage() {
-        pageNo = 1;
-        retrieveSingerList();
-    }
-
-    private void previousPage() {
-        pageNo--;
-        if (pageNo < 1) {
-            pageNo = 1;
-        }
-        retrieveSingerList();
-    }
-
-    private void nextPage() {
-        pageNo++;
-        if (pageNo > totalPages) {
-            pageNo = totalPages;
-        }
-        retrieveSingerList();
-    }
-
-    private void lastPage() {
-        pageNo = -1;    // represent last page
-        retrieveSingerList();
-    }
-
-    private class MyRestApi extends RestApiAsync<SingerList> {
-        @Override
-        public void onResponse(Call<SingerList> call, Response<SingerList> response) {
-            if (loadingDialog != null) loadingDialog.dismissAllowingStateLoss();
-            loadingDialog = null;
-            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = " +
-                    response.isSuccessful());
-            singerList = response.body();
-            if (!response.isSuccessful() || singerList == null) {
-                singerList = new SingerList();
-                singerListEmptyTextView.setText(failedMessage);
-                singerListEmptyTextView.setVisibility(View.VISIBLE);
-            } else {
-                pageNo = singerList.getPageNo();         // get the back value from called function
-                pageSize = singerList.getPageSize();     // get the back value from called function
-                totalPages = singerList.getTotalPages(); // get the back value from called function
-                if (singerList.getSingers().isEmpty()) {
-                    singerListEmptyTextView.setText(noResultString);
-                    singerListEmptyTextView.setVisibility(View.VISIBLE);
-                } else {
-                    singerListEmptyTextView.setVisibility(View.GONE);
+        val singersListMenuTextView = findViewById<TextView>(R.id.singersListMenuTextView)
+        ScreenUtil.resizeTextSize(singersListMenuTextView, textFontSize)
+        singersListMenuTextView.text = "$activityTitle $singerListTitle"
+        filterString = ""
+        searchEditText = findViewById(R.id.singerSearchEditText)
+        searchEditText?.let { sEt ->
+            ScreenUtil.resizeTextSize(sEt, textFontSize)
+            val searchEditLp = sEt.layoutParams as LinearLayout.LayoutParams
+            searchEditLp.leftMargin = (textFontSize * 2.0f).toInt()
+            searchEditLp.rightMargin = (textFontSize * 5.0f).toInt()
+            sEt.setText(filterString)
+            isSearchEditTextChanged = false
+            sEt.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
+                override fun afterTextChanged(editable: Editable) {
+                    Log.d(TAG, "addTextChangedListener.afterTextChanged")
+                    val content = editable.toString().trim()
+                    filterString = if (content.isEmpty()) "" else "SingNa+$content"
+                    Log.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
+                    pageNo = 1
+                    isSearchEditTextChanged = true
+                    retrieveSingerList()
                 }
-            }
-            // myViewAdapter.setParameters(SingerListActivity.this,
-            //         singerList.getSingers(), textFontSize);
-            Log.d(TAG, "MyRestApi.onResponse.inject()");
-            U2bKaraokeApp.Companion.getAppCompBuilder()
-                    .activityModule(SingerListActivity.this)
-                    .singerArrayListModule(singerList.getSingers())
-                    .floatModule(textFontSize).build()
-                    .inject(SingerListActivity.this);
-            mRecyclerView.setAdapter(myViewAdapter);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            })
+        }
+        singerListEmptyTextView = findViewById(R.id.singerListEmptyTextView)
+        ScreenUtil.resizeTextSize(singerListEmptyTextView, textFontSize)
+        singerListEmptyTextView?.visibility = View.GONE
+        mRecyclerView = findViewById(R.id.singerListRecyclerView)
+        val smallButtonFontSize = textFontSize * 0.7f
+        val firstPageButton = findViewById<Button>(R.id.firstPageButton)
+        ScreenUtil.resizeTextSize(firstPageButton, smallButtonFontSize)
+        firstPageButton.setOnClickListener { firstPage() }
+        val previousPageButton = findViewById<Button>(R.id.previousPageButton)
+        ScreenUtil.resizeTextSize(previousPageButton, smallButtonFontSize)
+        previousPageButton.setOnClickListener { previousPage() }
+        val nextPageButton = findViewById<Button>(R.id.nextPageButton)
+        ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize)
+        nextPageButton.setOnClickListener { nextPage() }
+        val lastPageButton = findViewById<Button>(R.id.lastPageButton)
+        ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
+        lastPageButton.setOnClickListener { lastPage() }
+        val singersListReturnButton = findViewById<Button>(R.id.singersListReturnButton)
+        ScreenUtil.resizeTextSize(singersListReturnButton, textFontSize)
+        singersListReturnButton.setOnClickListener { returnToPrevious() }
 
-            Log.d(TAG, "MyRestApi.onResponse.response.isSearchEditTextChanged = "
-                    + isSearchEditTextChanged);
+        restApi = MyRestApi()
+        retrieveSingerList()
+
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    returnToPrevious()
+                }
+            })
+    }
+
+    private fun retrieveSingerList() {
+        Log.d(TAG, "retrieveSingerList.filterString = $filterString")
+        if (loadingDialog == null) {
+            loadingDialog = AlertDialogFragment.newInstance(
+                loadingString,
+                Constants.FontSize_Scale_Type,
+                textFontSize, Color.RED, 0, 0, true
+            )
+            loadingDialog!!.show(supportFragmentManager, "LoadingDialogTag")
+        }
+        restApi?.let {rApi ->
+            val sType = singerType ?: SingerType()
+            if (filterString.isNullOrEmpty()) {
+                rApi.getSingersBySingerType(sType, pageSize, pageNo)
+            } else {
+                rApi.getSingersBySingerType(sType, pageSize, pageNo, filterString!!)
+            }
+            singerType = sType
+        }
+    }
+
+    public override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    private fun returnToPrevious() {
+        Log.d(TAG, "returnToPrevious")
+        finish()
+    }
+
+    private fun firstPage() {
+        pageNo = 1
+        retrieveSingerList()
+    }
+
+    private fun previousPage() {
+        pageNo--
+        if (pageNo < 1) {
+            pageNo = 1
+        }
+        retrieveSingerList()
+    }
+
+    private fun nextPage() {
+        pageNo++
+        if (pageNo > totalPages) {
+            pageNo = totalPages
+        }
+        retrieveSingerList()
+    }
+
+    private fun lastPage() {
+        pageNo = -1 // represent last page
+        retrieveSingerList()
+    }
+
+    private inner class MyRestApi : RestApiAsync<SingerList>() {
+        override fun onResponse(call: Call<SingerList?>, response: Response<SingerList?>) {
+            if (loadingDialog != null) loadingDialog!!.dismissAllowingStateLoss()
+            loadingDialog = null
+            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
+            singerList = response.body()
+            if (!response.isSuccessful || singerList == null) {
+                singerList = SingerList()
+                singerListEmptyTextView?.text = failedMessage
+                singerListEmptyTextView?.visibility = View.VISIBLE
+            } else {
+                singerList?.let { sList ->
+                    pageNo = sList.pageNo // get the back value from called function
+                    pageSize = sList.pageSize // get the back value from called function
+                    totalPages = sList.totalPages // get the back value from called function
+                    if (sList.singers.isEmpty()) {
+                        singerListEmptyTextView?.text = noResultString
+                        singerListEmptyTextView?.visibility = View.VISIBLE
+                    } else {
+                        singerListEmptyTextView?.visibility = View.GONE
+                    }
+                } ?: { singerList = SingerList() }
+            }
+            Log.d(TAG, "MyRestApi.onResponse.inject()")
+            appCompBuilder
+                .activityModule(this@SingerListActivity)
+                .singerArrayListModule(singerList!!.singers)
+                .floatModule(textFontSize).build()
+                .inject(this@SingerListActivity)
+            mRecyclerView?.setAdapter(myViewAdapter)
+            mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
+            Log.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
             if (isSearchEditTextChanged) {
                 // searchEditText.setFocusable(true);              // needed for requestFocus()
                 // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
                 // searchEditText.requestFocus();  // needed for the next two statements
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
-                isSearchEditTextChanged = false;
+                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
+                isSearchEditTextChanged = false
             }
         }
 
-        @Override
-        public void onFailure(Call call, Throwable t) {
-            Log.d(TAG, "MyRestApi.onFailure." + t.toString());
-            if (loadingDialog != null) loadingDialog.dismissAllowingStateLoss();
-            loadingDialog = null;
-            singerList = new SingerList();
-            singerListEmptyTextView.setText(failedMessage);
-            singerListEmptyTextView.setVisibility(View.VISIBLE);
+        override fun onFailure(call: Call<SingerList>, t: Throwable) {
+            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
+            if (loadingDialog != null) loadingDialog!!.dismissAllowingStateLoss()
+            loadingDialog = null
+            singerList = SingerList()
+            singerListEmptyTextView?.text = failedMessage
+            singerListEmptyTextView?.visibility = View.VISIBLE
         }
     }
 }

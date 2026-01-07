@@ -68,11 +68,11 @@ class LanguageListActivity : AppCompatActivity() {
             Constants.HotSongOrdered -> menuTextView.text = getString(R.string.hotSongLanguagesListString)
         }
 
-        languagesListEmptyTextView = findViewById<TextView>(R.id.languagesListEmptyTextView)
+        languagesListEmptyTextView = findViewById(R.id.languagesListEmptyTextView)
         ScreenUtil.resizeTextSize(languagesListEmptyTextView, textFontSize)
         languagesListEmptyTextView?.visibility = View.GONE
 
-        mRecyclerView = findViewById<RecyclerView>(R.id.languageListRecyclerView)
+        mRecyclerView = findViewById(R.id.languageListRecyclerView)
 
         val languagesListReturnButton = findViewById<Button>(R.id.languagesListReturnButton)
         ScreenUtil.resizeTextSize(languagesListReturnButton, textFontSize)
@@ -89,7 +89,6 @@ class LanguageListActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    LogUtil.d(TAG, "onBackPressedDispatcher.handleOnBackPressed")
                     returnToPrevious()
                 }
             })
@@ -134,7 +133,7 @@ class LanguageListActivity : AppCompatActivity() {
             mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
         }
 
-        override fun onFailure(call: Call<LanguageList?>, t: Throwable) {
+        override fun onFailure(call: Call<LanguageList>, t: Throwable) {
             LogUtil.e(TAG, "MyRestApi.onFailure.", t)
             loadingDialog?.dismissAllowingStateLoss()
             languageList = LanguageList()
