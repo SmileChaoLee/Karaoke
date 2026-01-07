@@ -11,6 +11,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.google_ads_util.AdMobInterstitial
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
+import com.smile.smilelibraries.utilities.ScreenUtil
 
 class SmileKaraokeApp : SmileAppBase() {
 
@@ -41,9 +42,12 @@ class SmileKaraokeApp : SmileAppBase() {
 
     override fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?): SetBannerAdView? {
         LogUtil.d(TAG, "showBannerAd")
-        return SetBannerAdView(activity, null,
+        val act = activity ?: return null
+        var bannerDpWidth = (ScreenUtil.getScreenSize(act).x * 0.98).toFloat()
+        bannerDpWidth = ScreenUtil.pixelToDp(bannerDpWidth)
+        return SetBannerAdView(act, null,
             bannerLayout,
-            adMobBannerID, facebookBannerID, 0)
+            adMobBannerID, facebookBannerID, bannerDpWidth.toInt())
     }
 
     override fun getInterstitial(): AdMobInterstitial? {

@@ -26,8 +26,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1003
-        versionName "10.03"
+        versionCode 1005
+        versionName "10.05"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -61,11 +61,24 @@ android {
             dimension = "karaoke"
             applicationId = "com.smile.videoplayer"
         }
-        create("youtubeplayer") {
+        create("u2bplayer") {
             dimension = "karaoke"
-            versionCode 113
-            versionName "1.13"
+            versionCode 115
+            versionName "1.15"
+            applicationId = "com.smile.u2bplayer"
+        }
+        create("u2bplayer2") {
+            // for Amazon app store only
+            dimension = "karaoke"
+            versionCode 115
+            versionName "1.15"
             applicationId = "com.smile.youtubeplayer"
+        }
+        create("u2bkaraoke") {
+            dimension = "karaoke"
+            versionCode 100
+            versionName "1.00"
+            applicationId = "com.smile.u2bkaraoke"
         }
     }
 
@@ -80,20 +93,20 @@ android {
             }
         }
         karaokeplayer {
-            // temporary add youtube
+            // temporary add u2bplayer
             java.srcDirs += ["src/karaokeplayer/java", "src/karaokeplayer_app_activity/java",
-                             "src/youtube/java"]
-            res.srcDirs += ["src/karaokeplayer/res", "src/youtube/res"]
+                             "src/u2bplayer/java"]
+            res.srcDirs += ["src/karaokeplayer/res", "src/u2bplayer/res"]
             manifest {
                 srcFile "src/karaokeplayer/AndroidManifest.xml"
             }
         }
 
         videoplayer {
-            // temporary add youtube
+            // temporary add u2bplayer
             java.srcDirs += ["src/videoplayer/java", "src/videoplayer_app_activity/java",
-                             "src/youtube/java"]
-            res.srcDirs += ["src/videoplayer/res", "src/youtube/res"]
+                             "src/u2bplayer/java"]
+            res.srcDirs += ["src/videoplayer/res", "src/u2bplayer/res"]
             manifest {
                 srcFile "src/videoplayer/AndroidManifest.xml"
             }
@@ -101,9 +114,9 @@ android {
 
         karaoketvplayer {
             java.srcDirs += ["src/karaoketvplayer/java", "src/karaokeplayer/java",
-                             "src/videoplayer/java", "src/youtube/java"]
+                             "src/videoplayer/java", "src/u2bplayer/java"]
             res.srcDirs += ["src/karaoketvplayer/res", "src/karaokeplayer/res",
-                            "src/videoplayer/res", "src/youtube/res"]
+                            "src/videoplayer/res", "src/u2bplayer/res"]
             manifest {
                 srcFile "src/karaoketvplayer/AndroidManifest.xml"
             }
@@ -126,11 +139,28 @@ android {
             }
         }
 
-        youtubeplayer {
-            java.srcDirs += ["src/youtube/java"]
-            res.srcDirs += ["src/youtube/res"]
+        u2bplayer {
+            java.srcDirs += ["src/u2bplayer/java"]
+            res.srcDirs += ["src/u2bplayer/res"]
             manifest {
-                srcFile "src/youtube/AndroidManifest.xml"
+                srcFile "src/u2bplayer/AndroidManifest.xml"
+            }
+        }
+
+        u2bplayer2 {
+            // for Amazon app store only
+            java.srcDirs += ["src/u2bplayer2/java", "src/u2bplayer/java"]
+            res.srcDirs += ["src/u2bplayer/res"]
+            manifest {
+                srcFile "src/u2bplayer2/AndroidManifest.xml"
+            }
+        }
+
+        u2bkaraoke {
+            java.srcDirs += ["src/u2bkaraoke/java", "src/u2bplayer/java"]
+            res.srcDirs += ["src/u2bkaraoke/res", "src/u2bplayer/res"]
+            manifest {
+                srcFile "src/u2bkaraoke/AndroidManifest.xml"
             }
         }
     }
@@ -270,6 +300,12 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:3.2.0") // For content negotiation if needed
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.2.0") // If you need JSON
     */
+
+    implementation 'com.google.dagger:dagger:2.57.2'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.57.2'
+    kapt 'com.google.dagger:dagger-android-processor:2.57.2'
+    kapt 'com.google.dagger:dagger-compiler:2.57.2'
+
     // This block runs after the project is configured
     afterEvaluate {
         android.applicationVariants.all { variant ->
@@ -293,7 +329,8 @@ dependencies {
                 if (flavor.name.containsIgnoreCase("karaoketvplayer")
                         || flavor.name.containsIgnoreCase("karaokeplayer")
                         || flavor.name.containsIgnoreCase("videoplayer")
-                        || flavor.name.containsIgnoreCase("youtubeplayer")) {
+                        || flavor.name.containsIgnoreCase("u2bplayer")
+                        || flavor.name.containsIgnoreCase("u2bkaraoke")) {
                     // Check for latest version
                     dependencies.add(variant.name + "Implementation",
                             "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")

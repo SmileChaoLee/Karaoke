@@ -11,11 +11,12 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.nativetemplates_models.GoogleAdMobNativeTemplate
 import com.smile.smilelibraries.google_ads_util.AdMobInterstitial
 import com.smile.smilelibraries.show_banner_ads.SetBannerAdView
+import com.smile.smilelibraries.utilities.ScreenUtil
 
-class SmileU2bApp : SmileAppBase() {
+class U2bPlayerApp : SmileAppBase() {
 
     companion object {
-        private const val TAG = "SmileU2bApp"
+        private const val TAG = "U2bPlayerApp"
     }
 
     override fun onCreate() {
@@ -24,8 +25,12 @@ class SmileU2bApp : SmileAppBase() {
     }
 
     override fun initAds() {
-        adMobBannerID = "ca-app-pub-8354869049759576/1400953752"
-        adMobNativeID = "ca-app-pub-8354869049759576/6170064706"
+        // for com.smile.youtubeplayer
+        // adMobBannerID = "ca-app-pub-8354869049759576/1400953752"
+        // adMobNativeID = "ca-app-pub-8354869049759576/6170064706"
+        // for com.smile.u2bplayer
+        adMobBannerID = "ca-app-pub-8354869049759576/7413877501"
+        adMobNativeID = "ca-app-pub-8354869049759576/7222305817"
         // google
         MobileAds.initialize(applicationContext) {
             initializationStatus: InitializationStatus? ->
@@ -35,15 +40,22 @@ class SmileU2bApp : SmileAppBase() {
     }
 
     override fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?): SetBannerAdView? {
-        LogUtil.d(TAG, "showBannerAd")
-        return SetBannerAdView(activity, null,
+        LogUtil.d(TAG, "showBannerAd.U2bPlayer")
+        val act = activity ?: return null
+        var bannerDpWidth = (ScreenUtil.getScreenSize(act).x * 0.98).toFloat()
+        bannerDpWidth = ScreenUtil.pixelToDp(bannerDpWidth)
+        return SetBannerAdView(act, null,
             bannerLayout,
-            adMobBannerID, facebookBannerID, 0)
+            adMobBannerID, facebookBannerID, bannerDpWidth.toInt())
     }
 
     override fun getInterstitial(): AdMobInterstitial? {
-        val adMobInterstitialID = "ca-app-pub-8354869049759576/7483146379"
-        return AdMobInterstitial(applicationContext, adMobInterstitialID)
+        // for com.smile.youtubeplayer
+        // val adMobInterstitialID = "ca-app-pub-8354869049759576/7483146379"
+        // for com.smile.u2bplayer
+        return null
+        // val adMobInterstitialID = "ca-app-pub-8354869049759576/5405649501"
+        // return AdMobInterstitial(applicationContext, adMobInterstitialID)
     }
 
     override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,

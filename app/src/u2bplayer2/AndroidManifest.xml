@@ -14,7 +14,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="com.smile.u2bplayer.U2bPlayerApp"
+        android:name="com.smile.u2bplayer2.U2bPlayer2App"
         android:icon="@drawable/u2bplayer_app_icon"
         android:banner="@drawable/u2bplayer_app_icon"
         android:roundIcon="@drawable/u2bplayer_app_icon"
