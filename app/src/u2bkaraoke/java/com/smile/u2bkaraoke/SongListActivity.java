@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -294,7 +295,7 @@ public class SongListActivity extends AppCompatActivity {
 
     private class MyRestApi extends RestApiAsync<SongList> {
         @Override
-        public void onResponse(Call<SongList> call, Response<SongList> response) {
+        public void onResponse(@NonNull Call<SongList> call, @NonNull Response<SongList> response) {
             Log.d(TAG, "MyRestApi.onResponse");
             if (loadingDialog != null) loadingDialog.dismissAllowingStateLoss();
             loadingDialog = null;
@@ -321,7 +322,7 @@ public class SongListActivity extends AppCompatActivity {
             // myViewAdapter = new SongListAdapter(SongListActivity.this,
             //         songList.getSongs(), textFontSize);
             Log.d(TAG, "MyRestApi.onResponse.inject()");
-            SongApplication.Companion.getAppCompBuilder()
+            U2bKaraokeApp.Companion.getAppCompBuilder()
                     .activityModule(SongListActivity.this)
                     .songArrayListModule(songList.getSongs())
                     .floatModule(textFontSize).build()

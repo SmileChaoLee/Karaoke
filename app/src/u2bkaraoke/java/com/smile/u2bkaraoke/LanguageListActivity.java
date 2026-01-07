@@ -128,7 +128,7 @@ public class LanguageListActivity extends AppCompatActivity {
             // myViewAdapter = new LanguageListAdapter(LanguageListActivity.this,
             //         languageList.getLanguages(), orderedFrom, textFontSize);
             Log.d(TAG, "MyRestApi.onResponse.inject()");
-            SongApplication.Companion.getAppCompBuilder()
+            U2bKaraokeApp.Companion.getAppCompBuilder()
                     .activityModule(LanguageListActivity.this)
                     .languageArrayListModule(languageList.getLanguages())
                     .intModule(orderedFrom)

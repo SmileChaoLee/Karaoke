@@ -254,7 +254,7 @@ public class SingerListActivity extends AppCompatActivity {
             // myViewAdapter.setParameters(SingerListActivity.this,
             //         singerList.getSingers(), textFontSize);
             Log.d(TAG, "MyRestApi.onResponse.inject()");
-            SongApplication.Companion.getAppCompBuilder()
+            U2bKaraokeApp.Companion.getAppCompBuilder()
                     .activityModule(SingerListActivity.this)
                     .singerArrayListModule(singerList.getSingers())
                     .floatModule(textFontSize).build()

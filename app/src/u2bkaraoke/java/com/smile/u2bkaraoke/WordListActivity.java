@@ -39,7 +39,7 @@ public class WordListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         Log.d(TAG, "onCreate.inject()");
-        SongApplication.Companion.getAppComponent().inject(this);
+        U2bKaraokeApp.Companion.getAppComponent().inject(this);
 
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
 

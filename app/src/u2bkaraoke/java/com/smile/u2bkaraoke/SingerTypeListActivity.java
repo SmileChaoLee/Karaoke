@@ -112,7 +112,7 @@ public class SingerTypeListActivity extends AppCompatActivity {
                 singerTypeListEmptyTextView.setVisibility(View.VISIBLE);
             }
             Log.d(TAG, "MyRestApi.onResponse.inject()");
-            SongApplication.Companion.getAppCompBuilder()
+            U2bKaraokeApp.Companion.getAppCompBuilder()
                     .activityModule(SingerTypeListActivity.this)
                     .singerTypeArrayListModule(singerTypeList.getSingerTypes())
                     .floatModule(textFontSize).build()

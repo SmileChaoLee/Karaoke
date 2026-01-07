@@ -1,59 +1,125 @@
-package com.smile.u2bkaraoke.retrofit;
+package com.smile.u2bkaraoke.retrofit
 
-import com.smile.u2bkaraoke.model.*;
+import com.smile.u2bkaraoke.model.LanguageList
+import com.smile.u2bkaraoke.model.SingerList
+import com.smile.u2bkaraoke.model.SingerTypeList
+import com.smile.u2bkaraoke.model.SongList
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Path
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-
-public interface ApiInterface {
-    //  from ASP.NET Core API
-
+interface ApiInterface {
     @GET("api/Singareas/SingerTypes")
-    Call<SingerTypeList> getAllSingerTypes();
+    fun getAllSingerTypes(): Call<SingerTypeList>
 
     @GET("api/Singareas/{id}/Singers/{sex}/{pageSize}/{pageNo}/{orderBy}")
-    Call<SingerList> getSingersBySingerTypeId(@Path("id") int id, @Path("sex") String sex, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy);
+    fun getSingersBySingerTypeId(
+        @Path("id") id: Int,
+        @Path("sex") sex: String?,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?
+    ): Call<SingerList>
 
     @GET("api/Singareas/{id}/Singers/{sex}/{pageSize}/{pageNo}/{orderBy}/{filter}")
-    Call<SingerList> getSingersBySingerTypeIdWithFilter(@Path("id") int id, @Path("sex") String sex, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy, @Path("filter") String filter);
+    fun getSingersBySingerTypeIdWithFilter(
+        @Path("id") id: Int,
+        @Path("sex") sex: String?,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("filter") filter: String?
+    ): Call<SingerList>
 
     // [HttpGet("{id}/[Action]/{pageSize}/{pageNo}/{orderBy}")] in SingersController.cs
     @GET("api/Singers/{id}/Songs/{pageSize}/{pageNo}/{orderBy}")
-    Call<SongList> getSongsBySingerId(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy);
+    fun getSongsBySingerId(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?
+    ): Call<SongList>
 
     // [HttpGet("{id}/[Action]/{pageSize}/{pageNo}/{orderBy}/{filter}")]
     @GET("api/Singers/{id}/Songs/{pageSize}/{pageNo}/{orderBy}/{filter}")
-    Call<SongList> getSongsBySingerIdWithFilter(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy, @Path("filter") String filter);
+    fun getSongsBySingerIdWithFilter(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("filter") filter: String?
+    ): Call<SongList>
 
     @GET("api/Languages")
-    Call<LanguageList> getAllLanguages();
+    fun getAllLanguages(): Call<LanguageList>
 
     @GET("api/Languages/{id}/Songs/{pageSize}/{pageNo}/{orderBy}")
-    Call<SongList> getSongsByLanguageIdOrderBy(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy);
+    fun getSongsByLanguageIdOrderBy(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?
+    ): Call<SongList>
 
     @GET("api/Languages/{id}/Songs/{pageSize}/{pageNo}/{orderBy}/{filter}")
-    Call<SongList> getSongsByLanguageIdOrderByWithFilter(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy, @Path("filter") String filter);
+    fun getSongsByLanguageIdOrderByWithFilter(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("filter") filter: String?
+    ): Call<SongList>
 
     @GET("api/Languages/{id}/{numOfWords}/Songs/{pageSize}/{pageNo}/{orderBy}")
-    Call<SongList> getSongsByLanguageIdNumOfWords(@Path("id") int id, @Path("numOfWords") int numOfWords, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy);
+    fun getSongsByLanguageIdNumOfWords(
+        @Path("id") id: Int,
+        @Path("numOfWords") numOfWords: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?
+    ): Call<SongList>
 
     @GET("api/Languages/{id}/{numOfWords}/Songs/{pageSize}/{pageNo}/{orderBy}/{filter}")
-    Call<SongList> getSongsByLanguageIdNumOfWordsWithFilter(@Path("id") int id, @Path("numOfWords") int numOfWords, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("orderBy") String orderBy, @Path("filter") String filter);
+    fun getSongsByLanguageIdNumOfWordsWithFilter(
+        @Path("id") id: Int,
+        @Path("numOfWords") numOfWords: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("filter") filter: String?
+    ): Call<SongList>
 
     // no order by, Only the date that the song came by descending order
     @GET("api/Languages/{id}/NewSongs/{pageSize}/{pageNo}")
-    Call<SongList> getNewSongsByLanguageId(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo);
+    fun getNewSongsByLanguageId(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int
+    ): Call<SongList>
 
     // no order by, Only the date that the song came by descending order
     @GET("api/Languages/{id}/NewSongs/{pageSize}/{pageNo}/{filter}")
-    Call<SongList> getNewSongsByLanguageIdWithFilter(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("filter") String filter);
+    fun getNewSongsByLanguageIdWithFilter(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("filter") filter: String?
+    ): Call<SongList>
 
     // no order by, Only the number that the song is ordered by descending order
     @GET("api/Languages/{id}/HotSongs/{pageSize}/{pageNo}")
-    Call<SongList> getHotSongsByLanguageId(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo);
+    fun getHotSongsByLanguageId(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int
+    ): Call<SongList>
 
     // no order by, Only the number that the song is ordered by descending order
     @GET("api/Languages/{id}/HotSongs/{pageSize}/{pageNo}/{filter}")
-    Call<SongList> getHotSongsByLanguageIdWithFilter(@Path("id") int id, @Path("pageSize") int pageSize, @Path("pageNo") int pageNo, @Path("filter") String filter);
+    fun getHotSongsByLanguageIdWithFilter(
+        @Path("id") id: Int,
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("filter") filter: String?
+    ): Call<SongList>
 }

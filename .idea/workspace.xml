@@ -251,50 +251,33 @@
           <theme>@style/AppTheme</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/activity_youtube_databinding.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/activity_youtube_viewbinding.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/fragment_youtube_video.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/youtube/res/layout/fragment_youtube_video_item.xml">
-        <config>
-          <theme>@style/AppTheme</theme>
-        </config>
-      </layout>
     </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Changed the app name to U2B Player">
-      <change afterPath="$PROJECT_DIR$/.idea/AndroidProjectSystem.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/deviceManager.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="ad8a8459-8bc4-4a6a-9db4-dde6b1d8ad3c" name="Changes" comment="Finished U2B Player for Google and Amazon">
+      <change afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/retrofit/ApiInterface.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-ms-rMY/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rHK/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rMO/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rSG/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/google-services.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/google-services.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/libs/smilelibraries-debug.aar" beforeDir="false" afterPath="$PROJECT_DIR$/app/libs/smilelibraries-debug.aar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/libs/smilelibraries-release.aar" beforeDir="false" afterPath="$PROJECT_DIR$/app/libs/smilelibraries-release.aar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments/PlayerBaseFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments/PlayerBaseFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/videoplayer/java/com/smile/videoplayer/fragments/VlcPlayerFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/videoplayer/java/com/smile/videoplayer/fragments/VlcPlayerFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/fragments/YouTubeFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/fragments/YouTubeFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/presenters/YouTubePresenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/presenters/YouTubePresenter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/services/YouTubeService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube/services/YouTubeService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/youtube/res/drawable/youtube_app_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/youtube/res/drawable/youtube_app_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/LanguageListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/LanguageListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SingerListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SingerListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SingerTypeListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SingerTypeListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SongApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/U2bKaraokeApp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SongListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/SongListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/WordListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/WordListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/retrofit/ApiInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/retrofit/ApiInterfaceOld.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/retrofit/RestApiAsync.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/java/com/smile/u2bkaraoke/retrofit/RestApiAsync.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rCN/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rCN/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rTW/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values-zh-rTW/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/u2bkaraoke/res/values/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/arm64-v8a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/arm64-v8a/compile_commands.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/armeabi-v7a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/armeabi-v7a/compile_commands.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/debug/x86/compile_commands.json" afterDir="false" />
@@ -303,7 +286,6 @@
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/armeabi-v7a/compile_commands.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86/compile_commands.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/ffmpeg/.cxx/tools/release/x86_64/compile_commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -319,7 +301,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=27071FDH3000J6)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/home/chaolee/.android/avd/Pixel_3a_API_33_x86_64.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -444,7 +426,7 @@
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "/home/chaolee/AndroidStudioProjects/Karaoke/app/src/youtube/res/drawable",
-    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/Karaoke/app/src/youtube/res/drawable",
+    "last_opened_file_path": "/home/chaolee/AndroidStudioProjects/Karaoke/app/src/u2bkaraoke/res",
     "project.structure.last.edited": "Suggestions",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
@@ -453,7 +435,7 @@
   },
   "keyToStringList": {
     "ExportApk.BuildVariants": [
-      "videoplayer2Release"
+      "u2bplayerRelease"
     ],
     "com.android.tools.idea.sqlite.queryhistory": [
       "select * from songList;",
@@ -466,11 +448,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/src/youtube/res/drawable" />
-      <recent name="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/fragments" />
-      <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/u2bkaraoke/res" />
+      <recent name="$PROJECT_DIR$/app/src/u2bkaraoke/res/values" />
       <recent name="$PROJECT_DIR$/app" />
-      <recent name="$PROJECT_DIR$/app/src/youtube/java/com/smile/youtube" />
+      <recent name="$PROJECT_DIR$/app/src/youtube/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/main/java/com/smile/karaoke/presenters" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/src/youtube/res/drawable" />
@@ -486,11 +468,11 @@
       <recent name="com.smile.karaokeplayer" />
     </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.smile.u2bkaraoke.retrofit" />
+      <recent name="com.smile.karaoke.presenters" />
       <recent name="com.smile.youtube.fragments" />
       <recent name="com.smile.karaoke.models" />
       <recent name="com.smile.youtube.roomdatabase" />
-      <recent name="youtube.callbacks" />
-      <recent name="youtube.adapters" />
     </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
       <recent name="com.smile.videoplayer_app_activity" />
@@ -500,11 +482,11 @@
       <recent name="videoplayer2" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.smile.u2bkaraoke.retrofit" />
+      <recent name="com.smile.karaoke.presenters" />
       <recent name="com.smile.karaoke.callbacks" />
       <recent name="karaoketvplayer.presenters" />
       <recent name="com.smile.karaokeplayer.presenters" />
-      <recent name="exoplayer.presenters" />
-      <recent name="exoplayer.listeners" />
     </key>
   </component>
   <component name="RunManager">
@@ -933,7 +915,7 @@
       <option name="project" value="LOCAL" />
       <updated>1681261598227</updated>
     </task>
-    <option name="localTasksCounter" value="254" />
+    <option name="localTasksCounter" value="272" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -1018,21 +1000,6 @@
       <path value="$PROJECT_DIR$/extensions/ffmpeg/src/main/jni/libyuv" />
       <path value="$PROJECT_DIR$/extensions/flac/src/main/jni/libflac" />
     </ignored-roots>
-    <MESSAGE value="Different players can access different database of favorites" />
-    <MESSAGE value="Adding favorite to room database is working for ExoPlayer and VlcPlayer" />
-    <MESSAGE value="Refined add songs to favorites database" />
-    <MESSAGE value="Refined source codes of processing songs" />
-    <MESSAGE value="Save and delete one favorite working and refined source codes" />
-    <MESSAGE value="The items of spinner have focus color" />
-    <MESSAGE value="Fixed bugs: color resource" />
-    <MESSAGE value="Added one more flavor" />
-    <MESSAGE value="Release YouTubePlayer" />
-    <MESSAGE value="Fixed permission issue for YoutubePlayer" />
-    <MESSAGE value="Refined EditText View" />
-    <MESSAGE value="Refined focus of search EditText" />
-    <MESSAGE value="Fixed permission tool" />
-    <MESSAGE value="YouTubePlayer goes to store link&#10;&#10;1. Only karaoketvplayer can start YouTubePlayer" />
-    <MESSAGE value="Decoupled the dependencies" />
     <MESSAGE value="Fixed permission code" />
     <MESSAGE value="Keep the search result after switching back from other tabs" />
     <MESSAGE value="Finished favorites for YouTubePlayer" />
@@ -1041,9 +1008,24 @@
     <MESSAGE value="Changed app name of YouTubePlayer and upgraded dependencies" />
     <MESSAGE value="Refined focus of view and changed LinearLayoutManager to GridLayoutManager" />
     <MESSAGE value="Re-architectured favorite fragments" />
-    <MESSAGE value="Release version code" />
     <MESSAGE value="Changed the app name to U2B Player" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed the app name to U2B Player" />
+    <MESSAGE value="Refined code and changed app icon of youtubeplayer" />
+    <MESSAGE value="Restore U2B Player to karaokeplayer and videoplayer" />
+    <MESSAGE value="Changed file names and package name" />
+    <MESSAGE value="Converted PlayerBasePresenter.java to Kotlin, disabled banner ad when landscape, and added native ads between 2 songs" />
+    <MESSAGE value="Added displaying the video id" />
+    <MESSAGE value="Refined the focus on Android TV" />
+    <MESSAGE value="Renamed the Chinese of U2B Player and release version code" />
+    <MESSAGE value="Added icon for file picker" />
+    <MESSAGE value="Restored fragmentView?.requestFocus() and removed redundant codes from adapters" />
+    <MESSAGE value="Release version code" />
+    <MESSAGE value="Moved cloud_file_icon.png to main/res/drawable" />
+    <MESSAGE value="Feed the home page for U2B Player by the last search" />
+    <MESSAGE value="Added u2bkaraoke folder" />
+    <MESSAGE value="Renamed YouTube Player to U2B Player" />
+    <MESSAGE value="Fixed bugs of u2bkaraoke" />
+    <MESSAGE value="Finished U2B Player for Google and Amazon" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finished U2B Player for Google and Amazon" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
@@ -1055,42 +1037,62 @@
         </entry>
         <entry key="com.smile.karaokeplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232825" />
+            <CheckInfo lastCheckTimestamp="1767809643757" />
           </value>
         </entry>
         <entry key="com.smile.karaokeplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232828" />
+            <CheckInfo lastCheckTimestamp="1767809643773" />
           </value>
         </entry>
         <entry key="com.smile.karaoketvplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232934" />
+            <CheckInfo lastCheckTimestamp="1767809643774" />
           </value>
         </entry>
         <entry key="com.smile.karaoketvplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232830" />
+            <CheckInfo lastCheckTimestamp="1767809643752" />
+          </value>
+        </entry>
+        <entry key="com.smile.u2bkaraoke">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767809643753" />
+          </value>
+        </entry>
+        <entry key="com.smile.u2bkaraoke.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767809643754" />
+          </value>
+        </entry>
+        <entry key="com.smile.u2bplayer">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767725513148" />
+          </value>
+        </entry>
+        <entry key="com.smile.u2bplayer.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1767725513146" />
           </value>
         </entry>
         <entry key="com.smile.videoplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232829" />
+            <CheckInfo lastCheckTimestamp="1767809643750" />
           </value>
         </entry>
         <entry key="com.smile.videoplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232834" />
+            <CheckInfo lastCheckTimestamp="1767809643759" />
           </value>
         </entry>
         <entry key="com.smile.youtubeplayer">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232936" />
+            <CheckInfo lastCheckTimestamp="1767809643771" />
           </value>
         </entry>
         <entry key="com.smile.youtubeplayer.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1767033232835" />
+            <CheckInfo lastCheckTimestamp="1767809643753" />
           </value>
         </entry>
       </map>

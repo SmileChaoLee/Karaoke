@@ -4,9 +4,9 @@ import android.app.Application
 import android.util.Log
 import com.smile.u2bkaraoke.dagger.interfaces.DaggerSongAppComponent
 
-class SongApplication : Application() {
+class U2bKaraokeApp : Application() {
     companion object {
-        private const val TAG = "SongApplication"
+        private const val TAG = "U2bKaraokeApp"
         val appCompBuilder = DaggerSongAppComponent.builder()!!
         val appComponent = appCompBuilder.build()
     }

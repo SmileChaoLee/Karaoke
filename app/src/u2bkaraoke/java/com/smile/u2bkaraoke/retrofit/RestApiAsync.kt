@@ -1,7 +1,7 @@
 package com.smile.u2bkaraoke.retrofit
 
 import android.util.Log
-import com.smile.u2bkaraoke.SongApplication
+import com.smile.u2bkaraoke.U2bKaraokeApp
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.LanguageList
@@ -32,7 +32,7 @@ abstract class RestApiAsync<T> : Callback<T> {
     @Suppress("UNCHECKED_CAST")
     private val apiInterface : ApiInterface
         get() {
-            SongApplication.appCompBuilder.stringModule(Constants.CHAO_URL)
+            U2bKaraokeApp.appCompBuilder.stringModule(Constants.CHAO_URL)
             .build().inject(this as RestApiAsync<Any>)
             return retrofit.create(ApiInterface::class.java)
             // return Client.getInstance(Constants.CHAO_URL).create(ApiInterface::class.java)
@@ -42,14 +42,14 @@ abstract class RestApiAsync<T> : Callback<T> {
     fun getAllSingerTypes() {
         Log.d(TAG, "getAllSingerTypes")
         // get Call from Retrofit Api
-        apiInterface.allSingerTypes.enqueue(callback as Callback<SingerTypeList>)
+        apiInterface.getAllSingerTypes().enqueue(callback as Callback<SingerTypeList>)
     }
 
     @Suppress("UNCHECKED_CAST")
     fun getAllLanguages() {
         Log.d(TAG, "getAllLanguages")
         // get Call from Retrofit Api
-        apiInterface.allLanguages.enqueue(callback as Callback<LanguageList>)
+        apiInterface.getAllLanguages().enqueue(callback as Callback<LanguageList>)
     }
 
     @Suppress("UNCHECKED_CAST")

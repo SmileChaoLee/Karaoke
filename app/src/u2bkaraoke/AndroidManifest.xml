@@ -7,12 +7,17 @@
 
     <application
         tools:replace="android:icon"
-        android:name="com.smile.u2bkaraoke.SongApplication"
+        android:name="com.smile.u2bkaraoke.U2bKaraokeApp"
         android:icon="@drawable/smile"
-        android:label="@string/app_name"
+        android:label="@string/u2bkaraoke_app_name"
         android:theme="@style/AppTheme"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8354869049759576~2333242536" />
+
         <activity
             android:name="com.smile.u2bkaraoke.U2bKkActivity"
             android:configChanges="orientation"
