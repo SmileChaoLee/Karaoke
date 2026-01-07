@@ -86,7 +86,7 @@ class SingerTypeListActivity : AppCompatActivity() {
         finish()
     }
 
-    private inner class MyRestApi : RestApiAsync<SingerTypeList?>() {
+    private inner class MyRestApi : RestApiAsync<SingerTypeList>() {
         @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SingerTypeList?>, response: Response<SingerTypeList?>) {
             loadingDialog?.dismissAllowingStateLoss()
@@ -116,7 +116,7 @@ class SingerTypeListActivity : AppCompatActivity() {
             mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
         }
 
-        override fun onFailure(call: Call<SingerTypeList?>, t: Throwable) {
+        override fun onFailure(call: Call<SingerTypeList>, t: Throwable) {
             LogUtil.e(TAG, "MyRestApi.onFailure.", t)
             loadingDialog?.dismissAllowingStateLoss()
             singerTypeList = SingerTypeList()

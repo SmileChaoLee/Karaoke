@@ -116,7 +116,7 @@ class LanguageListActivity : AppCompatActivity() {
                     } else {
                         languagesListEmptyTextView?.visibility = View.GONE
                     }
-                } ?: run { languageList = LanguageList() }
+                } ?: { languageList = LanguageList() }
             } else {
                 languageList = LanguageList()
                 languagesListEmptyTextView?.text = failedMessage

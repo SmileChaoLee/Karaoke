@@ -1,356 +1,343 @@
-package com.smile.u2bkaraoke;
+package com.smile.u2bkaraoke
 
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Build
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.smile.karaoke.R
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
+import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.model.Language
+import com.smile.u2bkaraoke.model.Singer
+import com.smile.u2bkaraoke.model.SongList
+import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.view_adapter.SongListAdapter
+import retrofit2.Call
+import retrofit2.Response
+import javax.inject.Inject
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class SongListActivity : AppCompatActivity() {
+    private var textFontSize = 0f
+    private var searchEditText: EditText? = null
+    private var isSearchEditTextChanged = false
+    private var filterString: String? = null
+    private var songsListEmptyTextView: TextView? = null
+    private var mRecyclerView: RecyclerView? = null
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.smile.karaoke.R;
-import com.smile.u2bkaraoke.model.*;
-import com.smile.u2bkaraoke.retrofit.RestApiAsync;
-import com.smile.smilelibraries.alertdialogfragment.AlertDialogFragment;
-import com.smile.smilelibraries.utilities.ScreenUtil;
-import com.smile.u2bkaraoke.view_adapter.SongListAdapter;
-
-import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Response;
-
-public class SongListActivity extends AppCompatActivity {
-
-    private static final String TAG = "SongListActivity";
-    private float textFontSize;
-    private EditText searchEditText;
-    private boolean isSearchEditTextChanged;
-    private String filterString;
-    private TextView songsListEmptyTextView;
-    private RecyclerView mRecyclerView;
+    @JvmField
     @Inject
-    SongListAdapter myViewAdapter;
-    private SongList songList = null;
-    private Singer singer;
-    private Language language;
-    private Object objectPassed;
+    var myViewAdapter: SongListAdapter? = null
+    private var songList: SongList? = null
+    private var singer: Singer? = null
+    private var language: Language? = null
+    private var objectPassed: Any? = null
 
-    private int orderedFrom = 0;
-    private int numOfWords = 0;
-    private int pageNo = 1;
-    private int pageSize = 7;
-    private int totalPages = 0;
-    private String noResultString;
-    private String failedMessage;
-    private String loadingString;
-    private AlertDialogFragment loadingDialog = null;
+    private var orderedFrom = 0
+    private var numOfWords = 0
+    private var pageNo = 1
+    private var pageSize = 7
+    private var totalPages = 0
+    private var noResultString: String? = null
+    private var failedMessage: String? = null
+    private var loadingString: String? = null
+    private var loadingDialog: AlertDialogFragment? = null
 
-    private MyRestApi restApi;
+    private var restApi: MyRestApi? = null
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        noResultString = getString(R.string.noResultString);
-        failedMessage = getString(R.string.failedMessage);
-        loadingString = getString(R.string.loadingString);
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.d(TAG, "onCreate")
+        noResultString = getString(R.string.noResultString)
+        failedMessage = getString(R.string.failedMessage)
+        loadingString = getString(R.string.loadingString)
+        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this)
 
-        textFontSize = ScreenUtil.getPxTextFontSizeNeeded(this);
-
-        orderedFrom = 0;    // default value
-        String songListTitle = getString(R.string.songsListString);
-        String activityTitle = "";
-        numOfWords = 0;
-        Bundle extras = getIntent().getExtras();
-        if (extras != null ) {
-            orderedFrom = extras.getInt(Constants.OrderedFrom, 0);
-            activityTitle = extras.getString(Constants.SongListActivityTitle, "").trim();
-            switch (orderedFrom) {
-                case Constants.SingerOrdered -> {
-                    singer = extras.getParcelable(Constants.SingerParcelable);
-                    objectPassed = singer;
+        orderedFrom = 0 // default value
+        val songListTitle = getString(R.string.songsListString)
+        var activityTitle = ""
+        numOfWords = 0
+        val extras = intent.extras
+        if (extras != null) {
+            orderedFrom = extras.getInt(Constants.OrderedFrom, 0)
+            activityTitle = extras.getString(Constants.SongListActivityTitle, "").trim { it <= ' ' }
+            when (orderedFrom) {
+                Constants.SingerOrdered -> {
+                    singer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        extras.getParcelable(Constants.SingerParcelable, Singer::class.java)
+                    } else extras.getParcelable(Constants.SingerParcelable)
+                    objectPassed = singer
                 }
-                case Constants.NewSongOrdered -> objectPassed = language;
-                case Constants.NewSongLanguageOrdered, Constants.HotSongLanguageOrdered -> {
-                    language = extras.getParcelable(Constants.LanguageParcelable);
-                    objectPassed = language;
+                Constants.NewSongOrdered -> objectPassed = language
+                Constants.NewSongLanguageOrdered, Constants.HotSongLanguageOrdered -> {
+                    language = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        extras.getParcelable(Constants.LanguageParcelable, Language::class.java)
+                    } else extras.getParcelable(Constants.LanguageParcelable)
+                    objectPassed = language
                 }
-                case Constants.HotSongOrdered -> objectPassed = null;
-                case Constants.LanguageOrdered, Constants.LanguageWordsOrdered -> {
-                    language = extras.getParcelable(Constants.LanguageParcelable);
-                    objectPassed = language;
-                    numOfWords = extras.getInt(Constants.NumOfWords);
+                Constants.HotSongOrdered -> objectPassed = null
+                Constants.LanguageOrdered, Constants.LanguageWordsOrdered -> {
+                    language = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        extras.getParcelable(Constants.LanguageParcelable, Language::class.java)
+                    } else extras.getParcelable(Constants.LanguageParcelable)
+                    objectPassed = language
+                    numOfWords = extras.getInt(Constants.NumOfWords)
                 }
             }
         }
-        Log.d(TAG, "onCreate.orderedFrom = " + orderedFrom);
+        LogUtil.d(TAG, "onCreate.orderedFrom = $orderedFrom")
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_song_list)
 
-        setContentView(R.layout.activity_song_list);
+        val songsListMenuTextView = findViewById<TextView>(R.id.songsListMenuTextView)
+        ScreenUtil.resizeTextSize(songsListMenuTextView, textFontSize)
+        songsListMenuTextView.text = "$activityTitle $songListTitle"
 
-        TextView songsListMenuTextView = findViewById(R.id.songsListMenuTextView);
-        ScreenUtil.resizeTextSize(songsListMenuTextView, textFontSize, Constants.FontSize_Scale_Type);
-        songsListMenuTextView.setText(activityTitle + " " + songListTitle);
+        filterString = ""
+        searchEditText = findViewById(R.id.songSearchEditText)
+        searchEditText?.let { sEt ->
+            ScreenUtil.resizeTextSize(sEt, textFontSize)
+            val searchEditLp = sEt.layoutParams as LinearLayout.LayoutParams
+            searchEditLp.leftMargin = (textFontSize * 2.0f).toInt()
+            searchEditLp.rightMargin = (textFontSize * 5.0f).toInt()
+            sEt.setText(filterString)
+            isSearchEditTextChanged = false
+            sEt.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
+                    LogUtil.d(TAG, "addTextChangedListener.beforeTextChanged")
+                }
+                override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
+                    LogUtil.d(TAG, "addTextChangedListener.onTextChanged")
+                }
+                override fun afterTextChanged(editable: Editable) {
+                    LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
+                    val content = editable.toString().trim()
+                    filterString = if (content.isEmpty()) "" else "SongNa+$content"
+                    LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
+                    pageNo = 1
+                    isSearchEditTextChanged = true
+                    retrieveSongList()
+                }
+            })
+        }
+        mRecyclerView = findViewById(R.id.songListRecyclerView)
+        songsListEmptyTextView = findViewById(R.id.songsListEmptyTextView)
+        ScreenUtil.resizeTextSize(songsListEmptyTextView, textFontSize)
+        songsListEmptyTextView?.visibility = View.GONE
 
-        filterString = "";
-        searchEditText = findViewById(R.id.songSearchEditText);
-        ScreenUtil.resizeTextSize(searchEditText, textFontSize, Constants.FontSize_Scale_Type);
-        LinearLayout.LayoutParams searchEditLp = (LinearLayout.LayoutParams) searchEditText.getLayoutParams();
-        searchEditLp.leftMargin = (int)(textFontSize * 2.0f);
-        searchEditLp.rightMargin = (int)(textFontSize * 5.0f);
-        // searchEditLp.setMargins(100, 0, (int)textFontSize*2, 0);
-        searchEditText.setText(filterString);
-        isSearchEditTextChanged = false;
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d(TAG, "searchEditText.addTextChangedListener.beforeTextChanged");
-            }
+        val smallButtonFontSize = textFontSize * 0.7f
+        val firstPageButton = findViewById<Button>(R.id.firstPageButton)
+        ScreenUtil.resizeTextSize(firstPageButton, smallButtonFontSize)
+        firstPageButton.setOnClickListener { firstPage() }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d(TAG, "searchEditText.addTextChangedListener.onTextChanged");
-            }
+        val previousPageButton = findViewById<Button>(R.id.previousPageButton)
+        ScreenUtil.resizeTextSize(previousPageButton, smallButtonFontSize)
+        previousPageButton.setOnClickListener { previousPage() }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Log.d(TAG, "searchEditText.addTextChangedListener.afterTextChanged");
-                String content = editable.toString().trim();
-                filterString = content.isEmpty() ? "" : "SongNa+" + content;
-                Log.d(TAG, "searchEditText.addTextChangedListener.afterTextChanged.filterString = "
-                + filterString);
-                pageNo = 1;
-                isSearchEditTextChanged = true;
-                // searchEditText.clearFocus();
-                retrieveSongList();
-            }
-        });
+        val nextPageButton = findViewById<Button>(R.id.nextPageButton)
+        ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize)
+        nextPageButton.setOnClickListener { nextPage() }
 
-        mRecyclerView = findViewById(R.id.songListRecyclerView);
+        val lastPageButton = findViewById<Button>(R.id.lastPageButton)
+        ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
+        lastPageButton.setOnClickListener { lastPage() }
 
-        songsListEmptyTextView = findViewById(R.id.songsListEmptyTextView);
-        ScreenUtil.resizeTextSize(songsListEmptyTextView, textFontSize, Constants.FontSize_Scale_Type);
-        songsListEmptyTextView.setVisibility(View.GONE);
+        val songsListReturnButton = findViewById<Button>(R.id.songsListReturnButton)
+        ScreenUtil.resizeTextSize(songsListReturnButton, textFontSize)
+        songsListReturnButton.setOnClickListener { returnToPrevious() }
 
-        float smallButtonFontSize = textFontSize * 0.7f;
-        final Button firstPageButton = findViewById(R.id.firstPageButton);
-        ScreenUtil.resizeTextSize(firstPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        firstPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firstPage();
-            }
-        });
+        restApi = MyRestApi()
+        retrieveSongList()
 
-        final Button previousPageButton = findViewById(R.id.previousPageButton);
-        ScreenUtil.resizeTextSize(previousPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        previousPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previousPage();
-            }
-        });
-
-        final Button nextPageButton = findViewById(R.id.nextPageButton);
-        ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        nextPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextPage();
-            }
-        });
-
-        final Button lastPageButton = findViewById(R.id.lastPageButton);
-        ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize, Constants.FontSize_Scale_Type);
-        lastPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lastPage();
-            }
-        });
-
-        final Button songsListReturnButton = findViewById(R.id.songsListReturnButton);
-        ScreenUtil.resizeTextSize(songsListReturnButton, textFontSize, Constants.FontSize_Scale_Type);
-        songsListReturnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPrevious();
-            }
-        });
-
-        restApi = new MyRestApi();
-        retrieveSongList();
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    returnToPrevious()
+                }
+            })
     }
 
-    private void retrieveSongList() {
-        Log.d(TAG, "retrieveSongList.orderedFrom = " + orderedFrom);
+    private fun retrieveSongList() {
+        LogUtil.d(TAG, "retrieveSongList.orderedFrom = $orderedFrom")
         if (loadingDialog == null) {
-            loadingDialog = AlertDialogFragment.newInstance(loadingString,
-                    Constants.FontSize_Scale_Type,
-                    textFontSize, Color.RED, 0, 0, true);
-            loadingDialog.show(getSupportFragmentManager(), "LoadingDialogTag");
+            loadingDialog = AlertDialogFragment.newInstance(
+                loadingString,
+                Constants.FontSize_Scale_Type,
+                textFontSize, Color.RED, 0, 0, true
+            )
+            loadingDialog!!.show(supportFragmentManager, "LoadingDialogTag")
         }
-        switch (orderedFrom) {
-            case Constants.SingerOrdered:
-                Log.d(TAG, "retrieveSongList.SingerOrdered");
-                if (filterString != null && !filterString.isEmpty()) {
-                    restApi.getSongsBySinger((Singer) objectPassed, pageSize, pageNo, filterString);
-                } else {
-                    restApi.getSongsBySinger((Singer) objectPassed, pageSize, pageNo);
-                }
-                break;
-            case Constants.NewSongOrdered :
-                Log.d(TAG, "retrieveSongList.NewSongOrdered");
-                break;
-            case Constants.HotSongOrdered:
-                Log.d(TAG, "retrieveSongList.HotSongOrdered");
-                break;
-            case Constants.NewSongLanguageOrdered:
-                Log.d(TAG, "retrieveSongList.NewSongLanguageOrdered");
-                if (filterString != null && !filterString.isEmpty()) {
-                    restApi.getNewSongsByLanguage((Language) objectPassed, pageSize, pageNo, filterString);
-                } else {
-                    restApi.getNewSongsByLanguage((Language) objectPassed, pageSize, pageNo);
-                }
-                break;
-            case Constants.HotSongLanguageOrdered:
-                Log.d(TAG, "retrieveSongList.HotSongLanguageOrdered");
-                if (filterString != null && !filterString.isEmpty()) {
-                    restApi.getHotSongsByLanguage((Language) objectPassed, pageSize, pageNo, filterString);
-                } else {
-                    restApi.getHotSongsByLanguage((Language) objectPassed, pageSize, pageNo);
-                }
-                break;
-            case Constants.LanguageOrdered:
-                Log.d(TAG, "retrieveSongList.LanguageOrdered");
-                if (filterString != null && !filterString.isEmpty()) {
-                    restApi.getSongsByLanguage((Language) objectPassed, pageSize, pageNo, filterString);
-                } else {
-                    restApi.getSongsByLanguage((Language) objectPassed, pageSize, pageNo);
-                }
-                break;
-            case Constants.LanguageWordsOrdered:
-                Log.d(TAG, "retrieveSongList.LanguageWordsOrdered");
-                if (filterString != null && !filterString.isEmpty()) {
-                    restApi.getSongsByLanguageNumOfWords((Language) objectPassed, numOfWords, pageSize, pageNo, filterString);
-                } else {
-                    restApi.getSongsByLanguageNumOfWords((Language) objectPassed, numOfWords, pageSize, pageNo);
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        returnToPrevious();
-    }
-
-    private void returnToPrevious() {
-        Log.d(TAG, "returnToPrevious");
-        finish();
-    }
-
-    private void firstPage() {
-        pageNo = 1;
-        retrieveSongList();
-    }
-
-    private void previousPage() {
-        pageNo--;
-        if (pageNo < 1) {
-            pageNo = 1;
-        }
-        retrieveSongList();
-    }
-
-    private void nextPage() {
-        pageNo++;
-        if (pageNo > totalPages) {
-            pageNo = totalPages;
-        }
-        retrieveSongList();
-    }
-
-    private void lastPage() {
-        pageNo = -1;    // represent last page
-        retrieveSongList();
-    }
-
-    private class MyRestApi extends RestApiAsync<SongList> {
-        @Override
-        public void onResponse(@NonNull Call<SongList> call, @NonNull Response<SongList> response) {
-            Log.d(TAG, "MyRestApi.onResponse");
-            if (loadingDialog != null) loadingDialog.dismissAllowingStateLoss();
-            loadingDialog = null;
-            Log.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = " +
-                    response.isSuccessful());
-            songList = response.body();
-            if (!response.isSuccessful() || songList == null) {
-                songList = new SongList();
-                songsListEmptyTextView.setText(failedMessage);
-                songsListEmptyTextView.setVisibility(View.VISIBLE);
-            } else {
-                pageNo = songList.getPageNo();         // get the back value from called function
-                pageSize = songList.getPageSize();     // get the back value from called function
-                totalPages = songList.getTotalPages(); // get the back value from called function
-                Log.d(TAG, "MyRestApi.onResponse.response.songList.getSongs().size() = " +
-                        songList.getSongs().size());
-                if (songList.getSongs().isEmpty()) {
-                    songsListEmptyTextView.setText(noResultString);
-                    songsListEmptyTextView.setVisibility(View.VISIBLE);
-                } else {
-                    songsListEmptyTextView.setVisibility(View.GONE);
+        when (orderedFrom) {
+            Constants.SingerOrdered -> {
+                LogUtil.d(TAG, "retrieveSongList.SingerOrdered")
+                restApi?.let { rApi ->
+                    val singer = objectPassed as? Singer ?: Singer()
+                    if (filterString.isNullOrEmpty()) {
+                        rApi.getSongsBySinger(singer, pageSize, pageNo)
+                    } else {
+                        rApi.getSongsBySinger(singer, pageSize, pageNo,filterString!!)
+                    }
+                    objectPassed = singer
                 }
             }
-            // myViewAdapter = new SongListAdapter(SongListActivity.this,
-            //         songList.getSongs(), textFontSize);
-            Log.d(TAG, "MyRestApi.onResponse.inject()");
-            U2bKaraokeApp.Companion.getAppCompBuilder()
-                    .activityModule(SongListActivity.this)
-                    .songArrayListModule(songList.getSongs())
-                    .floatModule(textFontSize).build()
-                    .inject(SongListActivity.this);
-            mRecyclerView.setAdapter(myViewAdapter);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            Constants.NewSongOrdered -> LogUtil.d(TAG, "retrieveSongList.NewSongOrdered")
+            Constants.HotSongOrdered -> LogUtil.d(TAG, "retrieveSongList.HotSongOrdered")
+            Constants.NewSongLanguageOrdered -> {
+                LogUtil.d(TAG, "retrieveSongList.NewSongLanguageOrdered")
+                restApi?.let { rApi ->
+                    val language = objectPassed as? Language ?: Language()
+                    if (filterString.isNullOrEmpty()) {
+                        rApi.getNewSongsByLanguage(language, pageSize, pageNo)
+                    } else {
+                        rApi.getNewSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    }
+                    objectPassed = language
+                }
+            }
+            Constants.HotSongLanguageOrdered -> {
+                LogUtil.d(TAG, "retrieveSongList.HotSongLanguageOrdered")
+                restApi?.let { rApi ->
+                    val language = objectPassed as? Language ?: Language()
+                    if (filterString.isNullOrEmpty()) {
+                        rApi.getHotSongsByLanguage(language, pageSize, pageNo)
+                    } else {
+                        rApi.getHotSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    }
+                    objectPassed = language
+                }
+            }
+            Constants.LanguageOrdered -> {
+                LogUtil.d(TAG, "retrieveSongList.LanguageOrdered")
+                restApi?.let { rApi ->
+                    val language = objectPassed as? Language ?: Language()
+                    if (filterString.isNullOrEmpty()) {
+                        rApi.getSongsByLanguage(language, pageSize, pageNo)
+                    } else {
+                        rApi.getSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    }
+                    objectPassed = language
+                }
+            }
+            Constants.LanguageWordsOrdered -> {
+                LogUtil.d(TAG, "retrieveSongList.LanguageWordsOrdered")
+                restApi?.let { rApi ->
+                    val language = objectPassed as? Language ?: Language()
+                    if (filterString.isNullOrEmpty()) {
+                        rApi.getSongsByLanguageNumOfWords(language, numOfWords, pageSize, pageNo)
+                    } else {
+                        rApi.getSongsByLanguageNumOfWords(language, numOfWords, pageSize, pageNo, filterString!!)
+                    }
+                    objectPassed = language
+                }
+            }
+        }
+    }
 
-            Log.d(TAG, "MyRestApi.onResponse.response.isSearchEditTextChanged = " +
-                    isSearchEditTextChanged);
+    public override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    private fun returnToPrevious() {
+        LogUtil.d(TAG, "returnToPrevious")
+        finish()
+    }
+
+    private fun firstPage() {
+        pageNo = 1
+        retrieveSongList()
+    }
+
+    private fun previousPage() {
+        pageNo--
+        if (pageNo < 1) {
+            pageNo = 1
+        }
+        retrieveSongList()
+    }
+
+    private fun nextPage() {
+        pageNo++
+        if (pageNo > totalPages) {
+            pageNo = totalPages
+        }
+        retrieveSongList()
+    }
+
+    private fun lastPage() {
+        pageNo = -1 // represent last page
+        retrieveSongList()
+    }
+
+    private inner class MyRestApi : RestApiAsync<SongList>() {
+        override fun onResponse(call: Call<SongList?>, response: Response<SongList?>) {
+            loadingDialog?.dismissAllowingStateLoss()
+            loadingDialog = null
+            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = {response.isSuccessful}")
+            songList = response.body()
+            if (response.isSuccessful) {
+                songList?.let { sList ->
+                    pageNo = sList.pageNo
+                    pageSize = sList.pageSize
+                    totalPages = sList.totalPages
+                    if (sList.songs.isEmpty()) {
+                        songsListEmptyTextView?.text = noResultString
+                        songsListEmptyTextView?.visibility = View.VISIBLE
+                    } else {
+                        songsListEmptyTextView?.visibility = View.GONE
+                    }
+                } ?: { songList = SongList() }
+            } else {
+                songList = SongList()
+                songsListEmptyTextView?.text = failedMessage
+                songsListEmptyTextView?.visibility = View.VISIBLE
+            }
+            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
+            appCompBuilder
+                .activityModule(this@SongListActivity)
+                .songArrayListModule(songList!!.songs)
+                .floatModule(textFontSize).build()
+                .inject(this@SongListActivity)
+            mRecyclerView?.setAdapter(myViewAdapter)
+            mRecyclerView?.setLayoutManager(LinearLayoutManager(applicationContext))
+
+            LogUtil.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
             if (isSearchEditTextChanged) {
                 // searchEditText.setFocusable(true);              // needed for requestFocus()
                 // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
                 // searchEditText.requestFocus();  // needed for the next two statements
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
-                isSearchEditTextChanged = false;
+                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
+                isSearchEditTextChanged = false
             }
         }
 
-        @Override
-        public void onFailure(Call<SongList> call, Throwable t) {
-            Log.d(TAG, "MyRestApi.onFailure." + t.toString());
-            if (loadingDialog != null) loadingDialog.dismissAllowingStateLoss();
-            loadingDialog = null;
-            songList = new SongList();
-            songsListEmptyTextView.setText(failedMessage);
-            songsListEmptyTextView.setVisibility(View.VISIBLE);
+        override fun onFailure(call: Call<SongList>, t: Throwable) {
+            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
+            if (loadingDialog != null) loadingDialog!!.dismissAllowingStateLoss()
+            loadingDialog = null
+            songList = SongList()
+            songsListEmptyTextView?.text = failedMessage
+            songsListEmptyTextView?.visibility = View.VISIBLE
         }
+    }
+
+    companion object {
+        private const val TAG = "SongListActivity"
     }
 }
