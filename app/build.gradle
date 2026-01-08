@@ -63,15 +63,15 @@ android {
         }
         create("u2bplayer") {
             dimension = "karaoke"
-            versionCode 115
-            versionName "1.15"
+            versionCode 116
+            versionName "1.16"
             applicationId = "com.smile.u2bplayer"
         }
         create("u2bplayer2") {
             // for Amazon app store only
             dimension = "karaoke"
-            versionCode 115
-            versionName "1.15"
+            versionCode 116
+            versionName "1.16"
             applicationId = "com.smile.youtubeplayer"
         }
         create("u2bkaraoke") {
