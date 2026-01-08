@@ -27,11 +27,7 @@ object MyPlayerConstants {
     const val IS_PLAY_SINGLE_SONG_STATE = "IsPlaySingleSong"
     const val SINGLE_SONG_INFO_STATE = "SingleSongInfo"
     const val IS_AUTOPLAY_STATE = "isAutoPlay"
-
-    const val MyFavoriteListState = "MyFavoriteList"
-    const val PlaySingleSongAction = "PlaySingleSongAction"
     const val SingleSongVolume = "SingleSongVolume"
-    const val BackToBaseActivity = "BackToBaseActivity"
 
     const val VLC_PLAYER = 1
     const val EXO_PLAYER = 2

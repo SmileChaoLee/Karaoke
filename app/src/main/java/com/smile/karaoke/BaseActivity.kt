@@ -1,11 +1,8 @@
 package com.smile.karaoke
 
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -21,7 +18,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media3.common.util.UnstableApi
 import com.google.android.ump.ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA
 import com.smile.karaoke.constants.MyPlayerConstants
@@ -57,10 +53,8 @@ abstract class BaseActivity : AppCompatActivity(),
     private lateinit var basePlayViewLayout : LinearLayout
     var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
-    private lateinit var baseReceiver: BroadcastReceiver
     private lateinit var callingIntent : Intent
     private var isPlayToPause : Boolean = false
-    private var hasPlayedSingle : Boolean = false
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
     private var interstitialAd: ShowInterstitial? = null
@@ -80,29 +74,6 @@ abstract class BaseActivity : AppCompatActivity(),
         touchDisabled = true
 
         setContentView(R.layout.activity_base)
-
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                LogUtil.i(TAG, "onCreate.BroadcastReceiver.onReceive")
-                intent?.action?.let {
-                    if (it == MyPlayerConstants.PlaySingleSongAction) {
-                        LogUtil.d(TAG, "onReceive.PlaySingleSongAction")
-                        intent.putExtra(MyPlayerConstants.SingleSongVolume,
-                                playerFragment?.mPresenter?.playingParam?.currentVolume)
-                        onReceiveFunc(isSingleSong = true, needPlay = true, intent = intent, pData = null)
-                        hasPlayedSingle = true
-                    }
-                }
-            }
-        }.also { baseReceiver = it }
-
-        LocalBroadcastManager.getInstance(this).apply {
-            LogUtil.d(TAG, "onCreate.LocalBroadcastManager.registerReceiver")
-            registerReceiver(baseReceiver, IntentFilter().apply {
-                addAction(MyPlayerConstants.PlaySingleSongAction)
-                addAction(MyPlayerConstants.BackToBaseActivity)
-            })
-        }
 
         basePlayViewLayout = findViewById(R.id.basePlayViewLayout)
         basePlayViewLayout.visibility = View.VISIBLE
@@ -269,9 +240,6 @@ abstract class BaseActivity : AppCompatActivity(),
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.i(TAG, "onDestroy()")
-        LocalBroadcastManager.getInstance(this).apply {
-            unregisterReceiver(baseReceiver)
-        }
         interstitialAd?.releaseInterstitial()
         MySingleton.clearSingleton()
         // clear the screen on, added on 2021-02-18
@@ -293,22 +261,16 @@ abstract class BaseActivity : AppCompatActivity(),
                       intent : Intent?, pData : Bundle?) {
         LogUtil.i(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
-            mPresenter.let{
-                it.initializeVariables(pData, intent,
-                    it.playingParam.isAutoPlay)
-                if (needPlay) it.playSongPlayedBeforeActivityCreated()
+            mPresenter.let{ mpIt ->
+                mpIt.initializeVariables(pData, intent,
+                    mpIt.playingParam.isAutoPlay)
+                if (needPlay) mpIt.playSongPlayedBeforeActivityCreated()
                 setMainMenu()
                 LogUtil.d(TAG, "onReceiveFunc.isSingleSong = $isSingleSong")
-                if (isSingleSong) {
-                    it.playingParam.singleSongPlayingStatus = 1  // start playing single song
-                    showPlayerView()
-                } else {
-                    // PlayerConstants.BackToBaseActivity
-                    if (it.playingParam.isPlayerViewVisible) showPlayerView()
-                    else hidePlayerView()
-                    LogUtil.d(TAG, "onReceiveFunc.currentPlaybackState = " +
-                            "${it.playingParam.currentPlaybackState}")
-                }
+                if (mpIt.playingParam.isPlayerViewVisible) showPlayerView()
+                else hidePlayerView()
+                LogUtil.d(TAG, "onReceiveFunc.currentPlaybackState = " +
+                        "${mpIt.playingParam.currentPlaybackState}")
             }
             showSupportToolbarAudioControlSetTimer()
         }
