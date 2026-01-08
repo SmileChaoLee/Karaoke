@@ -13,7 +13,7 @@
     <string name="noResultString">No result.</string>
     <string name="failedMessage">Failed.</string>
     <string name="succeededMessage">Succeeded.</string>
-    <string name="loadingString">Loading ...</string>
+    <string name="loadingString">Loading …</string>
 
     <string name="mainMenuTitle">Please Select One Option</string>
     <string name="singerOrderString">Songs By Singer</string>

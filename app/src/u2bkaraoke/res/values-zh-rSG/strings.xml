@@ -13,7 +13,7 @@
     <string name="noResultString">沒有結果</string>
     <string name="failedMessage">失敗</string>
     <string name="succeededMessage">成功</string>
-    <string name="loadingString">下載中 ...</string>
+    <string name="loadingString">下載中 …</string>
 
     <string name="mainMenuTitle">請選擇以下其中一個功能</string>
     <string name="singerOrderString">歌星點歌</string>

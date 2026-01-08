@@ -12,8 +12,8 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.u2bplayer.fragments.SearchVideosFragment
-import com.smile.u2bplayer.fragments.U2bFavFragment
-import com.smile.u2bplayer.fragments.U2bFragment
+import com.smile.u2bplayer.fragments.U2bPlayFavFragment
+import com.smile.u2bplayer.fragments.U2bPlayFragment
 import com.smile.u2bplayer.models.U2bSingleton
 
 @OptIn(UnstableApi::class)
@@ -31,7 +31,7 @@ open class U2bPlayerActivity : BaseActivity() {
     }
 
     private val searchFragment = SearchVideosFragment()
-    private val ytFavFragment = U2bFavFragment()
+    private val u2bPFFragment = U2bPlayFavFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +45,9 @@ open class U2bPlayerActivity : BaseActivity() {
     }
 
     // implement abstract methods of BackActivity
-    override fun getFragment(): U2bFragment {
+    override fun getFragment(): U2bPlayFragment {
         LogUtil.d(mTAG, "getFragment")
-        return U2bFragment()
+        return U2bPlayFragment()
     }
 
     override fun askPermissions(activity: Activity): Boolean {
@@ -73,7 +73,7 @@ open class U2bPlayerActivity : BaseActivity() {
                         1-> {
                             LogUtil.d(mTAG, "OnTabSelectedListener.onTabSelected.position = 1")
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(containerId, ytFavFragment, U2B_FAV_FRAGMENT_TAG)
+                                replace(containerId, u2bPFFragment, U2B_FAV_FRAGMENT_TAG)
                                 commit()
                             }
                         }
@@ -117,7 +117,7 @@ open class U2bPlayerActivity : BaseActivity() {
                 }
                 1 -> {
                     LogUtil.d(mTAG, "becomeVisible.index.1")
-                    it.post { ytFavFragment.showVideoButton?.requestFocus() }
+                    it.post { u2bPFFragment.showVideoButton?.requestFocus() }
                 }
             }
         }

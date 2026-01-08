@@ -25,10 +25,10 @@ import com.smile.u2bplayer.listeners.U2bCastPlayerListener
 import com.smile.u2bplayer.listeners.U2bPlayerListener
 
 @OptIn(UnstableApi::class)
-class U2bFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
+class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     companion object {
-        private const val TAG = "U2bFragment"
+        private const val TAG = "U2bPlayFragment"
     }
 
     private lateinit var presenter: U2bPresenter

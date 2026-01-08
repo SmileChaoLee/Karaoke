@@ -8,10 +8,10 @@ import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bplayer.U2bUtil
 
-class U2bFavFragment : ComFavFragment() {
+class U2bPlayFavFragment : ComFavFragment() {
 
     companion object {
-        private const val TAG: String = "U2bFavFragment"
+        private const val TAG: String = "U2bPFFragment"
     }
 
     // overriding the methods of ComFavFragment
