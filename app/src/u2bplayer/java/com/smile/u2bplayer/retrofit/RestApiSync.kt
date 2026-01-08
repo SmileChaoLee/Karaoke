@@ -27,7 +27,7 @@ object RestApiSync {
                     "video", // type
                     50 // maxResults    // used to be 25
                 ).execute()
-            LogUtil.e(TAG, "getVideoList.response = $response")
+            LogUtil.d(TAG, "getVideoList.response = $response")
             return response.body() ?: VideoList(items = emptyList())
         } catch (ex: Exception) {
             LogUtil.e(TAG, "getVideoList.Exception", ex)

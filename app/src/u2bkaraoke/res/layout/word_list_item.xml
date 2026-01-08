@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/red"
-        android:gravity="center_vertical|left"
+        android:gravity="center_vertical|start"
         android:layout_weight="1">
     </TextView>
 
@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
-        android:gravity="center_vertical|left"
+        android:gravity="center_vertical|start"
         android:layout_weight="6">
     </TextView>
 

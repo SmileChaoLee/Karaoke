@@ -1,7 +1,7 @@
 package com.smile.u2bkaraoke
 
 import android.app.Application
-import android.util.Log
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.dagger.interfaces.DaggerSongAppComponent
 
 class U2bKaraokeApp : Application() {
@@ -12,12 +12,12 @@ class U2bKaraokeApp : Application() {
     }
 
     override fun onCreate() {
-        Log.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate()
     }
 
     override fun onTrimMemory(level: Int) {
-        Log.d(TAG, "onTrimMemory")
+        LogUtil.d(TAG, "onTrimMemory")
         super.onTrimMemory(level)
     }
 }

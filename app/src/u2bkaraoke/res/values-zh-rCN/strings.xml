@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="u2bkaraoke_app_name">安卓点歌</string>
+    <string name="u2bkaraoke_app_name">優2B咔拉OK</string>
     <string name="action_settings">设定</string>
     <string name="title_activity_song_query">歌曲查询</string>
     <string name="title_activity_singer_query">歌星查询</string>
