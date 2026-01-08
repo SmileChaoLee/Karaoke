@@ -22,6 +22,12 @@ class SingerTypeListAdapter(
     private val mSingerTypes: ArrayList<SingerType>,
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
+
+
+    companion object {
+        private const val TAG = "SingerTyLstAdapter"
+    }
+
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
         val singerAreaNaTextView: TextView
@@ -87,9 +93,5 @@ class SingerTypeListAdapter(
 
     override fun getItemCount(): Int {
         return mSingerTypes.size
-    }
-
-    companion object {
-        private const val TAG = "SingerTypeAdapter"
     }
 }
