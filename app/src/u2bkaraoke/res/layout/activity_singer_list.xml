@@ -9,7 +9,7 @@
     android:focusableInTouchMode="true">
 
     <TextView
-        android:id="@+id/singersListMenuTextView"
+        android:id="@+id/singerListMenuTextView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:textStyle="bold"
@@ -27,7 +27,7 @@
         android:background="@drawable/search_bar"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintTop_toBottomOf="@+id/singersListMenuTextView" >
+        app:layout_constraintTop_toBottomOf="@+id/singerListMenuTextView" >
 
         <EditText
             android:id="@+id/singerSearchEditText"

@@ -6,10 +6,7 @@
     <string name="title_activity_song_query">SongQuery</string>
     <string name="title_activity_singer_query">SingerQuery</string>
     <string name="title_activity_singer_type_query">SingerArea</string>
-    <string name="title_activity_order_one_song">OrderOneSong</string>
     <string name="title_activity_language_query">LanguageQuery</string>
-    <string name="orderOneSongString">Please Input the Computer ID</string>
-    <string name="computerIdString">Computer ID:</string>
     <string name="noResultString">No result.</string>
     <string name="failedMessage">Failed.</string>
     <string name="succeededMessage">Succeeded.</string>

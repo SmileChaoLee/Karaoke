@@ -3,15 +3,15 @@ package com.smile.u2bkaraoke.dagger.interfaces
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.u2bkaraoke.SingerListActivity
-import com.smile.u2bkaraoke.SongListActivity
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.retrofit.RestApiSync
 import com.smile.u2bkaraoke.dagger.modules.ListAdapterModule
 import com.smile.u2bkaraoke.dagger.modules.PrimitiveModule
 import com.smile.u2bkaraoke.dagger.modules.RetrofitModule
 import com.smile.u2bkaraoke.fragments.LangListFragment
+import com.smile.u2bkaraoke.fragments.SingerListFragment
 import com.smile.u2bkaraoke.fragments.SingerTyListFragment
+import com.smile.u2bkaraoke.fragments.SongListFragment
 import com.smile.u2bkaraoke.fragments.WordListFragment
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
@@ -30,9 +30,9 @@ interface U2bKaOkComponent {
     fun inject(client: RestApiAsync<Any>)
     fun inject(client: RestApiSync)
     fun inject(fragment : SingerTyListFragment)
-    fun inject(activity : SingerListActivity)
+    fun inject(fragment : SingerListFragment)
     fun inject(fragment : LangListFragment)
-    fun inject(activity : SongListActivity)
+    fun inject(fragment : SongListFragment)
     fun inject(fragment : WordListFragment)
     @Component.Builder
     interface  Builder {

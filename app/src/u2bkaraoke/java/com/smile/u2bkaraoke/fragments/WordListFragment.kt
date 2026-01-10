@@ -1,7 +1,6 @@
 package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +16,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.SongListActivity
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Language
@@ -68,32 +66,33 @@ class WordListFragment : Fragment(), RecyclerItemListener {
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.d(TAG, "onViewCreated.inject()")
+        LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
         super.onViewCreated(view, savedInstanceState)
 
-        val wordsListTitle = getString(R.string.wordsListString)
+        val act = activity ?: return
+        val wordsListTitle = act.getString(R.string.wordsListString)
         view.apply {
             val wordsListMenuTextView = findViewById<TextView>(R.id.wordsListMenuTextView)
             ScreenUtil.resizeTextSize(wordsListMenuTextView, textFontSize)
             wordsListMenuTextView.text = "$languageTitle $wordsListTitle"
 
             mWordList = ArrayList()
-            mWordList.add( getString(R.string.oneWordOrderString))
-            mWordList.add(getString(R.string.twoWordsOrderString))
-            mWordList.add(getString(R.string.threeWordsOrderString))
-            mWordList.add( getString(R.string.fourWordsOrderString))
-            mWordList.add(getString(R.string.fiveWordsOrderString))
-            mWordList.add(getString(R.string.sixWordsOrderString))
-            mWordList.add(getString(R.string.sevenWordsOrderString))
-            mWordList.add(getString(R.string.eightWordsOrderString))
-            mWordList.add(getString(R.string.nineWordsOrderString))
-            mWordList.add(getString(R.string.tenWordsOrderString))
+            mWordList.add(act.getString(R.string.oneWordOrderString))
+            mWordList.add(act.getString(R.string.twoWordsOrderString))
+            mWordList.add(act.getString(R.string.threeWordsOrderString))
+            mWordList.add(act.getString(R.string.fourWordsOrderString))
+            mWordList.add(act.getString(R.string.fiveWordsOrderString))
+            mWordList.add(act.getString(R.string.sixWordsOrderString))
+            mWordList.add(act.getString(R.string.sevenWordsOrderString))
+            mWordList.add(act.getString(R.string.eightWordsOrderString))
+            mWordList.add(act.getString(R.string.nineWordsOrderString))
+            mWordList.add(act.getString(R.string.tenWordsOrderString))
 
             val mRecyclerView = findViewById<RecyclerView>(R.id.wordListRecyclerView)
             val wordsListReturnButton = findViewById<Button>(R.id.wordsListReturnButton)
             ScreenUtil.resizeTextSize(wordsListReturnButton, textFontSize)
-            wordsListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(activity) }
+            wordsListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
 
             appCompBuilder
                 .recyclerItemListenerModule(this@WordListFragment)
@@ -102,7 +101,7 @@ class WordListFragment : Fragment(), RecyclerItemListener {
                 .inject(this@WordListFragment)
 
             mRecyclerView.setAdapter(myViewAdapter)
-            mRecyclerView.setLayoutManager(LinearLayoutManager(activity?.applicationContext))
+            mRecyclerView.setLayoutManager(LinearLayoutManager(act.applicationContext))
         }
     }
 
@@ -111,25 +110,30 @@ class WordListFragment : Fragment(), RecyclerItemListener {
         if (position < 0) return
         val act = activity ?: return
         val fragContainerId = this.id   // container id of the fragment
+        val fragManager = act.supportFragmentManager
         mWordList.let { list ->
             val word = list[position]
             ScreenUtil.showToast(act, word,
                 textFontSize,Toast.LENGTH_SHORT)
+            /*
             Intent(act, SongListActivity::class.java).let {
                 it.putExtra(Constants.OrderedFrom, Constants.LanguageWordsOrdered)
-                it.putExtra(Constants.SongListActivityTitle,
+                it.putExtra(Constants.SongListTitle,
                     "$languageTitle $word")
                 it.putExtra(Constants.LanguageParcelable, mLanguage)
                 it.putExtra(Constants.NumOfWords, position + 1)
                 act.startActivity(it)
             }
+            */
+            val nFragment = SongListFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(Constants.OrderedFrom, Constants.LanguageWordsOrdered)
+                    putString(Constants.SongListTitle, "$languageTitle $word")
+                    putParcelable(Constants.LanguageParcelable, mLanguage)
+                    putInt(Constants.NumOfWords, position + 1)
+                }
+            }
+            U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
         }
-    }
-
-    private fun returnToPrevious() {
-        LogUtil.d(TAG, "returnToPrevious")
-        val act = activity ?: return
-        LogUtil.d(TAG, "returnToPrevious.popBackStack()")
-        act.supportFragmentManager.popBackStack()
     }
 }

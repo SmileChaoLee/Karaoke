@@ -1,6 +1,5 @@
 package com.smile.u2bkaraoke.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.SongListActivity
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.LanguageList
@@ -65,18 +63,21 @@ class LangListFragment : Fragment(), RecyclerItemListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
         super.onViewCreated(view, savedInstanceState)
 
+        val act = activity ?: return
         view.apply {
             val menuTextView = findViewById<TextView>(R.id.languagesListMenuTextView)
             ScreenUtil.resizeTextSize(menuTextView, textFontSize)
             when (orderedFrom) {
                 Constants.WordsOrdered ->  // from main activity (U2bKkActivity)
-                    menuTextView.text = getString(R.string.languagesListString)
-                Constants.NewSongOrdered -> menuTextView.text = getString(R.string.newSongLanguagesListString)
-                Constants.HotSongOrdered -> menuTextView.text = getString(R.string.hotSongLanguagesListString)
+                    menuTextView.text = act.getString(R.string.languagesListString)
+                Constants.NewSongOrdered ->
+                    menuTextView.text = act.getString(R.string.newSongLanguagesListString)
+                Constants.HotSongOrdered ->
+                    menuTextView.text = act.getString(R.string.hotSongLanguagesListString)
             }
 
             langListEmptyTextView = findViewById(R.id.languagesListEmptyTextView)
@@ -87,25 +88,24 @@ class LangListFragment : Fragment(), RecyclerItemListener {
 
             val languagesListReturnButton = findViewById<Button>(R.id.languagesListReturnButton)
             ScreenUtil.resizeTextSize(languagesListReturnButton, textFontSize)
-            languagesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(activity) }
+            languagesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
 
         // MyRestApi().getAllLanguages()
-        val act = activity ?: return
         act.lifecycleScope.launch(Dispatchers.IO) {
             languageList = RestApiSync.getApiSync().getAllLanguages()
             // update the UI
             withContext(Dispatchers.Main) {
                 languageList?.let {
                     if (it.languages.isEmpty()) {
-                        langListEmptyTextView?.text = getString(R.string.noResultString)
+                        langListEmptyTextView?.text = act.getString(R.string.noResultString)
                         langListEmptyTextView?.visibility = View.VISIBLE
                     } else {
                         langListEmptyTextView?.visibility = View.GONE
                     }
                 } ?: run {
                     languageList = LanguageList()
-                    langListEmptyTextView?.text = getString(R.string.failedMessage)
+                    langListEmptyTextView?.text = act.getString(R.string.failedMessage)
                     langListEmptyTextView?.visibility = View.VISIBLE
                 }
                 appCompBuilder
@@ -127,7 +127,7 @@ class LangListFragment : Fragment(), RecyclerItemListener {
         val fragManager = act.supportFragmentManager
         languageList?.let { list ->
             val language = list.languages[position]
-            LogUtil.d(TAG, "onItemClick.${language.langNa}")
+            LogUtil.d(TAG, "onItemClick.language.langNa = ${language.langNa}")
             ScreenUtil.showToast(act, language.langNa,
                 textFontSize, Toast.LENGTH_SHORT)
             val languageTitle = language.langNa
@@ -146,23 +146,45 @@ class LangListFragment : Fragment(), RecyclerItemListener {
                 }
                 Constants.NewSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.NewSongOrdered")
+                    /*
                     Intent(act, SongListActivity::class.java).let {
                         it.putExtra(Constants.OrderedFrom, Constants.NewSongLanguageOrdered)
-                        it.putExtra(Constants.SongListActivityTitle,
+                        it.putExtra(Constants.SongListTitle,
                             languageTitle + " " + getString(R.string.newString))
                         it.putExtra(Constants.LanguageParcelable, language)
                         act.startActivity(it)
                     }
+                    */
+                    val nFragment = SongListFragment().apply {
+                        arguments = Bundle().apply {
+                            putInt(Constants.OrderedFrom, Constants.NewSongLanguageOrdered)
+                            val listTitle = languageTitle + " " + act.getString(R.string.newString)
+                            putString(Constants.SongListTitle, listTitle)
+                            putParcelable(Constants.LanguageParcelable, language)
+                        }
+                    }
+                    U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
                 }
                 Constants.HotSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.HotSongOrdered")
+                    /*
                     Intent(act, SongListActivity::class.java).let {
                         it.putExtra(Constants.OrderedFrom, Constants.HotSongLanguageOrdered)
-                        it.putExtra(Constants.SongListActivityTitle,
+                        it.putExtra(Constants.SongListTitle,
                             languageTitle + " " + act.getString(R.string.hotString))
                         it.putExtra(Constants.LanguageParcelable, language)
                         act.startActivity(it)
                     }
+                    */
+                    val nFragment = SongListFragment().apply {
+                        arguments = Bundle().apply {
+                            putInt(Constants.OrderedFrom, Constants.HotSongLanguageOrdered)
+                            val listTitle = languageTitle + " " + act.getString(R.string.hotString)
+                            putString(Constants.SongListTitle, listTitle)
+                            putParcelable(Constants.LanguageParcelable, language)
+                        }
+                    }
+                    U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
                 }
             }
         }
@@ -172,11 +194,12 @@ class LangListFragment : Fragment(), RecyclerItemListener {
         override fun onResponse(call: Call<LanguageList?>, response: Response<LanguageList?>) {
             LogUtil.d(TAG, "MyRestApi.onResponse")
             LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = ${response.isSuccessful}")
+            val act = activity ?: return
             if (response.isSuccessful) {
                 languageList = response.body()
                 languageList?.let {
                     if (it.languages.isEmpty()) {
-                        langListEmptyTextView?.text = getString(R.string.noResultString)
+                        langListEmptyTextView?.text = act.getString(R.string.noResultString)
                         langListEmptyTextView?.visibility = View.VISIBLE
                     } else {
                         langListEmptyTextView?.visibility = View.GONE
@@ -184,10 +207,9 @@ class LangListFragment : Fragment(), RecyclerItemListener {
                 } ?: { languageList = LanguageList() }
             } else {
                 languageList = LanguageList()
-                langListEmptyTextView?.text = getString(R.string.failedMessage)
+                langListEmptyTextView?.text = act.getString(R.string.failedMessage)
                 langListEmptyTextView?.visibility = View.VISIBLE
             }
-            val act = activity ?: return
             LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
             appCompBuilder
                 .recyclerItemListenerModule(this@LangListFragment)
@@ -201,7 +223,7 @@ class LangListFragment : Fragment(), RecyclerItemListener {
         override fun onFailure(call: Call<LanguageList>, t: Throwable) {
             LogUtil.e(TAG, "MyRestApi.onFailure.", t)
             languageList = LanguageList()
-            langListEmptyTextView?.text = getString(R.string.failedMessage)
+            langListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
             langListEmptyTextView?.visibility = View.VISIBLE
         }
     }

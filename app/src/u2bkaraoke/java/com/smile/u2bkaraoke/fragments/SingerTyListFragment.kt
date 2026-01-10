@@ -1,7 +1,6 @@
 package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.SingerListActivity
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
@@ -62,10 +60,11 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.d(TAG, "onCreate")
+        LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
         super.onViewCreated(view, savedInstanceState)
 
+        val act = activity ?: return
         view.apply {
             val singerTypesListMenuTextView = findViewById<TextView>(R.id.singerTypesListMenuTextView)
             ScreenUtil.resizeTextSize(singerTypesListMenuTextView, textFontSize)
@@ -75,25 +74,24 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
             mRecyclerView = findViewById(R.id.singerTypeListRecyclerView)
             val singerTypesListReturnButton = findViewById<Button>(R.id.singerTypesListReturnButton)
             ScreenUtil.resizeTextSize(singerTypesListReturnButton, textFontSize)
-            singerTypesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(activity) }
+            singerTypesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
 
         // MyRestApi().getAllSingerTypes()
-        val act = activity ?: return
         act.lifecycleScope.launch(Dispatchers.IO) {
             singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
             // update the UI
             withContext(Dispatchers.Main) {
                 singerTypeList?.let {
                     if (it.singerTypes.isEmpty()) {
-                        singerTypeListEmptyTextView?.text = getString(R.string.noResultString)
+                        singerTypeListEmptyTextView?.text = act.getString(R.string.noResultString)
                         singerTypeListEmptyTextView?.visibility = View.VISIBLE
                     } else {
                         singerTypeListEmptyTextView?.visibility = View.GONE
                     }
                 } ?: run {
                     singerTypeList = SingerTypeList()
-                    singerTypeListEmptyTextView?.text = getString(R.string.failedMessage)
+                    singerTypeListEmptyTextView?.text = act.getString(R.string.failedMessage)
                     singerTypeListEmptyTextView?.visibility = View.VISIBLE
                 }
                 LogUtil.d(TAG, "inject().myViewAdapter")
@@ -112,17 +110,27 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
+        val fragContainerId = this.id   // container id of the fragment
+        val fragManager = act.supportFragmentManager
         singerTypeList?.let { list ->
             val singerType = list.singerTypes[position]
-            ScreenUtil.showToast(
-                act, singerType.areaNa,
-                textFontSize,  Toast.LENGTH_SHORT
-            )
+            LogUtil.i(TAG, "onItemClick.singerType.areaNa = ${singerType.areaNa}")
+            ScreenUtil.showToast(act, singerType.areaNa,
+                textFontSize,  Toast.LENGTH_SHORT)
+            /*
             Intent(act, SingerListActivity::class.java).let { int ->
                 int.putExtra(Constants.SingerListActivityTitle, singerType.areaNa)
                 int.putExtra(Constants.SingerTypeParcelable, singerType)
                 act.startActivity(int)
             }
+            */
+            val nFragment = SingerListFragment().apply {
+                arguments = Bundle().apply {
+                    putString(Constants.SingerListTitle, singerType.areaNa)
+                    putParcelable(Constants.SingerTypeParcelable, singerType)
+                }
+            }
+            U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
         }
     }
 
@@ -130,11 +138,12 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
         @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SingerTypeList?>, response: Response<SingerTypeList?>) {
             LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
+            val act = activity ?: return
             if (response.isSuccessful) {
                 singerTypeList = response.body()
                 singerTypeList?.let {
                     if (it.singerTypes.isEmpty()) {
-                        singerTypeListEmptyTextView?.text = getString(R.string.noResultString)
+                        singerTypeListEmptyTextView?.text = act.getString(R.string.noResultString)
                         singerTypeListEmptyTextView?.visibility = View.VISIBLE
                     } else {
                         singerTypeListEmptyTextView?.visibility = View.GONE
@@ -142,10 +151,9 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
                 } ?: { singerTypeList = SingerTypeList() }
             } else {
                 singerTypeList = SingerTypeList()
-                singerTypeListEmptyTextView?.text = getString(R.string.failedMessage)
+                singerTypeListEmptyTextView?.text = act.getString(R.string.failedMessage)
                 singerTypeListEmptyTextView?.visibility = View.VISIBLE
             }
-            val act = activity ?: return
             LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
             appCompBuilder
                 .recyclerItemListenerModule(this@SingerTyListFragment)
@@ -159,7 +167,7 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
         override fun onFailure(call: Call<SingerTypeList>, t: Throwable) {
             LogUtil.e(TAG, "MyRestApi.onFailure.", t)
             singerTypeList = SingerTypeList()
-            singerTypeListEmptyTextView?.text = getString(R.string.failedMessage)
+            singerTypeListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
             singerTypeListEmptyTextView?.visibility = View.VISIBLE
         }
     }

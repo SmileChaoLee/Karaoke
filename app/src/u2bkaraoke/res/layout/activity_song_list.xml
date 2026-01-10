@@ -62,7 +62,7 @@
             android:layout_height="match_parent">
         </androidx.recyclerview.widget.RecyclerView>
 
-        <TextView android:id="@+id/songsListEmptyTextView"
+        <TextView android:id="@+id/songListEmptyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textStyle="bold"

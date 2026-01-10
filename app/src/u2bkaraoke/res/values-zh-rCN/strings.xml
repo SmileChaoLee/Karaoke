@@ -6,10 +6,7 @@
     <string name="title_activity_song_query">歌曲查询</string>
     <string name="title_activity_singer_query">歌星查询</string>
     <string name="title_activity_singer_type_query">歌星地区</string>
-    <string name="title_activity_order_one_song">点一首歌曲</string>
     <string name="title_activity_language_query">歌曲语言查询</string>
-    <string name="orderOneSongString">请输入包厢内的电脑编号</string>
-    <string name="computerIdString">电脑编号:</string>
     <string name="noResultString">没有结果</string>
     <string name="failedMessage">失败</string>
     <string name="succeededMessage">成功</string>

@@ -1,6 +1,5 @@
 package com.smile.u2bkaraoke.dagger.modules
 
-import android.app.Activity
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
@@ -34,11 +33,11 @@ class ListAdapterModule {
     }
 
     @Provides
-    fun songListAdapterProvider(@Named("Activity")activity : Activity?,
+    fun songListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
                                 @Named("SongArrayList")songs : ArrayList<Song>?,
                                 @Named("FloatValue")textFontSize : Float?
     ) : SongListAdapter {
-        return SongListAdapter(activity!!, songs!!, textFontSize!!)
+        return SongListAdapter(listener!!, songs!!, textFontSize!!)
     }
 
     @Provides
@@ -50,10 +49,10 @@ class ListAdapterModule {
     }
 
     @Provides
-    fun singerListAdapterProvider(@Named("Activity")activity : Activity?,
+    fun singerListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
                                   @Named("SingerArrayList")singers : ArrayList<Singer>?,
                                   @Named("FloatValue")textFontSize : Float?
     ) : SingerListAdapter {
-        return SingerListAdapter(activity!!, singers!!, textFontSize!!)
+        return SingerListAdapter(listener!!, singers!!, textFontSize!!)
     }
 }

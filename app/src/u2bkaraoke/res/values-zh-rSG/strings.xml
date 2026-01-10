@@ -6,10 +6,7 @@
     <string name="title_activity_song_query">歌曲查詢</string>
     <string name="title_activity_singer_query">歌星查詢</string>
     <string name="title_activity_singer_type_query">歌星地區</string>
-    <string name="title_activity_order_one_song">點一首歌曲</string>
     <string name="title_activity_language_query">歌曲語言查詢</string>
-    <string name="orderOneSongString">請輸入包廂內的電腦編號</string>
-    <string name="computerIdString">電腦編號:</string>
     <string name="noResultString">沒有結果</string>
     <string name="failedMessage">失敗</string>
     <string name="succeededMessage">成功</string>

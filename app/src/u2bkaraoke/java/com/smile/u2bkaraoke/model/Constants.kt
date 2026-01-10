@@ -1,7 +1,5 @@
 package com.smile.u2bkaraoke.model
 
-import com.smile.smilelibraries.utilities.ScreenUtil
-
 object Constants {
     const val WordsOrdered = 0
     const val SingerOrdered = 1
@@ -11,11 +9,10 @@ object Constants {
     const val HotSongLanguageOrdered = 31
     const val LanguageOrdered = 4
     const val LanguageWordsOrdered = 41
-    const val FontSize_Scale_Type = ScreenUtil.FontSize_Pixel_Type
     const val OrderedFrom = "OrderedFrom"
-    const val SingerListActivityTitle = "SingerListActivityTitle"
+    const val SingerListTitle = "SingerListTitle"
     const val SingerTypeParcelable = "SingerTypeParcelable"
-    const val SongListActivityTitle = "SongListActivityTitle"
+    const val SongListTitle = "SongListTitle"
     const val SingerParcelable = "SingerParcelable"
     const val LanguageTitle = "LanguageTitle"
     const val LanguageParcelable = "LanguageParcelable"

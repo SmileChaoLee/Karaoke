@@ -29,32 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.smile.u2bkaraoke.SongListActivity"
-            android:label="@string/title_activity_song_query"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity
-            android:name="com.smile.u2bkaraoke.SingerListActivity"
-            android:label="@string/title_activity_singer_query"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity
-            android:name="com.smile.u2bkaraoke.OrderOneSong"
-            android:label="@string/title_activity_order_one_song"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity
-            android:name="com.smile.u2bkaraoke.LanguageListActivity"
-            android:label="@string/title_activity_language_query"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity android:name="com.smile.u2bkaraoke.WordListActivity"
-            android:configChanges="orientation"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
     </application>
 
 </manifest>
