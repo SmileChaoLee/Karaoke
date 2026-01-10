@@ -6,10 +6,11 @@ import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.Song
-import com.smile.u2bkaraoke.adapters.LanguageListAdapter
+import com.smile.u2bkaraoke.adapters.LangListAdapter
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.adapters.SongListAdapter
+import com.smile.u2bkaraoke.adapters.WordListAdapter
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -17,12 +18,19 @@ import javax.inject.Named
 @Module
 class ListAdapterModule {
     @Provides
-    fun languageListAdapterProvider(@Named("Activity")activity : Activity?,
+    fun languageListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
                                     @Named("LanguageArrayList")languages : ArrayList<Language>?,
-                                    @Named("IntValue")orderedFrom : Int?,
                                     @Named("FloatValue")textFontSize : Float?
-    ) : LanguageListAdapter {
-        return LanguageListAdapter(activity!!, languages!!, orderedFrom!!, textFontSize!!)
+    ) : LangListAdapter {
+        return LangListAdapter(listener!!, languages!!, textFontSize!!)
+    }
+
+    @Provides
+    fun wordListAdapterAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
+                                    @Named("ArrayList<String>")arraylist : ArrayList<String>?,
+                                    @Named("FloatValue")textFontSize : Float?
+    ) : WordListAdapter {
+        return WordListAdapter(listener!!, arraylist!!, textFontSize!!)
     }
 
     @Provides

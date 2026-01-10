@@ -24,6 +24,7 @@ import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,11 +61,9 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
         return view
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-
         super.onViewCreated(view, savedInstanceState)
 
         view.apply {
@@ -76,36 +75,35 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
             mRecyclerView = findViewById(R.id.singerTypeListRecyclerView)
             val singerTypesListReturnButton = findViewById<Button>(R.id.singerTypesListReturnButton)
             ScreenUtil.resizeTextSize(singerTypesListReturnButton, textFontSize)
-            singerTypesListReturnButton.setOnClickListener { returnToPrevious() }
+            singerTypesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(activity) }
         }
 
         // MyRestApi().getAllSingerTypes()
-        activity?.let { act ->
-            act.lifecycleScope.launch(Dispatchers.IO) {
-                singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
-                // update the UI
-                withContext(Dispatchers.Main) {
-                    singerTypeList?.let {
-                        if (it.singerTypes.isEmpty()) {
-                            singerTypeListEmptyTextView?.text = getString(R.string.noResultString)
-                            singerTypeListEmptyTextView?.visibility = View.VISIBLE
-                        } else {
-                            singerTypeListEmptyTextView?.visibility = View.GONE
-                        }
-                    } ?: run {
-                        singerTypeList = SingerTypeList()
-                        singerTypeListEmptyTextView?.text = getString(R.string.failedMessage)
+        val act = activity ?: return
+        act.lifecycleScope.launch(Dispatchers.IO) {
+            singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
+            // update the UI
+            withContext(Dispatchers.Main) {
+                singerTypeList?.let {
+                    if (it.singerTypes.isEmpty()) {
+                        singerTypeListEmptyTextView?.text = getString(R.string.noResultString)
                         singerTypeListEmptyTextView?.visibility = View.VISIBLE
+                    } else {
+                        singerTypeListEmptyTextView?.visibility = View.GONE
                     }
-                    LogUtil.d(TAG, "inject().myViewAdapter")
-                    appCompBuilder
-                        .recyclerItemListenerModule(this@SingerTyListFragment)
-                        .singerTypeArrayListModule(singerTypeList!!.singerTypes)
-                        .floatModule(textFontSize).build()
-                        .inject(this@SingerTyListFragment)
-                    mRecyclerView?.setAdapter(myViewAdapter)
-                    mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
+                } ?: run {
+                    singerTypeList = SingerTypeList()
+                    singerTypeListEmptyTextView?.text = getString(R.string.failedMessage)
+                    singerTypeListEmptyTextView?.visibility = View.VISIBLE
                 }
+                LogUtil.d(TAG, "inject().myViewAdapter")
+                appCompBuilder
+                    .recyclerItemListenerModule(this@SingerTyListFragment)
+                    .singerTypeArrayListModule(singerTypeList!!.singerTypes)
+                    .floatModule(textFontSize).build()
+                    .inject(this@SingerTyListFragment)
+                mRecyclerView?.setAdapter(myViewAdapter)
+                mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
             }
         }
     }
@@ -128,13 +126,6 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
         }
     }
 
-    private fun returnToPrevious() {
-        LogUtil.d(TAG, "returnToPrevious")
-        val act = activity ?: return
-        LogUtil.d(TAG, "returnToPrevious.popBackStack()")
-        act.supportFragmentManager.popBackStack()
-    }
-
     private inner class MyRestApi : RestApiAsync<SingerTypeList>() {
         @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SingerTypeList?>, response: Response<SingerTypeList?>) {
@@ -155,7 +146,7 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
                 singerTypeListEmptyTextView?.visibility = View.VISIBLE
             }
             val act = activity ?: return
-            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
+            LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
             appCompBuilder
                 .recyclerItemListenerModule(this@SingerTyListFragment)
                 .singerTypeArrayListModule(singerTypeList!!.singerTypes)

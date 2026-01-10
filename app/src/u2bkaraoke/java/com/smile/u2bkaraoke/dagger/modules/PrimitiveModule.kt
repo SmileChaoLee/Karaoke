@@ -33,6 +33,12 @@ class PrimitiveModule {
     }
 
     @Provides
+    @Named("ArrayList<String>")
+    fun arraylistProvider(@Named("PrimitiveModule")list : ArrayList<String>?) : ArrayList<String>? {
+        return list
+    }
+
+    @Provides
     @Named("LanguageArrayList")
     fun languageArrayListProvider(@Named("PrimitiveModule")list : ArrayList<Language>?) :
             ArrayList<Language>? {

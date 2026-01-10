@@ -8,17 +8,17 @@
     <string name="title_activity_singer_type_query">SingerArea</string>
     <string name="title_activity_order_one_song">OrderOneSong</string>
     <string name="title_activity_language_query">LanguageQuery</string>
-    <string name="orderOneSongString">Please Input the Computer ID</string>
+    <string name="orderOneSongString">Input the Computer ID</string>
     <string name="computerIdString">Computer ID:</string>
     <string name="noResultString">No result.</string>
     <string name="failedMessage">Failed.</string>
     <string name="succeededMessage">Succeeded.</string>
     <string name="loadingString">Loading …</string>
 
-    <string name="mainMenuTitle">Please Select One Option</string>
+    <string name="mainMenuTitle">Select One Option</string>
     <string name="singerOrderString">Songs By Singer</string>
-    <string name="newSongOrderString">Songs By New Published</string>
-    <string name="hotSongOrderString">Songs By Most Popular"</string>
+    <string name="newSongOrderString">New Songs</string>
+    <string name="hotSongOrderString">Popular Songs"</string>
     <string name="languageOrderString">Songs By Language</string>
     <string name="exitProgram">Exit Program</string>
 
@@ -27,13 +27,13 @@
     <string name="groupSinger">Group Singers</string>
     <string name="returnToPrevious">Return</string>
 
-    <string name="languagesListString">Languages List</string>
+    <string name="languagesListString">Language List</string>
     <string name="wordsListString">Number of Words</string>
-    <string name="newSongLanguagesListString">Languages List of New Songs</string>
-    <string name="hotSongLanguagesListString">Languages List of Hot Songs</string>
-    <string name="singerTypesListString">Singer Types List</string>
-    <string name="songsListString">Songs List</string>
-    <string name="singersListString">Singers List</string>
+    <string name="newSongLanguagesListString">Lang List of New Songs</string>
+    <string name="hotSongLanguagesListString">Lang List of Hot Songs</string>
+    <string name="singerTypesListString">Singer Type List</string>
+    <string name="songsListString">Song List</string>
+    <string name="singersListString">Singer List</string>
 
     <string name="firstPage">First Page</string>
     <string name="previousPage">Prev Page</string>
