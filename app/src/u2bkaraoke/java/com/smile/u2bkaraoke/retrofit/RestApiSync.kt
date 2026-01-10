@@ -10,20 +10,24 @@ import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.model.SongList
+import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
 
-abstract class RestApiAsync<T> : Callback<T> {
+class RestApiSync private constructor() {
 
     companion object {
-        private const val TAG = "RestApiAsync"
-    }
-
-    private val callback : Callback<T>
-        get() {
-            return this
+        private const val TAG = "RestApiSync"
+        private var instance: RestApiSync? = null
+        fun getApiSync(): RestApiSync {
+            if (instance == null) {
+                instance = RestApiSync()
+            }
+            return instance!!
         }
+    }
 
     @Inject
     lateinit var retrofit : Retrofit
@@ -33,25 +37,43 @@ abstract class RestApiAsync<T> : Callback<T> {
     private val apiInterface : ApiInterface
         get() {
             U2bKaraokeApp.appCompBuilder.stringModule(Constants.CHAO_URL)
-            .build().inject(this as RestApiAsync<Any>)
+            .build().inject(this)
             return retrofit.create(ApiInterface::class.java)
             // return Client.getInstance(Constants.CHAO_URL).create(ApiInterface::class.java)
         }
 
     @Suppress("UNCHECKED_CAST")
-    fun getAllSingerTypes() {
-        LogUtil.d(TAG, "getAllSingerTypes")
-        // get Call from Retrofit Api
-        apiInterface.getAllSingerTypes().enqueue(callback as Callback<SingerTypeList>)
+    fun getAllSingerTypes(): SingerTypeList? {
+        val logStr = "getAllSingerTypes"
+        LogUtil.d(TAG, logStr)
+        try {
+            // get Call from Retrofit Api
+            // val response: Response<SingerTypeList> = apiInterface.getAllSingerTypes().execute()
+            val response = apiInterface.getAllSingerTypes().execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getAllLanguages() {
-        LogUtil.d(TAG, "getAllLanguages")
-        // get Call from Retrofit Api
-        apiInterface.getAllLanguages().enqueue(callback as Callback<LanguageList>)
+    fun getAllLanguages(): LanguageList? {
+        val logStr = "getAllLanguages"
+        LogUtil.d(TAG, logStr)
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getAllLanguages().execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
+    /*
     @Suppress("UNCHECKED_CAST")
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int) {
         val singerId = singer.id
@@ -186,4 +208,5 @@ abstract class RestApiAsync<T> : Callback<T> {
         apiInterface.getSingersBySingerTypeIdWithFilter(areaId, sex, pageSize,
             pageNo, orderBy, filter).enqueue(callback as Callback<SingerList>)
     }
+    */
 }

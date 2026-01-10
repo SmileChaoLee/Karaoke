@@ -1,4 +1,4 @@
-package com.smile.u2bkaraoke.view_adapter
+package com.smile.u2bkaraoke.adapters
 
 import android.app.Activity
 import android.content.Intent
@@ -16,7 +16,7 @@ import com.smile.u2bkaraoke.WordListActivity
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.view_adapter.LanguageListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.LanguageListAdapter.MyViewHolder
 
 class LanguageListAdapter (
     private val mActivity: Activity,

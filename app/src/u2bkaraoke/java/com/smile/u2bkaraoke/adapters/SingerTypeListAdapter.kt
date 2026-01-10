@@ -1,28 +1,22 @@
-package com.smile.u2bkaraoke.view_adapter
+package com.smile.u2bkaraoke.adapters
 
-import android.app.Activity
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.smile.karaoke.R
-import com.smile.u2bkaraoke.SingerListActivity
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.view_adapter.SingerTypeListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter.MyViewHolder
 
 class SingerTypeListAdapter(
-    private val mActivity: Activity,
+    private val itemListener : RecyclerItemListener,
     private val mSingerTypes: ArrayList<SingerType>,
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
-
 
     companion object {
         private const val TAG = "SingerTyLstAdapter"
@@ -36,23 +30,15 @@ class SingerTypeListAdapter(
         init {
             positionNoTextView =
                 itemView.findViewById(R.id.singerTypeItem_Layout_positionNoTextView)
-            ScreenUtil.resizeTextSize(
-                positionNoTextView,
-                mTextFontSize,
-                Constants.FontSize_Scale_Type
-            )
+            ScreenUtil.resizeTextSize(positionNoTextView, mTextFontSize)
             singerAreaNaTextView = itemView.findViewById(R.id.singerAreaNaTextView)
-            ScreenUtil.resizeTextSize(
-                singerAreaNaTextView,
-                mTextFontSize,
-                Constants.FontSize_Scale_Type
-            )
+            ScreenUtil.resizeTextSize(singerAreaNaTextView, mTextFontSize)
             singerSexTextView = itemView.findViewById(R.id.singerSexTextView)
-            ScreenUtil.resizeTextSize(
-                singerSexTextView,
-                mTextFontSize,
-                Constants.FontSize_Scale_Type
-            )
+            ScreenUtil.resizeTextSize(singerSexTextView, mTextFontSize)
+
+            itemView.setOnClickListener {
+                itemListener.onItemClick(it, bindingAdapterPosition)
+            }
         }
     }
 
@@ -75,18 +61,6 @@ class SingerTypeListAdapter(
                 "2" -> "Female"
                 else ->                 // "0"
                     ""
-            }
-            itemView.setOnClickListener {
-                Log.d(TAG, "itemView.setOnClickListener.${singerType.areaNa}")
-                ScreenUtil.showToast(
-                    mActivity, singerType.areaNa,
-                    mTextFontSize, Constants.FontSize_Scale_Type, Toast.LENGTH_SHORT
-                )
-                Intent(mActivity, SingerListActivity::class.java).let {
-                    it.putExtra(Constants.SingerListActivityTitle, singerType.areaNa)
-                    it.putExtra(Constants.SingerTypeParcelable, singerType)
-                    mActivity.startActivity(it)
-                }
             }
         }
     }

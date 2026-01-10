@@ -17,7 +17,7 @@ import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.LanguageList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
-import com.smile.u2bkaraoke.view_adapter.LanguageListAdapter
+import com.smile.u2bkaraoke.adapters.LanguageListAdapter
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
@@ -64,7 +64,7 @@ class LanguageListActivity : AppCompatActivity() {
         when (orderedFrom) {
             Constants.WordsOrdered ->  // from main activity (U2bKkActivity)
                 menuTextView.text = getString(R.string.languagesListString)
-            Constants.NewSongOrdered -> menuTextView.text = getString(R.string.newSOngLanguagesListString)
+            Constants.NewSongOrdered -> menuTextView.text = getString(R.string.newSongLanguagesListString)
             Constants.HotSongOrdered -> menuTextView.text = getString(R.string.hotSongLanguagesListString)
         }
 

@@ -1,6 +1,6 @@
-package com.smile.u2bplayer.u2b_constants
+package com.smile.u2bplayer.u2bplay_constants
 
-object U2bConstants {
+object U2bPlayConstants {
     const val U2B_FAV_DB_NAME = "youtube_fav.db"
     const val PHONE_SPAN_COUNT = 1
     const val TABLET_SPAN_COUNT = 3

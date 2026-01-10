@@ -30,7 +30,7 @@ import com.smile.u2bplayer.U2bUtil
 import com.smile.u2bplayer.adapters.U2bRecyclerAdapter
 import com.smile.u2bplayer.models.U2bSingleton
 import com.smile.u2bplayer.retrofit.RestApiSync
-import com.smile.u2bplayer.u2b_constants.U2bConstants
+import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -94,7 +94,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         activity?.let { act ->
             var searchTerm = "Most Popular"
             try {
-                val fis = act.openFileInput(U2bConstants.KEYWORD_FILENAME)
+                val fis = act.openFileInput(U2bPlayConstants.KEYWORD_FILENAME)
                 val isr = InputStreamReader(fis)
                 val br = BufferedReader(isr)
                 searchTerm = br.readLine()  // last video id played
@@ -148,7 +148,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
         try {
             val fos = act.openFileOutput(
-                U2bConstants.KEYWORD_FILENAME,
+                U2bPlayConstants.KEYWORD_FILENAME,
                 Context.MODE_PRIVATE
             )
             val savingLine = if (searchTerm[searchTerm.length - 1] != '\n') {
@@ -299,7 +299,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             val act = activity?: return@setOnClickListener
             val songs = videosToSongs()
             lifecycleScope.launch(Dispatchers.IO) {
-                if (DatabaseUtil.addSongsToFavorites(act,U2bConstants.U2B_FAV_DB_NAME, songs, textFontSize)) {
+                if (DatabaseUtil.addSongsToFavorites(act,U2bPlayConstants.U2B_FAV_DB_NAME, songs, textFontSize)) {
                     withContext(Dispatchers.Main) {
                         ScreenUtil.showToast(act,
                             getString(R.string.add_to_favorites),

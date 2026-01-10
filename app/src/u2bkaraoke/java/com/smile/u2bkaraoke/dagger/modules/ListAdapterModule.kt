@@ -1,14 +1,15 @@
 package com.smile.u2bkaraoke.dagger.modules
 
 import android.app.Activity
+import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.Song
-import com.smile.u2bkaraoke.view_adapter.LanguageListAdapter
-import com.smile.u2bkaraoke.view_adapter.SingerListAdapter
-import com.smile.u2bkaraoke.view_adapter.SingerTypeListAdapter
-import com.smile.u2bkaraoke.view_adapter.SongListAdapter
+import com.smile.u2bkaraoke.adapters.LanguageListAdapter
+import com.smile.u2bkaraoke.adapters.SingerListAdapter
+import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
+import com.smile.u2bkaraoke.adapters.SongListAdapter
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -33,11 +34,11 @@ class ListAdapterModule {
     }
 
     @Provides
-    fun singerTypeListAdapterProvider(@Named("Activity")activity : Activity?,
+    fun singerTypeListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
                                 @Named("SingerTypeArrayList")types : ArrayList<SingerType>?,
                                 @Named("FloatValue")textFontSize : Float?
     ) : SingerTypeListAdapter {
-        return SingerTypeListAdapter(activity!!, types!!, textFontSize!!)
+        return SingerTypeListAdapter(listener!!, types!!, textFontSize!!)
     }
 
     @Provides

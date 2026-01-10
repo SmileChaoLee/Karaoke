@@ -36,11 +36,10 @@ class U2bPlayerApp : SmileAppBase() {
             initializationStatus: InitializationStatus? ->
             LogUtil.i(TAG, "Google AdMob was initialized successfully.")
         }
-        // for the chrome cast
     }
 
     override fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?): SetBannerAdView? {
-        LogUtil.d(TAG, "showBannerAd.U2bPlayer")
+        LogUtil.d(TAG, "showBannerAd")
         val act = activity ?: return null
         var bannerDpWidth = (ScreenUtil.getScreenSize(act).x * 0.98).toFloat()
         bannerDpWidth = ScreenUtil.pixelToDp(bannerDpWidth)
@@ -53,9 +52,9 @@ class U2bPlayerApp : SmileAppBase() {
         // for com.smile.youtubeplayer
         // val adMobInterstitialID = "ca-app-pub-8354869049759576/7483146379"
         // for com.smile.u2bplayer
-        return null
         // val adMobInterstitialID = "ca-app-pub-8354869049759576/5405649501"
         // return AdMobInterstitial(applicationContext, adMobInterstitialID)
+        return null
     }
 
     override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,

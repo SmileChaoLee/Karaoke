@@ -17,8 +17,8 @@
 
     <string name="mainMenuTitle">Please Select One Option</string>
     <string name="singerOrderString">Songs By Singer</string>
-    <string name="newSongOrderString">Songs By New Published</string>
-    <string name="hotSongOrderString">Songs By Most Popular"</string>
+    <string name="newSongOrderString">New Songs</string>
+    <string name="hotSongOrderString">Popular Songs"</string>
     <string name="languageOrderString">Songs By Language</string>
     <string name="exitProgram">Exit Program</string>
 
@@ -29,7 +29,7 @@
 
     <string name="languagesListString">Languages List</string>
     <string name="wordsListString">Number of Words</string>
-    <string name="newSOngLanguagesListString">Languages List of New Songs</string>
+    <string name="newSongLanguagesListString">Languages List of New Songs</string>
     <string name="hotSongLanguagesListString">Languages List of Hot Songs</string>
     <string name="singerTypesListString">Singer Types List</string>
     <string name="songsListString">Songs List</string>

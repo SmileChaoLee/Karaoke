@@ -16,7 +16,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appComponent
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Language
-import com.smile.u2bkaraoke.view_adapter.WordListAdapter
+import com.smile.u2bkaraoke.adapters.WordListAdapter
 import javax.inject.Inject
 
 class WordListActivity : AppCompatActivity() {

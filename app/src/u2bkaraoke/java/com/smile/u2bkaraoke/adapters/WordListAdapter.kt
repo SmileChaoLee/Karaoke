@@ -1,4 +1,4 @@
-package com.smile.u2bkaraoke.view_adapter
+package com.smile.u2bkaraoke.adapters
 
 import android.app.Activity
 import android.content.Intent
@@ -16,7 +16,7 @@ import com.smile.u2bkaraoke.SongListActivity
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.view_adapter.WordListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.WordListAdapter.MyViewHolder
 import javax.inject.Inject
 
 class WordListAdapter @Inject constructor(

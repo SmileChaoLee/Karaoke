@@ -1,4 +1,4 @@
-package com.smile.u2bkaraoke.view_adapter
+package com.smile.u2bkaraoke.adapters
 
 import android.app.Activity
 import android.content.Intent
@@ -15,7 +15,7 @@ import com.smile.u2bkaraoke.SongListActivity
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.view_adapter.SingerListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.SingerListAdapter.MyViewHolder
 
 class SingerListAdapter(
     private val mActivity: Activity,

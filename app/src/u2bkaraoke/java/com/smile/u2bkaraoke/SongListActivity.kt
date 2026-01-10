@@ -26,7 +26,7 @@ import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SongList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
-import com.smile.u2bkaraoke.view_adapter.SongListAdapter
+import com.smile.u2bkaraoke.adapters.SongListAdapter
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject

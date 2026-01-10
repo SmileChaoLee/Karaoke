@@ -29,7 +29,7 @@
 
     <string name="languagesListString">语言类别清单</string>
     <string name="wordsListString">字部选项</string>
-    <string name="newSOngLanguagesListString">最新歌曲的语言清单</string>
+    <string name="newSongLanguagesListString">最新歌曲的语言清单</string>
     <string name="hotSongLanguagesListString">排行歌曲的语言清单</string>
     <string name="singerTypesListString">歌星类别清单</string>
     <string name="songsListString">歌曲清单</string>

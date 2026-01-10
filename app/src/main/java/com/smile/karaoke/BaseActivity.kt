@@ -51,7 +51,7 @@ abstract class BaseActivity : AppCompatActivity(),
     private var permissionExternalStorage = false
     private var playerFragment: PlayerBaseFragment? = null
     private lateinit var basePlayViewLayout : LinearLayout
-    var tablayoutFragment : TablayoutFragment? = null
+    private var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
     private lateinit var callingIntent : Intent
     private var isPlayToPause : Boolean = false

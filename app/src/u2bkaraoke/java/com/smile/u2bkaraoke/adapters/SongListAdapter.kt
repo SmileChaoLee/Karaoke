@@ -1,4 +1,4 @@
-package com.smile.u2bkaraoke.view_adapter
+package com.smile.u2bkaraoke.adapters
 
 import android.app.Activity
 import android.util.Log
@@ -13,7 +13,7 @@ import com.smile.karaoke.R
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.model.Song
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.view_adapter.SongListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.SongListAdapter.MyViewHolder
 
 class SongListAdapter(
     private val mActivity: Activity,
