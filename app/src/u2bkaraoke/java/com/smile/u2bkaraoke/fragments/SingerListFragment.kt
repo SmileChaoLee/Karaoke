@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
@@ -28,7 +29,11 @@ import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
+import com.smile.u2bkaraoke.retrofit.RestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
@@ -37,7 +42,7 @@ class SingerListFragment : Fragment(), RecyclerItemListener {
 
 
     companion object {
-        private const val TAG = "SingerListActivity"
+        private const val TAG = "SingerListFragment"
     }
 
     @JvmField
@@ -55,7 +60,7 @@ class SingerListFragment : Fragment(), RecyclerItemListener {
     private var pageNo = 1
     private var pageSize = 10
     private var totalPages = 0
-    private var restApi: MyRestApi? = null
+    // private var restApi: MyRestApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -135,7 +140,7 @@ class SingerListFragment : Fragment(), RecyclerItemListener {
             singersListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
 
-        restApi = MyRestApi()
+        // restApi = MyRestApi()
         retrieveSingerList()
     }
 
@@ -170,15 +175,56 @@ class SingerListFragment : Fragment(), RecyclerItemListener {
     }
 
     private fun retrieveSingerList() {
-        LogUtil.d(TAG, "retrieveSingerList.filterString = $filterString")
-        restApi?.let {rApi ->
-            val sType = singerType ?: SingerType()
-            if (filterString.isNullOrEmpty()) {
-                rApi.getSingersBySingerType(sType, pageSize, pageNo)
-            } else {
-                rApi.getSingersBySingerType(sType, pageSize, pageNo, filterString!!)
+        val logStr = "retrieveSingerList"
+        LogUtil.d(TAG, "$logStr.filterString = $filterString")
+        val act = activity ?: return
+        act.lifecycleScope.launch(Dispatchers.IO) {
+            RestApiSync.getApiSync().let {rApi ->
+                val sType = singerType ?: SingerType()
+                singerList = if (filterString.isNullOrEmpty()) {
+                    rApi.getSingersBySingerType(sType, pageSize, pageNo)
+                } else {
+                    rApi.getSingersBySingerType(sType, pageSize, pageNo,
+                        filterString!!)
+                }
+                singerType = sType
+                withContext(Dispatchers.Main) {
+                    singerList?.let { sList ->
+                        pageNo = sList.pageNo // get the back value from called function
+                        pageSize = sList.pageSize // get the back value from called function
+                        totalPages = sList.totalPages // get the back value from called function
+                        if (sList.singers.isEmpty()) {
+                            singerListEmptyTextView?.text = act.getString(R.string.noResultString)
+                            singerListEmptyTextView?.visibility = View.VISIBLE
+                        } else {
+                            singerListEmptyTextView?.visibility = View.GONE
+                        }
+                    } ?: run {
+                        singerList = SingerList()
+                        singerListEmptyTextView?.text = act.getString(R.string.failedMessage)
+                        singerListEmptyTextView?.visibility = View.VISIBLE
+                    }
+                    LogUtil.d(TAG, "$logStr.inject().myViewAdapter")
+                    appCompBuilder
+                        .recyclerItemListenerModule(this@SingerListFragment)
+                        .singerArrayListModule(singerList!!.singers)
+                        .floatModule(textFontSize).build()
+                        .inject(this@SingerListFragment)
+                    mRecyclerView?.setAdapter(myViewAdapter)
+                    mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
+                    LogUtil.d(TAG, "$logStr.isSearchEditTextChanged = $isSearchEditTextChanged")
+                    if (isSearchEditTextChanged) {
+                        // searchEditText.setFocusable(true);              // needed for requestFocus()
+                        // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
+                        // searchEditText.requestFocus();  // needed for the next two statements
+                        val imm =
+                            act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
+                        imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
+                        isSearchEditTextChanged = false
+                    }
+                }
             }
-            singerType = sType
         }
     }
 

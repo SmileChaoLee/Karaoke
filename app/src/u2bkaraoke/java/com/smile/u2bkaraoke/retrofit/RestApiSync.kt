@@ -10,9 +10,6 @@ import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.model.SongList
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
 
@@ -73,140 +70,242 @@ class RestApiSync private constructor() {
         }
     }
 
-    /*
     @Suppress("UNCHECKED_CAST")
-    fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int) {
+    fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
+        val logStr = "getSongsBySinger"
+        LogUtil.d(TAG, logStr)
         val singerId = singer.id
         val orderBy = "SongNa" // order by song's name
-        apiInterface.getSongsBySingerId(singerId, pageSize, pageNo, orderBy)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            val response = apiInterface.getSongsBySingerId(singerId,
+                pageSize, pageNo, orderBy).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int, filter: String) {
+    fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int,
+                         filter: String): SongList? {
+        val logStr = "getSongsBySinger"
+        LogUtil.d(TAG, "$logStr.filter = $filter")
         val singerId = singer.id
         val orderBy = "SongNa" // order by song's name
-        apiInterface.getSongsBySingerIdWithFilter(singerId, pageSize, pageNo, orderBy, filter)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            val response = apiInterface.getSongsBySingerIdWithFilter(singerId,
+                pageSize, pageNo, orderBy, filter).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int) {
-        LogUtil.d(TAG, "getNewSongsByLanguage.no filter")
+    fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
+        val logStr = "getNewSongsByLanguage"
+        LogUtil.d(TAG, logStr)
         val languageId = language.id
-        // no order. Only the date that the song came in by descending order
-        apiInterface.getNewSongsByLanguageId(languageId, pageSize, pageNo)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            // no order. Only the date that the song came in by descending order
+            val response = apiInterface.getNewSongsByLanguageId(languageId,
+                pageSize, pageNo).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int, filter: String) {
-        LogUtil.d(TAG, "getNewSongsByLanguage.filter not empty")
+    fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
+                              filter: String): SongList? {
+        val logStr = "getNewSongsByLanguage"
+        LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
-        // no order. Only the date that the song came in by descending order
-        apiInterface.getNewSongsByLanguageIdWithFilter(languageId, pageSize, pageNo, filter)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            // no order. Only the date that the song came in by descending order
+            val response = apiInterface.getNewSongsByLanguageIdWithFilter(languageId,
+                pageSize, pageNo, filter).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int) {
-        LogUtil.d(TAG, "getHotSongsByLanguage.no filter")
+    fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
+        val logStr = "getHotSongsByLanguage"
+        LogUtil.d(TAG, logStr)
         val languageId = language.id
-        // no order by. Only the number that the song is ordered by descending order
-        apiInterface.getHotSongsByLanguageId(languageId, pageSize, pageNo)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            // no order by. Only the number that the song is ordered by descending order
+            val response = apiInterface.getHotSongsByLanguageId(languageId,
+                pageSize, pageNo).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int, filter: String) {
-        LogUtil.d(TAG, "getHotSongsByLanguage.filter not empty")
+    fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
+                              filter: String): SongList? {
+        val logStr = "getHotSongsByLanguage"
+        LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
-        LogUtil.d(TAG, "getNewSongsByLanguage.filter not empty.languageId = $languageId")
-        LogUtil.d(TAG, "getNewSongsByLanguage.filter not empty.pageSize = $pageSize")
-        LogUtil.d(TAG, "getNewSongsByLanguage.filter not empty.pageNo = $pageNo")
-        LogUtil.d(TAG, "getNewSongsByLanguage.filter not empty.filter = $filter")
-        // no order by. Only the number that the song is ordered by descending order
-        apiInterface.getHotSongsByLanguageIdWithFilter(languageId, pageSize, pageNo, filter)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            // no order by. Only the number that the song is ordered by descending order
+            val response = apiInterface.getHotSongsByLanguageIdWithFilter(
+                languageId, pageSize, pageNo, filter).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int) {
-        LogUtil.d(TAG, "getSongsByLanguage.no filter")
+    fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int): SongList? {
+        val logStr = "getSongsByLanguage"
+        LogUtil.d(TAG, logStr)
         val languageId = language.id
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
-        // get Call from Retrofit Api
-        apiInterface.getSongsByLanguageIdOrderBy(languageId, pageSize, pageNo, orderBy)
-            .enqueue(callback as Callback<SongList>)
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSongsByLanguageIdOrderBy(
+                languageId, pageSize, pageNo, orderBy).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int, filter: String) {
+    fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int,
+                           filter: String): SongList? {
         // filter cannot be empty
-        LogUtil.d(TAG, "getSongsByLanguage.filter not empty")
+        val logStr = "getHotSongsByLanguage"
+        LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSongsByLanguageIdOrderByWithFilter(
+                languageId,
+                pageSize,
+                pageNo,
+                orderBy,
+                filter  // cannot be empty
+            ).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int,
+                                     pageSize: Int, pageNo: Int): SongList? {
+        val logStr = "getSongsByLanguage"
+        LogUtil.d(TAG, logStr)
+        val languageId = language.id
+        val orderBy = "NumWordsSongNa" // order by (number of words + song's name)
         // get Call from Retrofit Api
-        apiInterface.getSongsByLanguageIdOrderByWithFilter(
-            languageId,
-            pageSize,
-            pageNo,
-            orderBy,
-            filter  // cannot be empty
-        ).enqueue(callback as Callback<SongList>)
+        try {
+            val response = apiInterface.getSongsByLanguageIdNumOfWords(
+                languageId,
+                numOfWords,
+                pageSize,
+                pageNo,
+                orderBy
+            ).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int, pageSize: Int
-                                       , pageNo: Int) {
-        LogUtil.d(TAG, "getSongsByLanguageNumOfWords.no filter")
+                                     , pageNo: Int, filter: String): SongList? {
+        val logStr = "getSongsByLanguageNumOfWords"
+        LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
         val orderBy = "NumWordsSongNa" // order by (number of words + song's name)
-        // get Call from Retrofit Api
-        apiInterface.getSongsByLanguageIdNumOfWords(
-            languageId,
-            numOfWords,
-            pageSize,
-            pageNo,
-            orderBy).enqueue(callback as Callback<SongList>)
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSongsByLanguageIdNumOfWordsWithFilter(
+                languageId,
+                numOfWords,
+                pageSize,
+                pageNo,
+                orderBy,
+                filter
+            ).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int, pageSize: Int
-                                     , pageNo: Int, filter: String) {
-        LogUtil.d(TAG, "getSongsByLanguageNumOfWords.filter not empty")
-        val languageId = language.id
-        val orderBy = "NumWordsSongNa" // order by (number of words + song's name)
-        // get Call from Retrofit Api
-        apiInterface.getSongsByLanguageIdNumOfWordsWithFilter(
-            languageId,
-            numOfWords,
-            pageSize,
-            pageNo,
-            orderBy,
-            filter).enqueue(callback as Callback<SongList>)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int) {
-        LogUtil.d(TAG, "getSingersBySingerType.no filter")
+    fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int): SingerList? {
+        val logStr = "getSingersBySingerType"
+        LogUtil.d(TAG, logStr)
         val areaId = singerType.id
         val sex = singerType.sex
         val orderBy = "SingNa" // singer's name
-        apiInterface.getSingersBySingerTypeId(areaId, sex, pageSize,
-            pageNo, orderBy).enqueue(callback as Callback<SingerList>)
+        try {
+            val response = apiInterface.getSingersBySingerTypeId(
+                areaId, sex, pageSize,
+                pageNo, orderBy).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int, filter: String) {
-        LogUtil.d(TAG, "getSingersBySingerType.filter not empty")
+    fun getSingersBySingerType(singerType: SingerType,
+                               pageSize: Int, pageNo: Int,
+                               filter: String): SingerList? {
+        val logStr = "getSingersBySingerType.filter = $filter"
+        LogUtil.d(TAG, logStr)
         val areaId = singerType.id
         val sex = singerType.sex
         val orderBy = "SingNa" // singer's name
-        apiInterface.getSingersBySingerTypeIdWithFilter(areaId, sex, pageSize,
-            pageNo, orderBy, filter).enqueue(callback as Callback<SingerList>)
+        try {
+            val response = apiInterface.getSingersBySingerTypeIdWithFilter(
+                areaId, sex, pageSize,
+                pageNo, orderBy, filter).execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
     }
-    */
 }

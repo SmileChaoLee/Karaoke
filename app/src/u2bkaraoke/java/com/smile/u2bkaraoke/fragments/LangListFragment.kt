@@ -108,6 +108,7 @@ class LangListFragment : Fragment(), RecyclerItemListener {
                     langListEmptyTextView?.text = act.getString(R.string.failedMessage)
                     langListEmptyTextView?.visibility = View.VISIBLE
                 }
+                LogUtil.d(TAG, "onViewCreated.inject().myViewAdapter")
                 appCompBuilder
                     .recyclerItemListenerModule(this@LangListFragment)
                     .languageArrayListModule(languageList!!.languages)

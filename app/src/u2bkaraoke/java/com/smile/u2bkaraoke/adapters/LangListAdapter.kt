@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.model.Language
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.adapters.LangListAdapter.MyViewHolder
@@ -19,16 +18,12 @@ class LangListAdapter (
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
 
-    companion object {
-        private const val TAG = "LangListAdapter"
-    }
-
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
         val languageNaTextView: TextView
 
         init {
-            LogUtil.d(TAG, "MyViewHolder init")
+            // LogUtil.d(TAG, "MyViewHolder init")
             positionNoTextView =
                 itemView.findViewById(R.id.languageItem_Layout_positionNoTextView)
             ScreenUtil.resizeTextSize(positionNoTextView, mTextFontSize)
@@ -43,7 +38,7 @@ class LangListAdapter (
 
     // Usually involves inflating a layout from XML and returning the holder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        LogUtil.d(TAG, "onCreateViewHolder")
+        // LogUtil.d(TAG, "onCreateViewHolder")
         val layoutInflater = LayoutInflater.from(parent.context)
         // inflate the singerType item view
         return MyViewHolder(layoutInflater.inflate(R.layout.language_list_item,
@@ -52,7 +47,7 @@ class LangListAdapter (
 
     // Involves populating data into the item through holder
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        LogUtil.d(TAG, "onBindViewHolder")
+        // LogUtil.d(TAG, "onBindViewHolder")
         val language = mLanguages[position]
         holder.apply {
             positionNoTextView.text = position.toString()
@@ -61,7 +56,6 @@ class LangListAdapter (
     }
 
     override fun getItemCount(): Int {
-        LogUtil.d(TAG, "getItemCount")
         return mLanguages.size
     }
 }
