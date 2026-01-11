@@ -210,7 +210,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                     PlayingParameters::class.java)
             } else
                 savedInstanceState.getParcelable(MyPlayerConstants.PlayingParamState)
-            LogUtil.d(TAG, "$logStr.playingParam = $playingParam")
+            LogUtil.d(TAG, "$logStr.pm = $pm")
             playingParam = pm ?: PlayingParameters()
             mCanShowNotSupportedFormat =
                 savedInstanceState.getBoolean(MyPlayerConstants.CanShowNotSupportedFormatState)
