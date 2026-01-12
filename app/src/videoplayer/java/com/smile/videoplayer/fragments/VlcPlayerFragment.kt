@@ -116,6 +116,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     override fun setupMenuItems() {
+        softDecoderFirstMenuItem?.isVisible = false
+        softDecoderFirstMenuItem?.isEnabled = false
         channelMenuItem?.isVisible = false
         channelMenuItem?.isEnabled = false
     }

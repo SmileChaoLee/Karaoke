@@ -8,7 +8,6 @@
     android:baselineAligned="false"
     android:focusable="true"
     android:clickable="true"
-    android:nextFocusUp="@+id/favoritePlaySelectedButton"
     android:background="@android:color/black">
 
     <LinearLayout
@@ -18,6 +17,7 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:clickable="true"
+        android:nextFocusUp="@+id/favoritePlaySelectedButton"
         android:nextFocusDown="@id/myListEditButton">
         <android.widget.ImageView
             android:id="@+id/myListVideoImageView"

@@ -21,6 +21,7 @@ interface RecyclerItemListener {
         return if (position % 2 == 0) Color.BLACK
         else SmileAppBase.transparentLightGray
         */
-        return Color.BLACK
+        // return Color.BLACK
+        return SmileAppBase.transparent
     }
 }

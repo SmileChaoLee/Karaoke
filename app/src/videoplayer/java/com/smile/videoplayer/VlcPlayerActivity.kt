@@ -5,6 +5,8 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.UpBaseActivity
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.videoplayer.fragments.VlcFavFragment
+import com.smile.videoplayer.fragments.VlcOpenFFragment
 import com.smile.videoplayer.fragments.VlcPlayerFragment
 
 @OptIn(UnstableApi::class)
@@ -22,4 +24,6 @@ open class VlcPlayerActivity : UpBaseActivity() {
     }
 
     override fun getFragment() = VlcPlayerFragment()
+    override fun getOpenFileFragment() = VlcOpenFFragment()
+    override fun getFavoriteFragment() = VlcFavFragment()
 }

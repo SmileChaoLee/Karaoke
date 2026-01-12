@@ -28,11 +28,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
+abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "OpenFileFragment"
     }
+
+    abstract fun decoderButtonVisibility(): Int
 
     private var pathTextView: TextView? = null
     private var filesRecyclerView : RecyclerView? = null
@@ -348,9 +350,10 @@ class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         }
     }
 
-    fun setupSwitchDecoderButton() {
+    private fun setupSwitchDecoderButton() {
         LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
+            visibility = decoderButtonVisibility()
             playSongs?.let {
                 setImageResource(
                     if (it.isSoftDecoderFirst()) R.drawable.soft_decoder

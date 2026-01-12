@@ -139,7 +139,7 @@ abstract class PlayerBaseFragment : Fragment(),
     var channelMenuItem: MenuItem? = null
 
     // submenu of file
-    private var softDecoderFirstMenuItem: MenuItem? = null
+    var softDecoderFirstMenuItem: MenuItem? = null
     private var autoPlayMenuItem: MenuItem? = null
     private var audioMenuItem: MenuItem? = null
     // submenu of audio
@@ -682,22 +682,20 @@ abstract class PlayerBaseFragment : Fragment(),
     fun setMainMenu() {
         LogUtil.i(TAG, "setMainMenu")
         softDecoderFirstMenuItem?.isVisible = true    // always visible
-        mPresenter.playingParam.let {
-            // val isVisible = !it.isPlaySingleSong // no more playing single song
-            val isVisible = true
-            autoPlayMenuItem?.isVisible = isVisible
-            audioMenuItem?.isVisible = isVisible
-            audioTrackMenuItem?.isVisible = isVisible
-            val channelMenuItem = mainMenu?.findItem(R.id.channel)
-            channelMenuItem?.isVisible = isVisible
-            val smileAppsMenuItem = mainMenu?.findItem(R.id.smileApps)
-            activity?.let { actIt ->
-                val app = (actIt.application as SmileAppBase)
-                smileAppsMenuItem?.isVisible = app.smileAppsMenuVisible
-            }
-            val privacyPolicyMenuItem = mainMenu?.findItem(R.id.privacyPolicy)
-            privacyPolicyMenuItem?.isVisible = isVisible
+        // val isVisible = !mPresenter.playingParam.isPlaySingleSong // no more playing single song
+        // val isVisible = true
+        autoPlayMenuItem?.isVisible = true
+        audioMenuItem?.isVisible = true
+        audioTrackMenuItem?.isVisible = true
+        // val channelMenuItem = mainMenu?.findItem(R.id.channel)
+        channelMenuItem?.isVisible = true
+        val smileAppsMenuItem = mainMenu?.findItem(R.id.smileApps)
+        activity?.let { actIt ->
+            val app = (actIt.application as SmileAppBase)
+            smileAppsMenuItem?.isVisible = app.smileAppsMenuVisible
         }
+        val privacyPolicyMenuItem = mainMenu?.findItem(R.id.privacyPolicy)
+        privacyPolicyMenuItem?.isVisible = true
         setupMenuItems() // abstract method
     }
 

@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.smile.karaoke.fragments.KaraFavFragment
+import com.smile.karaoke.fragments.ComFavFragment
 import com.smile.karaoke.fragments.OpenFileFragment
 import com.smile.karaoke.fragments.SafPickerFragment
 import com.smile.karaoke.utilities.LogUtil
@@ -22,9 +22,12 @@ abstract class UpBaseActivity: BaseActivity() {
         private const val FAVORITE_FRAGMENT_TAG : String = "MY_FAVORITES"
     }
 
-    private val openFragment = OpenFileFragment()
+    abstract fun getOpenFileFragment(): OpenFileFragment
+    abstract fun getFavoriteFragment(): ComFavFragment
+
+    private val openFragment = getOpenFileFragment()
     private val safPickerFragment = SafPickerFragment()
-    private val favoriteFragment = KaraFavFragment()
+    private val favoriteFragment = getFavoriteFragment()
 
     override fun askPermissions(activity: Activity): Boolean {
         LogUtil.d(TAG, "askPermissions")

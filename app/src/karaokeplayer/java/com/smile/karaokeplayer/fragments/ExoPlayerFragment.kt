@@ -139,6 +139,8 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun setupMenuItems() {
+        softDecoderFirstMenuItem?.isVisible = true
+        softDecoderFirstMenuItem?.isEnabled = true
         channelMenuItem?.isVisible = true
         channelMenuItem?.isEnabled = true
     }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.utilities.CommonUtil
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -43,8 +45,22 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     }
 
     abstract fun decoderButtonVisibility(): Int
-    abstract suspend fun getVideoThumbNail(song: SongInfo): Bitmap?
-    abstract fun getFavDatabaseName(): String
+    // will be override by U2bPlayer
+    open suspend fun getVideoThumbNail(song: SongInfo): Bitmap? {
+        var bm: Bitmap? = null
+        try {
+            mediaRetriever.setDataSource(song.filePath)
+            bm = mediaRetriever.getFrameAtTime(0,
+                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "getVideoThumbNail.setDataSource.Exception:", ex)
+        }
+        return bm
+    }
+    // will be override by U2bPlayer
+    open fun getFavDatabaseName(): String {
+        return DatabaseUtil.getFavDatabaseName()
+    }
 
     private var playMyFavorites: PlayMyFavorites? = null
     private var myListRecyclerView : RecyclerView? = null
@@ -354,6 +370,12 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         switchDecoderButton?.layoutParams = buttonParam
         playSelectedButton?.layoutParams = buttonParam
     }
+
+    // abstract method of ItemsBaseFragment
+    override fun gridSpanCount(): Int {
+        val act = activity ?: return 1
+        return CommonUtil.gridSpanCount(act)
+    }
     // end of overriding the methods of ItemsBaseFragment
 
     private fun initFavoriteRecyclerView() {
@@ -368,7 +390,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         }
     }
 
-    fun setupSwitchDecoderButton() {
+    private fun setupSwitchDecoderButton() {
         LogUtil.i(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             visibility = decoderButtonVisibility()

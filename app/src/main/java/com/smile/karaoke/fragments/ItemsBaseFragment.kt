@@ -1,7 +1,6 @@
 package com.smile.karaoke.fragments
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.res.Configuration
 import android.media.MediaMetadataRetriever
 import android.os.Bundle

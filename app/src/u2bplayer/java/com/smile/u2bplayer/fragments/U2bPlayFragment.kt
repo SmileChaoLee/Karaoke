@@ -160,6 +160,8 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun setupMenuItems() {
+        softDecoderFirstMenuItem?.isVisible = false
+        softDecoderFirstMenuItem?.isEnabled = false
         channelMenuItem?.isVisible = false
         channelMenuItem?.isEnabled = false
     }
