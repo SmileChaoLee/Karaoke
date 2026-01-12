@@ -6,7 +6,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.AppLinkUtil
 import com.smile.videoplayer.VlcPlayerActivity
-import com.smile.u2bplayer.U2bPlayerActivity
 
 open class PhVlcPlayerActivity : BasePlayerActivity() {
 
@@ -24,14 +23,13 @@ open class PhVlcPlayerActivity : BasePlayerActivity() {
         return true
     }
 
-    /*
     override fun startU2bPlayer() {
         LogUtil.i(mTAG, "startU2bPlayer()")
         AppLinkUtil.startAppLinkOnStore(this@PhVlcPlayerActivity,
             AppLinkUtil.U2B_PLAYER_LINK)
     }
-    */
 
+    /*
     override fun startU2bPlayer() {
         LogUtil.i(mTAG, "startU2bPlayer")
         Intent(
@@ -42,6 +40,8 @@ open class PhVlcPlayerActivity : BasePlayerActivity() {
             u2bPlayerLauncher.launch(it)
         }
     }
+    */
+
     override fun getExoButtonName(): String {
         return resources.getString(R.string.installKaraokePlayer)
     }

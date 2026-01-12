@@ -6,7 +6,6 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
 import com.smile.smilelibraries.utilities.AppLinkUtil
-import com.smile.u2bplayer.U2bPlayerActivity
 
 open class PhExoPlayerActivity : BasePlayerActivity() {
 
@@ -24,14 +23,13 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
         return true
     }
 
-    /*
     override fun startU2bPlayer() {
         LogUtil.i(mTAG, "startU2bPlayer()")
         AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
             AppLinkUtil.U2B_PLAYER_LINK)
     }
-    */
 
+    /*
     override fun startU2bPlayer() {
         LogUtil.i(mTAG, "startU2bPlayer")
         Intent(
@@ -42,6 +40,7 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
             u2bPlayerLauncher.launch(it)
         }
     }
+    */
 
     override fun getExoButtonName(): String {
         return resources.getString(R.string.karaoke_app_name)
