@@ -19,15 +19,15 @@ android {
         }
     }
 
-    compileSdk sdk_version.compile
+    compileSdk = sdk_version.compile
 
     defaultConfig {
 
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1005
-        versionName "10.05"
+        versionCode 1007
+        versionName "10.07"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,15 +63,15 @@ android {
         }
         create("u2bplayer") {
             dimension = "karaoke"
-            versionCode 116
-            versionName "1.16"
+            versionCode 117
+            versionName "1.17"
             applicationId = "com.smile.u2bplayer"
         }
         create("u2bplayer2") {
             // for Amazon app store only
             dimension = "karaoke"
-            versionCode 116
-            versionName "1.16"
+            versionCode 117
+            versionName "1.17"
             applicationId = "com.smile.youtubeplayer"
         }
         create("u2bkaraoke") {
@@ -93,20 +93,16 @@ android {
             }
         }
         karaokeplayer {
-            // temporary add u2bplayer
-            java.srcDirs += ["src/karaokeplayer/java", "src/karaokeplayer_app_activity/java",
-                             "src/u2bplayer/java"]
-            res.srcDirs += ["src/karaokeplayer/res", "src/u2bplayer/res"]
+            java.srcDirs += ["src/karaokeplayer/java", "src/karaokeplayer_app_activity/java"]
+            res.srcDirs += ["src/karaokeplayer/res"]
             manifest {
                 srcFile "src/karaokeplayer/AndroidManifest.xml"
             }
         }
 
         videoplayer {
-            // temporary add u2bplayer
-            java.srcDirs += ["src/videoplayer/java", "src/videoplayer_app_activity/java",
-                             "src/u2bplayer/java"]
-            res.srcDirs += ["src/videoplayer/res", "src/u2bplayer/res"]
+            java.srcDirs += ["src/videoplayer/java", "src/videoplayer_app_activity/java"]
+            res.srcDirs += ["src/videoplayer/res"]
             manifest {
                 srcFile "src/videoplayer/AndroidManifest.xml"
             }
@@ -245,14 +241,6 @@ dependencies {
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:11.1.0'
     // AdMob's InMobi adapter
     implementation 'com.google.ads.mediation:inmobi:11.1.0.0'
-    // ironSource's SDK
-    // implementation 'com.unity3d.ads-mediation:mediation-sdk:9.0.0'
-    // AdMob's ironSource adapter
-    // implementation 'com.google.ads.mediation:ironsource:9.0.0.1'
-    // applovin's SDK
-    // implementation 'com.applovin:applovin-sdk:13.5.0'
-    // AppLovin AdMob adapter
-    // implementation 'com.google.ads.mediation:applovin:13.5.0.0'
 
     // Compose BOM (Bill of Materials) - Recommended for managing versions
     // Use the latest BOM version
@@ -325,10 +313,7 @@ dependencies {
                     // dependencies.add(variant.name + "Implementation", project(":extension-vp9"))
                     // Note: You use the full variant name (e.g., "karaokeplayerDebugImplementation")
                 }
-                // temporary add karaokeplayer and videoplayer
                 if (flavor.name.containsIgnoreCase("karaoketvplayer")
-                        || flavor.name.containsIgnoreCase("karaokeplayer")
-                        || flavor.name.containsIgnoreCase("videoplayer")
                         || flavor.name.containsIgnoreCase("u2bplayer")
                         || flavor.name.containsIgnoreCase("u2bkaraoke")) {
                     // Check for latest version
