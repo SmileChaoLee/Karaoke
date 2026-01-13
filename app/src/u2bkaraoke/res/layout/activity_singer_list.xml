@@ -20,6 +20,7 @@
     </TextView>
     <LinearLayout
         android:id="@+id/singerSearchLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/search_bar"
@@ -33,7 +34,10 @@
             android:autofillHints=""
             android:inputType="textMultiLine"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="@color/my_editbox_textcolor"
+            android:textCursorDrawable="@drawable/my_custom_cursor"
+            android:focusable="true"
+            android:clickable="true"
             android:text=""
             android:hint="@string/singerNameString"
             android:layout_marginStart="20dp"

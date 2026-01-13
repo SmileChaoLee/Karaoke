@@ -19,15 +19,12 @@ class SingerListAdapter(
 ) : RecyclerView.Adapter<MyViewHolder>() {
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
-        val singerNoTextView: TextView
         val singerNaTextView: TextView
 
         init {
             positionNoTextView =
                 itemView.findViewById(R.id.singerItem_Layout_positionNoTextView)
             ScreenUtil.resizeTextSize(positionNoTextView, mTextFontSize)
-            singerNoTextView = itemView.findViewById(R.id.singerNoTextView)
-            ScreenUtil.resizeTextSize(singerNoTextView, mTextFontSize)
             singerNaTextView = itemView.findViewById(R.id.singerNaTextView)
             ScreenUtil.resizeTextSize(singerNaTextView, mTextFontSize)
 
@@ -57,7 +54,6 @@ class SingerListAdapter(
         val singer = mSingers[position]
         holder.apply {
             positionNoTextView.text = position.toString()
-            singerNoTextView.text = singer.singNo
             singerNaTextView.text = singer.singNa
             if (position == 0) {
                 itemView.post { itemView.requestFocus() }

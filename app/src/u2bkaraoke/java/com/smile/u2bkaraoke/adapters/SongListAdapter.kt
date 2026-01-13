@@ -20,7 +20,6 @@ class SongListAdapter(
 
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
-        var songNoTextView: TextView
         val songNaTextView: TextView
         var languageNameTextView: TextView
         var singer1NameTextView: TextView
@@ -34,8 +33,6 @@ class SongListAdapter(
             ScreenUtil.resizeTextSize(positionNoTextView, songNaFontSize)
             songNaTextView = itemView.findViewById(R.id.songNaTextView)
             ScreenUtil.resizeTextSize(songNaTextView, songNaFontSize)
-            songNoTextView = itemView.findViewById(R.id.songNoTextView)
-            ScreenUtil.resizeTextSize(songNoTextView, smallFontSize)
             languageNameTextView = itemView.findViewById(R.id.languageNameTextView)
             ScreenUtil.resizeTextSize(languageNameTextView, smallFontSize)
             singer1NameTextView = itemView.findViewById(R.id.singer1NameTextView)
@@ -69,7 +66,6 @@ class SongListAdapter(
         holder.apply {
             positionNoTextView.text = position.toString()
             songNaTextView.text = song.songNa
-            songNoTextView.text = song.songNo
             languageNameTextView.text = song.languageNa
             singer1NameTextView.text = song.singer1Na
             singer2NameTextView.text = song.singer2Na

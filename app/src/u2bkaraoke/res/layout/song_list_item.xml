@@ -9,13 +9,14 @@
     android:focusableInTouchMode="true"
     android:focusable="true"
     android:clickable="true"
+    android:nextFocusUp="@id/songSearchEditText"
     android:nextFocusDown="@id/nextPageButton">
 
     <LinearLayout
         android:id="@+id/songName_Layout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toTopOf="parent"
         android:weightSum="20">
@@ -34,19 +35,12 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/songNo_Layout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toBottomOf="@+id/songName_Layout"
-        android:weightSum="6">
-        <TextView android:id="@+id/songNoTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|start"
-            android:textColor="@android:color/black"
-            android:layout_weight="1">
-        </TextView>
+        android:weightSum="5">
         <TextView android:id="@+id/languageNameTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
