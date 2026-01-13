@@ -3,7 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/darkYellow"
+    android:background="@android:color/transparent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusDown="@id/u2bKShowVideoButton"
     android:weightSum="12">
 
     <TextView android:id="@+id/singerTypeItem_Layout_positionNoTextView"
@@ -13,7 +17,6 @@
         android:gravity="center_vertical|start"
         android:layout_weight="1">
     </TextView>
-
     <TextView android:id="@+id/singerAreaNaTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -21,7 +24,6 @@
         android:gravity="center_vertical|start"
         android:layout_weight="7">
     </TextView>
-
     <TextView android:id="@+id/singerSexTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

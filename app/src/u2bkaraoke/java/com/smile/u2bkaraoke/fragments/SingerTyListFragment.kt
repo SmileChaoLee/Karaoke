@@ -5,10 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +28,7 @@ import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
-class SingerTyListFragment : Fragment(), RecyclerItemListener {
+class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
 
     companion object {
@@ -40,7 +38,6 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
     @Inject
     lateinit var myViewAdapter: SingerTypeListAdapter
     private var mRecyclerView: RecyclerView? = null
-    private var textFontSize = 0f
     private var singerTypeListEmptyTextView: TextView? = null
     private var singerTypeList: SingerTypeList? = null
 
@@ -62,7 +59,6 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-        super.onViewCreated(view, savedInstanceState)
 
         val act = activity ?: return
         view.apply {
@@ -72,14 +68,19 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
             ScreenUtil.resizeTextSize(singerTypeListEmptyTextView, textFontSize)
             singerTypeListEmptyTextView?.visibility = View.GONE
             mRecyclerView = findViewById(R.id.singerTypeListRecyclerView)
-            val singerTypesListReturnButton = findViewById<Button>(R.id.singerTypesListReturnButton)
-            ScreenUtil.resizeTextSize(singerTypesListReturnButton, textFontSize)
-            singerTypesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
+        super.onViewCreated(view, savedInstanceState)
+        exitImageButton?.nextFocusUpId = R.id.singerTypeListRecyclerView
+        showVideoButton?.nextFocusUpId = R.id.singerTypeListRecyclerView
 
         // MyRestApi().getAllSingerTypes()
-        act.lifecycleScope.launch(Dispatchers.IO) {
-            singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            mRecyclerView?.visibility = View.GONE
+            singerTypeListEmptyTextView?.visibility = View.VISIBLE
+            singerTypeListEmptyTextView?.text = act.getString(R.string.loadingString)
+            withContext(Dispatchers.IO) {
+                singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
+            }
             // update the UI
             withContext(Dispatchers.Main) {
                 singerTypeList?.let {
@@ -102,6 +103,20 @@ class SingerTyListFragment : Fragment(), RecyclerItemListener {
                     .inject(this@SingerTyListFragment)
                 mRecyclerView?.setAdapter(myViewAdapter)
                 mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
+                updateRecyclerView()
+            }
+        }
+    }
+
+    private fun updateRecyclerView() {
+        singerTypeListEmptyTextView?.visibility = View.GONE
+        singerTypeList?.let {
+            if (it.singerTypes.isEmpty()) {
+                mRecyclerView?.visibility = View.GONE
+                showVideoButton?.post { showVideoButton?.requestFocus() }
+            } else {
+                mRecyclerView?.visibility = View.VISIBLE
+                mRecyclerView?.post { mRecyclerView?.requestFocus() }
             }
         }
     }

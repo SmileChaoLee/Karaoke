@@ -2,12 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green"
-    android:orientation="vertical"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:background="@color/transparentDarkGray">
 
     <TextView
         android:id="@+id/songsListMenuTextView"
@@ -20,7 +18,6 @@
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintTop_toTopOf="parent">
     </TextView>
-
     <LinearLayout
         android:id="@+id/songSearchLayout"
         android:layout_width="match_parent"
@@ -29,39 +26,38 @@
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintTop_toBottomOf="@+id/songsListMenuTextView" >
-
         <EditText
             android:id="@+id/songSearchEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:autofillHints=""
+            android:inputType="textMultiLine"
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:text=""
             android:hint="@string/songNameString"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="80dp"
-            android:inputType="textMultiLine"
             android:gravity="center_vertical|start">
         </EditText>
-
     </LinearLayout>
-
-
     <FrameLayout
         android:id="@+id/songsListView_Layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/darkYellow"
+        android:background="@color/yellow3"
         app:layout_constraintHeight_percent="0.6"
         app:layout_constraintTop_toBottomOf="@+id/songSearchLayout" >
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/songListRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/yellow3"
+            android:focusable="true"
+            android:clickable="true"
+            android:descendantFocusability ="afterDescendants">
         </androidx.recyclerview.widget.RecyclerView>
-
         <TextView android:id="@+id/songListEmptyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -70,78 +66,97 @@
             android:gravity="center"
             android:visibility="gone" >
         </TextView>
-
     </FrameLayout>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        style="?android:attr/buttonBarStyle"
         app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintBottom_toTopOf="@id/songsListReturnButton"
+        app:layout_constraintBottom_toTopOf="@id/exitShowVideoLayout"
         android:weightSum="4">
-
         <Button
             android:id="@+id/firstPageButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/firstPage"
             android:background="@android:drawable/btn_default"
             android:textStyle="bold"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/songListEmptyTextView"
+            android:nextFocusLeft="@id/firstPageButton"
+            android:nextFocusRight="@id/previousPageButton"
+            android:nextFocusDown="@id/u2bKShowVideoButton"
             android:textColor="@color/blue"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
-
         <Button
             android:id="@+id/previousPageButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/previousPage"
             android:background="@android:drawable/btn_default"
             android:textStyle="bold"
             android:textColor="@color/blue"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/songListEmptyTextView"
+            android:nextFocusLeft="@id/firstPageButton"
+            android:nextFocusRight="@id/nextPageButton"
+            android:nextFocusDown="@id/u2bKShowVideoButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
-
         <Button
             android:id="@+id/nextPageButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/nextPage"
             android:background="@android:drawable/btn_default"
             android:textStyle="bold"
             android:textColor="@color/blue"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/songListEmptyTextView"
+            android:nextFocusLeft="@id/previousPageButton"
+            android:nextFocusRight="@id/lastPageButton"
+            android:nextFocusDown="@id/u2bKShowVideoButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
-
         <Button
             android:id="@+id/lastPageButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/lastPage"
             android:background="@android:drawable/btn_default"
             android:textStyle="bold"
             android:textColor="@color/blue"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/songListEmptyTextView"
+            android:nextFocusLeft="@id/nextPageButton"
+            android:nextFocusRight="@id/lastPageButton"
+            android:nextFocusDown="@id/u2bKShowVideoButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
-
     </LinearLayout>
-
-    <Button
-        android:id="@+id/songsListReturnButton"
+    <LinearLayout
+        android:id="@+id/exitShowVideoLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:text="@string/returnToPrevious"
-        android:background="@drawable/yellow_square_button"
-        android:textColor="@color/red"
-        android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintBottom_toBottomOf="parent" >
-    </Button>
+        <include layout="@layout/exit_show_video_layout" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

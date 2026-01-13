@@ -15,7 +15,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,6 @@ import com.smile.u2bkaraoke.model.SongList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.retrofit.RestApiSync
-import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,7 +37,7 @@ import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
-class SongListFragment : Fragment(), RecyclerItemListener {
+class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG = "SongListFragment"
@@ -47,12 +45,15 @@ class SongListFragment : Fragment(), RecyclerItemListener {
 
     @Inject
     lateinit var myViewAdapter: SongListAdapter
-    private var textFontSize = 0f
     private var searchEditText: EditText? = null
     private var isSearchEditTextChanged = false
     private var filterString: String? = null
     private var songListEmptyTextView: TextView? = null
     private var mRecyclerView: RecyclerView? = null
+    private var firstPageButton: Button? = null
+    private var previousPageButton: Button? = null
+    private var nextPageButton: Button? = null
+    private var lastPageButton: Button? = null
     private var songList: SongList? = null
     private var singer: Singer? = null
     private var language: Language? = null
@@ -115,14 +116,11 @@ class SongListFragment : Fragment(), RecyclerItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-        super.onViewCreated(view, savedInstanceState)
 
-        val act = activity ?: return
-        val songListTitle = act.getString(R.string.songsListString)
         view.apply {
             val songsListMenuTextView = findViewById<TextView>(R.id.songsListMenuTextView)
             ScreenUtil.resizeTextSize(songsListMenuTextView, textFontSize)
-            songsListMenuTextView.text = "$activityTitle $songListTitle"
+            songsListMenuTextView.text = activityTitle
 
             filterString = ""
             searchEditText = findViewById(R.id.songSearchEditText)
@@ -155,31 +153,30 @@ class SongListFragment : Fragment(), RecyclerItemListener {
             songListEmptyTextView = findViewById(R.id.songListEmptyTextView)
             ScreenUtil.resizeTextSize(songListEmptyTextView, textFontSize)
             songListEmptyTextView?.visibility = View.GONE
-
             val smallButtonFontSize = textFontSize * 0.7f
-            val firstPageButton = findViewById<Button>(R.id.firstPageButton)
+            firstPageButton = findViewById(R.id.firstPageButton)
             ScreenUtil.resizeTextSize(firstPageButton, smallButtonFontSize)
-            firstPageButton.setOnClickListener { firstPage() }
-
-            val previousPageButton = findViewById<Button>(R.id.previousPageButton)
+            previousPageButton = findViewById(R.id.previousPageButton)
             ScreenUtil.resizeTextSize(previousPageButton, smallButtonFontSize)
-            previousPageButton.setOnClickListener { previousPage() }
-
-            val nextPageButton = findViewById<Button>(R.id.nextPageButton)
+            nextPageButton = findViewById(R.id.nextPageButton)
             ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize)
-            nextPageButton.setOnClickListener { nextPage() }
-
-            val lastPageButton = findViewById<Button>(R.id.lastPageButton)
+            lastPageButton = findViewById(R.id.lastPageButton)
             ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
-            lastPageButton.setOnClickListener { lastPage() }
-
-            val songsListReturnButton = findViewById<Button>(R.id.songsListReturnButton)
-            ScreenUtil.resizeTextSize(songsListReturnButton, textFontSize)
-            songsListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
+        super.onViewCreated(view, savedInstanceState)
+        exitImageButton?.nextFocusUpId = R.id.nextPageButton
+        showVideoButton?.nextFocusUpId = R.id.nextPageButton
 
         // restApi = MyRestApi()
         retrieveSongList()
+    }
+
+    override fun setClickListeners() {
+        super.setClickListeners()
+        firstPageButton?.setOnClickListener { firstPage() }
+        previousPageButton?.setOnClickListener { previousPage() }
+        nextPageButton?.setOnClickListener { nextPage() }
+        lastPageButton?.setOnClickListener { lastPage() }
     }
 
     override fun onItemClick(v: View?, position: Int) {
@@ -200,72 +197,96 @@ class SongListFragment : Fragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
-        act.lifecycleScope.launch(Dispatchers.IO) {
-            val restApi = RestApiSync.getApiSync()
-            when (orderedFrom) {
-                Constants.SingerOrdered -> {
-                    LogUtil.d(TAG, "$logStr.SingerOrdered")
-                    restApi.let { rApi ->
-                        val singer = objectPassed as? Singer ?: Singer()
-                        songList = if (filterString.isNullOrEmpty()) {
-                            rApi.getSongsBySinger(singer, pageSize, pageNo)
-                        } else {
-                            rApi.getSongsBySinger(singer, pageSize, pageNo,filterString!!)
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            mRecyclerView?.visibility = View.GONE
+            songListEmptyTextView?.visibility = View.VISIBLE
+            songListEmptyTextView?.text = act.getString(R.string.loadingString)
+            withContext(Dispatchers.IO) {
+                val restApi = RestApiSync.getApiSync()
+                when (orderedFrom) {
+                    Constants.SingerOrdered -> {
+                        LogUtil.d(TAG, "$logStr.SingerOrdered")
+                        restApi.let { rApi ->
+                            val singer = objectPassed as? Singer ?: Singer()
+                            songList = if (filterString.isNullOrEmpty()) {
+                                rApi.getSongsBySinger(singer, pageSize, pageNo)
+                            } else {
+                                rApi.getSongsBySinger(singer, pageSize, pageNo, filterString!!)
+                            }
+                            objectPassed = singer
                         }
-                        objectPassed = singer
                     }
-                }
-                // Constants.NewSongOrdered -> LogUtil.d(TAG, "retrieveSongList.NewSongOrdered")
-                // Constants.HotSongOrdered -> LogUtil.d(TAG, "retrieveSongList.HotSongOrdered")
-                Constants.NewSongLanguageOrdered -> {
-                    LogUtil.d(TAG, "$logStr.NewSongLanguageOrdered")
-                    restApi.let { rApi ->
-                        val language = objectPassed as? Language ?: Language()
-                        songList = if (filterString.isNullOrEmpty()) {
-                            rApi.getNewSongsByLanguage(language, pageSize, pageNo)
-                        } else {
-                            rApi.getNewSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    Constants.NewSongLanguageOrdered -> {
+                        LogUtil.d(TAG, "$logStr.NewSongLanguageOrdered")
+                        restApi.let { rApi ->
+                            val language = objectPassed as? Language ?: Language()
+                            songList = if (filterString.isNullOrEmpty()) {
+                                rApi.getNewSongsByLanguage(language, pageSize, pageNo)
+                            } else {
+                                rApi.getNewSongsByLanguage(
+                                    language,
+                                    pageSize,
+                                    pageNo,
+                                    filterString!!
+                                )
+                            }
+                            objectPassed = language
                         }
-                        objectPassed = language
                     }
-                }
-                Constants.HotSongLanguageOrdered -> {
-                    LogUtil.d(TAG, "$logStr.HotSongLanguageOrdered")
-                    restApi.let { rApi ->
-                        val language = objectPassed as? Language ?: Language()
-                        songList = if (filterString.isNullOrEmpty()) {
-                            rApi.getHotSongsByLanguage(language, pageSize, pageNo)
-                        } else {
-                            rApi.getHotSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    Constants.HotSongLanguageOrdered -> {
+                        LogUtil.d(TAG, "$logStr.HotSongLanguageOrdered")
+                        restApi.let { rApi ->
+                            val language = objectPassed as? Language ?: Language()
+                            songList = if (filterString.isNullOrEmpty()) {
+                                rApi.getHotSongsByLanguage(language, pageSize, pageNo)
+                            } else {
+                                rApi.getHotSongsByLanguage(
+                                    language,
+                                    pageSize,
+                                    pageNo,
+                                    filterString!!
+                                )
+                            }
+                            objectPassed = language
                         }
-                        objectPassed = language
                     }
-                }
-                Constants.LanguageOrdered -> {
-                    LogUtil.d(TAG, "$logStr.LanguageOrdered")
-                    restApi.let { rApi ->
-                        val language = objectPassed as? Language ?: Language()
-                        songList = if (filterString.isNullOrEmpty()) {
-                            rApi.getSongsByLanguage(language, pageSize, pageNo)
-                        } else {
-                            rApi.getSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                    Constants.LanguageOrdered -> {
+                        LogUtil.d(TAG, "$logStr.LanguageOrdered")
+                        restApi.let { rApi ->
+                            val language = objectPassed as? Language ?: Language()
+                            songList = if (filterString.isNullOrEmpty()) {
+                                rApi.getSongsByLanguage(language, pageSize, pageNo)
+                            } else {
+                                rApi.getSongsByLanguage(language, pageSize, pageNo, filterString!!)
+                            }
+                            objectPassed = language
                         }
-                        objectPassed = language
                     }
-                }
-                Constants.LanguageWordsOrdered -> {
-                    LogUtil.d(TAG, "$logStr.LanguageWordsOrdered")
-                    restApi.let { rApi ->
-                        val language = objectPassed as? Language ?: Language()
-                        songList = if (filterString.isNullOrEmpty()) {
-                            rApi.getSongsByLanguageNumOfWords(language, numOfWords, pageSize, pageNo)
-                        } else {
-                            rApi.getSongsByLanguageNumOfWords(language, numOfWords, pageSize, pageNo, filterString!!)
+                    Constants.LanguageWordsOrdered -> {
+                        LogUtil.d(TAG, "$logStr.LanguageWordsOrdered")
+                        restApi.let { rApi ->
+                            val language = objectPassed as? Language ?: Language()
+                            songList = if (filterString.isNullOrEmpty()) {
+                                rApi.getSongsByLanguageNumOfWords(
+                                    language,
+                                    numOfWords,
+                                    pageSize,
+                                    pageNo
+                                )
+                            } else {
+                                rApi.getSongsByLanguageNumOfWords(
+                                    language,
+                                    numOfWords,
+                                    pageSize,
+                                    pageNo,
+                                    filterString!!
+                                )
+                            }
+                            objectPassed = language
                         }
-                        objectPassed = language
                     }
-                }
-            }   // end of when(), finished the retrieving song list from server
+                }   // end of when(), finished the retrieving song list from server
+            }
             // update the UI
             withContext(Dispatchers.Main) {
                 songList?.let { sList ->
@@ -301,6 +322,20 @@ class SongListFragment : Fragment(), RecyclerItemListener {
                     imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
                     isSearchEditTextChanged = false
                 }
+                updateRecyclerView()
+            }
+        }
+    }
+
+    private fun updateRecyclerView() {
+        songListEmptyTextView?.visibility = View.GONE
+        songList?.let {
+            if (it.songs.isEmpty()) {
+                mRecyclerView?.visibility = View.GONE
+                showVideoButton?.post { showVideoButton?.requestFocus() }
+            } else {
+                mRecyclerView?.visibility = View.VISIBLE
+                mRecyclerView?.post { mRecyclerView?.requestFocus() }
             }
         }
     }

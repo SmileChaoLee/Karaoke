@@ -39,6 +39,11 @@ class SingerTypeListAdapter(
             itemView.setOnClickListener {
                 itemListener.onItemClick(it, bindingAdapterPosition)
             }
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                itemListener.onItemViewFocusChanged(
+                    v, bindingAdapterPosition, hasFocus
+                )
+            }
         }
     }
 
@@ -47,7 +52,8 @@ class SingerTypeListAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
 
         // inflate the singerType item view
-        return MyViewHolder(layoutInflater.inflate(R.layout.singer_type_list_item, parent, false))
+        return MyViewHolder(layoutInflater.inflate(R.layout.singer_type_list_item,
+            parent, false))
     }
 
     // Involves populating data into the item through holder
@@ -61,6 +67,9 @@ class SingerTypeListAdapter(
                 "2" -> "Female"
                 else ->                 // "0"
                     ""
+            }
+            if (position == 0) {
+                itemView.post { itemView.requestFocus() }
             }
         }
     }

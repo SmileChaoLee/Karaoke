@@ -2,82 +2,104 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green"
-    android:orientation="vertical">
+    style="?android:attr/buttonBarStyle"
+    android:background="@color/transparentDarkGray">
 
-    <TextView
-        android:id="@+id/mainMenuTextView"
+    <Button
+        android:id="@+id/singerOrderButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:textStyle="bold"
-        android:textColor="@color/darkOrange"
-        android:text="@string/mainMenuTitle"
-        android:gravity="center"
-        app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintTop_toTopOf="parent">
-    </TextView>
-
+        android:text="@string/singerOrderString"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@color/my_button_text_color"
+        android:background="@drawable/yellow_square_button"
+        android:layout_margin="10sp"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/singerOrderButton"
+        android:nextFocusLeft="@id/singerOrderButton"
+        android:nextFocusRight="@id/singerOrderButton"
+        android:nextFocusDown="@id/newSongOrderButton"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </Button>
+    <Button
+        android:id="@+id/newSongOrderButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/newSongOrderString"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@color/my_button_text_color"
+        android:background="@drawable/yellow_square_button"
+        android:layout_margin="10sp"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/singerOrderButton"
+        android:nextFocusLeft="@id/newSongOrderButton"
+        android:nextFocusRight="@id/newSongOrderButton"
+        android:nextFocusDown="@id/hotSongOrderButton"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toBottomOf="@id/singerOrderButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </Button>
+    <Button
+        android:id="@+id/hotSongOrderButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/hotSongOrderString"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@color/my_button_text_color"
+        android:background="@drawable/yellow_square_button"
+        android:layout_margin="10sp"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/newSongOrderButton"
+        android:nextFocusLeft="@id/hotSongOrderButton"
+        android:nextFocusRight="@id/hotSongOrderButton"
+        android:nextFocusDown="@id/languageOrderButton"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toBottomOf="@id/newSongOrderButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </Button>
+    <Button
+        android:id="@+id/languageOrderButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/languageOrderString"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@color/my_button_text_color"
+        android:background="@drawable/yellow_square_button"
+        android:layout_margin="10sp"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/hotSongOrderButton"
+        android:nextFocusLeft="@id/languageOrderButton"
+        android:nextFocusRight="@id/languageOrderButton"
+        android:nextFocusDown="@id/u2bKShowVideoButton"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toBottomOf="@id/hotSongOrderButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </Button>
     <LinearLayout
+        android:id="@+id/exitShowVideoLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.9"
-        app:layout_constraintTop_toBottomOf="@+id/mainMenuTextView"
-        android:weightSum="5">
-
-        <Button
-            android:id="@+id/singerOrderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/singerOrderString"
-            android:background="@drawable/yellow_square_button"
-            android:textColor="@color/blue"
-            android:layout_margin="10dp"
-            android:layout_weight="1">
-        </Button>
-        <Button
-            android:id="@+id/newSongOrderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/newSongOrderString"
-            android:background="@drawable/yellow_square_button"
-            android:textColor="@color/blue"
-            android:layout_margin="10dp"
-            android:layout_weight="1">
-        </Button>
-        <Button
-            android:id="@+id/hotSongOrderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/hotSongOrderString"
-            android:background="@drawable/yellow_square_button"
-            android:textColor="@color/blue"
-            android:layout_margin="10dp"
-            android:layout_weight="1">
-        </Button>
-        <Button
-            android:id="@+id/languageOrderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/languageOrderString"
-            android:background="@drawable/yellow_square_button"
-            android:textColor="@color/blue"
-            android:layout_margin="10dp"
-            android:layout_weight="1">
-        </Button>
-        <Button
-            android:id="@+id/exitProgramButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/exitProgram"
-            android:background="@drawable/yellow_square_button"
-            android:textStyle="bold"
-            android:textColor="@color/red"
-            android:layout_margin="10dp"
-            android:layout_weight="1">
-        </Button>
+        android:gravity="center"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintTop_toBottomOf="@id/languageOrderButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <include layout="@layout/exit_show_video_layout" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

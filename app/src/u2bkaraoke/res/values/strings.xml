@@ -24,13 +24,13 @@
     <string name="groupSinger">Group Singers</string>
     <string name="returnToPrevious">Return</string>
 
-    <string name="languagesListString">Language List</string>
+    <string name="languagesListString">Languages</string>
     <string name="wordsListString">Number of Words</string>
-    <string name="newSongLanguagesListString">Lang List of New Songs</string>
-    <string name="hotSongLanguagesListString">Lang List of Hot Songs</string>
-    <string name="singerTypesListString">Singer Type List</string>
-    <string name="songsListString">Song List</string>
-    <string name="singersListString">Singer List</string>
+    <string name="newSongLanguagesListString">Languages of New Songs</string>
+    <string name="hotSongLanguagesListString">Languages of Hot Songs</string>
+    <string name="singerTypesListString">Singer Types</string>
+    <string name="songsListString">Songs</string>
+    <string name="singersListString">Singers</string>
 
     <string name="firstPage">First Page</string>
     <string name="previousPage">Prev Page</string>

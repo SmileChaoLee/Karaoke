@@ -24,6 +24,8 @@
         android:background="@color/transparentLightGray"
         android:focusable="true"
         android:clickable="true"
+        app:tabPaddingStart="0dp"
+        app:tabPaddingEnd="0dp"
         app:tabMaxWidth="0dp"
         app:tabGravity="fill"
         app:tabMode="fixed"

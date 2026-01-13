@@ -7,20 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.model.Constants
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 
-class U2bKaOkFragment: Fragment() {
+class U2bKaOkFragment: U2bKKBaseFragment() {
 
     companion object {
         private const val TAG = "U2bKaOkFragment"
     }
 
     var singerOrderButton: Button? = null
+    var newSongOrderButton: Button? = null
+    var hotSongOrderButton: Button? = null
+    var languageOrderButton: Button? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -46,63 +49,21 @@ class U2bKaOkFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onViewCreated")
-        val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-        super.onViewCreated(view, savedInstanceState)
-
-        val fragContainerId = this.id   // container id of the fragment
-        val fragManager = activity?.supportFragmentManager
+        // val fragContainerId = this.id   // container id of the fragment
+        // val fragManager = activity?.supportFragmentManager
         view.apply {
-            val mainMenuTextView = findViewById<TextView>(R.id.mainMenuTextView)
-            ScreenUtil.resizeTextSize(mainMenuTextView, textFontSize)
-
             singerOrderButton = findViewById(R.id.singerOrderButton)
             ScreenUtil.resizeTextSize(singerOrderButton, textFontSize)
-            singerOrderButton?.setOnClickListener {
-                fragManager?.let { fm ->
-                    val nFragment = SingerTyListFragment()
-                    U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
-                }
-            }
-
-            val newSongOrderButton = findViewById<Button>(R.id.newSongOrderButton)
+            newSongOrderButton = findViewById(R.id.newSongOrderButton)
             ScreenUtil.resizeTextSize(newSongOrderButton, textFontSize)
-            newSongOrderButton.setOnClickListener {
-                fragManager?.let { fm ->
-                    val nFragment = LangListFragment().apply {
-                        arguments = Bundle().apply {
-                            putInt(Constants.OrderedFrom, Constants.NewSongOrdered)
-                        }
-                    }
-                    U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
-                }
-            }
-
-            val hotSongOrderButton = findViewById<Button>(R.id.hotSongOrderButton)
+            hotSongOrderButton = findViewById(R.id.hotSongOrderButton)
             ScreenUtil.resizeTextSize(hotSongOrderButton, textFontSize)
-            hotSongOrderButton.setOnClickListener {
-                fragManager?.let { fm ->
-                    val nFragment = LangListFragment().apply {
-                        arguments = Bundle().apply {
-                            putInt(Constants.OrderedFrom, Constants.HotSongOrdered)
-                        }
-                    }
-                    U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
-                }
-            }
-
-            val languageOrderButton = findViewById<Button>(R.id.languageOrderButton)
+            languageOrderButton = findViewById(R.id.languageOrderButton)
             ScreenUtil.resizeTextSize(languageOrderButton, textFontSize)
-            languageOrderButton.setOnClickListener {
-                fragManager?.let { fm ->
-                    val nFragment = LangListFragment()
-                    U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
-                }
-            }
-
-            val exitProgramButton = findViewById<Button>(R.id.exitProgramButton)
-            ScreenUtil.resizeTextSize(exitProgramButton, textFontSize)
-            exitProgramButton.setOnClickListener { activity?.finish() }
         }
+        super.onViewCreated(view, savedInstanceState)
+        exitImageButton?.nextFocusUpId = R.id.languageOrderButton
+        showVideoButton?.nextFocusUpId = R.id.languageOrderButton
     }
 
     override fun onResume() {
@@ -123,5 +84,45 @@ class U2bKaOkFragment: Fragment() {
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
         super.onDestroy()
+    }
+
+    override fun setClickListeners() {
+        super.setClickListeners()
+
+        exitImageButton?.setOnClickListener {
+            activity?.finish()
+        }
+        singerOrderButton?.setOnClickListener {
+            mFragManager?.let { fm ->
+                val nFragment = SingerTyListFragment()
+                U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
+            }
+        }
+        newSongOrderButton?.setOnClickListener {
+            mFragManager?.let { fm ->
+                val nFragment = LangListFragment().apply {
+                    arguments = Bundle().apply {
+                        putInt(Constants.OrderedFrom, Constants.NewSongOrdered)
+                    }
+                }
+                U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
+            }
+        }
+        hotSongOrderButton?.setOnClickListener {
+            mFragManager?.let { fm ->
+                val nFragment = LangListFragment().apply {
+                    arguments = Bundle().apply {
+                        putInt(Constants.OrderedFrom, Constants.HotSongOrdered)
+                    }
+                }
+                U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
+            }
+        }
+        languageOrderButton?.setOnClickListener {
+            mFragManager?.let { fm ->
+                val nFragment = LangListFragment()
+                U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
+            }
+        }
     }
 }

@@ -24,13 +24,13 @@
     <string name="groupSinger">團體歌手</string>
     <string name="returnToPrevious">回上一個功能</string>
 
-    <string name="languagesListString">語言類別清單</string>
+    <string name="languagesListString">語言類別</string>
     <string name="wordsListString">字部選項</string>
-    <string name="newSongLanguagesListString">最新歌曲的語言清單</string>
-    <string name="hotSongLanguagesListString">排行歌曲的語言清單</string>
-    <string name="singerTypesListString">歌星類別清單</string>
-    <string name="songsListString">歌曲清單</string>
-    <string name="singersListString">歌星清單</string>
+    <string name="newSongLanguagesListString">最新歌曲的語言</string>
+    <string name="hotSongLanguagesListString">排行歌曲的語言</string>
+    <string name="singerTypesListString">歌星類別</string>
+    <string name="songsListString">歌曲</string>
+    <string name="singersListString">歌星</string>
 
     <string name="firstPage">首頁</string>
     <string name="previousPage">上頁</string>

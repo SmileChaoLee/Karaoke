@@ -1,0 +1,116 @@
+package com.smile.u2bkaraoke.fragments
+
+import android.annotation.SuppressLint
+import android.content.res.Configuration
+import android.graphics.Point
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.smile.karaoke.R
+import com.smile.karaoke.interfaces.PlaySongs
+import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
+
+abstract class U2bKKBaseFragment : Fragment() {
+
+    companion object {
+        private const val TAG : String = "ItemsBaseFragment"
+    }
+
+    var textFontSize = 0.0f
+    var screen = Point()
+    var fragmentView : View? = null
+    var fragContainerId = 0
+    var mFragManager: FragmentManager? = null
+    var showVideoButton: ImageButton? = null
+    var exitImageButton: ImageButton? = null
+    private var playSongs: PlaySongs? = null
+    var buttonParam: LinearLayout.LayoutParams? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtil.i(TAG, "onCreate")
+        super.onCreate(savedInstanceState)
+        activity?.let {
+            textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
+            screen = ScreenUtil.getScreenSize(it)
+            if (it is PlaySongs) playSongs = it
+            LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
+            fragContainerId = this.id   // container id of the fragment
+            mFragManager = it.supportFragmentManager
+        }
+        LogUtil.d(TAG, "onCreate.finished")
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        LogUtil.i(TAG, "onViewCreated")
+        super.onViewCreated(view, savedInstanceState)
+
+        fragmentView = view
+        view.apply {
+            showVideoButton = findViewById(R.id.u2bKShowVideoButton)
+            exitImageButton = findViewById(R.id.u2bKExitButton)
+            isFocusable = true
+            isFocusableInTouchMode = true
+            requestFocus()
+            setOnKeyListener {_, keyCode, event ->
+                showVideoButton?.post { showVideoButton?.requestFocus() }
+                return@setOnKeyListener false
+            }
+        }
+        setClickListeners()
+        setButtonsSize()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        LogUtil.i(TAG, "onConfigurationChanged")
+        setButtonsSize()
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onResume() {
+        LogUtil.i(TAG, "onResume")
+        super.onResume()
+        showVideoButton?.post { showVideoButton?.requestFocus() }
+    }
+
+    override fun onPause() {
+        LogUtil.i(TAG, "onPause")
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogUtil.i(TAG, "onDestroy")
+    }
+
+    open fun setClickListeners() {
+        showVideoButton?.setOnClickListener {
+            playSongs?.switchToPlayerView()
+        }
+        exitImageButton?.setOnClickListener {
+            // playSongs?.returnToPrevious()
+            U2bKaOkUtil.returnToPrevious(activity)
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    open fun setButtonsSize() {
+        val buttonWidth = (textFontSize*2.0f).toInt()
+        // val margin = ScreenUtil.dpToPixel(50f).toInt()
+        showVideoButton?.let {
+            buttonParam = it.layoutParams as LinearLayout.LayoutParams
+            buttonParam?.apply {
+                width = buttonWidth
+                height = buttonWidth
+                gravity = Gravity.CENTER
+                // setMargins(margin, 0, margin, 0)
+            }
+            exitImageButton?.layoutParams = buttonParam
+        }
+    }
+}
