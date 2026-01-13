@@ -56,7 +56,7 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         savedInstanceState: Bundle?): View? {
         LogUtil.i(TAG, "onCreateView")
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.activity_word_list,
+        val view = inflater.inflate(R.layout.fragment_word_list,
             container, false)
         return view
     }

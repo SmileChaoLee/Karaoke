@@ -34,7 +34,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         savedInstanceState: Bundle?): View? {
         LogUtil.i(TAG, "onCreateView")
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.activity_u2bkaok,
+        val view = inflater.inflate(R.layout.fragment_u2bkaok,
             container, false)
 
         // commented out because moving to onViewCreated()
