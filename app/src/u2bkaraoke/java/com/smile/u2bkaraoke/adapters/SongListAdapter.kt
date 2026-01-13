@@ -73,6 +73,9 @@ class SongListAdapter(
             languageNameTextView.text = song.languageNa
             singer1NameTextView.text = song.singer1Na
             singer2NameTextView.text = song.singer2Na
+            if (position == 0) {
+                itemView.post { itemView.requestFocus() }
+            }
         }
     }
 

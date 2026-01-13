@@ -69,6 +69,7 @@ class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             singerTypeListEmptyTextView?.visibility = View.GONE
             mRecyclerView = findViewById(R.id.singerTypeListRecyclerView)
         }
+
         super.onViewCreated(view, savedInstanceState)
         exitImageButton?.nextFocusUpId = R.id.singerTypeListRecyclerView
         showVideoButton?.nextFocusUpId = R.id.singerTypeListRecyclerView

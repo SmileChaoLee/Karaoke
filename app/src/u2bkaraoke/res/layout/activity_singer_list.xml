@@ -25,7 +25,7 @@
         android:background="@drawable/search_bar"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintTop_toBottomOf="@+id/singerListMenuTextView" >
+        app:layout_constraintTop_toBottomOf="@id/singerListMenuTextView" >
         <EditText
             android:id="@+id/singerSearchEditText"
             android:layout_width="match_parent"
@@ -48,7 +48,7 @@
         android:layout_height="0dp"
         android:background="@color/yellow3"
         app:layout_constraintHeight_percent="0.6"
-        app:layout_constraintTop_toBottomOf="@+id/singerSearchLayout" >
+        app:layout_constraintTop_toBottomOf="@id/singerSearchLayout" >
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/singerListRecyclerView"
             android:layout_width="match_parent"
@@ -68,12 +68,13 @@
         </TextView>
     </FrameLayout>
     <LinearLayout
+        android:id="@+id/buttonsLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         style="?android:attr/buttonBarStyle"
         app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintBottom_toTopOf="@id/exitShowVideoLayout"
+        app:layout_constraintTop_toBottomOf="@id/singersListView_Layout"
         android:weightSum="4">
         <Button
             android:id="@+id/firstPageButton"
@@ -155,6 +156,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toBottomOf="@id/buttonsLayout"
         app:layout_constraintBottom_toBottomOf="parent" >
         <include layout="@layout/exit_show_video_layout" />
     </LinearLayout>

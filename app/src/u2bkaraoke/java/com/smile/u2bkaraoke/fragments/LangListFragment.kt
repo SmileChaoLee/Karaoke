@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +27,7 @@ import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
-class LangListFragment : Fragment(), RecyclerItemListener {
+class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG = "LangListFragment"
@@ -38,7 +36,6 @@ class LangListFragment : Fragment(), RecyclerItemListener {
     @Inject
     lateinit var myViewAdapter: LangListAdapter
     private var mRecyclerView: RecyclerView? = null
-    private var textFontSize = 0f
     private var langListEmptyTextView: TextView? = null
     private var languageList: LanguageList? = null
     private var orderedFrom = 0
@@ -65,8 +62,6 @@ class LangListFragment : Fragment(), RecyclerItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-        super.onViewCreated(view, savedInstanceState)
-
         val act = activity ?: return
         view.apply {
             val menuTextView = findViewById<TextView>(R.id.languagesListMenuTextView)
@@ -79,21 +74,24 @@ class LangListFragment : Fragment(), RecyclerItemListener {
                 Constants.HotSongOrdered ->
                     menuTextView.text = act.getString(R.string.hotSongLanguagesListString)
             }
-
             langListEmptyTextView = findViewById(R.id.languagesListEmptyTextView)
             ScreenUtil.resizeTextSize(langListEmptyTextView, textFontSize)
             langListEmptyTextView?.visibility = View.GONE
-
             mRecyclerView = findViewById(R.id.languageListRecyclerView)
-
-            val languagesListReturnButton = findViewById<Button>(R.id.languagesListReturnButton)
-            ScreenUtil.resizeTextSize(languagesListReturnButton, textFontSize)
-            languagesListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
         }
 
+        super.onViewCreated(view, savedInstanceState)
+        exitImageButton?.nextFocusUpId = R.id.languageListRecyclerView
+        showVideoButton?.nextFocusUpId = R.id.languageListRecyclerView
+
         // MyRestApi().getAllLanguages()
-        act.lifecycleScope.launch(Dispatchers.IO) {
-            languageList = RestApiSync.getApiSync().getAllLanguages()
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            mRecyclerView?.visibility = View.GONE
+            langListEmptyTextView?.visibility = View.VISIBLE
+            langListEmptyTextView?.text = act.getString(R.string.loadingString)
+            withContext(Dispatchers.IO) {
+                languageList = RestApiSync.getApiSync().getAllLanguages()
+            }
             // update the UI
             withContext(Dispatchers.Main) {
                 languageList?.let {
@@ -116,6 +114,20 @@ class LangListFragment : Fragment(), RecyclerItemListener {
                     .inject(this@LangListFragment)
                 mRecyclerView?.setAdapter(myViewAdapter)
                 mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
+                updateRecyclerView()
+            }
+        }
+    }
+
+    private fun updateRecyclerView() {
+        langListEmptyTextView?.visibility = View.GONE
+        languageList?.let {
+            if (it.languages.isEmpty()) {
+                mRecyclerView?.visibility = View.GONE
+                showVideoButton?.post { showVideoButton?.requestFocus() }
+            } else {
+                mRecyclerView?.visibility = View.VISIBLE
+                mRecyclerView?.post { mRecyclerView?.requestFocus() }
             }
         }
     }

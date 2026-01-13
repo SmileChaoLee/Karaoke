@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
@@ -23,16 +21,15 @@ import com.smile.u2bkaraoke.adapters.WordListAdapter
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import javax.inject.Inject
 
-class WordListFragment : Fragment(), RecyclerItemListener {
+class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG = "WordListFragment"
     }
 
-    // @JvmField
     @Inject
     lateinit var myViewAdapter: WordListAdapter
-    private var textFontSize = 0f
+    private var mRecyclerView: RecyclerView? = null
     private var languageTitle = ""
     private lateinit var mWordList: ArrayList<String>
     private lateinit var mLanguage: Language
@@ -68,7 +65,6 @@ class WordListFragment : Fragment(), RecyclerItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
-        super.onViewCreated(view, savedInstanceState)
 
         val act = activity ?: return
         val wordsListTitle = act.getString(R.string.wordsListString)
@@ -76,7 +72,6 @@ class WordListFragment : Fragment(), RecyclerItemListener {
             val wordsListMenuTextView = findViewById<TextView>(R.id.wordsListMenuTextView)
             ScreenUtil.resizeTextSize(wordsListMenuTextView, textFontSize)
             wordsListMenuTextView.text = "$languageTitle $wordsListTitle"
-
             mWordList = ArrayList()
             mWordList.add(act.getString(R.string.oneWordOrderString))
             mWordList.add(act.getString(R.string.twoWordsOrderString))
@@ -88,20 +83,29 @@ class WordListFragment : Fragment(), RecyclerItemListener {
             mWordList.add(act.getString(R.string.eightWordsOrderString))
             mWordList.add(act.getString(R.string.nineWordsOrderString))
             mWordList.add(act.getString(R.string.tenWordsOrderString))
-
-            val mRecyclerView = findViewById<RecyclerView>(R.id.wordListRecyclerView)
-            val wordsListReturnButton = findViewById<Button>(R.id.wordsListReturnButton)
-            ScreenUtil.resizeTextSize(wordsListReturnButton, textFontSize)
-            wordsListReturnButton.setOnClickListener { U2bKaOkUtil.returnToPrevious(act) }
-
+            mRecyclerView = findViewById<RecyclerView>(R.id.wordListRecyclerView)
             appCompBuilder
                 .recyclerItemListenerModule(this@WordListFragment)
                 .arraylistModule(mWordList)
                 .floatModule(textFontSize).build()
                 .inject(this@WordListFragment)
+            mRecyclerView?.setAdapter(myViewAdapter)
+            mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
+            updateRecyclerView()
+        }
 
-            mRecyclerView.setAdapter(myViewAdapter)
-            mRecyclerView.setLayoutManager(LinearLayoutManager(act.applicationContext))
+        super.onViewCreated(view, savedInstanceState)
+        exitImageButton?.nextFocusUpId = R.id.wordListRecyclerView
+        showVideoButton?.nextFocusUpId = R.id.wordListRecyclerView
+    }
+
+    private fun updateRecyclerView() {
+        if (mWordList.isEmpty()) {
+            mRecyclerView?.visibility = View.GONE
+            showVideoButton?.post { showVideoButton?.requestFocus() }
+        } else {
+            mRecyclerView?.visibility = View.VISIBLE
+            mRecyclerView?.post { mRecyclerView?.requestFocus() }
         }
     }
 

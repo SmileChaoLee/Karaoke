@@ -93,7 +93,6 @@ abstract class U2bKKBaseFragment : Fragment() {
             playSongs?.switchToPlayerView()
         }
         exitImageButton?.setOnClickListener {
-            // playSongs?.returnToPrevious()
             U2bKaOkUtil.returnToPrevious(activity)
         }
     }

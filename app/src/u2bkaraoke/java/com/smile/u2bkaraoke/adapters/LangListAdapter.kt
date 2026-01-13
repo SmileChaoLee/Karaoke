@@ -33,6 +33,12 @@ class LangListAdapter (
             itemView.setOnClickListener {
                 itemListener.onItemClick(it, bindingAdapterPosition)
             }
+
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                itemListener.onItemViewFocusChanged(
+                    v, bindingAdapterPosition, hasFocus
+                )
+            }
         }
     }
 
@@ -52,6 +58,9 @@ class LangListAdapter (
         holder.apply {
             positionNoTextView.text = position.toString()
             languageNaTextView.text = language.langNa
+            if (position == 0) {
+                itemView.post { itemView.requestFocus() }
+            }
         }
     }
 

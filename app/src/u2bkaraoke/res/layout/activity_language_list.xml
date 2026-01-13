@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green"
-    android:orientation="vertical">
+    android:background="@color/transparentDarkGray">
 
     <TextView
         android:id="@+id/languagesListMenuTextView"
@@ -19,22 +19,23 @@
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintTop_toTopOf="parent" >
     </TextView>
-
     <FrameLayout
         android:id="@+id/languagesListView_Layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/darkYellow"
+        android:background="@color/yellow3"
         app:layout_constraintHeight_percent="0.8"
-        app:layout_constraintTop_toBottomOf="@+id/languagesListMenuTextView" >
-
+        app:layout_constraintTop_toBottomOf="@id/languagesListMenuTextView">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/languageListRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/yellow3"
+            android:focusable="true"
+            android:clickable="true"
+            android:descendantFocusability ="afterDescendants">
         </androidx.recyclerview.widget.RecyclerView>
-
         <TextView android:id="@+id/languagesListEmptyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -43,20 +44,16 @@
             android:gravity="center"
             android:visibility="gone" >
         </TextView>
-
     </FrameLayout>
-
-    <Button
-        android:id="@+id/languagesListReturnButton"
+    <LinearLayout
+        android:id="@+id/exitShowVideoLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:text="@string/returnToPrevious"
-        android:background="@drawable/yellow_square_button"
-        android:textColor="@color/red"
-        android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toBottomOf="@id/languagesListView_Layout"
         app:layout_constraintBottom_toBottomOf="parent" >
-    </Button>
-
+        <include layout="@layout/exit_show_video_layout" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

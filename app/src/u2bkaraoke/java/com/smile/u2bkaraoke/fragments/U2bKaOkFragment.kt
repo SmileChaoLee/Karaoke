@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -61,6 +60,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
             languageOrderButton = findViewById(R.id.languageOrderButton)
             ScreenUtil.resizeTextSize(languageOrderButton, textFontSize)
         }
+
         super.onViewCreated(view, savedInstanceState)
         exitImageButton?.nextFocusUpId = R.id.languageOrderButton
         showVideoButton?.nextFocusUpId = R.id.languageOrderButton

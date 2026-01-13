@@ -130,6 +130,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             lastPageButton = findViewById(R.id.lastPageButton)
             ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
         }
+
         super.onViewCreated(view, savedInstanceState)
         exitImageButton?.nextFocusUpId = R.id.nextPageButton
         showVideoButton?.nextFocusUpId = R.id.nextPageButton

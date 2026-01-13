@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparentDarkGray"
-    android:orientation="vertical">
+    android:background="@color/transparentDarkGray">
     <TextView
         android:id="@+id/singerTypesListMenuTextView"
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
         android:layout_height="0dp"
         android:background="@color/yellow3"
         app:layout_constraintHeight_percent="0.8"
-        app:layout_constraintTop_toBottomOf="@+id/singerTypesListMenuTextView" >
+        app:layout_constraintTop_toBottomOf="@id/singerTypesListMenuTextView">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/singerTypeListRecyclerView"
             android:layout_width="match_parent"
@@ -46,11 +46,13 @@
         </TextView>
     </FrameLayout>
     <LinearLayout
+        android:id="@+id/exitShowVideoLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintTop_toBottomOf="@id/singerTypesListView_Layout"
         app:layout_constraintBottom_toBottomOf="parent" >
         <include layout="@layout/exit_show_video_layout" />
     </LinearLayout>

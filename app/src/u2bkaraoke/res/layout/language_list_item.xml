@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/darkYellow"
+    android:background="@android:color/transparent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusDown="@id/u2bKShowVideoButton"
     android:weightSum="7">
 
     <TextView android:id="@+id/languageItem_Layout_positionNoTextView"

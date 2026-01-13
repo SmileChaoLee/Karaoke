@@ -59,6 +59,9 @@ class SingerListAdapter(
             positionNoTextView.text = position.toString()
             singerNoTextView.text = singer.singNo
             singerNaTextView.text = singer.singNa
+            if (position == 0) {
+                itemView.post { itemView.requestFocus() }
+            }
         }
     }
 

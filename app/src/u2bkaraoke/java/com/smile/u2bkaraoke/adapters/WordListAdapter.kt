@@ -31,6 +31,12 @@ class WordListAdapter(
             itemView.setOnClickListener {
                 itemListener.onItemClick(it, bindingAdapterPosition)
             }
+
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                itemListener.onItemViewFocusChanged(
+                    v, bindingAdapterPosition, hasFocus
+                )
+            }
         }
     }
 
@@ -50,6 +56,9 @@ class WordListAdapter(
         holder.apply {
             wordNoTextView.text = "${position + 1}"
             wordNaTextView.text = word
+            if (position == 0) {
+                itemView.post { itemView.requestFocus() }
+            }
         }
     }
 
