@@ -330,7 +330,7 @@
                 android:indeterminate="false"
                 android:indeterminateOnly="false"
                 android:thumb="@drawable/duration_seekbar_thumb"
-                android:background="@drawable/file_menu_item_background_color"
+                android:background="@drawable/main_menu_item_background_color"
                 android:progressDrawable="@drawable/duration_seekbar_progress_drawable"
                 android:maxWidth="1000dp"
                 android:maxHeight="1000dp">

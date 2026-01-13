@@ -29,7 +29,7 @@
         app:tabMaxWidth="0dp"
         app:tabGravity="fill"
         app:tabMode="fixed"
-        app:tabBackground="@drawable/file_menu_item_background_color"
+        app:tabBackground="@drawable/main_menu_item_background_color"
         app:tabIconTint="@color/yellow"
         app:tabIndicatorColor="@color/yellow"
         app:tabSelectedTextColor="@color/yellow"

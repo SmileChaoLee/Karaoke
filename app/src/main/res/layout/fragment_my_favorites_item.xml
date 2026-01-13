@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/emptyString"
-        android:background="@drawable/file_menu_item_background_color"
+        android:background="@drawable/main_menu_item_background_color"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"
         android:src="@drawable/edit_image"
