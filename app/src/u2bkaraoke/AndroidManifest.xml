@@ -17,8 +17,8 @@
     <application
         tools:replace="android:icon"
         android:name="com.smile.u2bkaraoke.U2bKaraokeApp"
-        android:icon="@drawable/u2bkaraok_app_icon"
-        android:banner="@drawable/u2bkaraok_app_tv_icon"
+        android:icon="@drawable/u2bkaraoke_app_icon"
+        android:banner="@drawable/u2bkaraoke_app_tv_icon"
         android:label="@string/u2bkaraoke_app_name"
         android:theme="@style/AppTheme"
         android:allowBackup="true"
