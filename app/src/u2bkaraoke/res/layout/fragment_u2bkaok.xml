@@ -82,7 +82,7 @@
         android:nextFocusUp="@id/hotSongOrderButton"
         android:nextFocusLeft="@id/languageOrderButton"
         android:nextFocusRight="@id/languageOrderButton"
-        android:nextFocusDown="@id/u2bKShowVideoButton"
+        android:nextFocusDown="@id/u2bKExitButton"
         app:layout_constraintHeight_percent="0.2"
         app:layout_constraintTop_toBottomOf="@id/hotSongOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -426,6 +426,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
         LogUtil.i(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
         val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
+        LogUtil.i(TAG, "CreateMainUI.maxWidth = $maxWidth")
         val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
         LogUtil.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
         var verSpacerWeight = 1.0f

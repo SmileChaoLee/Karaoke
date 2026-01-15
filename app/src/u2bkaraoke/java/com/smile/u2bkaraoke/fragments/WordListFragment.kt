@@ -102,7 +102,7 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private fun updateRecyclerView() {
         if (mWordList.isEmpty()) {
             mRecyclerView?.visibility = View.GONE
-            showVideoButton?.post { showVideoButton?.requestFocus() }
+            exitImageButton?.post { exitImageButton?.requestFocus() }
         } else {
             mRecyclerView?.visibility = View.VISIBLE
             mRecyclerView?.post { mRecyclerView?.requestFocus() }

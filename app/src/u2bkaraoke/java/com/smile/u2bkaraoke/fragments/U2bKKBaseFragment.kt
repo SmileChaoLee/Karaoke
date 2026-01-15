@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.smile.karaoke.R
@@ -58,7 +59,7 @@ abstract class U2bKKBaseFragment : Fragment() {
             isFocusableInTouchMode = true
             requestFocus()
             setOnKeyListener {_, keyCode, event ->
-                showVideoButton?.post { showVideoButton?.requestFocus() }
+                exitImageButton?.post { exitImageButton?.requestFocus() }
                 return@setOnKeyListener false
             }
         }
@@ -75,7 +76,7 @@ abstract class U2bKKBaseFragment : Fragment() {
     override fun onResume() {
         LogUtil.i(TAG, "onResume")
         super.onResume()
-        showVideoButton?.post { showVideoButton?.requestFocus() }
+        exitImageButton?.post { exitImageButton?.requestFocus() }
     }
 
     override fun onPause() {
@@ -89,6 +90,7 @@ abstract class U2bKKBaseFragment : Fragment() {
     }
 
     open fun setClickListeners() {
+        showVideoButton?.visibility = View.GONE
         showVideoButton?.setOnClickListener {
             playSongs?.switchToPlayerView()
         }

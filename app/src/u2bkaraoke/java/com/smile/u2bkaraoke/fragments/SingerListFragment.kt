@@ -67,10 +67,19 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
-            activityTitle = args.getString(Constants.SingerListTitle, "")
             singerType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 args.getParcelable(Constants.SingerTypeParcelable, SingerType::class.java)
             } else args.getParcelable(Constants.SingerTypeParcelable)
+            singerType?.let {sType ->
+                val act = activity ?: return
+                val sexString = when (sType.sex) {
+                    "1" -> " - ${act.getString(R.string.male)}"
+                    "2" -> " - ${act.getString(R.string.female)}"
+                    else ->                 // "0"
+                        ""
+                }
+                activityTitle = "${sType.areaNa}$sexString"
+            }
         }
     }
 
@@ -244,7 +253,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         singerList?.let {
             if (it.singers.isEmpty()) {
                 mRecyclerView?.visibility = View.GONE
-                showVideoButton?.post { showVideoButton?.requestFocus() }
+                exitImageButton?.post { exitImageButton?.requestFocus() }
             } else {
                 mRecyclerView?.visibility = View.VISIBLE
                 mRecyclerView?.post { mRecyclerView?.requestFocus() }

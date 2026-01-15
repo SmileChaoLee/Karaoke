@@ -3,6 +3,7 @@ package com.smile.u2bkaraoke.dagger.modules
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SingerType
@@ -29,6 +30,14 @@ class PrimitiveModule {
     @Named("RecyclerItemListener")
     fun recyclerItemListenerProvider(@Named("PrimitiveModule")listener : RecyclerItemListener?)
     : RecyclerItemListener? {
+        return listener
+    }
+
+    @Provides
+    @Named("SingerTypeListAdapter.SingerTypeItemListener")
+    fun singerTypeItemListenerProvider(@Named("PrimitiveModule")listener :
+                                     SingerTypeListAdapter.SingerTypeItemListener?)
+            : SingerTypeListAdapter.SingerTypeItemListener? {
         return listener
     }
 

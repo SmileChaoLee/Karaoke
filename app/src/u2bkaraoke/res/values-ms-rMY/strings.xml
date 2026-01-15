@@ -41,6 +41,8 @@
     <string name="areaNo">Area No</string>
     <string name="areaNa">Area Name</string>
     <string name="sex">Sex</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
 
     <string name="oneWordOrderString">One Word</string>
     <string name="twoWordsOrderString">Two Words</string>

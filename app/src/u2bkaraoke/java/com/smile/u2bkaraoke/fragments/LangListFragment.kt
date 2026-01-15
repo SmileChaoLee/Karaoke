@@ -124,7 +124,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         languageList?.let {
             if (it.languages.isEmpty()) {
                 mRecyclerView?.visibility = View.GONE
-                showVideoButton?.post { showVideoButton?.requestFocus() }
+                exitImageButton?.post { exitImageButton?.requestFocus() }
             } else {
                 mRecyclerView?.visibility = View.VISIBLE
                 mRecyclerView?.post { mRecyclerView?.requestFocus() }

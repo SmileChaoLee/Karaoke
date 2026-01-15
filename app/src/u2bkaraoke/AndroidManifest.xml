@@ -53,6 +53,17 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden">
         </activity>
+
+        <activity
+            android:name="com.smile.u2bplayer.U2bPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
+        <service
+            android:name="com.smile.u2bplayer.services.U2bService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

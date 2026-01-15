@@ -41,6 +41,8 @@
     <string name="areaNo">区域编号</string>
     <string name="areaNa">区域名称</string>
     <string name="sex">性别</string>
+    <string name="male">男性</string>
+    <string name="female">女性</string>
 
     <string name="oneWordOrderString">一字部</string>
     <string name="twoWordsOrderString">二字部</string>

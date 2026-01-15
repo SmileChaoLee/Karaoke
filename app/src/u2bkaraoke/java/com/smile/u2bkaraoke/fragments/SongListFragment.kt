@@ -2,6 +2,7 @@ package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -30,6 +31,10 @@ import com.smile.u2bkaraoke.model.SongList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
+import com.smile.u2bplayer.U2bPlayerActivity
+import com.smile.u2bplayer.U2bPlayerUtil
+import com.smile.u2bplayer.fragments.SearchVideosFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -190,6 +195,10 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val song = list.songs[position]
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
+            U2bPlayerUtil.saveKeyword(act, song.songNa)
+            Intent(act, U2bPlayerActivity::class.java).apply {
+                startActivity(this@apply)
+            }
         }
     }
 
@@ -333,7 +342,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         songList?.let {
             if (it.songs.isEmpty()) {
                 mRecyclerView?.visibility = View.GONE
-                showVideoButton?.post { showVideoButton?.requestFocus() }
+                exitImageButton?.post { exitImageButton?.requestFocus() }
             } else {
                 mRecyclerView?.visibility = View.VISIBLE
                 mRecyclerView?.post { mRecyclerView?.requestFocus() }

@@ -19,7 +19,7 @@ import com.smile.u2bplayer.services.U2bService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.smile.u2bplayer.U2bUtil
+import com.smile.u2bplayer.U2bPlayerUtil
 import com.smile.u2bplayer.listeners.FScreenListener
 import com.smile.u2bplayer.listeners.U2bCastPlayerListener
 import com.smile.u2bplayer.listeners.U2bPlayerListener
@@ -190,7 +190,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun getFavDatabaseName(): String {
-        return U2bUtil.getFavDatabaseName()
+        return U2bPlayerUtil.getFavDatabaseName()
     }
 
     override fun switchToMusicVisibility(): Int {

@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    android:focusableInTouchMode="true"
     android:focusable="true"
     android:clickable="true"
-    android:nextFocusUp="@id/u2bKShowVideoButton"
-    android:nextFocusDown="@id/u2bKShowVideoButton"
+    android:nextFocusUp="@id/u2bKExitButton"
+    android:nextFocusDown="@id/u2bKExitButton"
     android:weightSum="12">
 
     <TextView android:id="@+id/singerTypeItem_Layout_positionNoTextView"

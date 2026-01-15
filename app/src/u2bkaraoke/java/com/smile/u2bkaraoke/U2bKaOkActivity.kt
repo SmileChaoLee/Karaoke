@@ -122,10 +122,10 @@ open class U2bKaOkActivity : BaseActivity() {
             when (index) {
                 0 -> {
                     LogUtil.d(mTAG, "becomeVisible.index.0")
-                    // tab.post { u2bKKFragment.showVideoButton?.requestFocus() }
                     fmContainerId?.let { cId ->
                         supportFragmentManager.findFragmentById(cId)?.let { curF ->
-                            tab.post { (curF as U2bKKBaseFragment).showVideoButton?.requestFocus() }
+                            val exitButton = (curF as U2bKKBaseFragment).exitImageButton
+                            exitButton?.post { exitButton.requestFocus() }
                         }
                     }
                 }

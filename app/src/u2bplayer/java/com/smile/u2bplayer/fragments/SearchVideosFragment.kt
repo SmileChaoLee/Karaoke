@@ -1,6 +1,5 @@
 package com.smile.u2bplayer.fragments
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -26,7 +25,7 @@ import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bplayer.U2bUtil
+import com.smile.u2bplayer.U2bPlayerUtil
 import com.smile.u2bplayer.adapters.U2bRecyclerAdapter
 import com.smile.u2bplayer.models.U2bSingleton
 import com.smile.u2bplayer.retrofit.RestApiSync
@@ -146,22 +145,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         searchCompleted = false
 
         // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
-        try {
-            val fos = act.openFileOutput(
-                U2bPlayConstants.KEYWORD_FILENAME,
-                Context.MODE_PRIVATE
-            )
-            val savingLine = if (searchTerm[searchTerm.length - 1] != '\n') {
-                searchTerm + "\n"
-            } else {
-                searchTerm
-            }
-            fos.write(savingLine.toByteArray())
-            fos.close()
-            LogUtil.d(TAG, "$logStr.succeeded to save searchTerm to file")
-        } catch (ex: Exception) {
-            LogUtil.e(TAG, "$logStr.Exception", ex)
-        }
+        U2bPlayerUtil.saveKeyword(act, searchTerm)
 
         LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
         searchRecyclerView?.visibility = View.GONE
@@ -325,7 +309,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     override fun gridSpanCount(): Int {
         val act = activity ?: return 1
-        return U2bUtil.gridSpanCount(act)
+        return U2bPlayerUtil.gridSpanCount(act)
     }
     // end of overriding the methods of ItemsBaseFragment
 

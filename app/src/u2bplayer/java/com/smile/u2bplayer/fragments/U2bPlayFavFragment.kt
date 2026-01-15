@@ -6,7 +6,7 @@ import com.smile.karaoke.fragments.ComFavFragment
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.u2bplayer.U2bUtil
+import com.smile.u2bplayer.U2bPlayerUtil
 
 class U2bPlayFavFragment : ComFavFragment() {
 
@@ -31,14 +31,14 @@ class U2bPlayFavFragment : ComFavFragment() {
     }
 
     override fun getFavDatabaseName(): String {
-        return U2bUtil.getFavDatabaseName()
+        return U2bPlayerUtil.getFavDatabaseName()
     }
     // end of overriding the methods of ComFavFragment
 
     // overriding the methods of ItemsBaseFragment
     override fun gridSpanCount(): Int {
         val act = activity ?: return 1
-        return U2bUtil.gridSpanCount(act)
+        return U2bPlayerUtil.gridSpanCount(act)
     }
     // end of overriding the methods of ItemsBaseFragment
 }

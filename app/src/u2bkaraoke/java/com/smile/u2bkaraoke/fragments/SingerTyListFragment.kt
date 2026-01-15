@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
-import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
@@ -28,8 +27,8 @@ import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
-class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
-
+class SingerTyListFragment : U2bKKBaseFragment(),
+    SingerTypeListAdapter.SingerTypeItemListener {
 
     companion object {
         private const val TAG = "SingerTyListFragment"
@@ -98,7 +97,7 @@ class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 LogUtil.d(TAG, "inject().myViewAdapter")
                 appCompBuilder
-                    .recyclerItemListenerModule(this@SingerTyListFragment)
+                    .singerTypeItemListenerModule(this@SingerTyListFragment)
                     .singerTypeArrayListModule(singerTypeList!!.singerTypes)
                     .floatModule(textFontSize).build()
                     .inject(this@SingerTyListFragment)
@@ -114,7 +113,7 @@ class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         singerTypeList?.let {
             if (it.singerTypes.isEmpty()) {
                 mRecyclerView?.visibility = View.GONE
-                showVideoButton?.post { showVideoButton?.requestFocus() }
+                exitImageButton?.post { exitImageButton?.requestFocus() }
             } else {
                 mRecyclerView?.visibility = View.VISIBLE
                 mRecyclerView?.post { mRecyclerView?.requestFocus() }
@@ -142,11 +141,20 @@ class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             */
             val nFragment = SingerListFragment().apply {
                 arguments = Bundle().apply {
-                    putString(Constants.SingerListTitle, singerType.areaNa)
                     putParcelable(Constants.SingerTypeParcelable, singerType)
                 }
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
+        }
+    }
+
+    override fun getSexString(sex: String): String {
+        LogUtil.d(TAG, "getSexString.sex = $sex")
+        return when (sex) {
+            "1" -> activity?.getString(R.string.male) ?: ""
+            "2" -> activity?.getString(R.string.female) ?: ""
+            else ->                 // "0"
+                ""
         }
     }
 
@@ -172,7 +180,7 @@ class SingerTyListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             }
             LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
             appCompBuilder
-                .recyclerItemListenerModule(this@SingerTyListFragment)
+                .singerTypeItemListenerModule(this@SingerTyListFragment)
                 .singerTypeArrayListModule(singerTypeList!!.singerTypes)
                 .floatModule(textFontSize).build()
                 .inject(this@SingerTyListFragment)

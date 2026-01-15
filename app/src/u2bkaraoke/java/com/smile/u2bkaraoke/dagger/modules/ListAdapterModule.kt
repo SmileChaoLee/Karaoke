@@ -41,9 +41,10 @@ class ListAdapterModule {
     }
 
     @Provides
-    fun singerTypeListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
-                                @Named("SingerTypeArrayList")types : ArrayList<SingerType>?,
-                                @Named("FloatValue")textFontSize : Float?
+    fun singerTypeListAdapterProvider(@Named("SingerTypeListAdapter.SingerTypeItemListener")listener :
+                                      SingerTypeListAdapter.SingerTypeItemListener?,
+                                      @Named("SingerTypeArrayList")types : ArrayList<SingerType>?,
+                                      @Named("FloatValue")textFontSize : Float?
     ) : SingerTypeListAdapter {
         return SingerTypeListAdapter(listener!!, types!!, textFontSize!!)
     }

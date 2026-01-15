@@ -3,6 +3,7 @@ package com.smile.u2bkaraoke.dagger.interfaces
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.retrofit.RestApiSync
 import com.smile.u2bkaraoke.dagger.modules.ListAdapterModule
@@ -43,6 +44,9 @@ interface U2bKaOkComponent {
         fun fragmentModule(@Named("PrimitiveModule") fragment: Fragment?) : Builder
         @BindsInstance
         fun recyclerItemListenerModule(@Named("PrimitiveModule") listener: RecyclerItemListener?) : Builder
+        @BindsInstance
+        fun singerTypeItemListenerModule(@Named("PrimitiveModule") listener:
+                                         SingerTypeListAdapter.SingerTypeItemListener?) : Builder
         @BindsInstance
         fun arraylistModule(@Named("PrimitiveModule") list: ArrayList<String>?) : Builder
         @BindsInstance

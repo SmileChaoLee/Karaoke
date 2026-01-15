@@ -44,7 +44,6 @@
 
         <activity android:name=".BasePlayerActivity" />
         <activity android:name=".BaseActivity" />
-        <activity android:name=".BaseFavoriteListActivity" />
         <activity android:name=".BaseSongDataActivity" />
         <activity
             android:name=".smileapps.SmileAppsActivity"

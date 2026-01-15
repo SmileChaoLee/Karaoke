@@ -13,13 +13,13 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter.MyViewHolder
 
 class SingerTypeListAdapter(
-    private val itemListener : RecyclerItemListener,
+    private val itemListener : SingerTypeItemListener,
     private val mSingerTypes: ArrayList<SingerType>,
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
 
-    companion object {
-        private const val TAG = "SingerTyLstAdapter"
+    interface SingerTypeItemListener: RecyclerItemListener {
+        fun getSexString(sex: String): String
     }
 
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
@@ -62,12 +62,7 @@ class SingerTypeListAdapter(
         holder.apply {
             positionNoTextView.text = position.toString()
             singerAreaNaTextView.text = singerType.areaNa
-            singerSexTextView.text = when (singerType.sex) {
-                "1" -> "Male"
-                "2" -> "Female"
-                else ->                 // "0"
-                    ""
-            }
+            singerSexTextView.text = itemListener.getSexString(singerType.sex)
             if (position == 0) {
                 itemView.post { itemView.requestFocus() }
             }

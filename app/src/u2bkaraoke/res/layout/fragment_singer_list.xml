@@ -94,7 +94,7 @@
             android:nextFocusUp="@id/singerListRecyclerView"
             android:nextFocusLeft="@id/firstPageButton"
             android:nextFocusRight="@id/previousPageButton"
-            android:nextFocusDown="@id/u2bKShowVideoButton"
+            android:nextFocusDown="@id/u2bKExitButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
@@ -112,7 +112,7 @@
             android:nextFocusUp="@id/singerListRecyclerView"
             android:nextFocusLeft="@id/firstPageButton"
             android:nextFocusRight="@id/nextPageButton"
-            android:nextFocusDown="@id/u2bKShowVideoButton"
+            android:nextFocusDown="@id/u2bKExitButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
@@ -130,7 +130,7 @@
             android:nextFocusUp="@id/singerListRecyclerView"
             android:nextFocusLeft="@id/previousPageButton"
             android:nextFocusRight="@id/lastPageButton"
-            android:nextFocusDown="@id/u2bKShowVideoButton"
+            android:nextFocusDown="@id/u2bKExitButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
@@ -148,7 +148,7 @@
             android:nextFocusUp="@id/singerListRecyclerView"
             android:nextFocusLeft="@id/nextPageButton"
             android:nextFocusRight="@id/lastPageButton"
-            android:nextFocusDown="@id/u2bKShowVideoButton"
+            android:nextFocusDown="@id/u2bKExitButton"
             android:gravity="center"
             android:layout_weight="1" >
         </Button>
