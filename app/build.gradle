@@ -76,8 +76,8 @@ android {
         }
         create("u2bkaraoke") {
             dimension = "karaoke"
-            versionCode 100
-            versionName "1.00"
+            versionCode 101
+            versionName "1.01"
             applicationId = "com.smile.u2bkaraoke"
         }
     }
