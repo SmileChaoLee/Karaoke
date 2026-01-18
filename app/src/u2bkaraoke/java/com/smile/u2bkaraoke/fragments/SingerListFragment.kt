@@ -105,7 +105,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             filterString = ""
             searchEditText = findViewById(R.id.singerSearchEditText)
             searchEditText?.let { sEt ->
-                ScreenUtil.resizeTextSize(sEt, textFontSize)
+                ScreenUtil.resizeTextSize(sEt, textFontSize * 0.8f)
                 val searchEditLp = sEt.layoutParams as LinearLayout.LayoutParams
                 searchEditLp.leftMargin = (textFontSize * 2.0f).toInt()
                 searchEditLp.rightMargin = (textFontSize * 5.0f).toInt()

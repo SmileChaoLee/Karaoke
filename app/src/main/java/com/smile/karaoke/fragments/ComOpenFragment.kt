@@ -62,12 +62,16 @@ open class ComOpenFragment: ItemsBaseFragment() {
     fun fileDescriptionsToSongList(files: ArrayList<FileDescription>): ArrayList<SongInfo> {
         val logStr = "fileDescriptionsToSongList"
         LogUtil.i(TAG, logStr)
+        val act = activity ?: return ArrayList()
         val songs = ArrayList<SongInfo>()
         var index = 0
         for (fileDes in files) {
             if (index >= MySingleton.MAX_SONGS) {
                 // excess the max
                 LogUtil.i(TAG, "$logStr.excess the max")
+                ScreenUtil.showToast(act,
+                    act.getString(R.string.excess_max) + ", ${MySingleton.MAX_SONGS}",
+                    textFontSize,Toast.LENGTH_SHORT)
                 break
             } else {
                 if (fileDes.selected) {

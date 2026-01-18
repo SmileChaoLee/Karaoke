@@ -6,7 +6,7 @@ import com.smile.karaoke.fragments.ComFavFragment
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.u2bplayer.U2bPlayerUtil
+import com.smile.u2bplayer.utilities.U2bPlayerUtil
 
 class U2bPlayFavFragment : ComFavFragment() {
 

@@ -1,4 +1,4 @@
-package com.smile.u2bplayer
+package com.smile.u2bplayer.utilities
 
 import android.app.Activity
 import android.content.Context

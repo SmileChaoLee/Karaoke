@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.smile.karaoke.R
@@ -30,7 +29,7 @@ abstract class U2bKKBaseFragment : Fragment() {
     var mFragManager: FragmentManager? = null
     var showVideoButton: ImageButton? = null
     var exitImageButton: ImageButton? = null
-    private var playSongs: PlaySongs? = null
+    var playSongs: PlaySongs? = null
     var buttonParam: LinearLayout.LayoutParams? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +100,7 @@ abstract class U2bKKBaseFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     open fun setButtonsSize() {
-        val buttonWidth = (textFontSize*2.0f).toInt()
+        val buttonWidth = (textFontSize*1.5f).toInt()
         // val margin = ScreenUtil.dpToPixel(50f).toInt()
         showVideoButton?.let {
             buttonParam = it.layoutParams as LinearLayout.LayoutParams
@@ -109,8 +108,9 @@ abstract class U2bKKBaseFragment : Fragment() {
                 width = buttonWidth
                 height = buttonWidth
                 gravity = Gravity.CENTER
-                // setMargins(margin, 0, margin, 0)
+                setMargins(0, 0, 0, 0)
             }
+            it.layoutParams = buttonParam
             exitImageButton?.layoutParams = buttonParam
         }
     }

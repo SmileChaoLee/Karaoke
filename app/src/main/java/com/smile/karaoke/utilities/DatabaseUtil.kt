@@ -2,16 +2,11 @@ package com.smile.karaoke.utilities
 
 import android.app.Activity
 import android.content.Context
-import android.widget.Toast
-import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.roomdatabase.FavSongDatabase
-import com.smile.smilelibraries.utilities.ScreenUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 object DatabaseUtil {
     private const val TAG = "DatabaseUtil"
@@ -52,8 +47,7 @@ object DatabaseUtil {
     }
 
     suspend fun addSongsToFavorites(act: Activity, dbName: String,
-                                    songs: ArrayList<SongInfo>,
-                                    textFontSize: Float): Boolean {
+                                    songs: ArrayList<SongInfo>): Boolean {
         val msg = "addSongsToFavorites"
         LogUtil.d(TAG, msg)
         val res = act.resources
@@ -73,12 +67,6 @@ object DatabaseUtil {
                 }
             } else {
                 LogUtil.d(TAG, "$msg.excess the max")
-                // excess max number of favorites
-                withContext(Dispatchers.Main) {
-                    ScreenUtil.showToast(act,
-                        res.getString(R.string.excess_max) + ", ${MySingleton.MAX_SONGS}",
-                        textFontSize,Toast.LENGTH_SHORT)
-                }
                 break
             }
         }

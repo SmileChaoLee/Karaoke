@@ -312,7 +312,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     }
                 } else {
                     if (DatabaseUtil.addSongsToFavorites(act,
-                            CommonConstants.FAVORITE_DB_NAME, songs, textFontSize)) {
+                            CommonConstants.FAVORITE_DB_NAME, songs)) {
                         withContext(Dispatchers.Main) {
                             ScreenUtil.showToast(act,
                                 getString(R.string.add_to_favorites),

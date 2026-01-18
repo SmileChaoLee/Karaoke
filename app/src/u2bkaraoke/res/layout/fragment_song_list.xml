@@ -155,14 +155,76 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/exitShowVideoLayout"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintTop_toBottomOf="@id/buttonsLayout"
-        app:layout_constraintBottom_toBottomOf="parent" >
-        <include layout="@layout/exit_show_video_layout" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:weightSum="5">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2">
+            <include layout="@layout/exit_show_video_layout" />
+        </LinearLayout>
+        <ImageButton
+            android:id="@+id/songUnselectButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/emptyString"
+            android:background="@drawable/main_menu_item_background_color"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:src="@drawable/unselect"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/nextPageButton"
+            android:nextFocusLeft="@id/u2bKShowVideoButton"
+            android:nextFocusRight="@id/songPlaySelectedButton"
+            android:nextFocusDown="@id/songUnselectButton"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/songPlaySelectedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/emptyString"
+            android:background="@drawable/main_menu_item_background_color"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:src="@drawable/play_media_button_image"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/nextPageButton"
+            android:nextFocusLeft="@id/songUnselectButton"
+            android:nextFocusRight="@id/songAddToFavButton"
+            android:nextFocusDown="@id/songPlaySelectedButton"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/songAddToFavButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/emptyString"
+            android:background="@drawable/main_menu_item_background_color"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:src="@drawable/add_image"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/nextPageButton"
+            android:nextFocusLeft="@id/songPlaySelectedButton"
+            android:nextFocusRight="@id/songAddToFavButton"
+            android:nextFocusDown="@id/songAddToFavButton"
+            android:layout_gravity="center"
+            android:layout_weight="1">
+        </ImageButton>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

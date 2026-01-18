@@ -25,7 +25,7 @@ import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.ImageUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bplayer.U2bPlayerUtil
+import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import com.smile.u2bplayer.adapters.U2bRecyclerAdapter
 import com.smile.u2bplayer.models.U2bSingleton
 import com.smile.u2bplayer.retrofit.RestApiSync
@@ -54,7 +54,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        // U2bSingleton.videos.clear() moved to U2bActivity
+        // U2bSingleton.videos.clear() moved to U2bPlayerActivity
     }
 
     override fun onCreateView(
@@ -263,10 +263,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         playSelectedButton?.setOnClickListener {
             val logStr = "playSelectedButton.setOnClickListener"
-            LogUtil.i(TAG, logStr)
+            LogUtil.i(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            // open the files to play
-            LogUtil.i(TAG, "$logStr.searchCompleted")
             val songs = videosToSongs()
             LogUtil.i(TAG, "$logStr.songs.size = ${songs.size}")
             if (songs.isEmpty()) {
@@ -279,20 +277,28 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         addToFavoriteButton?.setOnClickListener {
             it.post { it.requestFocus() }
+            LogUtil.i(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
             val songs = videosToSongs()
             lifecycleScope.launch(Dispatchers.IO) {
-                if (DatabaseUtil.addSongsToFavorites(act,U2bPlayConstants.U2B_FAV_DB_NAME, songs, textFontSize)) {
-                    withContext(Dispatchers.Main) {
-                        ScreenUtil.showToast(act,
-                            getString(R.string.add_to_favorites),
-                            textFontSize,Toast.LENGTH_SHORT)
+                if (songs.isEmpty()) {
+                    ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
+                        textFontSize,
+                        Toast.LENGTH_SHORT)
+                } else {
+                    if (DatabaseUtil.addSongsToFavorites(act,
+                            U2bPlayConstants.U2B_FAV_DB_NAME,
+                            songs)) {
+                        withContext(Dispatchers.Main) {
+                            ScreenUtil.showToast(act,
+                                getString(R.string.add_to_favorites),
+                                textFontSize,Toast.LENGTH_SHORT)
+                        }
                     }
                 }
             }
         }
-
         super.setClickListeners()
     }
 

@@ -1,5 +1,6 @@
 package com.smile.u2bkaraoke.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.model.Song
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.adapters.SongListAdapter.MyViewHolder
@@ -17,6 +19,13 @@ class SongListAdapter(
     private val mSongs: ArrayList<Song>,
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
+
+    companion object {
+        private const val TAG = "SongListAdapter"
+    }
+
+    private var positionUpdated: Int = -1
+    private var isDataSetChanged = true
 
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
@@ -69,13 +78,34 @@ class SongListAdapter(
             languageNameTextView.text = song.languageNa
             singer1NameTextView.text = song.singer1Na
             singer2NameTextView.text = song.singer2Na
-            if (position == 0) {
+
+            itemView.setBackgroundColor(itemListener.myBackgroundColor(position))
+
+            if (isDataSetChanged && position == 0) {
                 itemView.post { itemView.requestFocus() }
+                isDataSetChanged = false
+            }
+            if (position == positionUpdated) {
+                itemView.post { itemView.requestFocus() }
+                positionUpdated = -1
             }
         }
     }
 
     override fun getItemCount(): Int {
         return mSongs.size
+    }
+
+    fun myNotifyItemChanged(position:Int) {
+        LogUtil.d(TAG, "myNotifyItemChanged.position = $position")
+        positionUpdated = position
+        notifyItemChanged(position)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun myNotifyDataSetChanged() {
+        LogUtil.d(TAG, "myNotifyDataSetChanged")
+        isDataSetChanged = true
+        notifyDataSetChanged()
     }
 }
