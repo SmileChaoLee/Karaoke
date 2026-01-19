@@ -131,7 +131,7 @@ class SingerTyListFragment : U2bKKBaseFragment(),
             val singerType = list.singerTypes[position]
             LogUtil.i(TAG, "onItemClick.singerType.areaNa = ${singerType.areaNa}")
             ScreenUtil.showToast(act, singerType.areaNa,
-                textFontSize,  Toast.LENGTH_SHORT)
+                textFontSize, Toast.LENGTH_SHORT)
             /*
             Intent(act, SingerListActivity::class.java).let { int ->
                 int.putExtra(Constants.SingerListActivityTitle, singerType.areaNa)

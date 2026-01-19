@@ -1017,10 +1017,9 @@ abstract class PlayerBaseFragment : Fragment(),
                             MySingleton.orderedSongs[index])) {
                             withContext(Dispatchers.Main) {
                                 ScreenUtil.showToast(
-                                    actIt, getString(R.string.add_to_favorites), textFontSize,
-                                    ScreenUtil.FontSize_Pixel_Type,
-                                    Toast.LENGTH_SHORT
-                                )
+                                    actIt,
+                                    getString(R.string.add_to_favorites),
+                                    textFontSize, Toast.LENGTH_SHORT)
                             }
                         }
                     }

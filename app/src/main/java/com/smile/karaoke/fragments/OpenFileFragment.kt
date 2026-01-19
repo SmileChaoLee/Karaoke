@@ -215,10 +215,13 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                         index++
                         if (index >= MySingleton.MAX_FILES) {
                             // excess the max
-                            ScreenUtil.showToast(
-                                activity, getString(R.string.excess_max) +
-                                        " ${MySingleton.MAX_FILES}", textFontSize,
-                                Toast.LENGTH_SHORT)
+                            withContext(Dispatchers.Main) {
+                                ScreenUtil.showToast(
+                                    activity, getString(R.string.excess_max) +
+                                            " ${MySingleton.MAX_FILES}", textFontSize,
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
                             break
                         }
                     }
@@ -247,10 +250,13 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                                 index++
                                 if (index >= MySingleton.MAX_FILES) {
                                     // excess the max
-                                    ScreenUtil.showToast(
-                                        activity, getString(R.string.excess_max) +
-                                                " ${MySingleton.MAX_FILES}", textFontSize,
-                                        Toast.LENGTH_SHORT)
+                                    withContext(Dispatchers.Main) {
+                                        ScreenUtil.showToast(
+                                            activity, getString(R.string.excess_max) +
+                                                    " ${MySingleton.MAX_FILES}", textFontSize,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                    }
                                     break
                                 }
                             }
@@ -282,14 +288,16 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     backKeyButton?.requestFocus()
                 }
                 */
-                searchCompleted = true  // searching thread finished
             }
+            searchCompleted = true  // searching thread finished
         }
     }
 
     // overriding the methods of ItemsBaseFragment
     override fun setClickListeners() {
         backKeyButton?.setOnClickListener {
+            val logStr = "backKeyButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             if (MySingleton.currentPath == "/") return@setOnClickListener
             MySingleton.currentPath =
@@ -302,6 +310,8 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             searchCurrentFolder()
         }
         selectAllButton?.setOnClickListener {
+            val logStr = "selectAllButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             for (i in 0 until MySingleton.fileList.size) {
                 MySingleton.fileList[i].run {
@@ -313,6 +323,8 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
         unselectButton?.setOnClickListener {
+            val logStr = "unselectButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             for (i in 0 until MySingleton.fileList.size) {
                 MySingleton.fileList[i].run {
@@ -324,7 +336,8 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
         switchDecoderButton?.let {switchIt ->
-            LogUtil.d(TAG, "setClickListeners.switchDecoderButton.searchCompleted = $searchCompleted")
+            val logStr = "switchDecoderButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             switchIt.setOnClickListener {
                 if (!searchCompleted) return@setOnClickListener // searching
                 playSongs?.switchBetweenSoftAndHardDecoder()
@@ -332,6 +345,8 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
         playSelectedButton?.setOnClickListener {
+            val logStr = "playSelectedButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             lifecycleScope.launch(Dispatchers.Main) {
                 // open the files to play
@@ -339,23 +354,24 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
         addToFavoriteButton?.setOnClickListener {
-            LogUtil.d(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
+            val logStr = "addToFavoriteButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity ?: return@setOnClickListener
-            lifecycleScope.launch(Dispatchers.IO) {
-                if (selectedSongs.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        ScreenUtil.showToast(act,
-                            getString(R.string.noFilesSelectedString),
-                            textFontSize,Toast.LENGTH_SHORT)
-                    }
-                } else {
+            if (selectedSongs.isEmpty()) {
+                ScreenUtil.showToast(act,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize,Toast.LENGTH_SHORT)
+            } else {
+                lifecycleScope.launch(Dispatchers.IO) {
                     if (DatabaseUtil.addSongsToFavorites(act,
                             CommonConstants.FAVORITE_DB_NAME, selectedSongs)) {
                         withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(act,
+                            ScreenUtil.showToast(
+                                act,
                                 getString(R.string.add_to_favorites),
-                                textFontSize,Toast.LENGTH_SHORT)
+                                textFontSize, Toast.LENGTH_SHORT
+                            )
                         }
                     }
                 }

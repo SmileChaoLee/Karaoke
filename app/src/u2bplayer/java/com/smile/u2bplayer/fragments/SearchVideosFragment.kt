@@ -292,9 +292,9 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             // val songs = videosToSongs()
             LogUtil.i(TAG, "$logStr.selectedSongs.size = ${selectedSongs.size}")
             if (selectedSongs.isEmpty()) {
-                ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
-                    textFontSize,
-                    Toast.LENGTH_SHORT)
+                ScreenUtil.showToast(activity,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize, Toast.LENGTH_SHORT)
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
                 playSongs?.playSelectedSongList(vSongs)
@@ -305,13 +305,12 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             LogUtil.i(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
-            // val songs = videosToSongs()
-            lifecycleScope.launch(Dispatchers.IO) {
-                if (selectedSongs.isEmpty()) {
-                    ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
-                        textFontSize,
-                        Toast.LENGTH_SHORT)
-                } else {
+            if (selectedSongs.isEmpty()) {
+                ScreenUtil.showToast(act,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize, Toast.LENGTH_SHORT)
+            } else {
+                lifecycleScope.launch(Dispatchers.IO) {
                     if (DatabaseUtil.addSongsToFavorites(act,
                             U2bPlayConstants.U2B_FAV_DB_NAME,
                             selectedSongs)) {

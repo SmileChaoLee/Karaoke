@@ -280,10 +280,13 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                     index++
                     if (index >= MySingleton.MAX_FILES) {
                         // excess the max
-                        ScreenUtil.showToast(
-                            activity, getString(R.string.excess_max) +
-                                    " ${MySingleton.MAX_FILES}", textFontSize,
-                            Toast.LENGTH_SHORT)
+                        withContext(Dispatchers.Main) {
+                            ScreenUtil.showToast(
+                                act, getString(R.string.excess_max) +
+                                        " ${MySingleton.MAX_FILES}", textFontSize,
+                                Toast.LENGTH_SHORT
+                            )
+                        }
                         excessYn = true
                         break
                     }
@@ -297,7 +300,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
             loadingMsgTextView?.visibility = View.GONE
             if (excessYn) {
                 ScreenUtil.showToast(
-                    activity, getString(R.string.excess_max) +
+                    act, getString(R.string.excess_max) +
                             " ${MySingleton.MAX_SONGS}", textFontSize,
                     Toast.LENGTH_SHORT)
             }

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
@@ -34,8 +35,8 @@ import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SongList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SongListAdapter
+import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.retrofit.RestApiSync
-import com.smile.u2bplayer.models.U2bSingleton
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +54,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     @JvmField
     @Inject
     var myViewAdapter: SongListAdapter? = null
+    private var searchCompleted = true
     private var searchEditText: EditText? = null
     private var isSearchEditTextChanged = false
     private var filterString: String? = null
@@ -75,6 +77,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var pageNo = 1
     private var pageSize = 7
     private var totalPages = 0
+    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
     // private var restApi: MyRestApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -213,6 +216,8 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
+        selectedSongs.clear()
+        songList.songs.clear()
         super.onDestroy()
     }
 
@@ -222,6 +227,9 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         nextPageButton?.setOnClickListener { nextPage() }
         lastPageButton?.setOnClickListener { lastPage() }
         unselectButton?.setOnClickListener {
+            val logStr = "unselectButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
+            if (!searchCompleted) return@setOnClickListener // searching
             songList.let { list ->
                 val songs = list.songs
                 for (i in 0 until songs.size) {
@@ -234,36 +242,40 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         }
         playSelectedButton?.setOnClickListener {
             val logStr = "playSelectedButton.setOnClickListener"
-            LogUtil.i(TAG, logStr)
-            val songs = dataSongsToSongs()
-            LogUtil.i(TAG, "$logStr.songs.size = ${songs.size}")
-            if (songs.isEmpty()) {
-                ScreenUtil.showToast(activity,
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
+            if (!searchCompleted) return@setOnClickListener // searching
+            val act = activity?: return@setOnClickListener
+            LogUtil.d(TAG, "$logStr.songs.size = ${selectedSongs.size}")
+            if (selectedSongs.isEmpty()) {
+                ScreenUtil.showToast(act,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize, Toast.LENGTH_SHORT)
+            } else {
+                val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
+                playSongs?.playSelectedSongList(vSongs)
+            }
+        }
+        addToFavoriteButton?.setOnClickListener {
+            val logStr = "addToFavoriteButton.setOnClickListener"
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
+            if (!searchCompleted) return@setOnClickListener // searching
+            val act = activity?: return@setOnClickListener
+            if (selectedSongs.isEmpty()) {
+                ScreenUtil.showToast( act,
                     getString(R.string.noFilesSelectedString),
                     textFontSize,
                     Toast.LENGTH_SHORT)
             } else {
-                playSongs?.playSelectedSongList(ArrayList(songs))
-            }
-        }
-        addToFavoriteButton?.setOnClickListener {
-            it.post { it.requestFocus() }
-            val act = activity?: return@setOnClickListener
-            val songs = dataSongsToSongs()
-            lifecycleScope.launch(Dispatchers.IO) {
-                if (songs.isEmpty()) {
-                    ScreenUtil.showToast(activity,
-                        getString(R.string.noFilesSelectedString),
-                        textFontSize,
-                        Toast.LENGTH_SHORT)
-                } else {
+                lifecycleScope.launch(Dispatchers.IO) {
                     if (DatabaseUtil.addSongsToFavorites(act,
                             U2bPlayConstants.U2B_FAV_DB_NAME,
-                            songs)) {
+                            selectedSongs)) {
                         withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(act,
+                            ScreenUtil.showToast(
+                                act,
                                 getString(R.string.add_to_favorites),
-                                textFontSize,Toast.LENGTH_SHORT)
+                                textFontSize, Toast.LENGTH_SHORT
+                            )
                         }
                     }
                 }
@@ -295,8 +307,25 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 startActivity(this@apply)
             }
             */
-            song.vodYn = if (song.vodYn == "Y") "N" else "Y"
-            myViewAdapter?.notifyItemChanged(position)
+            val songInfo = dataSongToSongInfo(song)
+            var isUpdated = false
+            if (song.vodYn.uppercase() == "Y") {
+                song.vodYn = "N"
+                selectedSongs.remove(songInfo)
+                isUpdated = true
+            } else {
+                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                    ScreenUtil.showToast(
+                        activity, getString(R.string.excess_max) +
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                        Toast.LENGTH_SHORT)
+                } else {
+                    song.vodYn = "Y"
+                    selectedSongs.add(songInfo)
+                    isUpdated = true
+                }
+            }
+            if (isUpdated) myViewAdapter?.notifyItemChanged(position)
         }
     }
 
@@ -314,6 +343,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
         act.lifecycleScope.launch(Dispatchers.Main) {
+            searchCompleted = false
             mRecyclerView?.visibility = View.GONE
             songListEmptyTextView?.visibility = View.VISIBLE
             songListEmptyTextView?.text = act.getString(R.string.loadingString)
@@ -436,6 +466,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 mRecyclerView?.setAdapter(myViewAdapter)
                 mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
                 */
+                selectedSongs.clear()
                 songList.songs.clear()
                 tempSongList?.let { tempList ->
                     songList.songs.addAll(tempList.songs)
@@ -453,6 +484,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 updateRecyclerView()
             }
+            searchCompleted = true
         }
     }
 
@@ -496,9 +528,20 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         retrieveSongList()
     }
 
+    private fun dataSongToSongInfo(vSong: Song): SongInfo {
+        val logStr = "dataSongToSongInfo"
+        LogUtil.d(TAG, logStr)
+        return SongInfo().apply {
+            included = "1"
+            filePath = vSong.vodNo
+            songName = vSong.songNa
+            bitmapUrl = vSong.pathname
+        }
+    }
+
     private fun dataSongsToSongs(): ArrayList<SongInfo> {
         val logStr = "dataSongsToSongs"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         val songs = ArrayList<SongInfo>()
         songList.let { list ->
             val listSongs = list.songs
@@ -506,20 +549,14 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             for (i in 0 until listSongs.size) {
                 val lSong = listSongs[i]
                 if (lSong.vodYn.uppercase() != "Y") continue
-                SongInfo().apply {
-                    included = "1"
-                    filePath = lSong.vodNo
-                    songName = lSong.songNa
-                    bitmapUrl = lSong.pathname
-                    songs.add(this@apply)
-                }
+                songs.add(dataSongToSongInfo(lSong))
                 index++
-                if (index >= U2bSingleton.MAX_SONGS) {
+                if (index >= MySingleton.MAX_SONGS) {
                     // excess the max
                     LogUtil.i(TAG, "$logStr.excess the max")
                     ScreenUtil.showToast(
                         activity, getString(R.string.excess_max) +
-                                " ${U2bSingleton.MAX_SONGS}", textFontSize,
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
                         Toast.LENGTH_SHORT)
                     break
                 }
@@ -560,6 +597,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             mRecyclerView?.setAdapter(myViewAdapter)
             mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
             */
+            selectedSongs.clear()
             songList.songs.clear()
             tempSongList?.let { tempList ->
                 songList.songs.addAll(tempList.songs)
