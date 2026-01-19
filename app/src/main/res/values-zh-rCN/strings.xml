@@ -89,6 +89,7 @@
     <string name="U2bPlayer">優2B播放程式</string>
     <string name="currentString">目前使用中</string>
     <string name="loadingStr">載入中 …</string>
+    <string name="loadingWaitStr">載入中, 清稍後</string>
     <string name="softDecoderFirstStr">軟解碼優先</string>
     <string name="emptyString">""</string>
     <string name="installKaraokePlayer">安裝\n咔拉OK播放程式</string>

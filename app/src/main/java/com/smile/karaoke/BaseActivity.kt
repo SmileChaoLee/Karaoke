@@ -346,13 +346,26 @@ abstract class BaseActivity : AppCompatActivity(),
     // implementing interface PlaySongs
     override fun playSelectedSongList(songs: ArrayList<SongInfo>) {
         val msgStr = "playSelectedSongList"
-        LogUtil.i(TAG, "${msgStr}.songs.size = ${songs.size}")
+        LogUtil.i(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
-            MySingleton.orderedSongs.clear()
-            MySingleton.orderedSongs.addAll(songs)
+            // MySingleton.orderedSongs.clear() // no more clear, using add instead
+            var found: Boolean
+            for (songInfo in songs) {
+                found = false
+                LogUtil.d(TAG, "$msgStr.songInfo.filePath = ${songInfo.filePath}")
+                for (orderedSong in MySingleton.orderedSongs) {
+                    LogUtil.d(TAG, "$msgStr.orderedSong.filePath = ${orderedSong.filePath}")
+                    if (orderedSong.filePath == songInfo.filePath) {
+                        found = true
+                        break
+                    }
+                }
+                LogUtil.d(TAG, "$msgStr.found = $found")
+                if (!found) MySingleton.orderedSongs.add(songInfo)
+            }
             playerFragment?.let {
                 it.mPresenter.playingParam.isAutoPlay = false
-                it.mPresenter.autoPlaySongList()
+                if (it.mPresenter.mediaUri == null) it.mPresenter.autoPlaySongList()
                 it.showPlayerView()
             }
         }

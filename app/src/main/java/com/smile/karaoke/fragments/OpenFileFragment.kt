@@ -20,6 +20,7 @@ import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
+import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
@@ -46,6 +47,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
+    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -161,11 +163,28 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
-        if (MySingleton.fileList[position].file.isFile) {
-            MySingleton.fileList[position].selected = !MySingleton.fileList[position].selected
-            myRecyclerViewAdapter?.myNotifyItemChanged(position)
+        val fileDes = MySingleton.fileList[position]
+        if (fileDes.file.isFile) {
+            var isUpdated = false
+            if (fileDes.selected) {
+                selectedSongs.remove(fileDescriptionToSongInfo(fileDes))
+                fileDes.selected = false
+                isUpdated = true
+            } else {
+                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                    ScreenUtil.showToast(
+                        activity, getString(R.string.excess_max) +
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                        Toast.LENGTH_SHORT)
+                } else {
+                    selectedSongs.add(fileDescriptionToSongInfo(fileDes))
+                    fileDes.selected = true
+                    isUpdated = true
+                }
+            }
+            if (isUpdated) myRecyclerViewAdapter?.myNotifyItemChanged(position)
         } else {
-            MySingleton.currentPath = MySingleton.fileList[position].file.path
+            MySingleton.currentPath = fileDes.file.path
             searchCurrentFolder()
         }
     }
@@ -174,6 +193,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         MySingleton.fileList.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
         filesRecyclerView?.visibility = View.GONE
+        selectedSongs.clear()
     }
 
     fun searchCurrentFolder() {
@@ -183,14 +203,24 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         filesRecyclerView?.visibility = View.GONE
         loadingMsgTextView?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
-            val tempList: ArrayList<FileDescription> = ArrayList(MySingleton.MAX_FILES)
+            val tempList: ArrayList<FileDescription> = ArrayList()
             MySingleton.currentPath.let {
+                var index = 0
                 val dirBm = BitmapFactory.decodeResource(resources, R.drawable.folder_open_icon)
                 if (it == "/") {
                     val bm = dirBm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                     for (element in MySingleton.rootPathSet) {
                         LogUtil.d(TAG, "$logStr.element = $element")
                         tempList.add(FileDescription(File(element), bm, false))
+                        index++
+                        if (index >= MySingleton.MAX_FILES) {
+                            // excess the max
+                            ScreenUtil.showToast(
+                                activity, getString(R.string.excess_max) +
+                                        " ${MySingleton.MAX_FILES}", textFontSize,
+                                Toast.LENGTH_SHORT)
+                            break
+                        }
                     }
                 } else {
                     try {
@@ -214,6 +244,15 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                                 }
                                 bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
                                 tempList.add(FileDescription(f, bm, false))
+                                index++
+                                if (index >= MySingleton.MAX_FILES) {
+                                    // excess the max
+                                    ScreenUtil.showToast(
+                                        activity, getString(R.string.excess_max) +
+                                                " ${MySingleton.MAX_FILES}", textFontSize,
+                                        Toast.LENGTH_SHORT)
+                                    break
+                                }
                             }
                         }
                     } catch (ex: Exception) {
@@ -221,6 +260,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     }
                 }
             }
+            selectedSongs.clear()
             MySingleton.fileList.clear()
             MySingleton.fileList.addAll(tempList)
             LogUtil.d(TAG, "$logStr.FileDesList.fileList.size = ${MySingleton.fileList.size}")
@@ -295,7 +335,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             if (!searchCompleted) return@setOnClickListener // searching
             lifecycleScope.launch(Dispatchers.Main) {
                 // open the files to play
-                startPlaySelectedSong(activity)
+                startPlaySelectedSong(selectedSongs)
             }
         }
         addToFavoriteButton?.setOnClickListener {
@@ -303,8 +343,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity ?: return@setOnClickListener
             lifecycleScope.launch(Dispatchers.IO) {
-                val songs = fileDescriptionsToSongList(MySingleton.fileList)
-                if (songs.isEmpty()) {
+                if (selectedSongs.isEmpty()) {
                     withContext(Dispatchers.Main) {
                         ScreenUtil.showToast(act,
                             getString(R.string.noFilesSelectedString),
@@ -312,7 +351,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     }
                 } else {
                     if (DatabaseUtil.addSongsToFavorites(act,
-                            CommonConstants.FAVORITE_DB_NAME, songs)) {
+                            CommonConstants.FAVORITE_DB_NAME, selectedSongs)) {
                         withContext(Dispatchers.Main) {
                             ScreenUtil.showToast(act,
                                 getString(R.string.add_to_favorites),

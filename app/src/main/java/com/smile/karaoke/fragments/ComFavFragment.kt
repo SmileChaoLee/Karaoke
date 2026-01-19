@@ -44,6 +44,8 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         private const val TAG: String = "ComFavFragment"
     }
 
+    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
+
     abstract fun decoderButtonVisibility(): Int
     // will be override by U2bPlayer
     open suspend fun getVideoThumbNail(song: SongInfo): Bitmap? {
@@ -169,7 +171,6 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-        // clearFavoriteList()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -204,9 +205,27 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     // implementing FavoriteRecyclerViewAdapter.FavItemListener
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
-        MySingleton.favorites[position].apply {
-            song.included = if (song.included == "1") "0" else "1"
-            myRecyclerViewAdapter?.myNotifyItemChanged(position)
+        val songDesc = MySingleton.favorites[position]
+        songDesc.apply {
+            var isUpdated = false
+            if (song.included == "1") {
+                song.included = "0"
+                selectedSongs.remove(song)
+                isUpdated = true
+            } else {
+                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                    ScreenUtil.showToast(
+                        activity, getString(R.string.excess_max) +
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                        Toast.LENGTH_SHORT
+                    )
+                } else {
+                    song.included = "1"
+                    selectedSongs.add(song)
+                    isUpdated = true
+                }
+            }
+            if (isUpdated) myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
     }
 
@@ -229,6 +248,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
 
     fun clearFavoriteList() {
         LogUtil.i(TAG, "clearFavoriteList")
+        selectedSongs.clear()
         MySingleton.favorites.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
         myListRecyclerView?.visibility = View.GONE
@@ -244,7 +264,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
             loadingMsgTextView?.visibility = View.VISIBLE
             var excessYn = false
             withContext(Dispatchers.IO) {
-                val tempList: ArrayList<SongDescription> = ArrayList(MySingleton.MAX_SONGS)
+                val tempList: ArrayList<SongDescription> = ArrayList()
                 val songs = DatabaseUtil.readSavedFavorites(act,
                     getFavDatabaseName(), false)
                 var index = 0
@@ -258,12 +278,17 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                     element.included = "0"
                     tempList.add(SongDescription(element, bm))
                     index++
-                    if (index >= MySingleton.MAX_SONGS) {
+                    if (index >= MySingleton.MAX_FILES) {
                         // excess the max
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.excess_max) +
+                                    " ${MySingleton.MAX_FILES}", textFontSize,
+                            Toast.LENGTH_SHORT)
                         excessYn = true
                         break
                     }
                 }
+                selectedSongs.clear()
                 MySingleton.favorites.clear()
                 MySingleton.favorites.addAll(tempList)
                 LogUtil.d(TAG, "$logStr.MySingleTon.favorites.size = ${MySingleton.favorites.size}")
@@ -333,29 +358,13 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         playSelectedButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
             // open the files to play
-            val songs = ArrayList<SongInfo>().also { songIt ->
-                var index = 0
-                for (i in 0 until MySingleton.favorites.size) {
-                    if (MySingleton.favorites[i].song.included == "1") {
-                        songIt.add(MySingleton.favorites[i].song)
-                        index++
-                        if (index >= MySingleton.MAX_SONGS) {
-                            // excess the max
-                            ScreenUtil.showToast(
-                                activity, getString(R.string.excess_max) +
-                                        " ${MySingleton.MAX_SONGS}", textFontSize,
-                                Toast.LENGTH_SHORT)
-                            break
-                        }
-                    }
-                }
-            }
-            if (songs.isEmpty()) {
-                ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
-                    textFontSize,
-                    Toast.LENGTH_SHORT)
+            if (selectedSongs.isEmpty()) {
+                ScreenUtil.showToast(activity,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize,Toast.LENGTH_SHORT)
             } else {
-                playSongs?.playSelectedSongList(ArrayList(songs))
+                val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
+                playSongs?.playSelectedSongList(vSongs)
             }
         }
 

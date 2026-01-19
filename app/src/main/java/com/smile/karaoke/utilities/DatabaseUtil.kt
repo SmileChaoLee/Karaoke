@@ -3,7 +3,6 @@ package com.smile.karaoke.utilities
 import android.app.Activity
 import android.content.Context
 import com.smile.karaoke.constants.CommonConstants
-import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.models.SongListSQLite
 import com.smile.karaoke.roomdatabase.FavSongDatabase
@@ -50,26 +49,20 @@ object DatabaseUtil {
                                     songs: ArrayList<SongInfo>): Boolean {
         val msg = "addSongsToFavorites"
         LogUtil.d(TAG, msg)
-        val res = act.resources
         val db = FavSongDatabase.getDatabase(act, dbName)
         var numRecords = db.recordsOfPlayList()
         LogUtil.d(TAG, "$msg.numRecords = $numRecords")
         var added = false
         for (song in songs) {
-            if (numRecords < MySingleton.MAX_SONGS) {
-                // check if this file is already in database
-                if (db.findOneSongByFilepath(song.filePath) == null) {
-                    song.included = "1"
-                    db.addSongToSongList(song)
-                    added = true
-                    numRecords++
-                    LogUtil.d(TAG, "$msg.numRecords = $numRecords")
-                }
-            } else {
-                LogUtil.d(TAG, "$msg.excess the max")
-                break
+            // check if this file is already in database
+            if (db.findOneSongByFilepath(song.filePath) == null) {
+                song.included = "1"
+                db.addSongToSongList(song)
+                added = true
+                numRecords++
             }
         }
+        LogUtil.d(TAG, "$msg.numRecords = $numRecords")
         db.close()
         return added
     }

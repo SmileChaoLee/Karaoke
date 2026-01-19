@@ -14,7 +14,6 @@ import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaoke.models.MySingleton
-import com.smile.karaoke.models.MySingleton.orderedSongs
 import com.smile.karaoke.models.PlayingParameters
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.services.BasePlayService
@@ -128,9 +127,9 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
 
     fun autoPlaySongList() {
         val logStr = "autoPlaySongList"
-        LogUtil.d(TAG, "$logStr.orderedSongs.size = ${orderedSongs.size}")
+        LogUtil.d(TAG, "$logStr.orderedSongs.size = ${MySingleton.orderedSongs.size}")
         mCanShowNotSupportedFormat = true
-        if (!orderedSongs.isEmpty()) {
+        if (!MySingleton.orderedSongs.isEmpty()) {
             // next song that will be played, which the index is 0
             // start playing video from list
             playingParam.currentSongIndex = -1
@@ -267,8 +266,8 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
         LogUtil.d(TAG, "setAutoPlayStatusAndAction.songs.size() = ${songs.size}")
         var isAutoPlay = false
         if (!songs.isEmpty()) {
-            orderedSongs.clear()
-            orderedSongs.addAll(songs)
+            MySingleton.orderedSongs.clear()
+            MySingleton.orderedSongs.addAll(songs)
             playingParam.isAutoPlay = true
             autoPlaySongList()
             mPresentView.showPlayerView()
@@ -292,7 +291,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
 
     fun playPreviousSong() {
         LogUtil.d(TAG, "playPreviousSong")
-        val orderedSongsSize = orderedSongs.size
+        val orderedSongsSize = MySingleton.orderedSongs.size
         if (orderedSongsSize <= 1) {
             LogUtil.d(TAG, "playPreviousSong.orderedSongsSize <= 1, only one song in the list")
             // only one file in the play list
@@ -334,7 +333,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
 
     fun playNextSong() {
         LogUtil.d(TAG, "playNextSong")
-        val orderedSongsSize = orderedSongs.size
+        val orderedSongsSize = MySingleton.orderedSongs.size
         LogUtil.d(TAG, "playNextSong.orderedSongsSize = $orderedSongsSize")
         val currentIndex = playingParam.currentSongIndex
         val repeatStatus = playingParam.repeatStatus
@@ -374,6 +373,8 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
         mPresentView.updateVolumeSeekBarProgress()
         LogUtil.d(TAG, "$logStr.mediaUri = $mediaUri")
         if (mediaUri == null || Uri.EMPTY == mediaUri) {
+            // No more playing single song
+            /*
             if (playingParam.isPlaySingleSong) {
                 // called by SongListActivity
                 LogUtil.d(TAG, "$logStr.singleSongInfo = $singleSongInfo")
@@ -389,6 +390,8 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
             } else {
                 playingParam.currentAudioPosition = 0
             }
+            */
+            playingParam.currentAudioPosition = 0
         } else {
             val playbackState = playingParam.currentPlaybackState
             LogUtil.d(TAG, "$logStr.playbackState = $playbackState")
@@ -568,14 +571,14 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                 mediaUri = null
                 // remove the song that is unable to be played
                 LogUtil.d(TAG,
-                    "$msgStr.STATE_ERROR.orderedSongs.size() = ${orderedSongs.size}")
+                    "$msgStr.STATE_ERROR.orderedSongs.size() = ${MySingleton.orderedSongs.size}")
                 val currentIndexOfList = playingParam.currentSongIndex
                 LogUtil.d(TAG, "$msgStr.STATE_ERROR.currentIndexOfList = $currentIndexOfList")
                 if (currentIndexOfList >= 0) {
-                    orderedSongs.removeAt(currentIndexOfList)
+                    MySingleton.orderedSongs.removeAt(currentIndexOfList)
                     playingParam.currentSongIndex = currentIndexOfList - 1
                 }
-                LogUtil.d(TAG, "$msgStr.STATE_ERROR.orderedSongs.size() = ${orderedSongs.size}")
+                LogUtil.d(TAG, "$msgStr.STATE_ERROR.orderedSongs.size() = ${MySingleton.orderedSongs.size}")
                 isSelfFinished = false
                 playSong = true
                 // startAutoPlay(false)
@@ -604,7 +607,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     open fun saveInstanceState(outState: Bundle) {
         LogUtil.d(TAG, "saveInstanceState")
         outState.putInt(MyPlayerConstants.NumberOfVideoTracksState, numberOfVideoTracks)
-        val orderedSongs = ArrayList<SongInfo?>(orderedSongs)
+        val orderedSongs = ArrayList<SongInfo?>(MySingleton.orderedSongs)
         outState.putSerializable(MyPlayerConstants.OrderedSongsState, orderedSongs)
         outState.putParcelable(MyPlayerConstants.MediaUriState, mediaUri)
         outState.putParcelable(MyPlayerConstants.PlayingParamState, playingParam)

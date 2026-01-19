@@ -19,6 +19,7 @@ import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.fragments.ItemsBaseFragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
+import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongDescription
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.DatabaseUtil
@@ -50,6 +51,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var searchRecyclerView: RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
+    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -201,15 +203,37 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.d(TAG, "onItemClick.position = $position")
-        U2bSingleton.videos[position].apply {
-            song.included = if (song.included == "1") "0" else "1"
-            myRecyclerViewAdapter?.myNotifyItemChanged(position)
+        val songDesc = U2bSingleton.videos[position]
+        songDesc.apply {
+            var isUpdated = false
+            if (song.included == "1") {
+                song.included = "0"
+                selectedSongs.remove(song)
+                isUpdated = true
+            } else {
+                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                    ScreenUtil.showToast(
+                        activity, getString(R.string.excess_max) +
+                                " ${MySingleton.MAX_SONGS}", textFontSize,
+                        Toast.LENGTH_SHORT)
+                } else {
+                    song.included = "1"
+                    selectedSongs.add(song)
+                    isUpdated = true
+                }
+            }
+            if (isUpdated) myRecyclerViewAdapter?.myNotifyItemChanged(position)
         }
     }
 
     private fun startSearchVideos() {
         LogUtil.i(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
-        if (!searchCompleted) return
+        if (!searchCompleted) {
+            ScreenUtil.showToast(
+                activity, getString(R.string.loadingWaitStr),
+                textFontSize,Toast.LENGTH_SHORT)
+            return
+        }
         // start searching video
         searchEditTextView?.let { editIt ->
             val searchTerm = editIt.text.toString()
@@ -225,11 +249,11 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 if (U2bSingleton.videos[i].song.included == "1") {
                     songIt.add(U2bSingleton.videos[i].song)
                     index++
-                    if (index >= U2bSingleton.MAX_SONGS) {
+                    if (index >= MySingleton.MAX_SONGS) {
                         // excess the max
                         ScreenUtil.showToast(
                             activity, getString(R.string.excess_max) +
-                                    " ${U2bSingleton.MAX_SONGS}", textFontSize,
+                                    " ${MySingleton.MAX_SONGS}", textFontSize,
                             Toast.LENGTH_SHORT)
                         break
                     }
@@ -265,14 +289,15 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             val logStr = "playSelectedButton.setOnClickListener"
             LogUtil.i(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            val songs = videosToSongs()
-            LogUtil.i(TAG, "$logStr.songs.size = ${songs.size}")
-            if (songs.isEmpty()) {
+            // val songs = videosToSongs()
+            LogUtil.i(TAG, "$logStr.selectedSongs.size = ${selectedSongs.size}")
+            if (selectedSongs.isEmpty()) {
                 ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
                     textFontSize,
                     Toast.LENGTH_SHORT)
             } else {
-                playSongs?.playSelectedSongList(ArrayList(songs))
+                val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
+                playSongs?.playSelectedSongList(vSongs)
             }
         }
         addToFavoriteButton?.setOnClickListener {
@@ -280,16 +305,16 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
             LogUtil.i(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
-            val songs = videosToSongs()
+            // val songs = videosToSongs()
             lifecycleScope.launch(Dispatchers.IO) {
-                if (songs.isEmpty()) {
+                if (selectedSongs.isEmpty()) {
                     ScreenUtil.showToast(activity, getString(R.string.noFilesSelectedString),
                         textFontSize,
                         Toast.LENGTH_SHORT)
                 } else {
                     if (DatabaseUtil.addSongsToFavorites(act,
                             U2bPlayConstants.U2B_FAV_DB_NAME,
-                            songs)) {
+                            selectedSongs)) {
                         withContext(Dispatchers.Main) {
                             ScreenUtil.showToast(act,
                                 getString(R.string.add_to_favorites),

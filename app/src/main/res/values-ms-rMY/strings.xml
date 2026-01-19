@@ -89,6 +89,7 @@
     <string name="U2bPlayer">U2B Player</string>
     <string name="currentString">Current</string>
     <string name="loadingStr">Loading …</string>
+    <string name="loadingWaitStr">Loading, please wait</string>
     <string name="softDecoderFirstStr">SoftDecoder 1st</string>
     <string name="emptyString">""</string>
     <string name="installKaraokePlayer">Install\nKaraoke Player</string>

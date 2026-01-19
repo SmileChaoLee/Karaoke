@@ -72,7 +72,8 @@ class SafPickerFragment: ComOpenFragment() {
                     // BaseActivity will be coming back from invisible and similar to
                     // coming back from background
                     lifecycleScope.launch(Dispatchers.Main) {
-                        startPlaySelectedSong(activity)
+                        val songs = fileDescriptionsToSongList(MySingleton.fileList)
+                        startPlaySelectedSong(songs)
                     }
                 }
             }

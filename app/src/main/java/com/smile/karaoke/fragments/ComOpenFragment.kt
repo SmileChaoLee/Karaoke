@@ -28,10 +28,9 @@ open class ComOpenFragment: ItemsBaseFragment() {
     }
     // end of overriding the methods of ItemsBaseFragment
 
-    suspend fun startPlaySelectedSong(act: Activity?) {
-        LogUtil.d(TAG, "startPlaySelectedSong.act = $act")
-        if (act == null) return
-        val songs = fileDescriptionsToSongList(MySingleton.fileList)
+    suspend fun startPlaySelectedSong(songs: ArrayList<SongInfo>) {
+        LogUtil.d(TAG, "startPlaySelectedSong")
+        val act = activity ?: return
         if (songs.isEmpty()) {
             withContext(Dispatchers.Main) {
                 ScreenUtil.showToast(act,
@@ -40,13 +39,14 @@ open class ComOpenFragment: ItemsBaseFragment() {
             }
         } else {
             // Check if song is in database
+            val vSongs = ArrayList(songs.take(MySingleton.MAX_SONGS))
             DatabaseUtil.getSongsToPlay(act,
-                CommonConstants.FAVORITE_DB_NAME, songs)
-            playSongs?.playSelectedSongList(ArrayList(songs))
+                CommonConstants.FAVORITE_DB_NAME, vSongs)
+            playSongs?.playSelectedSongList(vSongs)
         }
     }
 
-    private fun fileDescriptionToSongInfo(fileDes: FileDescription): SongInfo {
+    fun fileDescriptionToSongInfo(fileDes: FileDescription): SongInfo {
         val fileUri = fileDes.file.toUri().toString()
         return SongInfo().apply {
             songName = fileDes.file.name
