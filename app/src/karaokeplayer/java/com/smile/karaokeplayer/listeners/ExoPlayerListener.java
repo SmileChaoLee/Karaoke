@@ -120,14 +120,14 @@ public class ExoPlayerListener implements Player.Listener {
     @Override
     public void onPlayerErrorChanged(@Nullable PlaybackException error) {
         LogUtil.d(mTAG,"onPlayerErrorChanged().error = " + error);
-        LogUtil.d(mTAG,"onPlayerErrorChanged().send PlaybackStateCompat.STATE_STOPPED");
-        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+        LogUtil.d(mTAG,"onPlayerErrorChanged().send PlaybackStateCompat.STATE_ERROR");
+        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
     }
 
     @Override
     public synchronized void onPlayerError(@NonNull PlaybackException error) {
         LogUtil.d(mTAG,"onPlayerError().error = " + error);
-        LogUtil.d(mTAG,"onPlayerError().send PlaybackStateCompat.STATE_STOPPED");
-        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+        LogUtil.d(mTAG,"onPlayerError().send PlaybackStateCompat.STATE_ERROR");
+        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR);
     }
 }

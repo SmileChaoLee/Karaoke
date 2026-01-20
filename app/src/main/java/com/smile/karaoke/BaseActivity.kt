@@ -349,11 +349,13 @@ abstract class BaseActivity : AppCompatActivity(),
         LogUtil.i(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
             // MySingleton.orderedSongs.clear() // no more clear, using add instead
+            val orderedSize = MySingleton.orderedSongs.size
             var found: Boolean
             for (songInfo in songs) {
                 found = false
                 LogUtil.d(TAG, "$msgStr.songInfo.filePath = ${songInfo.filePath}")
-                for (orderedSong in MySingleton.orderedSongs) {
+                for (i in 0 until orderedSize) {
+                    val orderedSong = MySingleton.orderedSongs[i]
                     LogUtil.d(TAG, "$msgStr.orderedSong.filePath = ${orderedSong.filePath}")
                     if (orderedSong.filePath == songInfo.filePath) {
                         found = true
