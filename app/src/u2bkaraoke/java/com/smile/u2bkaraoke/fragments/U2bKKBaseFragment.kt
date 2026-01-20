@@ -19,7 +19,7 @@ import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 abstract class U2bKKBaseFragment : Fragment() {
 
     companion object {
-        private const val TAG : String = "ItemsBaseFragment"
+        private const val TAG : String = "U2bKKBaseFragment"
     }
 
     var textFontSize = 0.0f

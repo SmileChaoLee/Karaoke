@@ -29,7 +29,7 @@ import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SongList
@@ -45,7 +45,7 @@ import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
-class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
+open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG = "SongListFragment"
@@ -67,7 +67,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var unselectButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
-    private lateinit var songList: SongList
+    lateinit var songList: SongList
     private var singer: Singer? = null
     private var language: Language? = null
     private var objectPassed: Any? = null
@@ -86,30 +86,30 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         orderedFrom = 0 // default value
         numOfWords = 0
         arguments?.let { args ->
-            orderedFrom = args.getInt(Constants.OrderedFrom, 0)
-            activityTitle = args.getString(Constants.SongListTitle, "").trim()
+            orderedFrom = args.getInt(U2bKKConstants.OrderedFrom, 0)
+            activityTitle = args.getString(U2bKKConstants.SongListTitle, "").trim()
             when (orderedFrom) {
-                Constants.SingerOrdered -> {
+                U2bKKConstants.SingerOrdered -> {
                     singer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        args.getParcelable(Constants.SingerParcelable, Singer::class.java)
-                    } else args.getParcelable(Constants.SingerParcelable)
+                        args.getParcelable(U2bKKConstants.SingerParcelable, Singer::class.java)
+                    } else args.getParcelable(U2bKKConstants.SingerParcelable)
                     objectPassed = singer
                 }
                 // Constants.NewSongOrdered -> objectPassed = language
-                Constants.NewSongLanguageOrdered, Constants.HotSongLanguageOrdered -> {
+                U2bKKConstants.NewSongLanguageOrdered, U2bKKConstants.HotSongLanguageOrdered -> {
                     language = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        args.getParcelable(Constants.LanguageParcelable, Language::class.java)
-                    } else args.getParcelable(Constants.LanguageParcelable)
+                        args.getParcelable(U2bKKConstants.LanguageParcelable, Language::class.java)
+                    } else args.getParcelable(U2bKKConstants.LanguageParcelable)
                     objectPassed = language
                     LogUtil.i(TAG, "onCreate.NewSongLanguageOrdered.language = $language")
                 }
                 // Constants.HotSongOrdered -> objectPassed = null
-                Constants.LanguageOrdered, Constants.LanguageWordsOrdered -> {
+                U2bKKConstants.LanguageOrdered, U2bKKConstants.LanguageWordsOrdered -> {
                     language = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        args.getParcelable(Constants.LanguageParcelable, Language::class.java)
-                    } else args.getParcelable(Constants.LanguageParcelable)
+                        args.getParcelable(U2bKKConstants.LanguageParcelable, Language::class.java)
+                    } else args.getParcelable(U2bKKConstants.LanguageParcelable)
                     objectPassed = language
-                    numOfWords = args.getInt(Constants.NumOfWords)
+                    numOfWords = args.getInt(U2bKKConstants.NumOfWords)
                 }
             }
         }
@@ -351,7 +351,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             withContext(Dispatchers.IO) {
                 val restApi = RestApiSync.getApiSync()
                 when (orderedFrom) {
-                    Constants.SingerOrdered -> {
+                    U2bKKConstants.SingerOrdered -> {
                         LogUtil.d(TAG, "$logStr.SingerOrdered")
                         restApi.let { rApi ->
                             val singer = objectPassed as? Singer ?: Singer()
@@ -363,7 +363,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                             objectPassed = singer
                         }
                     }
-                    Constants.NewSongLanguageOrdered -> {
+                    U2bKKConstants.NewSongLanguageOrdered -> {
                         LogUtil.d(TAG, "$logStr.NewSongLanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
@@ -380,7 +380,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                             objectPassed = language
                         }
                     }
-                    Constants.HotSongLanguageOrdered -> {
+                    U2bKKConstants.HotSongLanguageOrdered -> {
                         LogUtil.d(TAG, "$logStr.HotSongLanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
@@ -397,7 +397,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                             objectPassed = language
                         }
                     }
-                    Constants.LanguageOrdered -> {
+                    U2bKKConstants.LanguageOrdered -> {
                         LogUtil.d(TAG, "$logStr.LanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
@@ -409,7 +409,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                             objectPassed = language
                         }
                     }
-                    Constants.LanguageWordsOrdered -> {
+                    U2bKKConstants.LanguageWordsOrdered -> {
                         LogUtil.d(TAG, "$logStr.LanguageWordsOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()

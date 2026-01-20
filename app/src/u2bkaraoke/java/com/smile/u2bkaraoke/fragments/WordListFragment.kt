@@ -15,7 +15,7 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.adapters.WordListAdapter
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
@@ -33,20 +33,20 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var languageTitle = ""
     private lateinit var mWordList: ArrayList<String>
     private lateinit var mLanguage: Language
-    private var orderedFrom = Constants.WordsOrdered
+    private var orderedFrom = U2bKKConstants.WordsOrdered
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        orderedFrom = Constants.WordsOrdered
+        orderedFrom = U2bKKConstants.WordsOrdered
         languageTitle = ""
         var lang: Language? = null
         arguments?.let { args ->
-            orderedFrom = args.getInt(Constants.OrderedFrom, Constants.WordsOrdered)
-            languageTitle = args.getString(Constants.LanguageTitle, "")
+            orderedFrom = args.getInt(U2bKKConstants.OrderedFrom, U2bKKConstants.WordsOrdered)
+            languageTitle = args.getString(U2bKKConstants.LanguageTitle, "")
             lang = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                args.getParcelable(Constants.LanguageParcelable, Language::class.java)
-            } else args.getParcelable(Constants.LanguageParcelable)
+                args.getParcelable(U2bKKConstants.LanguageParcelable, Language::class.java)
+            } else args.getParcelable(U2bKKConstants.LanguageParcelable)
         }
         mLanguage = lang ?: Language()
     }
@@ -131,10 +131,10 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             */
             val nFragment = SongListFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(Constants.OrderedFrom, Constants.LanguageWordsOrdered)
-                    putString(Constants.SongListTitle, "$languageTitle $word")
-                    putParcelable(Constants.LanguageParcelable, mLanguage)
-                    putInt(Constants.NumOfWords, position + 1)
+                    putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.LanguageWordsOrdered)
+                    putString(U2bKKConstants.SongListTitle, "$languageTitle $word")
+                    putParcelable(U2bKKConstants.LanguageParcelable, mLanguage)
+                    putInt(U2bKKConstants.NumOfWords, position + 1)
                 }
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)

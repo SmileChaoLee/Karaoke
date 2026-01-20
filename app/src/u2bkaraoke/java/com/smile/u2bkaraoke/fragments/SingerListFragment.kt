@@ -23,7 +23,7 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
@@ -68,8 +68,8 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
             singerType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                args.getParcelable(Constants.SingerTypeParcelable, SingerType::class.java)
-            } else args.getParcelable(Constants.SingerTypeParcelable)
+                args.getParcelable(U2bKKConstants.SingerTypeParcelable, SingerType::class.java)
+            } else args.getParcelable(U2bKKConstants.SingerTypeParcelable)
             singerType?.let {sType ->
                 val act = activity ?: return
                 val sexString = when (sType.sex) {
@@ -177,9 +177,9 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             */
             val nFragment = SongListFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(Constants.OrderedFrom, Constants.SingerOrdered)
-                    putString(Constants.SongListTitle, singer.singNa)
-                    putParcelable(Constants.SingerParcelable, singer)
+                    putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.SingerOrdered)
+                    putString(U2bKKConstants.SongListTitle, singer.singNa)
+                    putParcelable(U2bKKConstants.SingerParcelable, singer)
                 }
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)

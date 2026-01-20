@@ -17,7 +17,7 @@ import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.retrofit.RestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
@@ -141,7 +141,7 @@ class SingerTyListFragment : U2bKKBaseFragment(),
             */
             val nFragment = SingerListFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(Constants.SingerTypeParcelable, singerType)
+                    putParcelable(U2bKKConstants.SingerTypeParcelable, singerType)
                 }
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)

@@ -2,7 +2,7 @@ package com.smile.u2bkaraoke.retrofit
 
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.LanguageList
 import com.smile.u2bkaraoke.model.Singer
@@ -32,7 +32,7 @@ abstract class RestApiAsync<T> : Callback<T> {
     @Suppress("UNCHECKED_CAST")
     private val apiInterface : ApiInterface
         get() {
-            U2bKaraokeApp.appCompBuilder.stringModule(Constants.CHAO_URL)
+            U2bKaraokeApp.appCompBuilder.stringModule(U2bKKConstants.CHAO_URL)
             .build().inject(this as RestApiAsync<Any>)
             return retrofit.create(ApiInterface::class.java)
             // return Client.getInstance(Constants.CHAO_URL).create(ApiInterface::class.java)

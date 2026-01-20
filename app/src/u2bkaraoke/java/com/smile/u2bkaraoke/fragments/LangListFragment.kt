@@ -14,7 +14,7 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.LanguageList
 import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.LangListAdapter
@@ -43,9 +43,9 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        orderedFrom = Constants.WordsOrdered
+        orderedFrom = U2bKKConstants.WordsOrdered
         arguments?.let { args ->
-            orderedFrom = args.getInt(Constants.OrderedFrom, Constants.WordsOrdered)
+            orderedFrom = args.getInt(U2bKKConstants.OrderedFrom, U2bKKConstants.WordsOrdered)
         }
     }
 
@@ -67,11 +67,11 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val menuTextView = findViewById<TextView>(R.id.languagesListMenuTextView)
             ScreenUtil.resizeTextSize(menuTextView, textFontSize)
             when (orderedFrom) {
-                Constants.WordsOrdered ->  // from main activity (U2bKkActivity)
+                U2bKKConstants.WordsOrdered ->  // from main activity (U2bKkActivity)
                     menuTextView.text = act.getString(R.string.languagesListString)
-                Constants.NewSongOrdered ->
+                U2bKKConstants.NewSongOrdered ->
                     menuTextView.text = act.getString(R.string.newSongLanguagesListString)
-                Constants.HotSongOrdered ->
+                U2bKKConstants.HotSongOrdered ->
                     menuTextView.text = act.getString(R.string.hotSongLanguagesListString)
             }
             langListEmptyTextView = findViewById(R.id.languagesListEmptyTextView)
@@ -147,17 +147,17 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             ScreenUtil.showToast(act, languageTitle,
                 textFontSize, Toast.LENGTH_SHORT)
             when (orderedFrom) {
-                Constants.WordsOrdered -> {
+                U2bKKConstants.WordsOrdered -> {
                     val nFragment = WordListFragment().apply {
                         arguments = Bundle().apply {
-                            putInt(Constants.OrderedFrom, Constants.LanguageOrdered)
-                            putString(Constants.LanguageTitle, languageTitle)
-                            putParcelable(Constants.LanguageParcelable, language)
+                            putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.LanguageOrdered)
+                            putString(U2bKKConstants.LanguageTitle, languageTitle)
+                            putParcelable(U2bKKConstants.LanguageParcelable, language)
                         }
                     }
                     U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
                 }
-                Constants.NewSongOrdered -> {
+                U2bKKConstants.NewSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.NewSongOrdered")
                     /*
                     Intent(act, SongListActivity::class.java).let {
@@ -170,15 +170,15 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     */
                     val nFragment = SongListFragment().apply {
                         arguments = Bundle().apply {
-                            putInt(Constants.OrderedFrom, Constants.NewSongLanguageOrdered)
+                            putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.NewSongLanguageOrdered)
                             val listTitle = languageTitle + " " + act.getString(R.string.newString)
-                            putString(Constants.SongListTitle, listTitle)
-                            putParcelable(Constants.LanguageParcelable, language)
+                            putString(U2bKKConstants.SongListTitle, listTitle)
+                            putParcelable(U2bKKConstants.LanguageParcelable, language)
                         }
                     }
                     U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
                 }
-                Constants.HotSongOrdered -> {
+                U2bKKConstants.HotSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.HotSongOrdered")
                     /*
                     Intent(act, SongListActivity::class.java).let {
@@ -191,10 +191,10 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     */
                     val nFragment = SongListFragment().apply {
                         arguments = Bundle().apply {
-                            putInt(Constants.OrderedFrom, Constants.HotSongLanguageOrdered)
+                            putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.HotSongLanguageOrdered)
                             val listTitle = languageTitle + " " + act.getString(R.string.hotString)
-                            putString(Constants.SongListTitle, listTitle)
-                            putParcelable(Constants.LanguageParcelable, language)
+                            putString(U2bKKConstants.SongListTitle, listTitle)
+                            putParcelable(U2bKKConstants.LanguageParcelable, language)
                         }
                     }
                     U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)

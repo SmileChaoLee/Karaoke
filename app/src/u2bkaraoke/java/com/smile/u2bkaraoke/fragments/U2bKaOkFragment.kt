@@ -9,7 +9,7 @@ import android.widget.Button
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.model.Constants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 
 class U2bKaOkFragment: U2bKKBaseFragment() {
@@ -102,7 +102,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
             mFragManager?.let { fm ->
                 val nFragment = LangListFragment().apply {
                     arguments = Bundle().apply {
-                        putInt(Constants.OrderedFrom, Constants.NewSongOrdered)
+                        putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.NewSongOrdered)
                     }
                 }
                 U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
@@ -112,7 +112,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
             mFragManager?.let { fm ->
                 val nFragment = LangListFragment().apply {
                     arguments = Bundle().apply {
-                        putInt(Constants.OrderedFrom, Constants.HotSongOrdered)
+                        putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.HotSongOrdered)
                     }
                 }
                 U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)

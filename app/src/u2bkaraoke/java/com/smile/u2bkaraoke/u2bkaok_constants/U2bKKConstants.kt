@@ -1,6 +1,6 @@
-package com.smile.u2bkaraoke.model
+package com.smile.u2bkaraoke.u2bkaok_constants
 
-object Constants {
+object U2bKKConstants {
     const val WordsOrdered = 0
     const val SingerOrdered = 1
     const val NewSongOrdered = 2
