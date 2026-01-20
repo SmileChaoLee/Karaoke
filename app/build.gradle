@@ -26,8 +26,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1007
-        versionName "10.07"
+        versionCode 1008
+        versionName "10.08"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,8 +63,8 @@ android {
         }
         create("u2bplayer") {
             dimension = "karaoke"
-            versionCode 117
-            versionName "1.17"
+            versionCode 118
+            versionName "1.18"
             applicationId = "com.smile.u2bplayer"
         }
         create("u2bplayer2") {
