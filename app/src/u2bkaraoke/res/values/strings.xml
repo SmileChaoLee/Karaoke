@@ -31,11 +31,13 @@
     <string name="singerTypesListString">Singer Types</string>
     <string name="songsListString">Songs</string>
     <string name="singersListString">Singers</string>
+    <string name="allSongsString">All Songs</string>
 
     <string name="firstPage">First Page</string>
     <string name="previousPage">Prev Page</string>
     <string name="nextPage">Next Page</string>
     <string name="lastPage">Last Page</string>
+    <string name="pageNoTotal">Page</string>
     <string name="returnTo">Return</string>
 
     <string name="areaNo">Area No</string>

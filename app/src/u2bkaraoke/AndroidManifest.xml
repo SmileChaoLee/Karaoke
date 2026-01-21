@@ -50,8 +50,7 @@
 
         <activity
             android:name="com.smile.u2bkaraoke.U2bKaOkActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="stateHidden">
+            android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
 
         <activity

@@ -31,11 +31,13 @@
     <string name="singerTypesListString">歌星類別</string>
     <string name="songsListString">歌曲</string>
     <string name="singersListString">歌星</string>
+    <string name="allSongsString">所有歌曲</string>
 
     <string name="firstPage">首頁</string>
     <string name="previousPage">上頁</string>
     <string name="nextPage">下頁</string>
     <string name="lastPage">末頁</string>
+    <string name="pageNoTotal">頁次</string>
     <string name="returnTo">返回</string>
 
     <string name="areaNo">區域編號</string>

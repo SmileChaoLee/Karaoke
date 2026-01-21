@@ -9,6 +9,7 @@ object U2bKKConstants {
     const val HotSongLanguageOrdered = 31
     const val LanguageOrdered = 4
     const val LanguageWordsOrdered = 41
+    const val ALL_SONG_ORDERED = 100
     const val OrderedFrom = "OrderedFrom"
     const val SingerListTitle = "SingerListTitle"
     const val SingerTypeParcelable = "SingerTypeParcelable"

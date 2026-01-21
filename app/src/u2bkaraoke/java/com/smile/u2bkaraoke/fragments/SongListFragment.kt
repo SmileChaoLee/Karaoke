@@ -1,7 +1,6 @@
 package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -10,11 +9,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -54,16 +51,16 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     @JvmField
     @Inject
     var myViewAdapter: SongListAdapter? = null
+    private var mRecyclerView: RecyclerView? = null
     private var searchCompleted = true
     private var searchEditText: EditText? = null
-    private var isSearchEditTextChanged = false
     private var filterString: String? = null
     private var songListEmptyTextView: TextView? = null
-    private var mRecyclerView: RecyclerView? = null
     private var firstPageButton: Button? = null
     private var previousPageButton: Button? = null
     private var nextPageButton: Button? = null
     private var lastPageButton: Button? = null
+    private var pageNoTextView: TextView? = null
     private var unselectButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
@@ -75,7 +72,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var activityTitle = ""
     private var numOfWords = 0
     private var pageNo = 1
-    private var pageSize = 7
+    private var pageSize = 10
     private var totalPages = 0
     private val selectedSongs : ArrayList<SongInfo> = ArrayList()
     // private var restApi: MyRestApi? = null
@@ -113,6 +110,9 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
             }
         }
+        if (orderedFrom == U2bKKConstants.ALL_SONG_ORDERED) {
+            activityTitle = getString(R.string.allSongsString)
+        }
         LogUtil.d(TAG, "onCreate.orderedFrom = $orderedFrom")
     }
 
@@ -140,12 +140,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             filterString = ""
             searchEditText = findViewById(R.id.songSearchEditText)
             searchEditText?.let { sEt ->
-                ScreenUtil.resizeTextSize(sEt, textFontSize * 0.8f)
-                val searchEditLp = sEt.layoutParams as LinearLayout.LayoutParams
-                searchEditLp.leftMargin = (textFontSize * 2.0f).toInt()
-                searchEditLp.rightMargin = (textFontSize * 5.0f).toInt()
+                ScreenUtil.resizeTextSize(sEt, textFontSize)
                 sEt.setText(filterString)
-                isSearchEditTextChanged = false
                 sEt.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
                         LogUtil.d(TAG, "addTextChangedListener.beforeTextChanged")
@@ -159,8 +155,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         filterString = if (content.isEmpty()) "" else "SongNa+$content"
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                         pageNo = 1
-                        isSearchEditTextChanged = true
-                        retrieveSongList()
+                        retrieveSongList(true)
                     }
                 })
             }
@@ -177,6 +172,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize)
             lastPageButton = findViewById(R.id.lastPageButton)
             ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
+            pageNoTextView = findViewById(R.id.pageNoTotal)
+            ScreenUtil.resizeTextSize(pageNoTextView, smallButtonFontSize)
             unselectButton = findViewById(R.id.songUnselectButton)
             playSelectedButton = findViewById(R.id.songPlaySelectedButton)
             addToFavoriteButton = findViewById(R.id.songAddToFavButton)
@@ -184,6 +181,10 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
         super.onViewCreated(view, savedInstanceState)
 
+        firstPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        previousPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        nextPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        lastPageButton?.nextFocusUpId = R.id.songListRecyclerView
         val showVisible = showVideoButton?.isVisible ?: false
         exitImageButton?.let { exitB ->
             exitB.nextFocusUpId = R.id.nextPageButton
@@ -301,12 +302,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val song = list.songs[position]
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
-            /*
-            U2bPlayerUtil.saveKeyword(act, song.songNa)
-            Intent(act, U2bPlayerActivity::class.java).apply {
-                startActivity(this@apply)
-            }
-            */
             val songInfo = dataSongToSongInfo(song)
             var isUpdated = false
             if (song.vodYn.uppercase() == "Y") {
@@ -337,7 +332,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             else super.myBackgroundColor(position)
     }
 
-    private fun retrieveSongList() {
+    @SuppressLint("SetTextI18n")
+    private fun retrieveSongList(isSearch: Boolean = false) {
         val logStr = "retrieveSingerList"
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
@@ -347,15 +343,28 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             mRecyclerView?.visibility = View.GONE
             songListEmptyTextView?.visibility = View.VISIBLE
             songListEmptyTextView?.text = act.getString(R.string.loadingString)
-            var tempSongList: SongList? = null
+            var tempList: SongList? = null
             withContext(Dispatchers.IO) {
                 val restApi = RestApiSync.getApiSync()
                 when (orderedFrom) {
+                    U2bKKConstants.ALL_SONG_ORDERED -> {
+                        LogUtil.d(TAG, "$logStr.ALL_SONG_ORDERED")
+                        restApi.let { rApi ->
+                            val song = objectPassed as? Song ?: Song()
+                            tempList = if (filterString.isNullOrEmpty()) {
+                                rApi.getSongs(pageSize, pageNo)
+                            } else {
+                                // rApi.getSongs(pageSize, pageNo, filterString!!)
+                                rApi.getSongs(pageSize, pageNo)
+                            }
+                            objectPassed = song
+                        }
+                    }
                     U2bKKConstants.SingerOrdered -> {
                         LogUtil.d(TAG, "$logStr.SingerOrdered")
                         restApi.let { rApi ->
                             val singer = objectPassed as? Singer ?: Singer()
-                            tempSongList = if (filterString.isNullOrEmpty()) {
+                            tempList = if (filterString.isNullOrEmpty()) {
                                 rApi.getSongsBySinger(singer, pageSize, pageNo)
                             } else {
                                 rApi.getSongsBySinger(singer, pageSize, pageNo, filterString!!)
@@ -367,7 +376,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         LogUtil.d(TAG, "$logStr.NewSongLanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
-                            tempSongList = if (filterString.isNullOrEmpty()) {
+                            tempList = if (filterString.isNullOrEmpty()) {
                                 rApi.getNewSongsByLanguage(language, pageSize, pageNo)
                             } else {
                                 rApi.getNewSongsByLanguage(
@@ -384,7 +393,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         LogUtil.d(TAG, "$logStr.HotSongLanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
-                            tempSongList = if (filterString.isNullOrEmpty()) {
+                            tempList = if (filterString.isNullOrEmpty()) {
                                 rApi.getHotSongsByLanguage(language, pageSize, pageNo)
                             } else {
                                 rApi.getHotSongsByLanguage(
@@ -401,7 +410,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         LogUtil.d(TAG, "$logStr.LanguageOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
-                            tempSongList = if (filterString.isNullOrEmpty()) {
+                            tempList = if (filterString.isNullOrEmpty()) {
                                 rApi.getSongsByLanguage(language, pageSize, pageNo)
                             } else {
                                 rApi.getSongsByLanguage(language, pageSize, pageNo, filterString!!)
@@ -413,7 +422,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         LogUtil.d(TAG, "$logStr.LanguageWordsOrdered")
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
-                            tempSongList = if (filterString.isNullOrEmpty()) {
+                            tempList = if (filterString.isNullOrEmpty()) {
                                 rApi.getSongsByLanguageNumOfWords(
                                     language,
                                     numOfWords,
@@ -436,10 +445,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             }
             // update the UI
             withContext(Dispatchers.Main) {
-                tempSongList?.let { sList ->
-                    pageNo = sList.pageNo
-                    pageSize = sList.pageSize
-                    totalPages = sList.totalPages
+                tempList?.let { sList ->
                     if (sList.songs.isEmpty()) {
                         songListEmptyTextView?.text = act.getString(R.string.noResultString)
                         songListEmptyTextView?.visibility = View.VISIBLE
@@ -451,38 +457,27 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         }
                     }
                 } ?: run{
-                    tempSongList = SongList()
+                    tempList = SongList()
                     songListEmptyTextView?.text = act.getString(R.string.failedMessage)
                     songListEmptyTextView?.visibility = View.VISIBLE
                 }
-                LogUtil.d(TAG, "$logStr.songList.songs.size = ${songList.songs.size}")
-                /*
-                LogUtil.d(TAG, "$logStr.inject().myViewAdapter")
-                appCompBuilder
-                    .recyclerItemListenerModule(this@SongListFragment)
-                    .songArrayListModule(songList!!.songs)
-                    .floatModule(textFontSize).build()
-                    .inject(this@SongListFragment)
-                mRecyclerView?.setAdapter(myViewAdapter)
-                mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-                */
+                LogUtil.d(TAG, "$logStr.tempList.songs.size = ${tempList?.songs?.size}")
                 selectedSongs.clear()
                 songList.songs.clear()
-                tempSongList?.let { tempList ->
+                tempList?.let { tempList ->
+                    songList.pageNo = tempList.pageNo
+                    songList.pageSize = tempList.pageSize
+                    songList.totalRecords = tempList.totalRecords
+                    songList.totalPages = tempList.totalPages
                     songList.songs.addAll(tempList.songs)
                 }
                 myViewAdapter?.myNotifyDataSetChanged()
-                LogUtil.d(TAG, "$logStr.isSearchEditTextChanged = $isSearchEditTextChanged")
-                if (isSearchEditTextChanged) {
-                    // searchEditText.setFocusable(true);              // needed for requestFocus()
-                    // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
-                    // searchEditText.requestFocus();  // needed for the next two statements
-                    val imm = act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                    imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
-                    isSearchEditTextChanged = false
-                }
                 updateRecyclerView()
+                pageNo = songList.pageNo
+                pageSize = songList.pageSize
+                totalPages = songList.totalPages
+                pageNoTextView?.text = "$pageNo/$totalPages"
+                if (isSearch) searchEditText?.post { searchEditText?.requestFocus() }
             }
             searchCompleted = true
         }
@@ -565,54 +560,43 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         return songs
     }
 
-    private inner class MyRestApi : RestApiAsync<SongList>() {
+    private inner class MyRestApi(private val isSearch: Boolean = false)
+        : RestApiAsync<SongList>() {
+        @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SongList?>, response: Response<SongList?>) {
             val act = activity ?: return
             LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = {response.isSuccessful}")
-            var tempSongList = response.body()
+            var tempList = response.body()
             if (response.isSuccessful) {
-                tempSongList?.let { sList ->
-                    pageNo = sList.pageNo
-                    pageSize = sList.pageSize
-                    totalPages = sList.totalPages
+                tempList?.let { sList ->
                     if (sList.songs.isEmpty()) {
                         songListEmptyTextView?.text = act.getString(R.string.noResultString)
                         songListEmptyTextView?.visibility = View.VISIBLE
                     } else {
                         songListEmptyTextView?.visibility = View.GONE
                     }
-                } ?: { tempSongList = SongList() }
+                } ?: { tempList = SongList() }
             } else {
-                tempSongList = SongList()
+                tempList = SongList()
                 songListEmptyTextView?.text = act.getString(R.string.failedMessage)
                 songListEmptyTextView?.visibility = View.VISIBLE
             }
-            /*
-            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
-            appCompBuilder
-                .recyclerItemListenerModule(this@SongListFragment)
-                .songArrayListModule(songList!!.songs)
-                .floatModule(textFontSize).build()
-                .inject(this@SongListFragment)
-            mRecyclerView?.setAdapter(myViewAdapter)
-            mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-            */
             selectedSongs.clear()
             songList.songs.clear()
-            tempSongList?.let { tempList ->
+            tempList?.let { tempList ->
+                songList.pageNo = tempList.pageNo
+                songList.pageSize = tempList.pageSize
+                songList.totalRecords = tempList.totalRecords
+                songList.totalPages = tempList.totalPages
                 songList.songs.addAll(tempList.songs)
             }
             myViewAdapter?.myNotifyDataSetChanged()
-            LogUtil.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
-            if (isSearchEditTextChanged) {
-                // searchEditText.setFocusable(true);              // needed for requestFocus()
-                // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
-                // searchEditText.requestFocus();  // needed for the next two statements
-                val imm = act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
-                isSearchEditTextChanged = false
-            }
+            updateRecyclerView()
+            pageNo = songList.pageNo
+            pageSize = songList.pageSize
+            totalPages = songList.totalPages
+            pageNoTextView?.text = "$pageNo/$totalPages"
+            if (isSearch) searchEditText?.post { searchEditText?.requestFocus() }
         }
 
         override fun onFailure(call: Call<SongList>, t: Throwable) {

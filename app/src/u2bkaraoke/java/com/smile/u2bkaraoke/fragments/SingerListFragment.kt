@@ -1,7 +1,6 @@
 package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -9,10 +8,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -26,15 +23,12 @@ import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
-import com.smile.u2bkaraoke.retrofit.RestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
 import com.smile.u2bkaraoke.retrofit.RestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
 import javax.inject.Inject
 
 class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
@@ -44,18 +38,19 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         private const val TAG = "SingerListFragment"
     }
 
+    @JvmField
     @Inject
-    lateinit var myViewAdapter: SingerListAdapter
+    var myViewAdapter: SingerListAdapter? = null
+    private var mRecyclerView: RecyclerView? = null
     private var searchEditText: EditText? = null
-    private var isSearchEditTextChanged = false
     private var filterString: String? = null
     private var singerListEmptyTextView: TextView? = null
-    private var mRecyclerView: RecyclerView? = null
     private var firstPageButton: Button? = null
     private var previousPageButton: Button? = null
     private var nextPageButton: Button? = null
     private var lastPageButton: Button? = null
-    private var singerList: SingerList? = null
+    private var pageNoTextView: TextView? = null
+    private lateinit var singerList: SingerList
     private var singerType: SingerType? = null
     private var activityTitle = ""
     private var pageNo = 1
@@ -97,6 +92,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onViewCreated")
         textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
+        singerList = SingerList()
 
         view.apply {
             val singerListMenuTextView = findViewById<TextView>(R.id.singerListMenuTextView)
@@ -105,12 +101,8 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             filterString = ""
             searchEditText = findViewById(R.id.singerSearchEditText)
             searchEditText?.let { sEt ->
-                ScreenUtil.resizeTextSize(sEt, textFontSize * 0.8f)
-                val searchEditLp = sEt.layoutParams as LinearLayout.LayoutParams
-                searchEditLp.leftMargin = (textFontSize * 2.0f).toInt()
-                searchEditLp.rightMargin = (textFontSize * 5.0f).toInt()
+                ScreenUtil.resizeTextSize(sEt, textFontSize)
                 sEt.setText(filterString)
-                isSearchEditTextChanged = false
                 sEt.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
                     override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
@@ -120,8 +112,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         filterString = if (content.isEmpty()) "" else "SingNa+$content"
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                         pageNo = 1
-                        isSearchEditTextChanged = true
-                        retrieveSingerList()
+                        retrieveSingerList(true)
                     }
                 })
             }
@@ -138,11 +129,26 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             ScreenUtil.resizeTextSize(nextPageButton, smallButtonFontSize)
             lastPageButton = findViewById(R.id.lastPageButton)
             ScreenUtil.resizeTextSize(lastPageButton, smallButtonFontSize)
+            pageNoTextView = findViewById(R.id.pageNoTotal)
+            ScreenUtil.resizeTextSize(pageNoTextView, smallButtonFontSize)
         }
 
         super.onViewCreated(view, savedInstanceState)
+
+        firstPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        previousPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        nextPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        lastPageButton?.nextFocusUpId = R.id.singerListRecyclerView
         exitImageButton?.nextFocusUpId = R.id.nextPageButton
         showVideoButton?.nextFocusUpId = R.id.nextPageButton
+
+        appCompBuilder
+            .recyclerItemListenerModule(this@SingerListFragment)
+            .singerArrayListModule(singerList.singers)
+            .floatModule(textFontSize).build()
+            .inject(this@SingerListFragment)
+        mRecyclerView?.setAdapter(myViewAdapter)
+        mRecyclerView?.setLayoutManager(LinearLayoutManager(requireContext()))
 
         // restApi = MyRestApi()
         retrieveSingerList()
@@ -162,19 +168,11 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         val act = activity ?: return
         val fragContainerId = this.id   // container id of the fragment
         val fragManager = act.supportFragmentManager
-        singerList?.let { list ->
+        singerList.let { list ->
             val singer = list.singers[position]
             LogUtil.i(TAG, "onItemClick.singer.singNa = ${singer.singNa}")
             ScreenUtil.showToast(act, singer.singNa,
                 textFontSize,  Toast.LENGTH_SHORT)
-            /*
-            Intent(mActivity, SongListActivity::class.java).let {
-                it.putExtra(Constants.OrderedFrom, Constants.SingerOrdered)
-                it.putExtra(Constants.SongListTitle, singer.singNa)
-                it.putExtra(Constants.SingerParcelable, singer)
-                mActivity.startActivity(it)
-            }
-            */
             val nFragment = SongListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.SingerOrdered)
@@ -186,7 +184,8 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         }
     }
 
-    private fun retrieveSingerList() {
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
+    private fun retrieveSingerList(isSearch: Boolean = false) {
         val logStr = "retrieveSingerList"
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
@@ -194,10 +193,11 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             mRecyclerView?.visibility = View.GONE
             singerListEmptyTextView?.visibility = View.VISIBLE
             singerListEmptyTextView?.text = act.getString(R.string.loadingString)
+            var tempList: SingerList? = null
             withContext(Dispatchers.IO) {
                 RestApiSync.getApiSync().let { rApi ->
                     val sType = singerType ?: SingerType()
-                    singerList = if (filterString.isNullOrEmpty()) {
+                    tempList = if (filterString.isNullOrEmpty()) {
                         rApi.getSingersBySingerType(sType, pageSize, pageNo)
                     } else {
                         rApi.getSingersBySingerType(
@@ -209,10 +209,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
             }
             withContext(Dispatchers.Main) {
-                singerList?.let { sList ->
-                    pageNo = sList.pageNo // get the back value from called function
-                    pageSize = sList.pageSize // get the back value from called function
-                    totalPages = sList.totalPages // get the back value from called function
+                tempList?.let { sList ->
                     if (sList.singers.isEmpty()) {
                         singerListEmptyTextView?.text = act.getString(R.string.noResultString)
                         singerListEmptyTextView?.visibility = View.VISIBLE
@@ -220,37 +217,33 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         singerListEmptyTextView?.visibility = View.GONE
                     }
                 } ?: run {
-                    singerList = SingerList()
+                    tempList = SingerList()
                     singerListEmptyTextView?.text = act.getString(R.string.failedMessage)
                     singerListEmptyTextView?.visibility = View.VISIBLE
                 }
-                LogUtil.d(TAG, "$logStr.inject().myViewAdapter")
-                appCompBuilder
-                    .recyclerItemListenerModule(this@SingerListFragment)
-                    .singerArrayListModule(singerList!!.singers)
-                    .floatModule(textFontSize).build()
-                    .inject(this@SingerListFragment)
-                mRecyclerView?.setAdapter(myViewAdapter)
-                mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-                LogUtil.d(TAG, "$logStr.isSearchEditTextChanged = $isSearchEditTextChanged")
-                if (isSearchEditTextChanged) {
-                    // searchEditText.setFocusable(true);              // needed for requestFocus()
-                    // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
-                    // searchEditText.requestFocus();  // needed for the next two statements
-                    val imm =
-                        act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                    imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
-                    isSearchEditTextChanged = false
+                LogUtil.d(TAG, "$logStr.tempList.singers.size = ${tempList?.singers?.size}")
+                singerList.singers.clear()
+                tempList?.let { tempList ->
+                    singerList.pageNo = tempList.pageNo
+                    singerList.pageSize = tempList.pageSize
+                    singerList.totalRecords = tempList.totalRecords
+                    singerList.totalPages = tempList.totalPages
+                    singerList.singers.addAll(tempList.singers)
                 }
+                myViewAdapter?.notifyDataSetChanged()
                 updateRecyclerView()
+                pageNo = singerList.pageNo
+                pageSize = singerList.pageSize
+                totalPages = singerList.totalPages
+                pageNoTextView?.text = "$pageNo/$totalPages"
+                if (isSearch) searchEditText?.post { searchEditText?.requestFocus() }
             }
         }
     }
 
     private fun updateRecyclerView() {
         singerListEmptyTextView?.visibility = View.GONE
-        singerList?.let {
+        singerList.let {
             if (it.singers.isEmpty()) {
                 mRecyclerView?.visibility = View.GONE
                 exitImageButton?.post { exitImageButton?.requestFocus() }
@@ -285,55 +278,5 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private fun lastPage() {
         pageNo = -1 // represent last page
         retrieveSingerList()
-    }
-
-    private inner class MyRestApi : RestApiAsync<SingerList>() {
-        override fun onResponse(call: Call<SingerList?>, response: Response<SingerList?>) {
-            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
-            val act = activity ?: return
-            singerList = response.body()
-            if (!response.isSuccessful || singerList == null) {
-                singerList = SingerList()
-                singerListEmptyTextView?.text = act.getString(R.string.failedMessage)
-                singerListEmptyTextView?.visibility = View.VISIBLE
-            } else {
-                singerList?.let { sList ->
-                    pageNo = sList.pageNo // get the back value from called function
-                    pageSize = sList.pageSize // get the back value from called function
-                    totalPages = sList.totalPages // get the back value from called function
-                    if (sList.singers.isEmpty()) {
-                        singerListEmptyTextView?.text = act.getString(R.string.noResultString)
-                        singerListEmptyTextView?.visibility = View.VISIBLE
-                    } else {
-                        singerListEmptyTextView?.visibility = View.GONE
-                    }
-                } ?: { singerList = SingerList() }
-            }
-            LogUtil.d(TAG, "MyRestApi.onResponse.inject()")
-            appCompBuilder
-                .recyclerItemListenerModule(this@SingerListFragment)
-                .singerArrayListModule(singerList!!.singers)
-                .floatModule(textFontSize).build()
-                .inject(this@SingerListFragment)
-            mRecyclerView?.setAdapter(myViewAdapter)
-            mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-            LogUtil.d(TAG, "MyRestApi.onResponse.isSearchEditTextChanged = $isSearchEditTextChanged")
-            if (isSearchEditTextChanged) {
-                // searchEditText.setFocusable(true);              // needed for requestFocus()
-                // searchEditText.setFocusableInTouchMode(true);   // needed for requestFocus()
-                // searchEditText.requestFocus();  // needed for the next two statements
-                val imm = act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                // imm.showSoftInput(null, InputMethodManager.SHOW_IMPLICIT);
-                imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
-                isSearchEditTextChanged = false
-            }
-        }
-
-        override fun onFailure(call: Call<SingerList>, t: Throwable) {
-            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
-            singerList = SingerList()
-            singerListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
-            singerListEmptyTextView?.visibility = View.VISIBLE
-        }
     }
 }

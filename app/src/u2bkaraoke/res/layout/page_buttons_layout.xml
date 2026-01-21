@@ -1,0 +1,83 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="?android:attr/buttonBarStyle"
+    android:background="@android:color/transparent"
+    android:weightSum="5">
+    <Button
+        android:id="@+id/firstPageButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        style="?android:attr/buttonBarButtonStyle"
+        android:text="@string/firstPage"
+        android:background="@android:drawable/btn_default"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusLeft="@id/firstPageButton"
+        android:nextFocusRight="@id/previousPageButton"
+        android:nextFocusDown="@id/u2bKExitButton"
+        android:textColor="@color/blue"
+        android:gravity="center"
+        android:layout_weight="1" >
+    </Button>
+    <Button
+    android:id="@+id/previousPageButton"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    style="?android:attr/buttonBarButtonStyle"
+    android:text="@string/previousPage"
+    android:background="@android:drawable/btn_default"
+    android:textColor="@color/blue"
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusLeft="@id/firstPageButton"
+    android:nextFocusRight="@id/nextPageButton"
+    android:nextFocusDown="@id/u2bKExitButton"
+    android:gravity="center"
+    android:layout_weight="1" >
+    </Button>
+    <Button
+    android:id="@+id/nextPageButton"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    style="?android:attr/buttonBarButtonStyle"
+    android:text="@string/nextPage"
+    android:background="@android:drawable/btn_default"
+    android:textColor="@color/blue"
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusLeft="@id/previousPageButton"
+    android:nextFocusRight="@id/lastPageButton"
+    android:nextFocusDown="@id/u2bKExitButton"
+    android:gravity="center"
+    android:layout_weight="1" >
+    </Button>
+    <Button
+    android:id="@+id/lastPageButton"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    style="?android:attr/buttonBarButtonStyle"
+    android:text="@string/lastPage"
+    android:background="@android:drawable/btn_default"
+    android:textColor="@color/blue"
+    android:focusable="true"
+    android:clickable="true"
+    android:nextFocusLeft="@id/nextPageButton"
+    android:nextFocusRight="@id/lastPageButton"
+    android:nextFocusDown="@id/u2bKExitButton"
+    android:gravity="center"
+    android:layout_weight="1" >
+    </Button>
+    <TextView
+        android:id="@+id/pageNoTotal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textColor="@color/red"
+        android:background="@color/yellow3"
+        android:text="@string/pageNoTotal"
+        android:gravity="center"
+        android:layout_weight="1" >
+    </TextView>
+</LinearLayout>

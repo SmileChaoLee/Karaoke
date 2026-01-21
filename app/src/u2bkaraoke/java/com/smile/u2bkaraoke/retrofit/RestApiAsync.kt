@@ -53,6 +53,16 @@ abstract class RestApiAsync<T> : Callback<T> {
     }
 
     @Suppress("UNCHECKED_CAST")
+    fun getSongs(pageSize : Int, pageNo : Int) {
+        LogUtil.d(TAG, "getSongs.no filter")
+        // order by (number of words + song's name)
+        val orderBy = "NumWordsSongNa"
+        // get Call from Retrofit Api
+        apiInterface.getSongs(pageSize, pageNo, orderBy)
+            .enqueue(callback as Callback<SongList>)
+    }
+
+    @Suppress("UNCHECKED_CAST")
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int) {
         val singerId = singer.id
         val orderBy = "SongNa" // order by song's name

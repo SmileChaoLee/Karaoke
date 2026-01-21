@@ -70,6 +70,25 @@ class RestApiSync private constructor() {
         }
     }
 
+
+    @Suppress("UNCHECKED_CAST")
+    fun getSongs(pageSize : Int, pageNo : Int): SongList? {
+        val logStr = "getSongs"
+        LogUtil.d(TAG, logStr)
+        // order by (number of words + song's name)
+        val orderBy = "NumWordsSongNa"
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSongs(pageSize, pageNo, orderBy)
+                .execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getSongsBySinger"

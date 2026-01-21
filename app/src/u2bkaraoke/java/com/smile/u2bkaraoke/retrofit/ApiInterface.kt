@@ -31,6 +31,16 @@ interface ApiInterface {
         @Path("filter") filter: String?
     ): Call<SingerList>
 
+    @GET("api/Languages")
+    fun getAllLanguages(): Call<LanguageList>
+
+    @GET("api/Songs/{pageSize}/{pageNo}/{orderBy}")
+    fun getSongs(
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?
+    ): Call<SongList>
+
     // [HttpGet("{id}/[Action]/{pageSize}/{pageNo}/{orderBy}")] in SingersController.cs
     @GET("api/Singers/{id}/Songs/{pageSize}/{pageNo}/{orderBy}")
     fun getSongsBySingerId(
@@ -49,9 +59,6 @@ interface ApiInterface {
         @Path("orderBy") orderBy: String?,
         @Path("filter") filter: String?
     ): Call<SongList>
-
-    @GET("api/Languages")
-    fun getAllLanguages(): Call<LanguageList>
 
     @GET("api/Languages/{id}/Songs/{pageSize}/{pageNo}/{orderBy}")
     fun getSongsByLanguageIdOrderBy(
