@@ -6,7 +6,7 @@ import android.widget.Toast
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.fragments.SongListFragment
-import com.smile.u2bplayer.U2bPlayerActivity
+import com.smile.u2bkktool.U2bKkPlayActivity
 import com.smile.u2bplayer.utilities.U2bPlayerUtil
 
 class SongToolFragment : SongListFragment() {
@@ -25,8 +25,13 @@ class SongToolFragment : SongListFragment() {
                 act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT
             )
-            U2bPlayerUtil.saveKeyword(act, song.songNa)
-            Intent(act, U2bPlayerActivity::class.java).apply {
+            val singer1 = if (song.singer1Na.isEmpty() ||
+                song.singer1Na.uppercase() == "UNKNOWN") "" else song.singer1Na
+            val singer2 = if (song.singer2Na.isEmpty() ||
+                song.singer2Na.uppercase() == "UNKNOWN") "" else song.singer2Na
+            val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
+            U2bPlayerUtil.saveKeyword(act, searchTerm)
+            Intent(act, U2bKkPlayActivity::class.java).apply {
                 startActivity(this@apply)
             }
         }

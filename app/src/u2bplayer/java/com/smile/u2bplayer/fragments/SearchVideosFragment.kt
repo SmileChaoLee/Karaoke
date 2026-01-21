@@ -37,7 +37,7 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
+open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG : String = "SearchVideosFragment"
@@ -50,8 +50,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var searchEditTextView: EditText? = null
     private var searchRecyclerView: RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
-    private var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
-    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
+    var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
+    val selectedSongs : ArrayList<SongInfo> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -204,6 +204,8 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.d(TAG, "onItemClick.position = $position")
+        if (position < 0) return
+        val act = activity ?: return
         val songDesc = U2bSingleton.videos[position]
         songDesc.apply {
             var isUpdated = false
@@ -213,8 +215,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 isUpdated = true
             } else {
                 if (selectedSongs.size >= MySingleton.MAX_SONGS) {
-                    ScreenUtil.showToast(
-                        activity, getString(R.string.excess_max) +
+                    ScreenUtil.showToast(act, getString(R.string.excess_max) +
                                 " ${MySingleton.MAX_SONGS}", textFontSize,
                         Toast.LENGTH_SHORT)
                 } else {
@@ -258,6 +259,22 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                             Toast.LENGTH_SHORT)
                         break
                     }
+                }
+            }
+        }
+    }
+
+    open fun addToFavoriteDatabase() {
+        LogUtil.d(TAG, "addToFavoriteDatabase")
+        val act = activity ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (DatabaseUtil.addSongsToFavorites(act,
+                    U2bPlayConstants.U2B_FAV_DB_NAME,
+                    selectedSongs)) {
+                withContext(Dispatchers.Main) {
+                    ScreenUtil.showToast(act,
+                        getString(R.string.add_to_favorites),
+                        textFontSize,Toast.LENGTH_SHORT)
                 }
             }
         }
@@ -311,17 +328,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                     getString(R.string.noFilesSelectedString),
                     textFontSize, Toast.LENGTH_SHORT)
             } else {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    if (DatabaseUtil.addSongsToFavorites(act,
-                            U2bPlayConstants.U2B_FAV_DB_NAME,
-                            selectedSongs)) {
-                        withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(act,
-                                getString(R.string.add_to_favorites),
-                                textFontSize,Toast.LENGTH_SHORT)
-                        }
-                    }
-                }
+                addToFavoriteDatabase()
             }
         }
         super.setClickListeners()
