@@ -106,6 +106,7 @@ class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                 LogUtil.e(TAG, "onViewCreated.Exception", ex)
             }
             LogUtil.d(TAG, "onViewCreated.searchTerm = $searchTerm")
+            searchEditTextView?.setText(searchTerm)
             searchYouTubeVideos(searchTerm)
         }
 

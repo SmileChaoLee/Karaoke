@@ -27,7 +27,7 @@
         android:inputType="textMultiLine"
         android:textColor="@color/my_editbox_textcolor"
         android:textCursorDrawable="@drawable/my_custom_cursor"
-        android:background="@drawable/u2bkk_editbox_background"
+        android:background="@drawable/search_editbox_background"
         android:focusable="true"
         android:clickable="true"
         android:nextFocusLeft="@id/singerSearchEditText"

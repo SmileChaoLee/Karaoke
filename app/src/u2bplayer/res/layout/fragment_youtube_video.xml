@@ -165,7 +165,7 @@
             android:clickable="true"
             android:nextFocusRight="@id/searchEditTextView"
             android:nextFocusLeft="@id/searchEditTextView"
-            android:background="@drawable/u2bkk_editbox_background"
+            android:background="@drawable/my_editbox_background"
             tools:ignore="LabelFor">
         </EditText>
     </LinearLayout>
