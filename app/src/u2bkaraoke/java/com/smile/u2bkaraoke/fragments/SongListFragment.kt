@@ -185,6 +185,23 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         previousPageButton?.nextFocusUpId = R.id.songListRecyclerView
         nextPageButton?.nextFocusUpId = R.id.songListRecyclerView
         lastPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        setFucusDirection()
+
+        appCompBuilder
+            .recyclerItemListenerModule(this@SongListFragment)
+            .songArrayListModule(songList.songs)
+            .floatModule(textFontSize).build()
+            .inject(this@SongListFragment)
+        mRecyclerView?.apply {
+            setAdapter(myViewAdapter)
+            setLayoutManager(LinearLayoutManager(requireContext()))
+        }
+
+        // restApi = MyRestApi()
+        retrieveSongList()
+    }
+
+    private fun setFucusDirection() {
         val showVisible = showVideoButton?.isVisible ?: false
         exitImageButton?.let { exitB ->
             exitB.nextFocusUpId = R.id.nextPageButton
@@ -200,19 +217,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             if (showVisible) unB.nextFocusLeftId = R.id.u2bKShowVideoButton
             else unB.nextFocusLeftId = R.id.u2bKExitButton
         }
-
-        appCompBuilder
-            .recyclerItemListenerModule(this@SongListFragment)
-            .songArrayListModule(songList.songs)
-            .floatModule(textFontSize).build()
-            .inject(this@SongListFragment)
-        mRecyclerView?.apply {
-            setAdapter(myViewAdapter)
-            setLayoutManager(LinearLayoutManager(requireContext()))
-        }
-
-        // restApi = MyRestApi()
-        retrieveSongList()
     }
 
     override fun onDestroy() {
@@ -254,6 +258,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
                 playSongs?.playSelectedSongList(vSongs)
+                setShowVideoButtonVisibility()
+                setFucusDirection()
             }
         }
         addToFavoriteButton?.setOnClickListener {

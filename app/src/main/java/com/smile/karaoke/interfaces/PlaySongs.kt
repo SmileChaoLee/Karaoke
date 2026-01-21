@@ -9,4 +9,5 @@ interface PlaySongs {
     fun switchBetweenSoftAndHardDecoder()
     fun showSmileAppsActivity()
     fun returnToPrevious(isSingleSong : Boolean = false)
+    fun isThereAnySongPlaying(): Boolean
 }

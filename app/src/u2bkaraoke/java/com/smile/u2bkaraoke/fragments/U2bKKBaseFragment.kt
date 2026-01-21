@@ -89,9 +89,11 @@ abstract class U2bKKBaseFragment : Fragment() {
     }
 
     open fun setClickListeners() {
-        showVideoButton?.visibility = View.GONE
-        showVideoButton?.setOnClickListener {
-            playSongs?.switchToPlayerView()
+        showVideoButton?.apply {
+            setShowVideoButtonVisibility()
+            setOnClickListener {
+                playSongs?.switchToPlayerView()
+            }
         }
         exitImageButton?.setOnClickListener {
             U2bKaOkUtil.returnToPrevious(activity)
@@ -113,5 +115,10 @@ abstract class U2bKKBaseFragment : Fragment() {
             it.layoutParams = buttonParam
             exitImageButton?.layoutParams = buttonParam
         }
+    }
+
+    fun setShowVideoButtonVisibility() {
+        val isVisible = playSongs?.isThereAnySongPlaying() ?: false
+        showVideoButton?.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 }

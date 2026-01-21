@@ -426,6 +426,12 @@ abstract class BaseActivity : AppCompatActivity(),
         }
         finishThisActivity()
     }
+
+    override fun isThereAnySongPlaying(): Boolean {
+        return playerFragment?.let {
+            it.mPresenter.mediaUri != null
+        } ?: false
+    }
     // Finish implementing interface PlaySongs
 
     private fun showInterstitialAd() {
