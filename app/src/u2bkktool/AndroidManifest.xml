@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        tools:replace="android:icon"
+        android:name="com.smile.u2bkktool.U2bKkToolApp"
+        android:icon="@drawable/u2bkktool_app_icon"
+        android:label="@string/u2bkktool_app_name"
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8354869049759576~2333242536" />
+
+        <activity
+            android:name="com.smile.u2bkktool.U2bKkToolActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.smile.u2bplayer.U2bPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false">
+        </activity>
+
+        <service
+            android:name="com.smile.u2bplayer.services.U2bService"
+            android:exported="false">
+        </service>
+    </application>
+
+</manifest>
