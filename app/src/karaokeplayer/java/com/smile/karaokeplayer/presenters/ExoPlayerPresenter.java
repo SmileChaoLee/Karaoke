@@ -1,6 +1,5 @@
 package com.smile.karaokeplayer.presenters;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import java.util.ArrayList;
@@ -52,10 +51,9 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     // Begin of override abstract method
     @SuppressWarnings("unchecked")
     @Override
-    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent,
-                                    boolean isAutoPlay) {
+    public void initializeVariables(Bundle savedInstanceState, boolean isAutoPlay) {
         LogUtil.i(TAG, "initializeVariables");
-        initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
+        initializeVariablesBase(savedInstanceState, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
             mTrackSelectionParameters = new TrackSelectionParameters

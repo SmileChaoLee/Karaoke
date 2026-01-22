@@ -1,6 +1,5 @@
 package com.smile.u2bplayer.presenters
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
@@ -28,12 +27,9 @@ class U2bPresenter(private val presentView: U2bPresentView)
     }
 
     // implementing methods of U2bPresenter.U2bPresentView
-    override fun initializeVariables(
-        savedInstanceState: Bundle?,
-        callingIntent: Intent?,
-        isAutoPlay: Boolean) {
+    override fun initializeVariables(savedInstanceState: Bundle?, isAutoPlay: Boolean) {
         LogUtil.d(TAG, "initializeVariables")
-        initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay)
+        initializeVariablesBase(savedInstanceState, isAutoPlay)
     }
 
     override fun setAudioTrackAndChannel(audioTrackIndex: Int, audioChannel: Int) {

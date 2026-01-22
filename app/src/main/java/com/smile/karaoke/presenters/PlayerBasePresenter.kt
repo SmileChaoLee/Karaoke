@@ -1,6 +1,5 @@
 package com.smile.karaoke.presenters
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -32,7 +31,6 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     open var numberOfVideoTracks: Int = 0
     lateinit var playingParam: PlayingParameters
         private set
-    var singleSongInfo: SongInfo? = null // when playing single song in songs list
     private var mCanShowNotSupportedFormat = false
 
     interface BasePresentView {
@@ -65,7 +63,6 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
 
     abstract fun initializeVariables(
         savedInstanceState: Bundle?,
-        callingIntent: Intent?,
         isAutoPlay: Boolean
     )
 
@@ -118,11 +115,9 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
         playingParam.musicAudioChannel = musicChannel
         playingParam.vocalAudioTrackIndex = vocalTrackNo
         playingParam.vocalAudioChannel = vocalChannel
-        if (songInfo !== singleSongInfo) {
-            playingParam.currentAudioTrackIndexPlayed = vocalTrackNo
-            playingParam.currentChannelPlayed = vocalChannel
-            singleSongInfo = songInfo
-        }
+        playingParam.currentAudioTrackIndexPlayed = vocalTrackNo
+        playingParam.currentChannelPlayed = vocalChannel
+
     }
 
     fun autoPlaySongList() {
@@ -154,9 +149,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun initializeVariablesBase(
-        savedInstanceState: Bundle?,
-        callingIntent: Intent?, isAutoPlay: Boolean) {
+    fun initializeVariablesBase(savedInstanceState: Bundle?, isAutoPlay: Boolean) {
         val logStr = "initializeVariablesBase"
         LogUtil.i(TAG, "$logStr.savedInstanceState = $savedInstanceState")
         LogUtil.d(TAG, "$logStr.isAutoPlay = $isAutoPlay")
@@ -165,26 +158,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
             mediaUri = null
             playingParam = PlayingParameters()
             mCanShowNotSupportedFormat = false
-            singleSongInfo = null // default
-            playingParam.let { pm ->
-                pm.isPlaySingleSong = false // default
-                if (callingIntent != null) {
-                    val arguments = callingIntent.extras
-                    if (arguments != null) {
-                        pm.isPlaySingleSong = arguments
-                            .getBoolean(MyPlayerConstants.IS_PLAY_SINGLE_SONG_STATE, true)
-                        pm.currentVolume = arguments
-                            .getFloat(MyPlayerConstants.SingleSongVolume, pm.currentVolume)
-                        singleSongInfo =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arguments.getParcelable(
-                                MyPlayerConstants.SINGLE_SONG_INFO_STATE,
-                                SongInfo::class.java
-                            )
-                            else arguments.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE)
-                        LogUtil.d(TAG, "$logStr.singleSongInfo = $singleSongInfo")
-                    }
-                }
-            }
+            playingParam.isPlaySingleSong = false
         } else {
             // needed to be set
             numberOfVideoTracks =
@@ -213,11 +187,6 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
             playingParam = pm ?: PlayingParameters()
             mCanShowNotSupportedFormat =
                 savedInstanceState.getBoolean(MyPlayerConstants.CanShowNotSupportedFormatState)
-            singleSongInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                savedInstanceState.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE,
-                    SongInfo::class.java)
-            } else savedInstanceState.getParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE)
-            LogUtil.d(TAG, "initializeVariablesBase.singleSongInfo = $singleSongInfo")
         }
         playingParam.isAutoPlay = isAutoPlay
     }
@@ -615,6 +584,5 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
             MyPlayerConstants.CanShowNotSupportedFormatState,
             mCanShowNotSupportedFormat
         )
-        outState.putParcelable(MyPlayerConstants.SINGLE_SONG_INFO_STATE, singleSongInfo)
     }
 }

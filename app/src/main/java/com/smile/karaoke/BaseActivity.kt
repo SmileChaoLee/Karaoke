@@ -53,7 +53,6 @@ abstract class BaseActivity : AppCompatActivity(),
     private lateinit var basePlayViewLayout : LinearLayout
     private var tablayoutFragment : TablayoutFragment? = null
     private lateinit var tablayoutViewLayout : LinearLayout
-    private lateinit var callingIntent : Intent
     private var isPlayToPause : Boolean = false
     private var callingComponentName : ComponentName? = null
     private var playData = Bundle()
@@ -81,16 +80,6 @@ abstract class BaseActivity : AppCompatActivity(),
         tablayoutViewLayout = findViewById(R.id.tablayoutViewLayout)
         tablayoutViewLayout.visibility = View.VISIBLE
         tablayoutViewLayout.isFocusable = true
-
-        callingIntent = intent
-        LogUtil.d(TAG,"onCreate.callingIntent = $callingIntent")
-        LogUtil.d(TAG,"onCreate.savedInstanceState = $savedInstanceState")
-
-        if (callingIntent.extras == null) {
-            LogUtil.d(TAG, "callingIntent.extras is null")
-        } else {
-            LogUtil.d(TAG, "callingIntent.extras is not null")
-        }
 
         if (savedInstanceState != null) {
             isPlayToPause = savedInstanceState.getBoolean(IS_PLAY_TO_PAUSE, false)
@@ -262,7 +251,7 @@ abstract class BaseActivity : AppCompatActivity(),
         LogUtil.i(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
             mPresenter.let{ mpIt ->
-                mpIt.initializeVariables(pData, intent,
+                mpIt.initializeVariables(pData,
                     mpIt.playingParam.isAutoPlay)
                 if (needPlay) mpIt.playSongPlayedBeforeActivityCreated()
                 setMainMenu()
@@ -465,8 +454,6 @@ abstract class BaseActivity : AppCompatActivity(),
 
     private fun createViewDependingOnOrientation() {
         LogUtil.i(TAG, "createViewDependingOnOrientation")
-        if (callingIntent.extras == null) {
-            playerFragment?.hidePlayerView()
-        }
+        playerFragment?.hidePlayerView()
     }
 }

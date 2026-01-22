@@ -288,9 +288,7 @@ abstract class PlayerBaseFragment : Fragment(),
         // must be after super.onCreate(savedInstanceState)
         activity?.let {
             mPlayServiceIntent = getPlayServiceIntent()
-            val callingIntent: Intent? = it.intent
-            LogUtil.d(TAG, "onCreate.callingIntent = $callingIntent")
-            mPresenter.initializeVariables(savedInstanceState, callingIntent, isAutoPlay)
+            mPresenter.initializeVariables(savedInstanceState, isAutoPlay)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.smile.videoplayer.presenters;
 
 import java.util.ArrayList;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,10 +48,9 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void initializeVariables(Bundle savedInstanceState, Intent callingIntent,
-                                    boolean isAutoPlay) {
+    public void initializeVariables(Bundle savedInstanceState, boolean isAutoPlay) {
         LogUtil.i(TAG, "initializeVariables");
-        initializeVariablesBase(savedInstanceState, callingIntent, isAutoPlay);
+        initializeVariablesBase(savedInstanceState, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
         } else {
