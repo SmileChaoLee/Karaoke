@@ -3,12 +3,18 @@ package com.smile.u2bkaraoke.retrofit
 import com.smile.u2bkaraoke.model.LanguageList
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerTypeList
+import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
-interface ApiInterface {
+interface U2bKkApiInterface {
+    @GET("api/Languages")
+    fun getAllLanguages(): Call<LanguageList>
+
     @GET("api/Singareas/SingerTypes")
     fun getAllSingerTypes(): Call<SingerTypeList>
 
@@ -30,9 +36,6 @@ interface ApiInterface {
         @Path("orderBy") orderBy: String?,
         @Path("filter") filter: String?
     ): Call<SingerList>
-
-    @GET("api/Languages")
-    fun getAllLanguages(): Call<LanguageList>
 
     @GET("api/Songs/{pageSize}/{pageNo}/{orderBy}")
     fun getSongs(
@@ -129,4 +132,7 @@ interface ApiInterface {
         @Path("pageNo") pageNo: Int,
         @Path("filter") filter: String?
     ): Call<SongList>
+
+    @PUT("api/songs/{id}")
+    fun updateOneSong(@Path("id") id: Int, @Body song: Song): Call<Int>
 }

@@ -15,10 +15,10 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.model.SingerTypeList
-import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
-import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,7 +79,7 @@ class SingerTyListFragment : U2bKKBaseFragment(),
             singerTypeListEmptyTextView?.visibility = View.VISIBLE
             singerTypeListEmptyTextView?.text = act.getString(R.string.loadingString)
             withContext(Dispatchers.IO) {
-                singerTypeList = RestApiSync.getApiSync().getAllSingerTypes()
+                singerTypeList = U2bKkRestApiSync.getApiSync().getAllSingerTypes()
             }
             // update the UI
             withContext(Dispatchers.Main) {
@@ -158,7 +158,7 @@ class SingerTyListFragment : U2bKKBaseFragment(),
         }
     }
 
-    private inner class MyRestApi : RestApiAsync<SingerTypeList>() {
+    private inner class MyRestApi : U2bKkRestApiAsync<SingerTypeList>() {
         @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SingerTypeList?>, response: Response<SingerTypeList?>) {
             LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")

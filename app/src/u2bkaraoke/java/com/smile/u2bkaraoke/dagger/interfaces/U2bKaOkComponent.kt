@@ -4,8 +4,8 @@ import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
-import com.smile.u2bkaraoke.retrofit.RestApiAsync
-import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.dagger.modules.ListAdapterModule
 import com.smile.u2bkaraoke.dagger.modules.PrimitiveModule
 import com.smile.u2bkaraoke.dagger.modules.RetrofitModule
@@ -28,8 +28,8 @@ import javax.inject.Singleton
     RetrofitModule::class,
     ListAdapterModule::class])
 interface U2bKaOkComponent {
-    fun inject(client: RestApiAsync<Any>)
-    fun inject(client: RestApiSync)
+    fun inject(client: U2bKkRestApiAsync<Any>)
+    fun inject(client: U2bKkRestApiSync)
     fun inject(fragment : SingerTyListFragment)
     fun inject(fragment : SingerListFragment)
     fun inject(fragment : LangListFragment)

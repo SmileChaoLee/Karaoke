@@ -9,18 +9,19 @@ import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.SingerTypeList
+import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Retrofit
 import javax.inject.Inject
 
-class RestApiSync private constructor() {
+class U2bKkRestApiSync private constructor() {
 
     companion object {
-        private const val TAG = "RestApiSync"
-        private var instance: RestApiSync? = null
-        fun getApiSync(): RestApiSync {
+        private const val TAG = "U2bKkRestApiSync"
+        private var instance: U2bKkRestApiSync? = null
+        fun getApiSync(): U2bKkRestApiSync {
             if (instance == null) {
-                instance = RestApiSync()
+                instance = U2bKkRestApiSync()
             }
             return instance!!
         }
@@ -30,16 +31,28 @@ class RestApiSync private constructor() {
     lateinit var retrofit : Retrofit
 
     // get Retrofit client and Retrofit Api
-    @Suppress("UNCHECKED_CAST")
-    private val apiInterface : ApiInterface
+    private val apiInterface : U2bKkApiInterface
         get() {
             U2bKaraokeApp.appCompBuilder.stringModule(U2bKKConstants.CHAO_URL)
             .build().inject(this)
-            return retrofit.create(ApiInterface::class.java)
+            return retrofit.create(U2bKkApiInterface::class.java)
             // return Client.getInstance(Constants.CHAO_URL).create(ApiInterface::class.java)
         }
 
-    @Suppress("UNCHECKED_CAST")
+    fun getAllLanguages(): LanguageList? {
+        val logStr = "getAllLanguages"
+        LogUtil.d(TAG, logStr)
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getAllLanguages().execute()
+            LogUtil.d(TAG, "$logStr.response = $response")
+            return response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+            return null
+        }
+    }
+
     fun getAllSingerTypes(): SingerTypeList? {
         val logStr = "getAllSingerTypes"
         LogUtil.d(TAG, logStr)
@@ -55,23 +68,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun getAllLanguages(): LanguageList? {
-        val logStr = "getAllLanguages"
-        LogUtil.d(TAG, logStr)
-        try {
-            // get Call from Retrofit Api
-            val response = apiInterface.getAllLanguages().execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
-        } catch (ex: Exception) {
-            LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
-        }
-    }
-
-
-    @Suppress("UNCHECKED_CAST")
     fun getSongs(pageSize : Int, pageNo : Int): SongList? {
         val logStr = "getSongs"
         LogUtil.d(TAG, logStr)
@@ -89,7 +85,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getSongsBySinger"
         LogUtil.d(TAG, logStr)
@@ -106,7 +101,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int,
                          filter: String): SongList? {
         val logStr = "getSongsBySinger"
@@ -124,7 +118,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getNewSongsByLanguage"
         LogUtil.d(TAG, logStr)
@@ -141,7 +134,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
                               filter: String): SongList? {
         val logStr = "getNewSongsByLanguage"
@@ -159,7 +151,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getHotSongsByLanguage"
         LogUtil.d(TAG, logStr)
@@ -176,7 +167,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
                               filter: String): SongList? {
         val logStr = "getHotSongsByLanguage"
@@ -194,7 +184,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int): SongList? {
         val logStr = "getSongsByLanguage"
         LogUtil.d(TAG, logStr)
@@ -213,7 +202,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int,
                            filter: String): SongList? {
         // filter cannot be empty
@@ -239,7 +227,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int,
                                      pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getSongsByLanguage"
@@ -263,7 +250,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int, pageSize: Int
                                      , pageNo: Int, filter: String): SongList? {
         val logStr = "getSongsByLanguageNumOfWords"
@@ -288,7 +274,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int): SingerList? {
         val logStr = "getSingersBySingerType"
         LogUtil.d(TAG, logStr)
@@ -307,7 +292,6 @@ class RestApiSync private constructor() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getSingersBySingerType(singerType: SingerType,
                                pageSize: Int, pageNo: Int,
                                filter: String): SingerList? {
@@ -326,5 +310,20 @@ class RestApiSync private constructor() {
             LogUtil.e(TAG, "$logStr.Exception", ex)
             return null
         }
+    }
+
+    fun updateOneSong(id: Int, song: Song): Int {
+        val logStr = "updateOneSong"
+        var result = -1
+        try {
+            val response = apiInterface.updateOneSong(id, song).execute()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = ${response.code()}")
+            if (code == 200) result = 1 // succeeded
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+        }
+        return result
     }
 }

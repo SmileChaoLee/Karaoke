@@ -16,9 +16,9 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.LanguageList
-import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.LangListAdapter
-import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,7 +90,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             langListEmptyTextView?.visibility = View.VISIBLE
             langListEmptyTextView?.text = act.getString(R.string.loadingString)
             withContext(Dispatchers.IO) {
-                languageList = RestApiSync.getApiSync().getAllLanguages()
+                languageList = U2bKkRestApiSync.getApiSync().getAllLanguages()
             }
             // update the UI
             withContext(Dispatchers.Main) {
@@ -203,7 +203,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         }
     }
 
-    private inner class MyRestApi : RestApiAsync<LanguageList>() {
+    private inner class MyRestApi : U2bKkRestApiAsync<LanguageList>() {
         override fun onResponse(call: Call<LanguageList?>, response: Response<LanguageList?>) {
             LogUtil.d(TAG, "MyRestApi.onResponse")
             LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = ${response.isSuccessful}")

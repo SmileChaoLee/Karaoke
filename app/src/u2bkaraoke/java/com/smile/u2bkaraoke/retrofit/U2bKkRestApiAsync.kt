@@ -9,15 +9,16 @@ import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.SingerTypeList
+import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Callback
 import retrofit2.Retrofit
 import javax.inject.Inject
 
-abstract class RestApiAsync<T> : Callback<T> {
+abstract class U2bKkRestApiAsync<T> : Callback<T> {
 
     companion object {
-        private const val TAG = "RestApiAsync"
+        private const val TAG = "U2bKkRestApiAsync"
     }
 
     private val callback : Callback<T>
@@ -30,26 +31,27 @@ abstract class RestApiAsync<T> : Callback<T> {
 
     // get Retrofit client and Retrofit Api
     @Suppress("UNCHECKED_CAST")
-    private val apiInterface : ApiInterface
+    private val apiInterface : U2bKkApiInterface
         get() {
             U2bKaraokeApp.appCompBuilder.stringModule(U2bKKConstants.CHAO_URL)
-            .build().inject(this as RestApiAsync<Any>)
-            return retrofit.create(ApiInterface::class.java)
+            .build().inject(this as U2bKkRestApiAsync<Any>)
+            return retrofit.create(U2bKkApiInterface::class.java)
             // return Client.getInstance(Constants.CHAO_URL).create(ApiInterface::class.java)
         }
 
-    @Suppress("UNCHECKED_CAST")
-    fun getAllSingerTypes() {
-        LogUtil.d(TAG, "getAllSingerTypes")
-        // get Call from Retrofit Api
-        apiInterface.getAllSingerTypes().enqueue(callback as Callback<SingerTypeList>)
-    }
 
     @Suppress("UNCHECKED_CAST")
     fun getAllLanguages() {
         LogUtil.d(TAG, "getAllLanguages")
         // get Call from Retrofit Api
         apiInterface.getAllLanguages().enqueue(callback as Callback<LanguageList>)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun getAllSingerTypes() {
+        LogUtil.d(TAG, "getAllSingerTypes")
+        // get Call from Retrofit Api
+        apiInterface.getAllSingerTypes().enqueue(callback as Callback<SingerTypeList>)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -195,5 +197,10 @@ abstract class RestApiAsync<T> : Callback<T> {
         val orderBy = "SingNa" // singer's name
         apiInterface.getSingersBySingerTypeIdWithFilter(areaId, sex, pageSize,
             pageNo, orderBy, filter).enqueue(callback as Callback<SingerList>)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun updateOneSong(id: Int, song: Song){
+        apiInterface.updateOneSong(id, song).enqueue(callback as Callback<Int>)
     }
 }

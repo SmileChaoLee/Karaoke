@@ -24,7 +24,7 @@ import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
-import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -195,7 +195,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             singerListEmptyTextView?.text = act.getString(R.string.loadingString)
             var tempList: SingerList? = null
             withContext(Dispatchers.IO) {
-                RestApiSync.getApiSync().let { rApi ->
+                U2bKkRestApiSync.getApiSync().let { rApi ->
                     val sType = singerType ?: SingerType()
                     tempList = if (filterString.isNullOrEmpty()) {
                         rApi.getSingersBySingerType(sType, pageSize, pageNo)

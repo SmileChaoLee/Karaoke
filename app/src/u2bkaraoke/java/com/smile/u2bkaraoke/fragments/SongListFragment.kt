@@ -30,10 +30,10 @@ import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SongList
-import com.smile.u2bkaraoke.retrofit.RestApiAsync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.model.Song
-import com.smile.u2bkaraoke.retrofit.RestApiSync
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -351,7 +351,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             songListEmptyTextView?.text = act.getString(R.string.loadingString)
             var tempList: SongList? = null
             withContext(Dispatchers.IO) {
-                val restApi = RestApiSync.getApiSync()
+                val restApi = U2bKkRestApiSync.getApiSync()
                 when (orderedFrom) {
                     U2bKKConstants.ALL_SONG_ORDERED -> {
                         LogUtil.d(TAG, "$logStr.ALL_SONG_ORDERED")
@@ -567,7 +567,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     private inner class MyRestApi(private val isSearch: Boolean = false)
-        : RestApiAsync<SongList>() {
+        : U2bKkRestApiAsync<SongList>() {
         @SuppressLint("SetTextI18n")
         override fun onResponse(call: Call<SongList?>, response: Response<SongList?>) {
             val act = activity ?: return
