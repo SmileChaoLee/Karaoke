@@ -7,6 +7,7 @@ import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.fragments.SongListFragment
 import com.smile.u2bkktool.U2bKkPlayActivity
+import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
 import com.smile.u2bplayer.utilities.U2bPlayerUtil
 
 class SongToolFragment : SongListFragment() {
@@ -31,9 +32,9 @@ class SongToolFragment : SongListFragment() {
                 song.singer2Na.uppercase() == "UNKNOWN") "" else song.singer2Na
             val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
             U2bPlayerUtil.saveKeyword(act, searchTerm)
-            Intent(act, U2bKkPlayActivity::class.java).apply {
-                startActivity(this@apply)
-            }
+            val vIntent = Intent(act, U2bKkPlayActivity::class.java)
+            vIntent.putExtra(U2bKkToConstants.SEARCHED_SONG, song)
+            startActivity(vIntent)
         }
     }
 

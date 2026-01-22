@@ -5,5 +5,9 @@ import com.smile.u2bplayer.U2bBaseActivity
 
 class U2bKkPlayActivity : U2bBaseActivity() {
 
-    override fun getSearchFragment() = SearchToolFragment()
+    override fun getSearchFragment(): SearchToolFragment {
+        return SearchToolFragment().apply {
+            arguments = intent.extras
+        }
+    }
 }
