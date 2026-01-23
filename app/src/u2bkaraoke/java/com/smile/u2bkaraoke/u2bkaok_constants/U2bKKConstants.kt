@@ -24,6 +24,6 @@ object U2bKKConstants {
     const val SINGER_NAME = "singerName"
     const val LANGUAGE_NAME = "languageName"
 
-    // const val CHAO_URL = "http://137.184.120.171/"
-    const val CHAO_URL = "http://192.168.0.74:5000/"
+    const val CHAO_URL = "http://137.184.120.171/"
+    // const val CHAO_URL = "http://192.168.0.234:5000/"
 }
