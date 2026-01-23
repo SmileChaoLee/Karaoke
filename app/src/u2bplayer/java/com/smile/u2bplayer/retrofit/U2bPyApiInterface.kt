@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface ApiInterface {
+interface U2bPyApiInterface {
     /**
      * Searches for videos based on a query term.
      * @param apiKey Your YouTube Data API v3 key

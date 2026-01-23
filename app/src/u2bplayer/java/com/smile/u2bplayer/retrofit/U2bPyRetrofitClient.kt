@@ -9,9 +9,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object RetrofitClient {
+object U2bPyRetrofitClient {
 
-    private const val TAG = "RetrofitClient"
+    private const val TAG = "U2bPyRetClient"
     private const val YOUTUBE_URL = "https://www.googleapis.com/youtube/v3/"
 
     fun getRetrofit(packageName: String): Retrofit {

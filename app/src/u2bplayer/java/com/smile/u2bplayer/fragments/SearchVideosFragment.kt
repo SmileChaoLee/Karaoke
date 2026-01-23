@@ -29,7 +29,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import com.smile.u2bplayer.adapters.U2bRecyclerAdapter
 import com.smile.u2bplayer.models.U2bSingleton
-import com.smile.u2bplayer.retrofit.RestApiSync
+import com.smile.u2bplayer.retrofit.U2bPyRestApiSync
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +42,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
     companion object {
         private const val TAG : String = "SearchVideosFragment"
     }
+
     private var searchButton: ImageButton? = null
     private var selectAllButton: ImageButton? = null
     private var unselectButton: ImageButton? = null
@@ -140,7 +141,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         mediaRetriever.release()
     }
 
-    private fun searchYouTubeVideos(searchTerm: String) {
+    private fun searchYouTubeVideos(searchTerm: String, maxResult: Int = 50) {
         val logStr = "searchYouTubeVideos"
         LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
         if (searchTerm.isEmpty()) return
@@ -155,8 +156,8 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         loadingMsgTextView?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
-            val videoList = RestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
-                searchTerm)
+            val videoList = U2bPyRestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
+                searchTerm, maxResult)
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
             var songInfo: SongInfo
