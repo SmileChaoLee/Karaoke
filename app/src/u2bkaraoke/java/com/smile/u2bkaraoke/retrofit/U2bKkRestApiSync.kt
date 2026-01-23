@@ -312,18 +312,19 @@ class U2bKkRestApiSync private constructor() {
         }
     }
 
-    fun updateOneSong(id: Int, song: Song): Int {
+    fun updateOneSong(id: Int, song: Song): Int? {
         val logStr = "updateOneSong"
-        var result = -1
+        var result: Int? = -1
         try {
             val response = apiInterface.updateOneSong(id, song).execute()
             LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
             val code = response.code()
-            LogUtil.d(TAG, "$logStr.response.code() = ${response.code()}")
-            if (code == 200) result = 1 // succeeded
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == 200) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
+        LogUtil.d(TAG, "$logStr.result = $result")
         return result
     }
 }
