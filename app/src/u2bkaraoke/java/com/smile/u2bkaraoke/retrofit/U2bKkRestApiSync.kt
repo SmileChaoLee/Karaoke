@@ -18,6 +18,7 @@ class U2bKkRestApiSync private constructor() {
 
     companion object {
         private const val TAG = "U2bKkRestApiSync"
+        private const val HTTP_OK = 200
         private var instance: U2bKkRestApiSync? = null
         fun getApiSync(): U2bKkRestApiSync {
             if (instance == null) {
@@ -42,30 +43,36 @@ class U2bKkRestApiSync private constructor() {
     fun getAllLanguages(): LanguageList? {
         val logStr = "getAllLanguages"
         LogUtil.d(TAG, logStr)
+        var result:LanguageList? = null
         try {
             // get Call from Retrofit Api
             val response = apiInterface.getAllLanguages().execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getAllSingerTypes(): SingerTypeList? {
         val logStr = "getAllSingerTypes"
         LogUtil.d(TAG, logStr)
+        var result:SingerTypeList? = null
         try {
             // get Call from Retrofit Api
             // val response: Response<SingerTypeList> = apiInterface.getAllSingerTypes().execute()
             val response = apiInterface.getAllSingerTypes().execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongs(pageSize : Int, pageNo : Int): SongList? {
@@ -73,16 +80,19 @@ class U2bKkRestApiSync private constructor() {
         LogUtil.d(TAG, logStr)
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
+        var result:SongList? = null
         try {
             // get Call from Retrofit Api
             val response = apiInterface.getSongs(pageSize, pageNo, orderBy)
                 .execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
@@ -90,15 +100,18 @@ class U2bKkRestApiSync private constructor() {
         LogUtil.d(TAG, logStr)
         val singerId = singer.id
         val orderBy = "SongNa" // order by song's name
+        var result:SongList? = null
         try {
             val response = apiInterface.getSongsBySingerId(singerId,
                 pageSize, pageNo, orderBy).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int,
@@ -107,31 +120,37 @@ class U2bKkRestApiSync private constructor() {
         LogUtil.d(TAG, "$logStr.filter = $filter")
         val singerId = singer.id
         val orderBy = "SongNa" // order by song's name
+        var result:SongList? = null
         try {
             val response = apiInterface.getSongsBySingerIdWithFilter(singerId,
                 pageSize, pageNo, orderBy, filter).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getNewSongsByLanguage"
         LogUtil.d(TAG, logStr)
         val languageId = language.id
+        var result:SongList? = null
         try {
             // no order. Only the date that the song came in by descending order
             val response = apiInterface.getNewSongsByLanguageId(languageId,
                 pageSize, pageNo).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
@@ -139,32 +158,38 @@ class U2bKkRestApiSync private constructor() {
         val logStr = "getNewSongsByLanguage"
         LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
+        var result:SongList? = null
         try {
             // no order. Only the date that the song came in by descending order
             val response = apiInterface.getNewSongsByLanguageIdWithFilter(languageId,
                 pageSize, pageNo, filter).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getHotSongsByLanguage"
         LogUtil.d(TAG, logStr)
         val languageId = language.id
+        var result:SongList? = null
         try {
             // no order by. Only the number that the song is ordered by descending order
             val response = apiInterface.getHotSongsByLanguageId(languageId,
                 pageSize, pageNo).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
@@ -172,16 +197,19 @@ class U2bKkRestApiSync private constructor() {
         val logStr = "getHotSongsByLanguage"
         LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
+        var result:SongList? = null
         try {
             // no order by. Only the number that the song is ordered by descending order
             val response = apiInterface.getHotSongsByLanguageIdWithFilter(
                 languageId, pageSize, pageNo, filter).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int): SongList? {
@@ -190,16 +218,19 @@ class U2bKkRestApiSync private constructor() {
         val languageId = language.id
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
+        var result:SongList? = null
         try {
             // get Call from Retrofit Api
             val response = apiInterface.getSongsByLanguageIdOrderBy(
                 languageId, pageSize, pageNo, orderBy).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int,
@@ -210,6 +241,7 @@ class U2bKkRestApiSync private constructor() {
         val languageId = language.id
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
+        var result:SongList? = null
         try {
             // get Call from Retrofit Api
             val response = apiInterface.getSongsByLanguageIdOrderByWithFilter(
@@ -219,12 +251,14 @@ class U2bKkRestApiSync private constructor() {
                 orderBy,
                 filter  // cannot be empty
             ).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int,
@@ -234,6 +268,7 @@ class U2bKkRestApiSync private constructor() {
         val languageId = language.id
         val orderBy = "NumWordsSongNa" // order by (number of words + song's name)
         // get Call from Retrofit Api
+        var result:SongList? = null
         try {
             val response = apiInterface.getSongsByLanguageIdNumOfWords(
                 languageId,
@@ -242,12 +277,14 @@ class U2bKkRestApiSync private constructor() {
                 pageNo,
                 orderBy
             ).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int, pageSize: Int
@@ -256,6 +293,7 @@ class U2bKkRestApiSync private constructor() {
         LogUtil.d(TAG, "$logStr.filter = $filter")
         val languageId = language.id
         val orderBy = "NumWordsSongNa" // order by (number of words + song's name)
+        var result:SongList? = null
         try {
             // get Call from Retrofit Api
             val response = apiInterface.getSongsByLanguageIdNumOfWordsWithFilter(
@@ -266,12 +304,14 @@ class U2bKkRestApiSync private constructor() {
                 orderBy,
                 filter
             ).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int): SingerList? {
@@ -280,16 +320,19 @@ class U2bKkRestApiSync private constructor() {
         val areaId = singerType.id
         val sex = singerType.sex
         val orderBy = "SingNa" // singer's name
+        var result:SingerList? = null
         try {
             val response = apiInterface.getSingersBySingerTypeId(
                 areaId, sex, pageSize,
                 pageNo, orderBy).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun getSingersBySingerType(singerType: SingerType,
@@ -300,16 +343,19 @@ class U2bKkRestApiSync private constructor() {
         val areaId = singerType.id
         val sex = singerType.sex
         val orderBy = "SingNa" // singer's name
+        var result:SingerList? = null
         try {
             val response = apiInterface.getSingersBySingerTypeIdWithFilter(
                 areaId, sex, pageSize,
                 pageNo, orderBy, filter).execute()
-            LogUtil.d(TAG, "$logStr.response = $response")
-            return response.body()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
-            return null
         }
+        return result
     }
 
     fun updateOneSong(id: Int, song: Song): Int? {
@@ -320,7 +366,7 @@ class U2bKkRestApiSync private constructor() {
             LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
             val code = response.code()
             LogUtil.d(TAG, "$logStr.response.code() = $code")
-            if (code == 200) result = response.body()
+            if (code == HTTP_OK) result = response.body()
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
