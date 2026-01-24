@@ -72,6 +72,7 @@
     <string name="start_picker">Start Picker</string>
     <string name="search_videos">SearCh Videos</string>
     <string name="unknown">Unknown</string>
+    <string name="notFound">Not Found</string>
     <string name="add_to_favorites">Add To Favorites</string>
     <string name="excess_max">Excess Max</string>
     <string name="notSupportedString">Not Supported.</string>

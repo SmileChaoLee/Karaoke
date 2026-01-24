@@ -1,5 +1,7 @@
 package com.smile.u2bkktool.fragments
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -9,8 +11,8 @@ import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.model.Song
-import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
+import com.smile.u2bkktool.utilities.U2bKkToUtil
 import com.smile.u2bplayer.fragments.SearchVideosFragment
 import com.smile.u2bplayer.models.U2bSingleton
 import kotlinx.coroutines.Dispatchers
@@ -23,12 +25,14 @@ class SearchToolFragment : SearchVideosFragment() {
         private const val TAG : String = "SearchToolFragment"
     }
 
+    private var songPosition = -1
     private var dataSong: Song? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
+            songPosition = args.getInt(U2bKkToConstants.SONG_LIST_POSITION, -1)
             dataSong = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 args.getParcelable(U2bKkToConstants.SEARCHED_SONG, Song::class.java)
             } else args.getParcelable(U2bKkToConstants.SEARCHED_SONG)
@@ -69,32 +73,20 @@ class SearchToolFragment : SearchVideosFragment() {
         val act = activity ?: return
         // update the song database on the cloud
         // update the vodNo with video id and pathname with snippet.thumbnails.default.url
-        if (selectedSongs.isEmpty()) {
-            // show message
-            ScreenUtil.showToast(act,
-                getString(R.string.noFilesSelectedString),
-                textFontSize, Toast.LENGTH_SHORT)
-            return
-        }
         dataSong?.let { dSong ->
+            dSong.vodNo = selectedSongs[0].filePath
+            dSong.pathname = selectedSongs[0].bitmapUrl ?: ""
             lifecycleScope.launch(Dispatchers.IO) {
-                dSong.vodNo = selectedSongs[0].filePath
-                dSong.pathname = selectedSongs[0].bitmapUrl ?: ""
-                val result = U2bKkRestApiSync.getApiSync().updateOneSong(dSong.id, dSong)
-                LogUtil.d(TAG, "$logStr.result = $result")
+                val isSuccessful = U2bKkToUtil.updateOneSongToCloud(dSong)
                 withContext(Dispatchers.Main) {
-                    if (result == 1) {
-                        ScreenUtil.showToast(
-                            act,
-                            getString(R.string.succeededMessage),
-                            textFontSize, Toast.LENGTH_SHORT
-                        )
+                    if (isSuccessful) {
+                        ScreenUtil.showToast(act,
+                            dSong.songNa + " " + act.getString(R.string.succeededMessage),
+                            textFontSize, Toast.LENGTH_SHORT)
                     } else {
-                        ScreenUtil.showToast(
-                            act,
-                            getString(R.string.failedMessage),
-                            textFontSize, Toast.LENGTH_SHORT
-                        )
+                        ScreenUtil.showToast(act,
+                            dSong.songNa + " " + act.getString(R.string.failedMessage),
+                            textFontSize, Toast.LENGTH_SHORT)
                     }
                 }
             }
@@ -104,7 +96,17 @@ class SearchToolFragment : SearchVideosFragment() {
     override fun setClickListeners() {
         super.setClickListeners()
         exitImageButton?.setOnClickListener {
-            activity?.finish()
+            activity?.let { act ->
+                val returnIntent = Intent()
+                Bundle().apply {
+                    putInt(U2bKkToConstants.SONG_LIST_POSITION, songPosition)
+                    putParcelable(U2bKkToConstants.SEARCHED_SONG, dataSong)
+                    returnIntent.putExtras(this@apply)
+                    // can bundle some data to previous activity
+                    act.setResult(RESULT_OK, returnIntent)
+                    act.finish()
+                }
+            }
         }
     }
 }

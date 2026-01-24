@@ -1,6 +1,7 @@
 package com.smile.u2bkaraoke.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,9 +74,23 @@ class SongListAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val song = mSongs[position]
         holder.apply {
-            positionNoTextView.text = position.toString()
+            positionNoTextView.let {
+                it.text = position.toString()
+                if (song.mMpeg == "00" && song.nMpeg == "00") {
+                    it.setTextColor(Color.BLACK)
+                } else {
+                    it.setTextColor(Color.RED)
+                }
+            }
             songNaTextView.text = song.songNa
-            languageNameTextView.text = song.languageNa
+            languageNameTextView.let {
+                it.text = song.languageNa
+                if (song.mMpeg == "00" && song.nMpeg == "00") {
+                    it.setTextColor(Color.BLACK)
+                } else {
+                    it.setTextColor(Color.RED)
+                }
+            }
             singer1NameTextView.text = song.singer1Na
             singer2NameTextView.text = song.singer2Na
 

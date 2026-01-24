@@ -20,6 +20,7 @@ object U2bPyRestApiSync {
         val logStr = "getVideoList"
         LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
         LogUtil.d(TAG, "$logStr.packageName = $packageName")
+        LogUtil.d(TAG, "$logStr.maxResult = $maxResult")
         var result = VideoList(items = emptyList())
         try {
             val response: Response<VideoList> = getApiInstance(packageName)

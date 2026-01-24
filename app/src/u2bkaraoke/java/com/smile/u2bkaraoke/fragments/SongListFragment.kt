@@ -226,6 +226,30 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         super.onDestroy()
     }
 
+    open fun addToFavoriteDatabase() {
+        LogUtil.i(TAG, "addToFavoriteDatabase")
+        val act = activity?: return
+        if (selectedSongs.isEmpty()) {
+            ScreenUtil.showToast(activity,
+                getString(R.string.noFilesSelectedString),
+                textFontSize,Toast.LENGTH_SHORT)
+            return
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (DatabaseUtil.addSongsToFavorites(act,
+                    U2bPlayConstants.U2B_FAV_DB_NAME,
+                    selectedSongs)) {
+                withContext(Dispatchers.Main) {
+                    ScreenUtil.showToast(
+                        act,
+                        getString(R.string.add_to_favorites),
+                        textFontSize, Toast.LENGTH_SHORT
+                    )
+                }
+            }
+        }
+    }
+
     override fun setClickListeners() {
         firstPageButton?.setOnClickListener { firstPage() }
         previousPageButton?.setOnClickListener { previousPage() }
@@ -266,27 +290,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val logStr = "addToFavoriteButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            val act = activity?: return@setOnClickListener
-            if (selectedSongs.isEmpty()) {
-                ScreenUtil.showToast( act,
-                    getString(R.string.noFilesSelectedString),
-                    textFontSize,
-                    Toast.LENGTH_SHORT)
-            } else {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    if (DatabaseUtil.addSongsToFavorites(act,
-                            U2bPlayConstants.U2B_FAV_DB_NAME,
-                            selectedSongs)) {
-                        withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(
-                                act,
-                                getString(R.string.add_to_favorites),
-                                textFontSize, Toast.LENGTH_SHORT
-                            )
-                        }
-                    }
-                }
-            }
+            addToFavoriteDatabase()
         }
         super.setClickListeners()
     }
