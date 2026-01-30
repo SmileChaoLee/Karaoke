@@ -62,4 +62,6 @@
 
     <string name="newString">新</string>
     <string name="hotString">排行</string>
+
+    <string name="songNotReadyYet">歌曲尚未準備好</string>
 </resources>

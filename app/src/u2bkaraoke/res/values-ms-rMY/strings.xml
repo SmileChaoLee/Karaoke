@@ -63,4 +63,6 @@
     <string name="newString">New</string>
     <string name="hotString">Hot</string>
 
+    <string name="songNotReadyYet">Not Ready Yet</string>
+
 </resources>

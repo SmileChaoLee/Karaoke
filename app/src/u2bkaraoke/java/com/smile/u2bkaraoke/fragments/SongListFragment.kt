@@ -312,6 +312,13 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val song = list.songs[position]
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
+            if (song.nMpeg != "00" || song.mMpeg != "00") {
+                // this song is not ready yet
+                ScreenUtil.showToast(
+                    act, getString(R.string.songNotReadyYet),
+                    textFontSize, Toast.LENGTH_LONG)
+                return
+            }
             val songInfo = dataSongToSongInfo(song)
             var isUpdated = false
             if (song.vodYn.uppercase() == "Y") {
@@ -321,7 +328,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             } else {
                 if (selectedSongs.size >= MySingleton.MAX_SONGS) {
                     ScreenUtil.showToast(
-                        activity, getString(R.string.excess_max) +
+                        act, getString(R.string.excess_max) +
                                 " ${MySingleton.MAX_SONGS}", textFontSize,
                         Toast.LENGTH_SHORT)
                 } else {
