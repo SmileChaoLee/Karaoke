@@ -95,6 +95,26 @@ class U2bKkRestApiSync private constructor() {
         return result
     }
 
+    fun getSongs(pageSize : Int, pageNo : Int, numWords: String): SongList? {
+        val logStr = "getSongs"
+        LogUtil.d(TAG, logStr)
+        // order by (number of words + song's name)
+        val orderBy = "NumWordsSongNa"
+        var result:SongList? = null
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSongsByNumWords(pageSize, pageNo, orderBy, numWords)
+                .execute()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+        }
+        return result
+    }
+
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
         val logStr = "getSongsBySinger"
         LogUtil.d(TAG, logStr)

@@ -64,5 +64,6 @@
     <string name="hotString">Hot</string>
 
     <string name="songNotReadyYet">Not Ready Yet</string>
+    <string name="numWords">Number of Words</string>
 
 </resources>

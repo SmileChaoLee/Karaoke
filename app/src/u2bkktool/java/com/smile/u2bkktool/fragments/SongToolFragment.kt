@@ -55,6 +55,12 @@ class SongToolFragment : SongListFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        LogUtil.d(TAG, "onViewCreated")
+        super.onViewCreated(view, savedInstanceState)
+        searchEditText?.setHint(getString(R.string.numWords))
+    }
+
     private fun songSearchTerm(song: Song): String {
         // val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
         var searchTerm = "intitle:[\"${song.songNa.trim()}"

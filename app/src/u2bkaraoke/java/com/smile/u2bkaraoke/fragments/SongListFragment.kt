@@ -53,7 +53,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     var myViewAdapter: SongListAdapter? = null
     private var mRecyclerView: RecyclerView? = null
     private var searchCompleted = true
-    private var searchEditText: EditText? = null
+    var searchEditText: EditText? = null
     private var filterString: String? = null
     private var songListEmptyTextView: TextView? = null
     private var firstPageButton: Button? = null
@@ -152,7 +152,11 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     override fun afterTextChanged(editable: Editable) {
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
                         val content = editable.toString().trim()
-                        filterString = if (content.isEmpty()) "" else "SongNa+$content"
+                        if (orderedFrom != U2bKKConstants.ALL_SONG_ORDERED) {
+                            filterString = if (content.isEmpty()) "" else "SongNa+$content"
+                        } else {
+                            filterString = content.trim()
+                        }
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                         pageNo = 1
                         retrieveSongList(true)
@@ -372,7 +376,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                                 rApi.getSongs(pageSize, pageNo)
                             } else {
                                 // rApi.getSongs(pageSize, pageNo, filterString!!)
-                                rApi.getSongs(pageSize, pageNo)
+                                rApi.getSongs(pageSize, pageNo, filterString!!)
                             }
                             objectPassed = song
                         }
