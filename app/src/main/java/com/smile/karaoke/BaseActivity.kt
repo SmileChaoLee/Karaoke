@@ -354,9 +354,25 @@ abstract class BaseActivity : AppCompatActivity(),
                 LogUtil.d(TAG, "$msgStr.found = $found")
                 if (!found) MySingleton.orderedSongs.add(songInfo)
             }
+            LogUtil.i(TAG, "$msgStr.MySingleton.orderedSongs.size = ${MySingleton.orderedSongs.size}")
             playerFragment?.let {
-                it.mPresenter.playingParam.isAutoPlay = false
-                if (it.mPresenter.mediaUri == null) it.mPresenter.autoPlaySongList()
+                it.mPresenter.let { pIt ->
+                    pIt.playingParam.isAutoPlay = false
+                    if (pIt.mediaUri == null) {
+                        pIt.autoPlaySongList()
+                    } else {
+                        it.getPlayService()?.let { ps ->
+                            if (!ps.isPlaying()) {
+                                val sIndex = pIt.playingParam.currentSongIndex
+                                LogUtil.d(TAG, "$msgStr.currentSongIndex = $sIndex")
+                                // if (MySingleton.orderedSongs.size > sIndex) {   // it should be always true
+                                    pIt.playingParam.currentSongIndex = sIndex - 1
+                                // }
+                                pIt.startAutoPlay(false)
+                            }
+                        }
+                    }
+                }
                 it.showPlayerView()
             }
         }

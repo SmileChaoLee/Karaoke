@@ -244,36 +244,36 @@ abstract class BasePlayService : Service() {
         var stillPlayNext = true
         val repeatStatus = playingParam.repeatStatus
         val currentSongIndex = playingParam.currentSongIndex
-        var nextSongIndex = currentSongIndex + 1 // preparing the next
-        LogUtil.d(TAG, "startAutoPlay.nextSongIndex = $nextSongIndex")
+        var songIndex = currentSongIndex + 1 // preparing this song
+        LogUtil.d(TAG, "startAutoPlay.songIndex = $songIndex")
         if (orderedSongsSize == 0) {
             stillPlayNext = false // no more songs
         } else {
             when (repeatStatus) {
                 MyPlayerConstants.NoRepeatPlaying ->                     // no repeat
-                    if ((nextSongIndex >= orderedSongsSize) || (nextSongIndex < 0)) {
+                    if ((songIndex >= orderedSongsSize) || (songIndex < 0)) {
                         stillPlayNext = false // no more songs
                     }
                 MyPlayerConstants.RepeatOneSong -> {
                     // repeat one song
                     LogUtil.d(TAG, "startAutoPlay.RepeatOneSong")
-                    if (isSelfFinished && (nextSongIndex > 0) && (nextSongIndex <= orderedSongsSize)) {
-                        nextSongIndex--
-                        LogUtil.d(TAG, "startAutoPlay.RepeatOneSong.nextSongIndex = $nextSongIndex")
+                    if (isSelfFinished && (songIndex > 0) && (songIndex <= orderedSongsSize)) {
+                        songIndex--
+                        LogUtil.d(TAG, "startAutoPlay.RepeatOneSong.songIndex = $songIndex")
                     }
                 }
                 MyPlayerConstants.RepeatAllSongs ->                     // repeat all songs
-                    if (nextSongIndex >= orderedSongsSize) {
-                        nextSongIndex = 0
+                    if (songIndex >= orderedSongsSize) {
+                        songIndex = 0
                     }
             }
         }
 
         if (stillPlayNext) {
             // still play the next song
-            playSingleSong(presenter, orderedSongs[nextSongIndex])
-            playingParam.currentSongIndex = nextSongIndex // set nextSongIndex to currentSongIndex
-            LogUtil.d(TAG, "startAutoPlay.stillPlayNext.setCurrentSongIndex() = $nextSongIndex")
+            playSingleSong(presenter, orderedSongs[songIndex])
+            playingParam.currentSongIndex = songIndex // set nextSongIndex to currentSongIndex
+            LogUtil.d(TAG, "startAutoPlay.stillPlayNext.setCurrentSongIndex() = $songIndex")
         }
 
         return stillPlayNext
