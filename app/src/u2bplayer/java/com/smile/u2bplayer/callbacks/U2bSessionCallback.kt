@@ -42,26 +42,27 @@ class U2bSessionCallback(private val playService: U2bService)
     @OptIn(UnstableApi::class)
     @Synchronized
     override fun onPrepareFromUri(uri: Uri, extras: Bundle?) {
+        val logStr = "onPrepareFromUri"
         val presenter = playService.presenter
-        LogUtil.d(TAG, "onPrepareFromUri().Uri = $uri")
-        LogUtil.d(TAG, "onPrepareFromUri().Uri.path = ${uri.path}")
+        LogUtil.d(TAG, "$logStr.Uri = $uri")
+        LogUtil.d(TAG, "$logStr.Uri.path = ${uri.path}")
         val playingParam: PlayingParameters? = presenter?.playingParam
         playingParam?.preparedStatus = 1
-        LogUtil.d(TAG, "removeVideoPlayerView")
+        LogUtil.d(TAG, "$logStr.removeVideoPlayerView")
         // presenter.presentView.removeVideoPlayerView()
-        LogUtil.d(TAG, "setVideoPlayerView")
+        LogUtil.d(TAG, "$logStr.setVideoPlayerView")
         // presenter.presentView.setVideoPlayerView()
-        LogUtil.d(TAG, "onPrepareFromUri().playService.prepare()")
+        LogUtil.d(TAG, "$logStr.playService.prepare()")
         playService.prepare(uri.toString())
         val currentVolume = playingParam?.currentVolume
         var currentAudioPosition = playingParam?.currentAudioPosition
         var currentPlaybackState = playingParam?.currentPlaybackState
         LogUtil.d(
-            TAG, "onPrepareFromUri().currentVolume = " + currentVolume +
+            TAG, "$logStr.currentVolume = " + currentVolume +
                 ", currentAudioPosition= " + currentAudioPosition + ", currentPlaybackState = " +
                 currentPlaybackState)
         extras?.let {
-            LogUtil.d(TAG, "onPrepareFromUri().extras is not null.")
+            LogUtil.d(TAG, "$logStr.extras is not null.")
             val playingParamOrigin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getParcelable(MyPlayerConstants.PlayingParamOrigin,
                     PlayingParameters::class.java)
@@ -71,9 +72,9 @@ class U2bSessionCallback(private val playService: U2bService)
                 currentAudioPosition = playIt.currentAudioPosition
                 LogUtil.d(
                     TAG,
-                    "onPrepareFromUri().not null.currentVolume = " + currentVolume +
-                            ", currentAudioPosition= " + currentAudioPosition + ", currentPlaybackState = " +
-                            currentPlaybackState)
+                    "$logStr.not null.currentVolume = " + currentVolume +
+                            ", currentAudioPosition= " + currentAudioPosition +
+                            ", currentPlaybackState = " + currentPlaybackState)
             }
         }
         currentAudioPosition?.let {
@@ -82,26 +83,26 @@ class U2bSessionCallback(private val playService: U2bService)
 
         when (currentPlaybackState) {
             PlaybackStateCompat.STATE_PAUSED -> {
-                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PAUSED")
+                LogUtil.d(TAG, "$logStr.PlaybackStateCompat.STATE_PAUSED")
                 playService.onPause()
             }
             PlaybackStateCompat.STATE_STOPPED -> {
                 // playing was finished
-                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_STOPPED")
+                LogUtil.d(TAG, "$logStr.PlaybackStateCompat.STATE_STOPPED")
                 playService.onStop()
             }
             PlaybackStateCompat.STATE_PLAYING -> {
-                LogUtil.d(TAG, "onPrepareFromUri().PlaybackStateCompat.STATE_PLAYING")
+                LogUtil.d(TAG, "$logStr.PlaybackStateCompat.STATE_PLAYING")
                 playService.onPlay()
             }
             MyPlayerConstants.PREPARE_MEDIA -> {
-                LogUtil.d(TAG, "onPrepareFromUri().PlayerConstants.PREPARE_MEDIA")
+                LogUtil.d(TAG, "$logStr.PlayerConstants.PREPARE_MEDIA")
                 playService.onPlay()
             }
             else -> {
                 // PlaybackStateCompat.STATE_NONE:
                 // stopped by user
-                LogUtil.d(TAG,"onPrepareFromUr().PlaybackStateCompat.STATE_NONE or default")
+                LogUtil.d(TAG,"$logStr.PlaybackStateCompat.STATE_NONE or default")
                 playService.onStop()
             }
         }

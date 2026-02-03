@@ -180,42 +180,48 @@ abstract class PlayerBaseFragment : Fragment(),
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
+        val logStr = "startAndBindPlayService"
         activity?.let {
+            /*
             if (isServiceDestroyed) {
-                LogUtil.d(TAG, "startAndBindPlayService.startService()")
+                LogUtil.d(TAG, "$logStr.startService()")
                 it.startService(mPlayServiceIntent)
                 isServiceDestroyed = false
             } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already started")
+                LogUtil.d(TAG, "$logStr.PlayService already started")
             }
+            */
             if (!isServiceBound) {
                 val result: Boolean = it.bindService(mPlayServiceIntent!!,
-                    connection, Context.BIND_IMPORTANT)
-                LogUtil.d(TAG, "startAndBindPlayService.isBound = $result")
+                    connection, Context.BIND_AUTO_CREATE)
+                LogUtil.d(TAG, "$logStr.isBound = $result")
             } else {
-                LogUtil.d(TAG, "startAndBindPlayService.PlayService already bound")
+                LogUtil.d(TAG, "$logStr.PlayService already bound")
             }
         }
     }
 
-    private fun unbindAndStopPlayService() {
+    fun unbindAndStopPlayService() {
+        val logStr = "unbindAndStopPlayService"
         activity?.let {
             if (isServiceBound) {
-                LogUtil.d(TAG, "unbindAndStopPlayService.unbindService()")
+                LogUtil.d(TAG, "$logStr.unbindService()")
                 it.unbindService(connection)
-                it.stopService(mPlayServiceIntent)
+                // it.stopService(mPlayServiceIntent)
                 isServiceBound = false
                 isServiceDestroyed = true
             } else {
-                LogUtil.d(TAG, "unbindAndStopPlayService.PlayService is not bound")
+                LogUtil.d(TAG, "$logStr.PlayService is not bound")
             }
         }
     }
 
     private fun onPlayServiceDisconnected() {
         LogUtil.i(TAG, "onPlayServiceDisconnected")
+        /*
         activity?.stopService(mPlayServiceIntent)
         isServiceDestroyed = true
+        */
     }
 
     var isServiceBound: Boolean = false
@@ -251,7 +257,8 @@ abstract class PlayerBaseFragment : Fragment(),
             deviceType = ScreenUtil.getDeviceType(it)
             if (deviceType != ScreenUtil.DEVICE_TYPE_PHONE) {
                 LogUtil.d(TAG, "onCreate.deviceType is not phone")
-                orgOrientation = resources.configuration.orientation
+                val res = it.resources
+                orgOrientation = res.configuration.orientation
                 if (deviceType == ScreenUtil.DEVICE_TYPE_ANDROID_TV) {
                     // disable cast for ExoPlayer for Android TV
                     LogUtil.d(TAG, "onCreate.disable cast for Android TV")
@@ -419,7 +426,10 @@ abstract class PlayerBaseFragment : Fragment(),
         }
 
         setImageButtonStatus() // must before setButtonsPositionAndSize()
-        setButtonsPositionAndSize(resources.configuration)
+        activity?.let { act ->
+            val res = act.resources
+            setButtonsPositionAndSize(res.configuration)
+        }
         setOnClickEvents()
         showNativeAndHideBannerAd()
 
@@ -595,10 +605,13 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            bannerAdsLayout?.visibility = View.GONE
-        } else {
-            CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+        activity?.let {
+            val res = it.resources
+            if (res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                bannerAdsLayout?.visibility = View.GONE
+            } else {
+                CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+            }
         }
         startAndBindPlayService()
         hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
@@ -710,8 +723,9 @@ abstract class PlayerBaseFragment : Fragment(),
         try {
             mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
             mediaRouteButton?.let {
-                activity?.applicationContext?.let { ctxIt ->
-                    CastButtonFactory.setUpMediaRouteButton(ctxIt, it)
+                activity?.let { actIt ->
+                    val ctx = actIt.applicationContext
+                    CastButtonFactory.setUpMediaRouteButton(ctx, it)
                     setMediaRouteButtonVisible()
                 }
             }
@@ -884,10 +898,13 @@ abstract class PlayerBaseFragment : Fragment(),
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
             closeMenu(mainMenu)
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                bannerAdsLayout?.visibility = View.GONE
-            } else {
-                CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+            activity?.let { actIt ->
+                val res = actIt.resources
+                if (res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    bannerAdsLayout?.visibility = View.GONE
+                } else {
+                    CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+                }
             }
         }
         fragmentView?.requestFocus()
@@ -1029,14 +1046,17 @@ abstract class PlayerBaseFragment : Fragment(),
         }
 
         orientationImageButton?.setOnClickListener {
-            val org = resources.configuration.orientation
-            val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
+            activity?.let { actIt ->
+                val res = actIt.resources
+                val org = res.configuration.orientation
+                val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
                     Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
-            LogUtil.d(TAG,"orientationImageButton.onClick.orientation = $orientation")
-            setScreenOrientation(orientation)
-            disableButtonForSometime(it)
-            lastFocusView = orientationImageButton
-            fragmentView?.requestFocus()
+                LogUtil.d(TAG, "orientationImageButton.onClick.orientation = $orientation")
+                setScreenOrientation(orientation)
+                disableButtonForSometime(it)
+                lastFocusView = orientationImageButton
+                fragmentView?.requestFocus()
+            }
         }
         repeatImageButton?.setOnClickListener {
             mPresenter.setRepeatSongStatus()
@@ -1201,7 +1221,10 @@ abstract class PlayerBaseFragment : Fragment(),
         switchToMusicImageButton?.visibility = switchToMusicVisibility()
         switchToVocalImageButton?.visibility = switchToVocalVisibility()
         audioChannelImageButton?.visibility = audioChannelVisibility()
-        setOrientationImageButton(resources.configuration.orientation)
+        activity?.let { actIt ->
+            val res = actIt.resources
+            setOrientationImageButton(res.configuration.orientation)
+        }
         // repeatImageButton
         when (pm.repeatStatus) {
             MyPlayerConstants.NoRepeatPlaying -> {
@@ -1213,9 +1236,7 @@ abstract class PlayerBaseFragment : Fragment(),
             MyPlayerConstants.RepeatAllSongs ->                 // repeat all song list
                 repeatImageButton?.setImageResource(R.drawable.repeat_all)
         }
-        activity?.let {
-            repeatImageButton?.visibility = if (pm.isPlaySingleSong) View.GONE else View.VISIBLE
-        }
+        repeatImageButton?.visibility = if (pm.isPlaySingleSong) View.GONE else View.VISIBLE
 
         hideVideoImageButton?.apply {
             setImageResource(if (playerViewLinearLayout?.visibility==View.VISIBLE) R.drawable.hide_video
@@ -1303,20 +1324,26 @@ abstract class PlayerBaseFragment : Fragment(),
                     nativeTemplate?.showNativeAd()
                 } else {
                     hideNativeAd()
-                    if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        bannerAdsLayout?.visibility = View.GONE
-                    } else {
-                        CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+                    activity?.let { actIt ->
+                        val res = actIt.resources
+                        if (res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            bannerAdsLayout?.visibility = View.GONE
+                        } else {
+                            CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+                        }
                     }
                 }
             }
         } else {
             LogUtil.d(TAG, "${msgStr}.View.INVISIBLE")
             // show the banner ad if in the right place
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                bannerAdsLayout?.visibility = View.GONE
-            } else {
-                CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+            activity?.let { act ->
+                val res = act.resources
+                if (res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    bannerAdsLayout?.visibility = View.GONE
+                } else {
+                    CommonUtil.setVisible(bannerAdsLayout, nativeAdViewVisibility)
+                }
             }
         }
 
@@ -1471,7 +1498,9 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     private fun setScreenOrientation(orientation: Int) {
-        orgOrientation = resources.configuration.orientation
+        val act = activity ?: return
+        val res = act.resources
+        orgOrientation = res.configuration.orientation
         LogUtil.d(TAG, "setScreenOrientation.orgOrientation = $orgOrientation")
         activity?.requestedOrientation = when (orientation) {
             Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

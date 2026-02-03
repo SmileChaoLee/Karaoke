@@ -223,11 +223,13 @@ abstract class BasePlayService : Service() {
     }
 
     fun playMediaFromUri(mediaUri: Uri?, playingParam: PlayingParameters) {
-        LogUtil.i(TAG, "playMediaFromUri.mediaUri = $mediaUri")
+        val logStr = "playMediaFromUri"
+        LogUtil.i(TAG, "$logStr.mediaUri = $mediaUri")
         mediaUri?.let { mediaIt ->
+            LogUtil.d(TAG, "$logStr.mediaSessionCompat = $mediaSessionCompat")
             mediaSessionCompat?.let {
                 it.controller?.transportControls?.apply {
-                    LogUtil.d(TAG, "playMediaFromUri.mediaTransportControls is not null")
+                    LogUtil.d(TAG, "$logStr.mediaTransportControls is not null")
                     val playingParamOriginExtras = Bundle()
                     playingParamOriginExtras.putParcelable(MyPlayerConstants.PlayingParamOrigin,
                         PlayingParameters(playingParam))

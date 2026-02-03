@@ -281,6 +281,10 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
     }
 
+    open fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
+        playSongs?.playSelectedSongList(songInfos, false)
+    }
+
     // overriding BaseFragment's methods
     override fun setClickListeners() {
         searchButton?.setOnClickListener {
@@ -316,7 +320,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                     textFontSize, Toast.LENGTH_SHORT)
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
-                playSongs?.playSelectedSongList(vSongs)
+                playSelectedSongList(vSongs)
             }
         }
         addToFavoriteButton?.setOnClickListener {

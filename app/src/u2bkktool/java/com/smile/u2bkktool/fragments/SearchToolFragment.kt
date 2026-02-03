@@ -8,9 +8,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.smile.karaoke.R
+import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.model.Song
+import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
 import com.smile.u2bkktool.utilities.U2bKkToUtil
 import com.smile.u2bplayer.fragments.SearchVideosFragment
@@ -91,6 +93,10 @@ class SearchToolFragment : SearchVideosFragment() {
                 }
             }
         }
+    }
+
+    override fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
+        playSongs?.playSelectedSongList(songInfos, true)
     }
 
     override fun setClickListeners() {

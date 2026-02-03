@@ -74,7 +74,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var pageNo = 1
     private var pageSize = 10
     private var totalPages = 0
-    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
+    private val selectedSongInfos : ArrayList<SongInfo> = ArrayList()
+    val selectedSongs : ArrayList<Pair<Song, Int>> = ArrayList()
     // private var restApi: MyRestApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,10 +153,10 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     override fun afterTextChanged(editable: Editable) {
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
                         val content = editable.toString().trim()
-                        if (orderedFrom != U2bKKConstants.ALL_SONG_ORDERED) {
-                            filterString = if (content.isEmpty()) "" else "SongNa+$content"
+                        filterString = if (orderedFrom != U2bKKConstants.ALL_SONG_ORDERED) {
+                            if (content.isEmpty()) "" else "SongNa+$content"
                         } else {
-                            filterString = content.trim()
+                            content.trim()
                         }
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                         pageNo = 1
@@ -225,6 +226,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
+        selectedSongInfos.clear()
         selectedSongs.clear()
         songList.songs.clear()
         super.onDestroy()
@@ -233,7 +235,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     open fun addToFavoriteDatabase() {
         LogUtil.i(TAG, "addToFavoriteDatabase")
         val act = activity?: return
-        if (selectedSongs.isEmpty()) {
+        if (selectedSongInfos.isEmpty()) {
             ScreenUtil.showToast(activity,
                 getString(R.string.noFilesSelectedString),
                 textFontSize,Toast.LENGTH_SHORT)
@@ -242,7 +244,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         lifecycleScope.launch(Dispatchers.IO) {
             if (DatabaseUtil.addSongsToFavorites(act,
                     U2bPlayConstants.U2B_FAV_DB_NAME,
-                    selectedSongs)) {
+                    selectedSongInfos)) {
                 withContext(Dispatchers.Main) {
                     ScreenUtil.showToast(
                         act,
@@ -252,6 +254,10 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
             }
         }
+    }
+
+    open fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
+        playSongs?.playSelectedSongList(songInfos, false)
     }
 
     override fun setClickListeners() {
@@ -278,14 +284,14 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
-            LogUtil.d(TAG, "$logStr.songs.size = ${selectedSongs.size}")
-            if (selectedSongs.isEmpty()) {
+            LogUtil.d(TAG, "$logStr.songs.size = ${selectedSongInfos.size}")
+            if (selectedSongInfos.isEmpty()) {
                 ScreenUtil.showToast(act,
                     getString(R.string.noFilesSelectedString),
                     textFontSize, Toast.LENGTH_SHORT)
             } else {
-                val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
-                playSongs?.playSelectedSongList(vSongs)
+                val vSongInfos = ArrayList(selectedSongInfos.take(MySingleton.MAX_SONGS))
+                playSelectedSongList(vSongInfos)
                 setShowVideoButtonVisibility()
                 setFucusDirection()
             }
@@ -306,6 +312,10 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         addToFavoriteButton?.layoutParams = buttonParam
     }
 
+    open fun isAllowed(song: Song): Boolean {
+        return (song.nMpeg == "00" && song.mMpeg == "00")
+    }
+
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
@@ -316,7 +326,8 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val song = list.songs[position]
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
-            if (song.nMpeg != "00" || song.mMpeg != "00") {
+            isAllowed(song)
+            if (!isAllowed(song)) {
                 // this song is not ready yet
                 ScreenUtil.showToast(
                     act, getString(R.string.songNotReadyYet),
@@ -326,21 +337,27 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val songInfo = dataSongToSongInfo(song)
             var isUpdated = false
             if (song.vodYn.uppercase() == "Y") {
+                LogUtil.i(TAG, "onItemClick.remove")
                 song.vodYn = "N"
-                selectedSongs.remove(songInfo)
+                selectedSongInfos.remove(songInfo)
+                selectedSongs.remove(Pair(song, position))
                 isUpdated = true
             } else {
-                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                if (selectedSongInfos.size >= MySingleton.MAX_SONGS) {
                     ScreenUtil.showToast(
                         act, getString(R.string.excess_max) +
                                 " ${MySingleton.MAX_SONGS}", textFontSize,
                         Toast.LENGTH_SHORT)
                 } else {
+                    LogUtil.i(TAG, "onItemClick.add")
                     song.vodYn = "Y"
-                    selectedSongs.add(songInfo)
+                    selectedSongInfos.add(songInfo)
+                    selectedSongs.add(Pair(song, position))
                     isUpdated = true
                 }
             }
+            LogUtil.i(TAG, "onItemClick.selectedSongInfos.size = ${selectedSongInfos.size}")
+            LogUtil.i(TAG, "onItemClick.selectedSongs.size = ${selectedSongs.size}")
             if (isUpdated) myViewAdapter?.notifyItemChanged(position)
         }
     }
@@ -354,7 +371,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun retrieveSongList(isSearch: Boolean = false) {
+    fun retrieveSongList(isSearch: Boolean = false) {
         val logStr = "retrieveSingerList"
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
@@ -483,6 +500,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     songListEmptyTextView?.visibility = View.VISIBLE
                 }
                 LogUtil.d(TAG, "$logStr.tempList.songs.size = ${tempList?.songs?.size}")
+                selectedSongInfos.clear()
                 selectedSongs.clear()
                 songList.songs.clear()
                 tempList?.let { tempList ->
@@ -544,7 +562,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         retrieveSongList()
     }
 
-    private fun dataSongToSongInfo(vSong: Song): SongInfo {
+    fun dataSongToSongInfo(vSong: Song): SongInfo {
         val logStr = "dataSongToSongInfo"
         LogUtil.d(TAG, logStr)
         return SongInfo().apply {
@@ -602,6 +620,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 songListEmptyTextView?.text = act.getString(R.string.failedMessage)
                 songListEmptyTextView?.visibility = View.VISIBLE
             }
+            selectedSongInfos.clear()
             selectedSongs.clear()
             songList.songs.clear()
             tempList?.let { tempList ->

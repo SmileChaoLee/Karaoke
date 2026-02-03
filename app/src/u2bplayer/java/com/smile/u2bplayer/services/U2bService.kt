@@ -133,6 +133,7 @@ class U2bService : BasePlayService() {
         if (isU2bCast) {
             u2bCastPlayer?.loadVideo(videoId, 0f)   // play immediately
         } else {
+            LogUtil.i(TAG, "prepare.u2bPlayer = $u2bPlayer")
             u2bPlayer?.loadVideo(videoId, 0f)   // play immediately
         }
     }

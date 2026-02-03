@@ -72,6 +72,16 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         setVideoWindowSize()
     }
 
+    //  for testing
+    override fun onStop() {
+        super.onStop()
+        LogUtil.i(TAG, "onStop")
+        // Need to unbind the U2bService when coming back from background
+        // ,not like other players
+        // Otherwise the listener will not working
+        unbindAndStopPlayService()
+    }
+
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
         if (mPlayServiceIntent != null) {
@@ -212,7 +222,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun getPlayService(): U2bService? {
-        LogUtil.i(TAG, "getPlayService")
+        // LogUtil.i(TAG, "getPlayService")
         return playService
     }
     // End of implementing YouTubePresenter.YouTubePresentView
