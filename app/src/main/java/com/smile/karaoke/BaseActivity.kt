@@ -338,8 +338,8 @@ abstract class BaseActivity : AppCompatActivity(),
         val msgStr = "playSelectedSongList"
         LogUtil.i(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
-            val preOrderedSize = MySingleton.orderedSongs.size
             if (isClearNeeded) MySingleton.orderedSongs.clear()
+            val preOrderedSize = MySingleton.orderedSongs.size
             var found: Boolean
             for (songInfo in songs) {
                 found = false
@@ -357,6 +357,7 @@ abstract class BaseActivity : AppCompatActivity(),
             }
             LogUtil.i(TAG, "$msgStr.MySingleton.orderedSongs.size = ${MySingleton.orderedSongs.size}")
             playerFragment?.let {
+                it.showPlayerView()
                 it.mPresenter.let { pIt ->
                     if (isClearNeeded) {
                         pIt.autoPlaySongList()
@@ -365,7 +366,8 @@ abstract class BaseActivity : AppCompatActivity(),
                     if (MySingleton.orderedSongs.size == preOrderedSize) {
                         // no new songs added
                         LogUtil.d(TAG, "$msgStr.no new media files added")
-                        ScreenUtil.showToast(this, getString(R.string.noSongsAddedStr),
+                        ScreenUtil.showToast(this,
+                            getString(R.string.noSongsAddedStr),
                             60f, Toast.LENGTH_SHORT)
                         return
                     }
@@ -383,7 +385,6 @@ abstract class BaseActivity : AppCompatActivity(),
                         }
                     }
                 }
-                it.showPlayerView()
             }
         }
     }
