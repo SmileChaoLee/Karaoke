@@ -95,4 +95,5 @@
     <string name="emptyString">""</string>
     <string name="installKaraokePlayer">安裝\n咔OK播放程式</string>
     <string name="installVideoPlayer">安裝\n視頻播放程式</string>
+    <string name="noSongsAddedStr">沒有新的視頻加入</string>
 </resources>

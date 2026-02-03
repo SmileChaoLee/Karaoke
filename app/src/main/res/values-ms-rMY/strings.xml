@@ -95,4 +95,5 @@
     <string name="emptyString">""</string>
     <string name="installKaraokePlayer">Install\nKaraoke Player</string>
     <string name="installVideoPlayer">Install\nVideo Player</string>
+    <string name="noSongsAddedStr">No media files added</string>
 </resources>

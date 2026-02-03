@@ -166,7 +166,7 @@ abstract class BasePlayService : Service() {
             LogUtil.e(TAG, "${msgStr}.Exception: ", ex)
         }
         var mediaUri = filePath.toUri()
-        LogUtil.d(TAG, "${msgStr}. = $mediaUri")
+        LogUtil.d(TAG, "${msgStr}.mediaUri = $mediaUri")
         if (Uri.EMPTY == mediaUri) {
             return
         }

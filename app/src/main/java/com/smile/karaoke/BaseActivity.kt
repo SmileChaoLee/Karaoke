@@ -176,7 +176,8 @@ abstract class BaseActivity : AppCompatActivity(),
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionExternalStorage = PermissionUtil.onRequestPermResult(requestCode, grantResults)
         if (!permissionExternalStorage) {
-            ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
+            ScreenUtil.showToast(this, "Permission Denied",
+                60f, Toast.LENGTH_LONG)
             LogUtil.i(TAG, "onRequestPermissionsResult.Permission Denied")
             finish()
         }
@@ -333,17 +334,17 @@ abstract class BaseActivity : AppCompatActivity(),
     // Finishes implementing interface PlayMyFavorites
 
     // implementing interface PlaySongs
-    override fun playSelectedSongList(songs: ArrayList<SongInfo>) {
+    override fun playSelectedSongList(songs: ArrayList<SongInfo>, isClearNeeded: Boolean) {
         val msgStr = "playSelectedSongList"
         LogUtil.i(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
-            // MySingleton.orderedSongs.clear() // no more clear, using add instead
-            val orderedSize = MySingleton.orderedSongs.size
+            val preOrderedSize = MySingleton.orderedSongs.size
+            if (isClearNeeded) MySingleton.orderedSongs.clear()
             var found: Boolean
             for (songInfo in songs) {
                 found = false
                 LogUtil.d(TAG, "$msgStr.songInfo.filePath = ${songInfo.filePath}")
-                for (i in 0 until orderedSize) {
+                for (i in 0 until preOrderedSize) {
                     val orderedSong = MySingleton.orderedSongs[i]
                     LogUtil.d(TAG, "$msgStr.orderedSong.filePath = ${orderedSong.filePath}")
                     if (orderedSong.filePath == songInfo.filePath) {
@@ -357,17 +358,26 @@ abstract class BaseActivity : AppCompatActivity(),
             LogUtil.i(TAG, "$msgStr.MySingleton.orderedSongs.size = ${MySingleton.orderedSongs.size}")
             playerFragment?.let {
                 it.mPresenter.let { pIt ->
+                    if (isClearNeeded) {
+                        pIt.autoPlaySongList()
+                        return
+                    }
+                    if (MySingleton.orderedSongs.size == preOrderedSize) {
+                        // no new songs added
+                        LogUtil.d(TAG, "$msgStr.no new media files added")
+                        ScreenUtil.showToast(this, getString(R.string.noSongsAddedStr),
+                            60f, Toast.LENGTH_SHORT)
+                        return
+                    }
                     pIt.playingParam.isAutoPlay = false
                     if (pIt.mediaUri == null) {
+                        LogUtil.d(TAG, "$msgStr.autoPlaySongList()")
                         pIt.autoPlaySongList()
                     } else {
                         it.getPlayService()?.let { ps ->
                             if (!ps.isPlaying()) {
-                                val sIndex = pIt.playingParam.currentSongIndex
-                                LogUtil.d(TAG, "$msgStr.currentSongIndex = $sIndex")
-                                // if (MySingleton.orderedSongs.size > sIndex) {   // it should be always true
-                                    pIt.playingParam.currentSongIndex = sIndex - 1
-                                // }
+                                // play new added songs
+                                pIt.playingParam.currentSongIndex = preOrderedSize - 1
                                 pIt.startAutoPlay(false)
                             }
                         }
