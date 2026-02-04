@@ -26,8 +26,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1009
-        versionName "10.09"
+        versionCode 1010
+        versionName "10.10"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,21 +63,21 @@ android {
         }
         create("u2bplayer") {
             dimension = "karaoke"
-            versionCode 119
-            versionName "1.19"
+            versionCode 120
+            versionName "1.20"
             applicationId = "com.smile.u2bplayer"
         }
         create("u2bplayer2") {
             // for Amazon app store only
             dimension = "karaoke"
-            versionCode 119
-            versionName "1.19"
+            versionCode 120
+            versionName "1.20"
             applicationId = "com.smile.youtubeplayer"
         }
         create("u2bkaraoke") {
             dimension = "karaoke"
-            versionCode 103
-            versionName "1.03"
+            versionCode 104
+            versionName "1.04"
             applicationId = "com.smile.u2bkaraoke"
         }
         create("u2bkktool") {
