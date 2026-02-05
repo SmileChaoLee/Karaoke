@@ -76,10 +76,6 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     override fun onStop() {
         super.onStop()
         LogUtil.i(TAG, "onStop")
-        // Need to unbind the U2bService when coming back from background
-        // ,not like other players
-        // Otherwise the listener will not working
-        unbindAndStopPlayService()
     }
 
     override fun onDestroy() {
@@ -110,7 +106,39 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         }
     }
 
-    private fun initYouTubePlayerView() {
+    // for U2bKkTool
+    fun addU2bListeners() {
+        LogUtil.d(TAG, "addU2bListeners")
+        val pListener = u2bPlayerListener ?: return
+        val fListener = fScreenListener ?: return
+        removeU2bListeners()
+        LogUtil.d(TAG, "addU2bListeners can be executed")
+        youTubeView?.apply {
+            addYouTubePlayerListener(pListener)
+            addFullscreenListener(fListener)
+        }
+    }
+
+    // for U2bKkTool
+    fun removeU2bListeners() {
+        LogUtil.i(TAG, "removeU2bListeners")
+        val pListener = u2bPlayerListener ?: return
+        val fListener = fScreenListener ?: return
+        youTubeView?.apply {
+            removeYouTubePlayerListener(pListener)
+            removeFullscreenListener(fListener)
+        }
+    }
+
+    fun releaseYouTubePlayer() {
+        LogUtil.i(TAG, "releaseYouTubePlayer")
+        val player = youTubeView ?: return
+        LogUtil.i(TAG, "releaseYouTubePlayer.youTubeView initialized")
+        removeU2bListeners()
+        player.release()
+    }
+
+    fun initYouTubePlayerView() {
         val logStr = "initYouTubePlayerView"
         LogUtil.i(TAG, logStr)
         val act = activity ?: return

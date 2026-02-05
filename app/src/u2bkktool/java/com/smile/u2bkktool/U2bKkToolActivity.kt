@@ -1,16 +1,40 @@
 package com.smile.u2bkktool
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
+import androidx.media3.common.util.UnstableApi
+import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.U2bKkBaseActivity
-import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
-import com.smile.u2bkktool.fragments.SongToolFragment
 
+@UnstableApi
 class U2bKkToolActivity : U2bKkBaseActivity() {
-    override fun getFirstFragment(): Fragment {
-        return SongToolFragment().apply {
-            arguments = Bundle().apply {
-                putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.ALL_SONG_ORDERED)
+
+    companion object {
+        private const val TAG = "U2bKkToolActivity"
+    }
+
+    override fun isU2bKkTool(): Boolean {
+        return true
+    }
+
+    override fun onStart() {
+        LogUtil.d(TAG, "onStart")
+        super.onStart()
+        u2bPlayerFragment.apply {
+            val ps = getPlayService()
+            LogUtil.d(TAG, "onStart.getPlayService() = $ps")
+            if (ps != null) {
+                initYouTubePlayerView()
+            }
+        }
+    }
+
+    override fun onStop() {
+        LogUtil.d(TAG, "onStop")
+        super.onStop()
+        u2bPlayerFragment.apply {
+            val ps = getPlayService()
+            LogUtil.d(TAG, "onStop.getPlayService() = $ps")
+            if (ps != null) {
+                releaseYouTubePlayer()
             }
         }
     }

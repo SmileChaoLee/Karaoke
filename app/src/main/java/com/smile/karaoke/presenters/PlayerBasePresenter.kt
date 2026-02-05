@@ -544,7 +544,9 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                 val currentIndexOfList = playingParam.currentSongIndex
                 LogUtil.d(TAG, "$msgStr.STATE_ERROR.currentIndexOfList = $currentIndexOfList")
                 if (currentIndexOfList >= 0) {
-                    MySingleton.orderedSongs.removeAt(currentIndexOfList)
+                    if (MySingleton.orderedSongs.size > currentIndexOfList) {
+                        MySingleton.orderedSongs.removeAt(currentIndexOfList)
+                    }
                     playingParam.currentSongIndex = currentIndexOfList - 1
                 }
                 LogUtil.d(TAG, "$msgStr.STATE_ERROR.orderedSongs.size() = ${MySingleton.orderedSongs.size}")

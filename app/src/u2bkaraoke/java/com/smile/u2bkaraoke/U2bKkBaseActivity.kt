@@ -14,21 +14,22 @@ import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.fragments.SongListFragment
 import com.smile.u2bkaraoke.fragments.U2bKKBaseFragment
+import com.smile.u2bkaraoke.fragments.U2bKaOkFragment
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import com.smile.u2bplayer.fragments.U2bPlayFragment
 
 @OptIn(UnstableApi::class)
-abstract class U2bKkBaseActivity : BaseActivity() {
+abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
 
     companion object {
         private var TAG : String = "U2bKkBaseActivity"
     }
 
-    abstract fun getFirstFragment(): Fragment
-
-    private val nFragment = getFirstFragment()
+    private val nFragment = U2bKaOkFragment()
     private var fmContainerId: Int? = null
+    var u2bPlayerFragment = U2bPlayFragment()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +56,7 @@ abstract class U2bKkBaseActivity : BaseActivity() {
     // implement abstract methods of BackActivity
     override fun getFragment(): U2bPlayFragment {
         LogUtil.d(TAG, "getFragment")
-        return U2bPlayFragment()
+        return u2bPlayerFragment
     }
 
     override fun askPermissions(activity: Activity): Boolean {

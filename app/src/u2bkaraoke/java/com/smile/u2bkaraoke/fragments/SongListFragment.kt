@@ -1,6 +1,8 @@
 package com.smile.u2bkaraoke.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_CANCELED
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +16,8 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,22 +34,26 @@ import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.SongList
-import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
+import com.smile.u2bkktool.U2bKkPlayActivity
+import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
+import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
 import javax.inject.Inject
 
-open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
+class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     companion object {
         private const val TAG = "SongListFragment"
+    }
+
+    interface U2bKkFunc {
+        fun isU2bKkTool(): Boolean
     }
 
     @JvmField
@@ -76,11 +84,24 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var totalPages = 0
     private val selectedSongInfos : ArrayList<SongInfo> = ArrayList()
     val selectedSongs : ArrayList<Pair<Song, Int>> = ArrayList()
-    // private var restApi: MyRestApi? = null
+    private var mU2bKkFunc: U2bKkFunc? = null
+    private lateinit var searchToolLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is U2bKkFunc) mU2bKkFunc = it
+            LogUtil.d(TAG, "onCreate.u2bKkFunc = $mU2bKkFunc")
+        }
+        searchToolLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
+            val logStr = "searchToolLauncher.receive"
+            LogUtil.d(TAG, "$logStr.result = $result")
+            if (result.resultCode == RESULT_CANCELED) return@registerForActivityResult
+            retrieveSongList()
+        }
+
         orderedFrom = 0 // default value
         numOfWords = 0
         arguments?.let { args ->
@@ -202,7 +223,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             setLayoutManager(LinearLayoutManager(requireContext()))
         }
 
-        // restApi = MyRestApi()
         retrieveSongList()
     }
 
@@ -232,32 +252,51 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         super.onDestroy()
     }
 
-    open fun addToFavoriteDatabase() {
+    private fun addToFavoriteDatabase() {
         LogUtil.i(TAG, "addToFavoriteDatabase")
         val act = activity?: return
         if (selectedSongInfos.isEmpty()) {
-            ScreenUtil.showToast(activity,
+            ScreenUtil.showToast(act,
                 getString(R.string.noFilesSelectedString),
                 textFontSize,Toast.LENGTH_SHORT)
             return
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            if (DatabaseUtil.addSongsToFavorites(act,
-                    U2bPlayConstants.U2B_FAV_DB_NAME,
-                    selectedSongInfos)) {
-                withContext(Dispatchers.Main) {
-                    ScreenUtil.showToast(
-                        act,
-                        getString(R.string.add_to_favorites),
-                        textFontSize, Toast.LENGTH_SHORT
-                    )
+        mU2bKkFunc?.let {
+            if (it.isU2bKkTool()) {
+                val song = selectedSongs[0].first
+                val position = selectedSongs[0].second
+                U2bPlayerUtil.saveKeyword(act, songSearchTerm(song))
+                Intent(act,U2bKkPlayActivity::class.java).also { intIt ->
+                    intIt.putExtra(U2bKkToConstants.SONG_LIST_POSITION, position)
+                    intIt.putExtra(U2bKkToConstants.SEARCHED_SONG, song)
+                    searchToolLauncher.launch(intIt)
+                }
+            } else {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    if (DatabaseUtil.addSongsToFavorites(act,
+                            U2bPlayConstants.U2B_FAV_DB_NAME,
+                            selectedSongInfos)) {
+                        withContext(Dispatchers.Main) {
+                            ScreenUtil.showToast(
+                                act,
+                                getString(R.string.add_to_favorites),
+                                textFontSize, Toast.LENGTH_SHORT
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 
-    open fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
-        playSongs?.playSelectedSongList(songInfos, false)
+    private fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
+        mU2bKkFunc?.let {
+            if (it.isU2bKkTool()) {
+                playSongs?.playSelectedSongList(songInfos, true)
+            } else {
+                playSongs?.playSelectedSongList(songInfos, false)
+            }
+        }
     }
 
     override fun setClickListeners() {
@@ -312,10 +351,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         addToFavoriteButton?.layoutParams = buttonParam
     }
 
-    open fun isAllowed(song: Song): Boolean {
-        return (song.nMpeg == "00" && song.mMpeg == "00")
-    }
-
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
@@ -326,14 +361,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val song = list.songs[position]
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
-            isAllowed(song)
-            if (!isAllowed(song)) {
-                // this song is not ready yet
-                ScreenUtil.showToast(
-                    act, getString(R.string.songNotReadyYet),
-                    textFontSize, Toast.LENGTH_LONG)
-                return
-            }
             val songInfo = dataSongToSongInfo(song)
             var isUpdated = false
             if (song.vodYn.uppercase() == "Y") {
@@ -376,11 +403,15 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
-        val baseFilter = "VideoReady+00"
+        var baseFilter = "VideoReady+00"
+        LogUtil.d(TAG, "$logStr.mU2bKkFunc = $mU2bKkFunc")
+        mU2bKkFunc?.let { funcIt ->
+            if (funcIt.isU2bKkTool()) baseFilter = ""
+        }
         val vFilter = if (filterString.isNullOrEmpty()) {
             baseFilter
         } else {
-            "$filterString+$baseFilter"
+            if (baseFilter.isEmpty()) filterString!! else "$filterString+$baseFilter"
         }
         LogUtil.d(TAG, "$logStr.vFilter = $vFilter")
         act.lifecycleScope.launch(Dispatchers.Main) {
@@ -621,51 +652,28 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         return songs
     }
 
-    private inner class MyRestApi(private val isSearch: Boolean = false)
-        : U2bKkRestApiAsync<SongList>() {
-        @SuppressLint("SetTextI18n")
-        override fun onResponse(call: Call<SongList?>, response: Response<SongList?>) {
-            val act = activity ?: return
-            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = {response.isSuccessful}")
-            var tempList = response.body()
-            if (response.isSuccessful) {
-                tempList?.let { sList ->
-                    if (sList.songs.isEmpty()) {
-                        songListEmptyTextView?.text = act.getString(R.string.noResultString)
-                        songListEmptyTextView?.visibility = View.VISIBLE
-                    } else {
-                        songListEmptyTextView?.visibility = View.GONE
-                    }
-                } ?: { tempList = SongList() }
-            } else {
-                tempList = SongList()
-                songListEmptyTextView?.text = act.getString(R.string.failedMessage)
-                songListEmptyTextView?.visibility = View.VISIBLE
-            }
-            selectedSongInfos.clear()
-            selectedSongs.clear()
-            songList.songs.clear()
-            tempList?.let { tempList ->
-                songList.pageNo = tempList.pageNo
-                songList.pageSize = tempList.pageSize
-                songList.totalRecords = tempList.totalRecords
-                songList.totalPages = tempList.totalPages
-                songList.songs.addAll(tempList.songs)
-            }
-            myViewAdapter?.myNotifyDataSetChanged()
-            updateRecyclerView()
-            pageNo = songList.pageNo
-            pageSize = songList.pageSize
-            totalPages = songList.totalPages
-            pageNoTextView?.text = "$pageNo/$totalPages"
-            if (isSearch) searchEditText?.post { searchEditText?.requestFocus() }
+    private fun songSearchTerm(song: Song): String {
+        // val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
+        // singers first then song name
+        var searchTerm = "\""
+        if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
+            searchTerm = searchTerm + song.singer1Na.trim()
         }
+        if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
+            searchTerm = searchTerm + " " + song.singer2Na.trim()
+        }
+        searchTerm = searchTerm + " " + "${song.songNa.trim()}\""
+        // song name first then singers
+        searchTerm = searchTerm + " " + "\"${song.songNa.trim()}"
+        if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
+            searchTerm = searchTerm + " " + song.singer1Na.trim()
+        }
+        if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
+            searchTerm = searchTerm + " " + song.singer2Na.trim()
+        }
+        searchTerm = "$searchTerm\""
 
-        override fun onFailure(call: Call<SongList>, t: Throwable) {
-            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
-            songList = SongList()
-            songListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
-            songListEmptyTextView?.visibility = View.VISIBLE
-        }
+        LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
+        return searchTerm
     }
 }
