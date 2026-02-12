@@ -37,8 +37,6 @@ import com.smile.u2bkaraoke.model.SongList
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
-import com.smile.u2bkktool.U2bKkPlayActivity
-import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +52,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     interface U2bKkFunc {
         fun isU2bKkTool(): Boolean
+        fun intentU2bKkPlayActivity(): Intent
     }
 
     @JvmField
@@ -266,11 +265,17 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 val song = selectedSongs[0].first
                 val position = selectedSongs[0].second
                 U2bPlayerUtil.saveKeyword(act, songSearchTerm(song))
+                val nIntent = it.intentU2bKkPlayActivity()
+                nIntent.putExtra(U2bKKConstants.SONG_LIST_POSITION, position)
+                nIntent.putExtra(U2bKKConstants.SEARCHED_SONG, song)
+                searchToolLauncher.launch(nIntent)
+                /*
                 Intent(act,U2bKkPlayActivity::class.java).also { intIt ->
                     intIt.putExtra(U2bKkToConstants.SONG_LIST_POSITION, position)
                     intIt.putExtra(U2bKkToConstants.SEARCHED_SONG, song)
                     searchToolLauncher.launch(intIt)
                 }
+                */
             } else {
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (DatabaseUtil.addSongsToFavorites(act,
@@ -656,6 +661,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         // val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
         // singers first then song name
         var searchTerm = "\""
+        // var searchTerm = ""
         if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + song.singer1Na.trim()
         }
@@ -671,7 +677,8 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
         }
-        searchTerm = "$searchTerm\" KTV版"
+        searchTerm = "$searchTerm\" KTV"
+        // searchTerm = "$searchTerm\""
 
         LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
         return searchTerm

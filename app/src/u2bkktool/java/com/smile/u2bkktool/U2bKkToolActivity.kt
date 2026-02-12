@@ -1,5 +1,6 @@
 package com.smile.u2bkktool
 
+import android.content.Intent
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.U2bKkBaseActivity
@@ -13,6 +14,10 @@ class U2bKkToolActivity : U2bKkBaseActivity() {
 
     override fun isU2bKkTool(): Boolean {
         return true
+    }
+
+    override fun intentU2bKkPlayActivity(): Intent {
+        return Intent(this@U2bKkToolActivity,U2bKkPlayActivity::class.java)
     }
 
     override fun onStart() {

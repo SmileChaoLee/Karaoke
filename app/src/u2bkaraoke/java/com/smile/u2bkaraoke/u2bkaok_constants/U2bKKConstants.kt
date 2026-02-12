@@ -11,7 +11,6 @@ object U2bKKConstants {
     const val LanguageWordsOrdered = 41
     const val ALL_SONG_ORDERED = 100
     const val OrderedFrom = "OrderedFrom"
-    const val SingerListTitle = "SingerListTitle"
     const val SingerTypeParcelable = "SingerTypeParcelable"
     const val SongListTitle = "SongListTitle"
     const val SingerParcelable = "SingerParcelable"
@@ -19,10 +18,8 @@ object U2bKKConstants {
     const val LanguageParcelable = "LanguageParcelable"
     const val NumOfWords = "NumOfWords"
 
-    const val SONG_NO = "songNo"
-    const val SONG_NAME = "songName"
-    const val SINGER_NAME = "singerName"
-    const val LANGUAGE_NAME = "languageName"
+    const val SONG_LIST_POSITION = "SongListPosition"
+    const val SEARCHED_SONG = "SearchedSong"
 
     const val CHAO_URL = "http://137.184.120.171/"
     // const val CHAO_URL = "http://192.168.0.234:5000/"

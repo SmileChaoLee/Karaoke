@@ -12,8 +12,7 @@ import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.model.Song
-import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
-import com.smile.u2bkktool.u2bKktool_constants.U2bKkToConstants
+import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkktool.utilities.U2bKkToUtil
 import com.smile.u2bplayer.fragments.SearchVideosFragment
 import com.smile.u2bplayer.models.U2bSingleton
@@ -34,10 +33,10 @@ class SearchToolFragment : SearchVideosFragment() {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
-            songPosition = args.getInt(U2bKkToConstants.SONG_LIST_POSITION, -1)
+            songPosition = args.getInt(U2bKKConstants.SONG_LIST_POSITION, -1)
             dataSong = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                args.getParcelable(U2bKkToConstants.SEARCHED_SONG, Song::class.java)
-            } else args.getParcelable(U2bKkToConstants.SEARCHED_SONG)
+                args.getParcelable(U2bKKConstants.SEARCHED_SONG, Song::class.java)
+            } else args.getParcelable(U2bKKConstants.SEARCHED_SONG)
             LogUtil.d(TAG, "onCreate.dataSong = $dataSong")
         }
     }
@@ -105,8 +104,8 @@ class SearchToolFragment : SearchVideosFragment() {
             activity?.let { act ->
                 val returnIntent = Intent()
                 Bundle().apply {
-                    putInt(U2bKkToConstants.SONG_LIST_POSITION, songPosition)
-                    putParcelable(U2bKkToConstants.SEARCHED_SONG, dataSong)
+                    putInt(U2bKKConstants.SONG_LIST_POSITION, songPosition)
+                    putParcelable(U2bKKConstants.SEARCHED_SONG, dataSong)
                     returnIntent.putExtras(this@apply)
                     // can bundle some data to previous activity
                     act.setResult(RESULT_OK, returnIntent)
