@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="u2bkaraoke_app_name">U2B Karaoke</string>
+    <string name="u2bkaraoke_app_name">U2B Songs</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_song_query">SongQuery</string>
     <string name="title_activity_singer_query">SingerQuery</string>
