@@ -135,13 +135,6 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
         super.onViewCreated(view, savedInstanceState)
 
-        firstPageButton?.nextFocusUpId = R.id.singerListRecyclerView
-        previousPageButton?.nextFocusUpId = R.id.singerListRecyclerView
-        nextPageButton?.nextFocusUpId = R.id.singerListRecyclerView
-        lastPageButton?.nextFocusUpId = R.id.singerListRecyclerView
-        exitImageButton?.nextFocusUpId = R.id.nextPageButton
-        showVideoButton?.nextFocusUpId = R.id.nextPageButton
-
         appCompBuilder
             .recyclerItemListenerModule(this@SingerListFragment)
             .singerArrayListModule(singerList.singers)
@@ -152,6 +145,30 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
         // restApi = MyRestApi()
         retrieveSingerList()
+    }
+
+    private fun setFucusDirection() {
+        LogUtil.d(TAG, "setFucusDirection")
+        firstPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        previousPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        nextPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        lastPageButton?.nextFocusUpId = R.id.singerListRecyclerView
+        exitImageButton?.nextFocusUpId = R.id.nextPageButton
+        showVideoButton?.nextFocusUpId = R.id.nextPageButton
+        selectTab?.view?.let { tab ->
+            LogUtil.d(TAG, "setFucusDirection.selectTab")
+            tab.nextFocusDownId = R.id.singerSearchEditText
+            searchEditText?.nextFocusUpId = tab.id
+        }
+        favoriteTab?.view?.let { tab ->
+            tab.nextFocusDownId = R.id.singerSearchEditText
+        }
+    }
+
+    override fun onResume() {
+        LogUtil.i(TAG, "onResume")
+        super.onResume()
+        setFucusDirection()
     }
 
     override fun setClickListeners() {

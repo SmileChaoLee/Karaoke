@@ -1,12 +1,12 @@
 package com.smile.karaoke.interfaces
 
-import android.graphics.Color
 import android.view.View
 import com.smile.karaoke.SmileAppBase
 
 interface RecyclerItemListener {
 
     fun onItemClick(v: View?, position: Int)
+    fun nextFocusUpId(v: View) {}
 
     fun onItemViewFocusChanged(v: View?, position: Int, hasFocus: Boolean) {
         if (hasFocus) {

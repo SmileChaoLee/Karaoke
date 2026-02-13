@@ -65,5 +65,6 @@
 
     <string name="songNotReadyYet">Not Ready Yet</string>
     <string name="numWords">Number of Words</string>
+    <string name="selectStr">Select</string>
 
 </resources>

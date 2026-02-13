@@ -132,13 +132,6 @@ class SingerTyListFragment : U2bKKBaseFragment(),
             LogUtil.i(TAG, "onItemClick.singerType.areaNa = ${singerType.areaNa}")
             ScreenUtil.showToast(act, singerType.areaNa,
                 textFontSize, Toast.LENGTH_SHORT)
-            /*
-            Intent(act, SingerListActivity::class.java).let { int ->
-                int.putExtra(Constants.SingerListActivityTitle, singerType.areaNa)
-                int.putExtra(Constants.SingerTypeParcelable, singerType)
-                act.startActivity(int)
-            }
-            */
             val nFragment = SingerListFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(U2bKKConstants.SingerTypeParcelable, singerType)
@@ -146,6 +139,13 @@ class SingerTyListFragment : U2bKKBaseFragment(),
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
         }
+    }
+
+    override fun nextFocusUpId(v: View) {
+        selectTab?.view?.nextFocusDownId = R.id.singerTypeListRecyclerView
+        favoriteTab?.view?.nextFocusDownId = R.id.singerTypeListRecyclerView
+        // The following line does not work
+        v.nextFocusUpId = selectTab?.view?.id ?: R.id.singerTypeListRecyclerView
     }
 
     override fun getSexString(sex: String): String {

@@ -6,7 +6,6 @@
     android:background="@android:color/transparent"
     android:focusable="true"
     android:clickable="true"
-    android:nextFocusUp="@id/u2bKExitButton"
     android:nextFocusDown="@id/u2bKExitButton"
     android:weightSum="12">
 

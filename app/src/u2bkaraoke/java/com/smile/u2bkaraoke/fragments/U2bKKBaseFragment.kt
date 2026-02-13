@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.tabs.TabLayout
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.PlaySongs
 import com.smile.karaoke.utilities.LogUtil
@@ -20,6 +21,10 @@ abstract class U2bKKBaseFragment : Fragment() {
 
     companion object {
         private const val TAG : String = "U2bKKBaseFragment"
+        @SuppressLint("StaticFieldLeak")
+        var selectTab: TabLayout.Tab? = null
+        @SuppressLint("StaticFieldLeak")
+        var favoriteTab: TabLayout.Tab? = null
     }
 
     var textFontSize = 0.0f
@@ -42,6 +47,7 @@ abstract class U2bKKBaseFragment : Fragment() {
             LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
             fragContainerId = this.id   // container id of the fragment
             mFragManager = it.supportFragmentManager
+            val tabText = arrayOf(getString(R.string.selectStr), getString(R.string.my_favorites))
         }
         LogUtil.d(TAG, "onCreate.finished")
     }
@@ -75,7 +81,17 @@ abstract class U2bKKBaseFragment : Fragment() {
     override fun onResume() {
         LogUtil.i(TAG, "onResume")
         super.onResume()
-        exitImageButton?.post { exitImageButton?.requestFocus() }
+        exitImageButton?.post {
+            exitImageButton?.requestFocus()
+            LogUtil.i(TAG, "onResume.selectTab = $selectTab")
+            LogUtil.i(TAG, "onResume.selectTab.view = ${selectTab?.view}")
+            selectTab?.view?.let {
+                it.nextFocusRightId = favoriteTab?.view?.id ?: it.id
+            }
+            favoriteTab?.view?.let {
+                it.nextFocusLeftId = selectTab?.view?.id ?: it.id
+            }
+        }
     }
 
     override fun onPause() {

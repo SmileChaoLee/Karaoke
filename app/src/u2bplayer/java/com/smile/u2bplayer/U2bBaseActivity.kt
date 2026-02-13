@@ -56,20 +56,21 @@ abstract class U2bBaseActivity : BaseActivity() {
 
     override fun setTabs(activity: FragmentActivity?, tabLayout: TabLayout, containerId: Int) {
         val tabText = arrayOf(getString(R.string.search_videos), getString(R.string.my_favorites))
+        val act = activity ?: return
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     when (it.position) {
                         0-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
-                            activity?.supportFragmentManager?.beginTransaction()?.apply {
+                            act.supportFragmentManager.beginTransaction().apply {
                                 replace(containerId, searchFragment, SEARCH_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         1-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
-                            activity?.supportFragmentManager?.beginTransaction()?.apply {
+                            act.supportFragmentManager.beginTransaction().apply {
                                 replace(containerId, u2bPFFragment, U2B_FAV_FRAGMENT_TAG)
                                 commit()
                             }
@@ -106,15 +107,15 @@ abstract class U2bBaseActivity : BaseActivity() {
         LogUtil.d(TAG, "becomeVisible.index = $index")
         LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
         val tabView = tabLayout.getTabAt(index)?.view
-        tabView?.let {
+        tabView?.let { tab ->
             when (index) {
                 0 -> {
                     LogUtil.d(TAG, "becomeVisible.index.0")
-                    it.post { searchFragment.showVideoButton?.requestFocus() }
+                    tab.post { searchFragment.showVideoButton?.requestFocus() }
                 }
                 1 -> {
                     LogUtil.d(TAG, "becomeVisible.index.1")
-                    it.post { u2bPFFragment.showVideoButton?.requestFocus() }
+                    tab.post { u2bPFFragment.showVideoButton?.requestFocus() }
                 }
             }
         }

@@ -64,6 +64,9 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         exitImageButton?.nextFocusUpId = R.id.languageOrderButton
         showVideoButton?.nextFocusUpId = R.id.languageOrderButton
+        singerOrderButton?.nextFocusUpId = selectTab?.view?.id ?: R.id.singerOrderButton
+        selectTab?.view?.nextFocusDownId = R.id.singerOrderButton
+        favoriteTab?.view?.nextFocusDownId = R.id.singerOrderButton
     }
 
     override fun onResume() {

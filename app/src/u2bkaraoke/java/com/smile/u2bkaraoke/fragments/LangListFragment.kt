@@ -159,15 +159,6 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 U2bKKConstants.NewSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.NewSongOrdered")
-                    /*
-                    Intent(act, SongListActivity::class.java).let {
-                        it.putExtra(Constants.OrderedFrom, Constants.NewSongLanguageOrdered)
-                        it.putExtra(Constants.SongListTitle,
-                            languageTitle + " " + getString(R.string.newString))
-                        it.putExtra(Constants.LanguageParcelable, language)
-                        act.startActivity(it)
-                    }
-                    */
                     val nFragment = SongListFragment().apply {
                         arguments = Bundle().apply {
                             putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.NewSongLanguageOrdered)
@@ -180,15 +171,6 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 U2bKKConstants.HotSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.HotSongOrdered")
-                    /*
-                    Intent(act, SongListActivity::class.java).let {
-                        it.putExtra(Constants.OrderedFrom, Constants.HotSongLanguageOrdered)
-                        it.putExtra(Constants.SongListTitle,
-                            languageTitle + " " + act.getString(R.string.hotString))
-                        it.putExtra(Constants.LanguageParcelable, language)
-                        act.startActivity(it)
-                    }
-                    */
                     val nFragment = SongListFragment().apply {
                         arguments = Bundle().apply {
                             putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.HotSongLanguageOrdered)
@@ -201,6 +183,13 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
             }
         }
+    }
+
+    override fun nextFocusUpId(v: View) {
+        selectTab?.view?.nextFocusDownId = R.id.languageListRecyclerView
+        favoriteTab?.view?.nextFocusDownId = R.id.languageListRecyclerView
+        // The following line does not work
+        v.nextFocusUpId = selectTab?.view?.id ?: R.id.languageListRecyclerView
     }
 
     private inner class MyRestApi : U2bKkRestApiAsync<LanguageList>() {

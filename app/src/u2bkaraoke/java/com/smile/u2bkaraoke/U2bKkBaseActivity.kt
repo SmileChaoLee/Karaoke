@@ -1,36 +1,34 @@
 package com.smile.u2bkaraoke
 
 import android.app.Activity
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import androidx.annotation.OptIn
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaoke.BaseActivity
+import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.fragments.SongListFragment
 import com.smile.u2bkaraoke.fragments.U2bKKBaseFragment
 import com.smile.u2bkaraoke.fragments.U2bKaOkFragment
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
+import com.smile.u2bplayer.fragments.U2bPlayFavFragment
 import com.smile.u2bplayer.fragments.U2bPlayFragment
 
 @OptIn(UnstableApi::class)
 abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
 
     companion object {
-        private var TAG : String = "U2bKkBaseActivity"
+        private const val TAG = "U2bKkBaseActivity"
     }
 
+    private val u2bPFFragment = U2bPlayFavFragment()
     private val nFragment = U2bKaOkFragment()
-    private var fmContainerId: Int? = null
     var u2bPlayerFragment = U2bPlayFragment()
-
+    private var fmContainerId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +67,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
     // implement interface, TablayoutFragment.TabFragmentFunc
     override fun setTabs(activity: FragmentActivity?, tabLayout: TabLayout, containerId: Int) {
         fmContainerId = containerId
+        val tabText = arrayOf(getString(R.string.selectStr), getString(R.string.my_favorites))
         val act = activity ?: return
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -76,10 +75,25 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
                     when (it.position) {
                         0-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
-                            U2bKaOkUtil.beginTransaction(act.supportFragmentManager,
-                                containerId, nFragment)
+                            supportFragmentManager.apply {
+                                // val curF = findFragmentByTag(U2bKaOkUtil.FRAGMENT_TAG)
+                                val curF = findFragmentById(fmContainerId)
+                                LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0.curF = $curF")
+                                if (curF == null) {
+                                    U2bKaOkUtil.beginTransaction(this@apply,
+                                        fmContainerId, nFragment)
+                                } else {
+                                    if (curF is U2bPlayFavFragment) {   // it might be always
+                                        U2bKaOkUtil.returnToPrevious(act)
+                                    }
+                                }
+                            }
                         }
-
+                        1-> {
+                            LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            U2bKaOkUtil.beginTransaction(supportFragmentManager,
+                                fmContainerId, u2bPFFragment)
+                        }
                         else->{
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.others")
                         }
@@ -94,9 +108,21 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 LogUtil.d(TAG, "OnTabSelectedListener.onTabReselected")
             }
-
         })
 
+        tabLayout.let {
+            it.isFocusable = true
+            U2bKKBaseFragment.selectTab = it.newTab()
+            U2bKKBaseFragment.selectTab?.text = tabText[0]
+            U2bKKBaseFragment.selectTab?.view?.isFocusable = true
+            it.addTab(U2bKKBaseFragment.selectTab!!, true)
+            U2bKKBaseFragment.favoriteTab = it.newTab()
+            U2bKKBaseFragment.favoriteTab?.text = tabText[1]
+            U2bKKBaseFragment.favoriteTab?.view?.isFocusable = true
+            it.addTab(U2bKKBaseFragment.favoriteTab!!)
+        }
+
+        /*
         // the following code must be called after setOnTabSelectedListener
         tabLayout.apply {
             // Set the height of the layout to match your indicator height
@@ -122,6 +148,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
             tab.view.isFocusable = false
             tab.view.isFocusableInTouchMode = false
         }
+        */
     }
 
     override fun becomeVisible(tabLayout: TabLayout) {
@@ -133,12 +160,14 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
             when (index) {
                 0 -> {
                     LogUtil.d(TAG, "becomeVisible.index.0")
-                    fmContainerId?.let { cId ->
-                        supportFragmentManager.findFragmentById(cId)?.let { curF ->
-                            val exitButton = (curF as U2bKKBaseFragment).exitImageButton
-                            exitButton?.post { exitButton.requestFocus() }
-                        }
+                    supportFragmentManager.findFragmentById(fmContainerId)?.let { curF ->
+                        val exitButton = (curF as U2bKKBaseFragment).exitImageButton
+                        exitButton?.post { exitButton.requestFocus() }
                     }
+                }
+                1 -> {
+                    LogUtil.d(TAG, "becomeVisible.index.1")
+                    tab.post { u2bPFFragment.showVideoButton?.requestFocus() }
                 }
             }
         }

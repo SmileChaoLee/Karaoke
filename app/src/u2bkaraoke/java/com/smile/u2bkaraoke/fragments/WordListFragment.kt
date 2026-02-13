@@ -83,7 +83,7 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             mWordList.add(act.getString(R.string.eightWordsOrderString))
             mWordList.add(act.getString(R.string.nineWordsOrderString))
             mWordList.add(act.getString(R.string.tenWordsOrderString))
-            mRecyclerView = findViewById<RecyclerView>(R.id.wordListRecyclerView)
+            mRecyclerView = findViewById(R.id.wordListRecyclerView)
             appCompBuilder
                 .recyclerItemListenerModule(this@WordListFragment)
                 .arraylistModule(mWordList)
@@ -119,16 +119,6 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val word = list[position]
             ScreenUtil.showToast(act, word,
                 textFontSize,Toast.LENGTH_SHORT)
-            /*
-            Intent(act, SongListActivity::class.java).let {
-                it.putExtra(Constants.OrderedFrom, Constants.LanguageWordsOrdered)
-                it.putExtra(Constants.SongListTitle,
-                    "$languageTitle $word")
-                it.putExtra(Constants.LanguageParcelable, mLanguage)
-                it.putExtra(Constants.NumOfWords, position + 1)
-                act.startActivity(it)
-            }
-            */
             val nFragment = SongListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.LanguageWordsOrdered)
@@ -139,5 +129,12 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             }
             U2bKaOkUtil.beginTransaction(fragManager, fragContainerId, nFragment)
         }
+    }
+
+    override fun nextFocusUpId(v: View) {
+        selectTab?.view?.nextFocusDownId = R.id.wordListRecyclerView
+        favoriteTab?.view?.nextFocusDownId = R.id.wordListRecyclerView
+        // The following line does not work
+        v.nextFocusUpId = selectTab?.view?.id ?: R.id.wordListRecyclerView
     }
 }

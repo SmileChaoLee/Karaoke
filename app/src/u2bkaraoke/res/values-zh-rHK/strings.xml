@@ -65,4 +65,5 @@
 
     <string name="songNotReadyYet">歌曲尚未準備好</string>
     <string name="numWords">字部</string>
+    <string name="selectStr">選歌</string>
 </resources>

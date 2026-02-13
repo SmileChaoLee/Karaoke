@@ -206,12 +206,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
         super.onViewCreated(view, savedInstanceState)
 
-        firstPageButton?.nextFocusUpId = R.id.songListRecyclerView
-        previousPageButton?.nextFocusUpId = R.id.songListRecyclerView
-        nextPageButton?.nextFocusUpId = R.id.songListRecyclerView
-        lastPageButton?.nextFocusUpId = R.id.songListRecyclerView
-        setFucusDirection()
-
         appCompBuilder
             .recyclerItemListenerModule(this@SongListFragment)
             .songArrayListModule(songList.songs)
@@ -226,6 +220,11 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     private fun setFucusDirection() {
+        LogUtil.d(TAG, "setFucusDirection")
+        firstPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        previousPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        nextPageButton?.nextFocusUpId = R.id.songListRecyclerView
+        lastPageButton?.nextFocusUpId = R.id.songListRecyclerView
         val showVisible = showVideoButton?.isVisible ?: false
         exitImageButton?.let { exitB ->
             exitB.nextFocusUpId = R.id.nextPageButton
@@ -241,6 +240,20 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             if (showVisible) unB.nextFocusLeftId = R.id.u2bKShowVideoButton
             else unB.nextFocusLeftId = R.id.u2bKExitButton
         }
+        selectTab?.view?.let { tab ->
+            LogUtil.d(TAG, "setFucusDirection.selectTab")
+            tab.nextFocusDownId = R.id.songSearchEditText
+            searchEditText?.nextFocusUpId = tab.id
+        }
+        favoriteTab?.view?.let { tab ->
+            tab.nextFocusDownId = R.id.songSearchEditText
+        }
+    }
+
+    override fun onResume() {
+        LogUtil.i(TAG, "onResume")
+        super.onResume()
+        setFucusDirection()
     }
 
     override fun onDestroy() {
@@ -269,13 +282,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 nIntent.putExtra(U2bKKConstants.SONG_LIST_POSITION, position)
                 nIntent.putExtra(U2bKKConstants.SEARCHED_SONG, song)
                 searchToolLauncher.launch(nIntent)
-                /*
-                Intent(act,U2bKkPlayActivity::class.java).also { intIt ->
-                    intIt.putExtra(U2bKkToConstants.SONG_LIST_POSITION, position)
-                    intIt.putExtra(U2bKkToConstants.SEARCHED_SONG, song)
-                    searchToolLauncher.launch(intIt)
-                }
-                */
             } else {
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (DatabaseUtil.addSongsToFavorites(act,

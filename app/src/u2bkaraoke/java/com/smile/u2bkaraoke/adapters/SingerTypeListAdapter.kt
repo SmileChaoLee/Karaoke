@@ -39,11 +39,14 @@ class SingerTypeListAdapter(
             itemView.setOnClickListener {
                 itemListener.onItemClick(it, bindingAdapterPosition)
             }
+
             itemView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
                 itemListener.onItemViewFocusChanged(
                     v, bindingAdapterPosition, hasFocus
                 )
             }
+
+            itemListener.nextFocusUpId(itemView)
         }
     }
 

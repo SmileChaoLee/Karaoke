@@ -37,6 +37,8 @@ class WordListAdapter(
                     v, bindingAdapterPosition, hasFocus
                 )
             }
+
+            itemListener.nextFocusUpId(itemView)
         }
     }
 

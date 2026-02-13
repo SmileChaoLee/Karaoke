@@ -39,6 +39,8 @@ class LangListAdapter (
                     v, bindingAdapterPosition, hasFocus
                 )
             }
+
+            itemListener.nextFocusUpId(itemView)
         }
     }
 
