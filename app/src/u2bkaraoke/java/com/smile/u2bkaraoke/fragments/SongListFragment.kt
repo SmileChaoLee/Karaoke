@@ -300,11 +300,22 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         }
     }
 
-    private fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
+    private fun playSelectedSongList(songInfos: ArrayList<SongInfo>,
+                                     songPs: ArrayList<Pair<Song, Int>>) {
         mU2bKkFunc?.let {
             if (it.isU2bKkTool()) {
                 playSongs?.playSelectedSongList(songInfos, true)
             } else {
+                // update remote database
+                lifecycleScope.launch(Dispatchers.IO) {
+                    var song: Song
+                    for (songP in songPs) {
+                        song = songP.first
+                        song.orderNum = song.orderNum + 1
+                        val result = U2bKkRestApiSync.getApiSync().updateOneSong(song.id, song)
+                        LogUtil.d(TAG, "playSelectedSongList.result = $result")
+                    }
+                }
                 playSongs?.playSelectedSongList(songInfos, false)
             }
         }
@@ -341,7 +352,8 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     textFontSize, Toast.LENGTH_SHORT)
             } else {
                 val vSongInfos = ArrayList(selectedSongInfos.take(MySingleton.MAX_SONGS))
-                playSelectedSongList(vSongInfos)
+                val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
+                playSelectedSongList(vSongInfos, vSongs)
                 setShowVideoButtonVisibility()
                 setFucusDirection()
             }
