@@ -382,6 +382,18 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         // val fragManager = act.supportFragmentManager
         songList.let { list ->
             val song = list.songs[position]
+            mU2bKkFunc?.let {funcIt ->
+                if (!funcIt.isU2bKkTool()) {
+                    if (song.nMpeg != "00" || song.mMpeg != "00") {
+                        // cannot be selected
+                        val notReadyYet = act.getString(R.string.songNotReadyYet)
+                        ScreenUtil.showToast(act,
+                            "${song.songNa}\n$notReadyYet",
+                            textFontSize, Toast.LENGTH_SHORT)
+                        return
+                    }
+                }
+            }
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
             val songInfo = dataSongToSongInfo(song)
@@ -426,6 +438,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
+        /*  // the code is to filter out the songs that are not ready net
         var baseFilter = "VideoReady+00"
         LogUtil.d(TAG, "$logStr.mU2bKkFunc = $mU2bKkFunc")
         mU2bKkFunc?.let { funcIt ->
@@ -436,6 +449,8 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         } else {
             if (baseFilter.isEmpty()) filterString!! else "$filterString+$baseFilter"
         }
+        */
+        val vFilter = filterString ?: ""
         LogUtil.d(TAG, "$logStr.vFilter = $vFilter")
         act.lifecycleScope.launch(Dispatchers.Main) {
             searchCompleted = false

@@ -63,7 +63,7 @@
     <string name="newString">New</string>
     <string name="hotString">Hot</string>
 
-    <string name="songNotReadyYet">Not Ready Yet</string>
+    <string name="songNotReadyYet">Red Alert\nSong Not Ready Yet</string>
     <string name="numWords">Number of Words</string>
     <string name="selectStr">Select</string>
 
