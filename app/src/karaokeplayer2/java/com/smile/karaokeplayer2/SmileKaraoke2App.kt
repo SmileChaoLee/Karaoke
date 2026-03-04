@@ -37,10 +37,10 @@ class SmileKaraoke2App : SmileAppBase() {
         return null // No ads in this version
     }
 
-    override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+    override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.d(TAG, "geNativeTemplate.do nothing")
+        LogUtil.d(TAG, "getNativeTemplate.do nothing")
         return null // No ads in this version
     }
 }

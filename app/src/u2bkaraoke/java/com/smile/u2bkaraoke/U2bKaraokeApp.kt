@@ -52,10 +52,10 @@ class U2bKaraokeApp : SmileAppBase() {
         return null
     }
 
-    override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+    override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.i(TAG, "geNativeTemplate")
+        LogUtil.i(TAG, "getNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
             adMobNativeID,

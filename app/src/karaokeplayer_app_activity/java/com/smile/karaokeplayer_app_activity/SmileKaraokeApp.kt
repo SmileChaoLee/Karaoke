@@ -55,10 +55,10 @@ class SmileKaraokeApp : SmileAppBase() {
         return AdMobInterstitial(applicationContext, adMobInterstitialID)
     }
 
-    override fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+    override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
     : GoogleAdMobNativeTemplate? {
-        LogUtil.d(TAG, "geNativeTemplate")
+        LogUtil.d(TAG, "getNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
             adMobNativeID,

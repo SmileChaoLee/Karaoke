@@ -46,8 +46,8 @@ abstract class SmileAppBase : MultiDexApplication() {
     abstract fun showBannerAd(activity: Activity?, bannerLayout: LinearLayout?)
     : SetBannerAdView?
     abstract fun getInterstitial(): AdMobInterstitial?
-    abstract fun geNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
-                                  nativeAdView: TemplateView?)
+    abstract fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
+                                   nativeAdView: TemplateView?)
     : GoogleAdMobNativeTemplate?
 
     override fun onCreate() {

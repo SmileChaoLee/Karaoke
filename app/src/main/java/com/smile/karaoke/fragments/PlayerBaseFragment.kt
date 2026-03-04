@@ -410,7 +410,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 supportActionBar?.setDisplayShowTitleEnabled(false)
             }
             nativeTemplate = (actIt.application as SmileAppBase)
-                .geNativeTemplate(actIt,
+                .getNativeTemplate(actIt,
                     nativeAdsFrameLayout,
                     nativeAdTemplateView)
         }
@@ -685,8 +685,8 @@ abstract class PlayerBaseFragment : Fragment(),
             closeFragment()
         } else {
             exitAppTimer.start()
-            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp), toastTextSize,
-                ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_SHORT)
+            ScreenUtil.showToast(activity, getString(R.string.backKeyToExitApp),
+                toastTextSize, Toast.LENGTH_SHORT)
         }
     }
 
