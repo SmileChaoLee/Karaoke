@@ -693,15 +693,17 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private fun songSearchTerm(song: Song): String {
         // val searchTerm = "intitle:" + "\"[" + song.songNa + " " + singer1 + " " + singer2 + "]\""
         // singers first then song name
-        var searchTerm = "\""
-        // var searchTerm = ""
+        // var searchTerm = "\""
+        var searchTerm = ""
         if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + song.singer1Na.trim()
         }
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
         }
-        searchTerm = searchTerm + " " + "${song.songNa.trim()}\""
+        // searchTerm = searchTerm + " " + "${song.songNa.trim()}\""
+        searchTerm = searchTerm + " " + song.songNa.trim()
+        /*
         // song name first then singers
         searchTerm = searchTerm + " " + "\"${song.songNa.trim()}"
         if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
@@ -710,7 +712,9 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
         }
-        searchTerm = "$searchTerm\" KTV"
+        */
+        // searchTerm = "$searchTerm\" KTV"
+        searchTerm = "$searchTerm KTV"
         // searchTerm = "$searchTerm\""
 
         LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
