@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -72,6 +73,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     abstract fun hasU2bPlayer(): Boolean
     abstract fun startU2bPlayer()
+    abstract fun startU2bKaraoke()
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
@@ -80,6 +82,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     // the following are for VLCPlayer
     lateinit var vlcLauncher: ActivityResultLauncher<Intent>
     lateinit var u2bPlayerLauncher: ActivityResultLauncher<Intent>
+    lateinit var u2bKaOkLauncher: ActivityResultLauncher<Intent>
     //
     protected val loadingMessage = mutableStateOf("")
     private val backgroundColor = Yellow3
@@ -90,7 +93,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private var isExoEnabled by mutableStateOf(true)
     private var isVlcEnabled by mutableStateOf(true)
-    private var isU2bEnabled by mutableStateOf(true)
+    private var isU2bPlayEnabled by mutableStateOf(true)
+    private var isU2bKaOkEnabled by mutableStateOf(true)
     private val focusRequester = mutableStateOf(FocusRequester())
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
@@ -136,7 +140,14 @@ abstract class BasePlayerActivity : ComponentActivity() {
         u2bPlayerLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
                 result: ActivityResult ->
-            LogUtil.d(TAG, "smileAppsLauncher.receive.result = $result")
+            LogUtil.d(TAG, "u2bPlayerLauncher.receive.result = $result")
+            loadingMessage.value = ""
+        }
+
+        u2bKaOkLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+                result: ActivityResult ->
+            LogUtil.d(TAG, "u2bKaOkLauncher.receive.result = $result")
             loadingMessage.value = ""
         }
 
@@ -216,13 +227,15 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private fun enableMainButtons() {
         isExoEnabled = true
         isVlcEnabled = true
-        isU2bEnabled = true
+        isU2bPlayEnabled = true
+        isU2bKaOkEnabled = true
     }
 
     protected fun disableMainButtons() {
         isExoEnabled = false
         isVlcEnabled = false
-        isU2bEnabled = false
+        isU2bPlayEnabled = false
+        isU2bKaOkEnabled = false
     }
 
     private fun startExoActivity() {
@@ -359,11 +372,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun U2bButton(modifier: Modifier = Modifier,
-                  buttonWidth: Float,
-                  buttonHeight: Float,
-                  textLineHeight: TextUnit) {
-        LogUtil.d(TAG, "U2bButton")
+    fun U2bPlayButton(modifier: Modifier = Modifier,
+                      buttonWidth: Float,
+                      buttonHeight: Float,
+                      textLineHeight: TextUnit) {
+        LogUtil.d(TAG, "U2bPlayButton")
         Column(modifier = modifier,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center) {
@@ -371,7 +384,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
             val isFocused by interactionSource.collectIsFocusedAsState()
             val isClicked = remember { mutableStateOf(false) }
             Button(
-                enabled = isU2bEnabled,
+                enabled = isU2bPlayEnabled,
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
                         isClicked.value = true
@@ -398,6 +411,51 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 )
             )
             { Text(text = getString(R.string.U2bPlayer),
+                lineHeight = textLineHeight,
+                fontSize = KaraokeComposable.textFontSize) }
+        }
+    }
+
+    @Composable
+    fun U2bKaOkButton(modifier: Modifier = Modifier,
+                  buttonWidth: Float,
+                  buttonHeight: Float,
+                  textLineHeight: TextUnit) {
+        LogUtil.d(TAG, "U2bKaOkButton")
+        Column(modifier = modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center) {
+            val interactionSource = remember { MutableInteractionSource() }
+            val isFocused by interactionSource.collectIsFocusedAsState()
+            val isClicked = remember { mutableStateOf(false) }
+            Button(
+                enabled = isU2bKaOkEnabled,
+                onClick = {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        isClicked.value = true
+                        delay(200)
+                        startU2bKaraoke()
+                        isClicked.value = false
+                    }
+                },
+                modifier = Modifier
+                    .width(width = buttonWidth.dp)
+                    .height(height = buttonHeight.dp)
+                    .background(color = buttonBackground),
+                interactionSource = interactionSource,
+                colors = ButtonColors(
+                    containerColor =
+                        if (!isClicked.value) buttonContainerColor
+                        else Color.Cyan,
+                    disabledContainerColor = buttonContainerColor,
+                    contentColor =
+                        if (!isFocused && !isClicked.value)
+                            buttonContentColor
+                        else Color.Red,
+                    disabledContentColor = buttonContentColor
+                )
+            )
+            { Text(text = getString(R.string.U2bKaOk),
                 lineHeight = textLineHeight,
                 fontSize = KaraokeComposable.textFontSize) }
         }
@@ -452,22 +510,35 @@ abstract class BasePlayerActivity : ComponentActivity() {
                 ExoVlcButtons(modifier = Modifier.weight(4.0f),
                     buttonWidth, buttonHeight, textLineHeight)
                 if (hasU2bPlayer()) {
-                    U2bButton(
+                    val butHeight = buttonHeight * 0.7f
+                    U2bPlayButton(
                         modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight
+                        buttonWidth, butHeight, textLineHeight
+                    )
+                    U2bKaOkButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, butHeight, textLineHeight
                     )
                 }
             } else {
                 Row(modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
+                    verticalAlignment = Alignment.Top) {
                     ExoVlcButtons(modifier = Modifier.weight(1.0f),
                         buttonWidth, buttonHeight, textLineHeight)
                     if (hasU2bPlayer()) {
-                        U2bButton(
-                            modifier = Modifier.weight(1.0f),
-                            buttonWidth, buttonHeight, textLineHeight
-                        )
+                        Column( modifier = Modifier.fillMaxHeight().weight(1.0f)
+                            .padding(start = 20.dp, end = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            U2bPlayButton(
+                                modifier = Modifier.weight(1.0f),
+                                buttonWidth, buttonHeight, textLineHeight
+                            )
+                            U2bKaOkButton(
+                                modifier = Modifier.weight(1.0f),
+                                buttonWidth, buttonHeight, textLineHeight
+                            )
+                        }
                     }
                 }
             }

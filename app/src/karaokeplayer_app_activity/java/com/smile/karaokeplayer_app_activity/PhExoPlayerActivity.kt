@@ -29,6 +29,12 @@ open class PhExoPlayerActivity : BasePlayerActivity() {
             AppLinkUtil.U2B_PLAYER_LINK)
     }
 
+    override fun startU2bKaraoke() {
+        LogUtil.i(mTAG, "startU2bKaraoke()")
+        AppLinkUtil.startAppLinkOnStore(this@PhExoPlayerActivity,
+            AppLinkUtil.U2B_KARAOKE_LINK)
+    }
+
     /*
     override fun startU2bPlayer() {
         LogUtil.i(mTAG, "startU2bPlayer")

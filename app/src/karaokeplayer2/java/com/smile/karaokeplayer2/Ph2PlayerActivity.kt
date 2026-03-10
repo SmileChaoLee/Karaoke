@@ -25,8 +25,13 @@ open class Ph2PlayerActivity : BasePlayerActivity() {
     }
 
     override fun startU2bPlayer() {
-        LogUtil.i(mTAG, "startYouTubePlayer()")
         // do nothing
+        LogUtil.i(mTAG, "startYouTubePlayer()")
+    }
+
+    override fun startU2bKaraoke() {
+        // do nothing
+        LogUtil.i(mTAG, "startU2bKaraoke()")
     }
 
     override fun getExoButtonName(): String {

@@ -88,6 +88,7 @@
         3.支援聲道切換\n
         4.支援投射到電視</string>
     <string name="U2bPlayer">優2B播放程式</string>
+    <string name="U2bKaOk">優2B聽歌練唱</string>
     <string name="currentString">目前使用中</string>
     <string name="loadingStr">載入中 …</string>
     <string name="loadingWaitStr">載入中, 清稍後</string>

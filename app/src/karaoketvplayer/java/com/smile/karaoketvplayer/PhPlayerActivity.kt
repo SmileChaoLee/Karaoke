@@ -5,6 +5,7 @@ import com.smile.karaoke.BasePlayerActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaokeplayer.ExoPlayerActivity
+import com.smile.u2bkaraoke.U2bKaOkActivity
 import com.smile.videoplayer.VlcPlayerActivity
 import com.smile.u2bplayer.U2bPlayerActivity
 
@@ -30,6 +31,17 @@ open class PhPlayerActivity : BasePlayerActivity() {
         Intent(
             this@PhPlayerActivity,
             U2bPlayerActivity::class.java
+        ).also {
+            loadingMessage.value = getString(R.string.loadingStr)
+            u2bPlayerLauncher.launch(it)
+        }
+    }
+
+    override fun startU2bKaraoke() {
+        LogUtil.i(mTAG, "startU2bKaraoke")
+        Intent(
+            this@PhPlayerActivity,
+            U2bKaOkActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
             u2bPlayerLauncher.launch(it)
