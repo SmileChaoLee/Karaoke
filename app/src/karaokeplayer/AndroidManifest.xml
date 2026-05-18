@@ -21,7 +21,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="com.smile.karaokeplayer_app_activity.SmileKaraokeApp"
+        android:name="com.smile.karaokeplayer.SmileKaraokeApp"
         android:icon="@drawable/karaoke_app_icon"
         android:banner="@drawable/karaoke_app_tv_icon"
         android:roundIcon="@drawable/karaoke_app_icon"
@@ -32,7 +32,7 @@
             android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
-            android:name="com.smile.karaokeplayer_app_activity.PhExoPlayerActivity"
+            android:name="com.smile.karaokeplayer.PhExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.karaokeplayer_app_activity.TvExoPlayerActivity"
+            android:name="com.smile.karaokeplayer.TvExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -35,7 +35,7 @@
             android:value="ca-app-pub-8354869049759576~5549171584" />
 
         <activity
-            android:name="com.smile.karaokeplayer2.Ph2PlayerActivity"
+            android:name="com.smile.karaokeplayer.PhExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +44,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.karaokeplayer2.Tv2PlayerActivity"
+            android:name="com.smile.karaokeplayer.TvExoPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,18 +58,10 @@
             android:exported="false">
         </activity>
 
-        <activity
-            android:name="com.smile.videoplayer.VlcPlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false">
-        </activity>
-
         <service
             android:name="com.smile.karaokeplayer.services.ExoPlayService"
-            android:exported="false" />
-        <service
-            android:name="com.smile.videoplayer.services.VlcPlayService"
-            android:exported="false" />
+            android:exported="false">
+        </service>
 
     </application>
 

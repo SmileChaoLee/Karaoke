@@ -21,7 +21,7 @@
 
     <application
         tools:replace="android:icon"
-        android:name="com.smile.videoplayer_app_activity.SmileVideoApp"
+        android:name="com.smile.videoplayer.SmileVideoApp"
         android:icon="@drawable/video_app_icon"
         android:banner="@drawable/video_app_tv_icon"
         android:roundIcon="@drawable/video_app_icon"
@@ -32,7 +32,7 @@
             android:value="ca-app-pub-8354869049759576~5376732060" />
 
         <activity
-            android:name="com.smile.videoplayer_app_activity.PhVlcPlayerActivity"
+            android:name="com.smile.videoplayer.PhVlcPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.videoplayer_app_activity.TvVlcPlayerActivity"
+            android:name="com.smile.videoplayer.TvVlcPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

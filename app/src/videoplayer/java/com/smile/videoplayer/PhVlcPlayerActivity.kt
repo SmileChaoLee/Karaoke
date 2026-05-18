@@ -1,14 +1,12 @@
-package com.smile.videoplayer2
+package com.smile.videoplayer
 
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.videoplayer.VlcPlayerActivity
 
-// For Amazon Fire Tablet or Android phone
 @UnstableApi
-open class FPhVlcPlayerActivity : VlcPlayerActivity() {
+open class PhVlcPlayerActivity : VlcPlayerActivity() {
 
-    private var mTAG : String = "FPhVlcPlayerActivity"
+    private var mTAG : String = "PhVlcPlayerActivity"
 
     init {
         LogUtil.d(mTAG, "init")

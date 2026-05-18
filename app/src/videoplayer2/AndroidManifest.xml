@@ -32,7 +32,7 @@
             android:value="ca-app-pub-8354869049759576~5376732060" />
 
         <activity
-            android:name="com.smile.videoplayer2.FPhVlcPlayerActivity"
+            android:name="com.smile.videoplayer.PhVlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -42,7 +42,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.videoplayer2.FTvVlcPlayerActivity"
+            android:name="com.smile.videoplayer.TvVlcPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
