@@ -12,8 +12,4 @@ open class PhU2bKaOkActivity : U2bKaOkActivity() {
         LogUtil.d(mTAG, "init")
         setTag(mTAG)
     }
-
-    override fun needInterstitialAd(): Boolean {
-        return false
-    }
 }

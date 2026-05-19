@@ -62,7 +62,6 @@ abstract class BaseActivity : AppCompatActivity(),
     @OptIn(UnstableApi::class)
     abstract fun getFragment() : PlayerBaseFragment
     abstract fun askPermissions(activity: Activity): Boolean
-    open fun needInterstitialAd() = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG,"onCreate")
@@ -456,10 +455,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     private fun finishThisActivity() {
-        LogUtil.i(TAG, "finishThisActivity = $interstitialAd")
-        if (needInterstitialAd()) {
-            showInterstitialAd()
-        }
+        // LogUtil.i(TAG, "finishThisActivity = $interstitialAd")
         finish()
         /*  // do not use this because it does not work sometimes
             because the executeDismiss does not happen

@@ -12,8 +12,4 @@ open class PhExoPlayerActivity : ExoPlayerActivity() {
         LogUtil.d(mTAG, "init")
         setTag(mTAG)
     }
-
-    override fun needInterstitialAd(): Boolean {
-        return false
-    }
 }

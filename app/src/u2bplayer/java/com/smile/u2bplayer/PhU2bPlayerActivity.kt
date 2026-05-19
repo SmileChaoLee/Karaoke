@@ -12,8 +12,4 @@ open class PhU2bPlayerActivity : U2bPlayerActivity() {
         LogUtil.d(mTAG, "init")
         setTag(mTAG)
     }
-
-    override fun needInterstitialAd(): Boolean {
-        return false
-    }
 }
