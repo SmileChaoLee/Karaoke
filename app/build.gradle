@@ -240,15 +240,15 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'androidx.media:media:1.7.1'
+    implementation 'androidx.core:core-ktx:1.18.0'
+    implementation 'androidx.media:media:1.8.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.annotation:annotation:1.9.1"
+    implementation "androidx.annotation:annotation:1.10.0"
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-ads:23.6.0'
-    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.android.material:material:1.14.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
 
@@ -264,16 +264,16 @@ dependencies {
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.material3:material3' // Or material
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.activity:activity-ktx:1.12.4'
+    implementation 'androidx.activity:activity-ktx:1.13.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
-    implementation 'androidx.activity:activity-compose:1.12.4'
+    implementation 'androidx.activity:activity-compose:1.13.0'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.mediarouter:mediarouter:1.8.1'
     implementation 'androidx.media3:media3-cast:1.10.1'  // for exoplayer and vlcplayer
     // implementation 'com.google.android.gms:play-services-cast-framework:22.1.0'
     // implementation "com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0"
 
-    implementation 'com.android.billingclient:billing-ktx:8.3.0'
+    implementation 'com.android.billingclient:billing-ktx:9.0.0'
 
     implementation 'androidx.tracing:tracing-perfetto-handshake:1.0.1'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
@@ -286,7 +286,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
     // For coroutines (optional, but recommended for modern Android development)
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
     implementation 'io.coil-kt:coil:2.7.0'
@@ -352,7 +352,7 @@ dependencies {
     }
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.10.4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.11.2'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.room:room-testing:2.8.4'
     androidTestImplementation platform('androidx.compose:compose-bom:2026.02.01')
