@@ -1,5 +1,7 @@
 # Project exclude paths
 app/google-services.json
+extensions/vp9/src/main/jni/libvpx/
+extensions/vp9/src/main/obj/
 /.gradle/
 /app/build/
 /app/build/intermediates/javac/exoplayerDebug/classes/
