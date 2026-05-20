@@ -148,6 +148,7 @@ abstract class PlayerBaseFragment : Fragment(),
     private var rightChannelMenuItem: MenuItem? = null
     private var stereoChannelMenuItem: MenuItem? = null
     private var oldMotionEventX = 0.0f
+    private var oldMotionEventY = 0.0f
     private var currentAudioPosition = 0L
     private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
     private var lastFocusView: ImageButton? = null
@@ -1124,11 +1125,13 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnTouchListener { _, motionEvent ->
                 val playService = getPlayService() ?: return@setOnTouchListener false
                 val posX = motionEvent.x    // keep changing if there is new motionEvent
+                val posY = motionEvent.y    // keep changing if there is new motionEvent
                 LogUtil.d(TAG, "setOnTouchListener.motionEvent.x = $posX")
                 when (motionEvent.action) {
                     MotionEvent.ACTION_DOWN -> {
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_DOWN.posX = $posX")
                         oldMotionEventX = posX
+                        oldMotionEventY = posY
                         currentAudioPosition = mPresenter.playingParam.currentAudioPosition
                         mPresenter.removeMsgFromDurationBarHandler()
                     }
@@ -1149,20 +1152,30 @@ abstract class PlayerBaseFragment : Fragment(),
                             LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.out of the screen size")
                             return@run
                         }
+                        if (posY <= 0 || posY >= screenSizeY) {
+                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.out of the screen size")
+                            return@run
+                        }
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.posX = $posX")
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.oldMotionEventX = $oldMotionEventX")
-                        val distance = posX - oldMotionEventX
+                        val disX = posX - oldMotionEventX
+                        val disY = posY - oldMotionEventY
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.screenSizeX = $screenSizeX")
-                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.distance = $distance")
-                        if (abs(distance) <= 20.0f) {
-                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.distance is too small")
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.disX = $disX")
+                        LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.disY = $disY")
+                        if (abs(disX) <= 20.0f) {
+                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.disX is too small")
+                            return@run
+                        }
+                        if (abs(disY) >= 30.0f) {
+                            LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.disY is too big")
                             return@run
                         }
                         val duration = playService.getMediaDuration()
                         LogUtil.d(TAG, "setOnTouchListener.ACTION_MOVE.duration = $duration")
                         if (duration > 0) {
                             // val currentTime = playService.getCurrentPosition()
-                            var progress = currentAudioPosition + ((distance / screenSizeX) * duration).toInt()
+                            var progress = currentAudioPosition + ((disX / screenSizeX) * duration).toInt()
                             if (progress < 0) {
                                 progress = 0
                             } else if (progress > duration - 2000) {
