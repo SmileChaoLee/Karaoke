@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/.cxx/RelWithDebInfo/30e6ho1z/x86_64",
-  "command": "/home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=x86_64-none-linux-android23 --sysroot=/home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DffmpegJNI_EXPORTS -I/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/ffmpeg -I/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O2 -g -DNDEBUG -fPIC -std=gnu++11 -o CMakeFiles/ffmpegJNI.dir/ffmpeg_jni.cc.o -c /home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/ffmpeg_jni.cc",
-  "file": "/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/ffmpeg_jni.cc"
-}
-]
