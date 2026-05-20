@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
@@ -317,6 +316,7 @@ abstract class PlayerBaseFragment : Fragment(),
         return view
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
@@ -377,7 +377,7 @@ abstract class PlayerBaseFragment : Fragment(),
             it.isFocusableInTouchMode = true
             it.requestFocus()
             it.setOnKeyListener {
-                    _, keyCode, event ->
+                    _, keyCode, _ ->
                 LogUtil.d(TAG, "setOnKeyListener.keyCode = $keyCode")
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
                     /*
@@ -478,7 +478,7 @@ abstract class PlayerBaseFragment : Fragment(),
         }
         val id = item.itemId
         if (id == R.id.softDecoderFirst) {
-            // setting if use soft decoder
+            // setting if you use soft decoder
             playingParam.softDecoderFirst = !playingParam.softDecoderFirst
             softDecoderFirstMenuItem?.isChecked = playingParam.softDecoderFirst
             getPlayService()?.switchDecoder()
@@ -636,7 +636,7 @@ abstract class PlayerBaseFragment : Fragment(),
     override fun onConfigurationChanged(newConfig: Configuration) {
         val logStr = "onConfigurationChanged"
         LogUtil.i(TAG, logStr)
-        closeMenu(mainMenu)
+        CommonUtil.closeMenu(mainMenu)
         setOrientationImageButton(newConfig.orientation)
         setButtonsPositionAndSize(newConfig)
         activity?.let {actIt ->
@@ -846,17 +846,6 @@ abstract class PlayerBaseFragment : Fragment(),
         //
     }
 
-    private fun closeMenu(menu: Menu?) {
-        menu?.let {
-            for (i in 0 until it.size) {
-                it[i].subMenu?.let { it2 ->
-                    closeMenu(it2)
-                }
-            }
-            it.close()
-        }
-    }
-
     private fun closeFragment() {
         val pm = mPresenter.playingParam
         LogUtil.i(TAG, "closeFragment.isPlaySingleSong = " + pm.isPlaySingleSong)
@@ -897,7 +886,7 @@ abstract class PlayerBaseFragment : Fragment(),
             supportToolbar?.visibility = View.GONE
             audioControllerView?.visibility = View.GONE
             nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
-            closeMenu(mainMenu)
+            CommonUtil.closeMenu(mainMenu)
             activity?.let { actIt ->
                 val res = actIt.resources
                 if (res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -908,17 +897,6 @@ abstract class PlayerBaseFragment : Fragment(),
             }
         }
         fragmentView?.requestFocus()
-    }
-
-    private fun disableButtonForSometime(button: View) {
-        val seconds = 0.2f  // 200 ms
-        button.isEnabled = false
-        val handler = Handler(Looper.getMainLooper())
-        val runnable = Runnable {
-            handler.removeCallbacksAndMessages(null)
-            button.isEnabled = true
-        }
-        handler.postDelayed(runnable, (seconds * 1000.0).toLong())
     }
 
     open fun switchToMusicVisibility(): Int {
@@ -961,7 +939,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed,
                     currentChannelPlayed)
             }
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = audioTrackImageButton
             fragmentView?.requestFocus()
         }
@@ -982,13 +960,13 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
                 getPlayService()?.setAudioVolume(pIt.currentVolume)
             }
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = volumeImageButton
             fragmentView?.requestFocus()
         }
         previousMediaImageButton?.setOnClickListener {
             mPresenter.playPreviousSong()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = previousMediaImageButton
             fragmentView?.requestFocus()
         }
@@ -999,29 +977,29 @@ abstract class PlayerBaseFragment : Fragment(),
             } else {
                 mPresenter.startPlay()
             }
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = playMediaImageButton
             fragmentView?.requestFocus()
         }
         replayMediaImageButton?.setOnClickListener {
             mPresenter.replayMedia()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = replayMediaImageButton
             fragmentView?.requestFocus()
         }
         stopMediaImageButton?.setOnClickListener {
             mPresenter.stopPlay(MyPlayerConstants.STOPPED_BY_USER)
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = stopMediaImageButton
             fragmentView?.requestFocus()
         }
         nextMediaImageButton?.setOnClickListener {
             mPresenter.playNextSong()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = nextMediaImageButton
             fragmentView?.requestFocus()
         }
-        heartImageButton?.setOnClickListener { it->
+        heartImageButton?.setOnClickListener {
             // add this media file to my favorite
             val index = mPresenter.playingParam.currentSongIndex
             LogUtil.d(TAG,"heartImageButton.onClick.currentSongIndex = $index")
@@ -1040,7 +1018,7 @@ abstract class PlayerBaseFragment : Fragment(),
                     }
                 }
             }
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = heartImageButton
             fragmentView?.requestFocus()
         }
@@ -1052,27 +1030,27 @@ abstract class PlayerBaseFragment : Fragment(),
                 val orientation = if (org == Configuration.ORIENTATION_PORTRAIT)
                     Configuration.ORIENTATION_LANDSCAPE else Configuration.ORIENTATION_PORTRAIT
                 LogUtil.d(TAG, "orientationImageButton.onClick.orientation = $orientation")
-                setScreenOrientation(orientation)
-                disableButtonForSometime(it)
+                CommonUtil.setScreenOrientation(actIt, orientation)
+                CommonUtil.disableButtonForSometime(it)
                 lastFocusView = orientationImageButton
                 fragmentView?.requestFocus()
             }
         }
         repeatImageButton?.setOnClickListener {
             mPresenter.setRepeatSongStatus()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = repeatImageButton
             fragmentView?.requestFocus()
         }
         switchToMusicImageButton?.setOnClickListener {
             mPresenter.switchAudioToMusic()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = switchToMusicImageButton
             fragmentView?.requestFocus()
         }
         switchToVocalImageButton?.setOnClickListener {
             mPresenter.switchAudioToVocal()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = switchToVocalImageButton
             fragmentView?.requestFocus()
         }
@@ -1083,14 +1061,14 @@ abstract class PlayerBaseFragment : Fragment(),
             } else {
                 showPlayerView()
             }
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = hideVideoImageButton
             fragmentView?.requestFocus()
         }
 
         audioChannelImageButton?.setOnClickListener {
             audioChannelButtonListener()
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = audioChannelImageButton
             fragmentView?.requestFocus()
         }
@@ -1102,7 +1080,7 @@ abstract class PlayerBaseFragment : Fragment(),
             softDecoderFirstMenuItem?.isChecked = mPresenter.playingParam.softDecoderFirst
             autoPlayMenuItem?.isChecked = mPresenter.playingParam.isAutoPlay
             setTimerToHideSupportAudioControl()   // reset the timer
-            disableButtonForSometime(it)
+            CommonUtil.disableButtonForSometime(it)
             lastFocusView = actionMenuImageButton
             fragmentView?.requestFocus()
         }
@@ -1125,7 +1103,7 @@ abstract class PlayerBaseFragment : Fragment(),
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
         supportToolbar?.let {
-            it.setOnClickListener { v: View ->
+            it.setOnClickListener { _: View ->
                 LogUtil.i(TAG, "supportToolbar.onClick() is called.")
                 showSupportToolbarAudioControlSetTimer()
                 if (lastFocusView != null) {
@@ -1411,7 +1389,9 @@ abstract class PlayerBaseFragment : Fragment(),
         playBaseFragmentFunc?.baseHidePlayerView()
         mPresenter.playingParam.isPlayerViewVisible = false
         if (deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
-            setScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
+            activity?.let { actIt ->
+                CommonUtil.setScreenOrientation(actIt, Configuration.ORIENTATION_PORTRAIT)
+            }
         }
     }
 
@@ -1432,7 +1412,9 @@ abstract class PlayerBaseFragment : Fragment(),
         mPresenter.playingParam.isPlayerViewVisible = true
         if (deviceType == ScreenUtil.DEVICE_TYPE_PHONE) {
             LogUtil.d(TAG, "showPlayerView.orgOrientation = $orgOrientation")
-            setScreenOrientation(orgOrientation)
+            activity?.let { actIt ->
+                 CommonUtil.setScreenOrientation(actIt, orgOrientation)
+            }
         }
         LogUtil.d(TAG, "showPlayerView.fragmentView?.requestFocus()")
         fragmentView?.requestFocus()
@@ -1495,18 +1477,6 @@ abstract class PlayerBaseFragment : Fragment(),
                 getFavDatabaseName(),true)
         }
         return ArrayList()
-    }
-
-    private fun setScreenOrientation(orientation: Int) {
-        val act = activity ?: return
-        val res = act.resources
-        orgOrientation = res.configuration.orientation
-        LogUtil.d(TAG, "setScreenOrientation.orgOrientation = $orgOrientation")
-        activity?.requestedOrientation = when (orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            Configuration.ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
     }
 
     private fun setOrientationImageButton(orientation : Int) {
