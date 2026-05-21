@@ -696,7 +696,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         // var searchTerm = "\""
         var searchTerm = ""
         if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
-            searchTerm = searchTerm + song.singer1Na.trim()
+            searchTerm += song.singer1Na.trim()
         }
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
