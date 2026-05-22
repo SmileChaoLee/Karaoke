@@ -63,7 +63,7 @@ abstract class ItemsBaseFragment : Fragment() {
         view.isFocusableInTouchMode = true
         view.requestFocus()
         view.setOnKeyListener {
-                _, keyCode, event ->
+                _, _, _ ->
             showVideoButton?.post { showVideoButton?.requestFocus() }
             return@setOnKeyListener false
         }

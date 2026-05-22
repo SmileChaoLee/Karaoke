@@ -1,6 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.core.net.toUri
 import com.smile.karaoke.R
