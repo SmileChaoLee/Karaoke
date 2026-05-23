@@ -7,7 +7,7 @@
     android:baselineAligned="false"
     android:focusable="true"
     android:clickable="true"
-    android:nextFocusUp="@id/searchFileTextView"
+    android:nextFocusUp="@id/fileSearchEditText"
     android:background="@android:color/black">
 
     <android.widget.ImageView

@@ -74,7 +74,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         LogUtil.i(TAG, "onViewCreated")
 
         view.let {
-            searchEditTextView = it.findViewById(R.id.searchEditTextView)
+            searchEditTextView = it.findViewById(R.id.videoSearchEditText)
             ScreenUtil.resizeTextSize(searchEditTextView, textFontSize)
             searchButton = it.findViewById(R.id.searchButton)
             selectAllButton = it.findViewById(R.id.searchSelectAllButton)

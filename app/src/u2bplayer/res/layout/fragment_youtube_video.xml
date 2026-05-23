@@ -38,7 +38,7 @@
                 android:src="@drawable/search"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 tools:ignore="NestedWeights">
@@ -54,7 +54,7 @@
                 android:src="@drawable/select_all"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -70,7 +70,7 @@
                 android:src="@drawable/unselect"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -85,7 +85,7 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -100,7 +100,7 @@
                 android:src="@drawable/add_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -116,7 +116,7 @@
                 android:src="@drawable/show_video"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -138,14 +138,14 @@
                 android:src="@drawable/power_button"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchEditTextView"
+                android:nextFocusDown="@id/videoSearchEditText"
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/searchEditTextViewLayout"
+        android:id="@+id/videoSearchEditTextLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -154,17 +154,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <EditText
-            android:id="@+id/searchEditTextView"
+            android:id="@+id/videoSearchEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints=""
+            android:hint="@string/search_videos"
             android:inputType="textMultiLine"
             android:textColor="@color/my_editbox_textcolor"
             android:textCursorDrawable="@drawable/my_custom_cursor"
             android:focusable="true"
             android:clickable="true"
-            android:nextFocusRight="@id/searchEditTextView"
-            android:nextFocusLeft="@id/searchEditTextView"
+            android:nextFocusRight="@id/videoSearchEditText"
+            android:nextFocusLeft="@id/videoSearchEditText"
             android:background="@drawable/my_editbox_background"
             tools:ignore="LabelFor">
         </EditText>
@@ -174,7 +175,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/searchEditTextViewLayout"
+        app:layout_constraintTop_toBottomOf="@id/videoSearchEditTextLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

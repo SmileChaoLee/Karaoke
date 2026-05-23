@@ -7,7 +7,7 @@
     android:baselineAligned="false"
     android:focusable="true"
     android:clickable="true"
-    android:nextFocusUp="@+id/searchEditTextView"
+    android:nextFocusUp="@+id/videoSearchEditText"
     android:background="@android:color/black">
 
     <android.widget.ImageView

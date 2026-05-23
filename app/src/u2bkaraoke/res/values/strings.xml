@@ -66,5 +66,7 @@
     <string name="songNotReadyYet">Red Alert\nSong Not Ready Yet</string>
     <string name="numWords">Number of Words</string>
     <string name="selectStr">Select</string>
+    <string name="search_singers">Search Singers</string>
+    <string name="search_songs">Search Songs</string>
 
 </resources>

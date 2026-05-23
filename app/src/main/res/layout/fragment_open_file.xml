@@ -38,7 +38,7 @@
                 android:src="@drawable/back_key"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 tools:ignore="NestedWeights">
@@ -54,7 +54,7 @@
                 android:src="@drawable/select_all"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -70,7 +70,7 @@
                 android:src="@drawable/unselect"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -85,7 +85,7 @@
                 android:src="@drawable/hard_decoder"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -100,7 +100,7 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -115,7 +115,7 @@
                 android:src="@drawable/add_image"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -131,7 +131,7 @@
                 android:src="@drawable/show_video"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center"
                 android:layout_weight="1">
             </ImageButton>
@@ -153,7 +153,7 @@
                 android:src="@drawable/power_button"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@id/searchFileTextView"
+                android:nextFocusDown="@id/fileSearchEditText"
                 android:layout_gravity="center">
             </ImageButton>
         </LinearLayout>
@@ -172,7 +172,7 @@
         app:layout_constraintEnd_toEndOf="parent">
     </TextView>
     <EditText
-        android:id="@+id/searchFileTextView"
+        android:id="@+id/fileSearchEditText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:autofillHints=""
@@ -184,8 +184,8 @@
         android:focusable="true"
         android:clickable="true"
         android:nextFocusUp="@id/showVideoImageButton"
-        android:nextFocusRight="@id/searchFileTextView"
-        android:nextFocusLeft="@id/searchFileTextView"
+        android:nextFocusRight="@id/fileSearchEditText"
+        android:nextFocusLeft="@id/fileSearchEditText"
         android:nextFocusDown="@id/openFilesRecyclerView"
         android:background="@drawable/my_editbox_background"
         tools:ignore="LabelFor"
@@ -198,7 +198,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@+id/searchFileTextView"
+        app:layout_constraintTop_toBottomOf="@+id/fileSearchEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

@@ -66,4 +66,7 @@
     <string name="songNotReadyYet">紅色警告\n歌曲尚未準備好</string>
     <string name="numWords">字部</string>
     <string name="selectStr">選歌</string>
+    <string name="search_singers">搜尋歌星</string>
+    <string name="search_songs">搜尋歌曲</string>
+
 </resources>
