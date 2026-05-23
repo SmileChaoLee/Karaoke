@@ -6,11 +6,7 @@ app/google-services.json
 .idea/modules/app/KaraokePlayer.app.main.iml
 .idea/modules/app/KaraokePlayer.app.unitTest.iml
 .idea/workspace.xml
-extensions/av1/src/main/jni/cpu_features/
-extensions/av1/src/main/jni/libgav1
 extensions/ffmpeg/.cxx/
-extensions/vp9/src/main/jni/libvpx/
-extensions/vp9/src/main/jni/libvpx_android_configs/
 extensions/vp9/src/main/obj/
 /.gradle/
 /app/build/
