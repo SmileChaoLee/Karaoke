@@ -18,7 +18,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
+rootProject.name = 'KaraokePlayer'
 include ':app', ':extension-ffmpeg', ':extension-vp9', ':extension-flac', ':extension-opus', ':extension-av1'
 project(':extension-ffmpeg').projectDir = new File('extensions/ffmpeg')
 project(':extension-vp9').projectDir = new File('extensions/vp9')

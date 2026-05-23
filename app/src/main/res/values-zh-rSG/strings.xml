@@ -72,6 +72,7 @@
     <string name="files_picker">檔案選擇</string>
     <string name="start_picker">開啟檔案選擇</string>
     <string name="search_videos">搜尋視頻</string>
+    <string name="search_files">搜尋檔案</string>
     <string name="unknown">不知道</string>
     <string name="notFound">沒找到</string>
     <string name="add_to_favorites">加入我的最爱</string>
