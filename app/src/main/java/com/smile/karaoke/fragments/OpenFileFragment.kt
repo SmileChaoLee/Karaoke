@@ -4,14 +4,20 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.scale
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLayoutManager
@@ -21,8 +27,10 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.ui_states.OpenFileUiState
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.karaoke.viewmodels.OpenFileViewModel
 import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +46,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     abstract fun decoderButtonVisibility(): Int
 
     private var pathTextView: TextView? = null
+    private var fileSearchEditText: EditText? = null
     private var filesRecyclerView : RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null
@@ -48,6 +57,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
     private val selectedSongs : ArrayList<SongInfo> = ArrayList()
+    private val viewModel: OpenFileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -108,11 +118,83 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             showVideoButton?.visibility = View.VISIBLE
             exitImageButton = it.findViewById(R.id.exitImageButton)
             exitImageButton?.visibility = View.VISIBLE
+            fileSearchEditText = it.findViewById(R.id.fileSearchEditText)
+            fileSearchEditText?.let { sEt ->
+                ScreenUtil.resizeTextSize(sEt, textFontSize)
+                sEt.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
+                        LogUtil.d(TAG, "addTextChangedListener.beforeTextChanged")
+                    }
+                    override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
+                        LogUtil.d(TAG, "addTextChangedListener.onTextChanged")
+                    }
+                    override fun afterTextChanged(editable: Editable) {
+                        LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
+                        val content = editable.toString().trim()
+                        if (content.isEmpty()) {
+                            searchCurrentFolder()
+                        } else {
+                            searchingStartView()
+                            viewModel.searchFiles(activity, content)
+                        }
+                    }
+                })
+            }
         }
+
+        // work with viewmodel
+        // Launch a coroutine scoped to the Fragment's View lifecycle
+        viewLifecycleOwner.lifecycleScope.launch {
+            // repeatOnLifecycle suspends until the Lifecycle hits the STARTED state,
+            // and automatically cancels collection when it drops below STARTED.
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    // Update your RecyclerView adapter or UI here
+                    updateMviScreen(state)
+                }
+            }
+        }
+        //
+
         searchCurrentFolder()
         initFilesRecyclerView()
 
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun updateMviScreen(state: OpenFileUiState) {
+        val logStr = "updateMviScreen"
+        LogUtil.d(TAG, logStr)
+        when (state) {
+            is OpenFileUiState.Initial -> {
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.Initial")
+                // Handle the initial state if needed
+            }
+            is OpenFileUiState.StartLoading -> {
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.StartLoading")
+                searchingStartView()
+            }
+            is OpenFileUiState.FinishLoading -> {
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.FinishLoading")
+                selectedSongs.clear()
+                MySingleton.fileList.clear()
+                MySingleton.fileList.addAll(state.list)
+                updateRecyclerView()
+            }
+            is OpenFileUiState.ShowToast -> {
+                // Handle the toast event
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.ShowToast")
+                when (state.event) {
+                    OpenFileUiState.EXCESS_MAX -> {
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.excess_max) +
+                                    " ${MySingleton.MAX_FILES}", textFontSize,
+                            Toast.LENGTH_SHORT
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -150,13 +232,18 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             backKeyButton?.post { backKeyButton?.requestFocus() }
         } else {
             filesRecyclerView?.visibility = View.VISIBLE
-            filesRecyclerView?.post { filesRecyclerView?.requestFocus() }
+            // filesRecyclerView?.post { filesRecyclerView?.requestFocus() }
+            // filesRecyclerView?.clearFocus()
+            fileSearchEditText?.postDelayed(
+                { fileSearchEditText?.requestFocus() },
+                50
+            )
         }
     }
 
     private fun updateRecyclerView() {
+        searchingFinishView()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
-        loadingMsgTextView?.visibility = View.GONE
         setProperFocus()
     }
 
@@ -196,12 +283,21 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         selectedSongs.clear()
     }
 
-    fun searchCurrentFolder() {
-        val logStr = "searchCurrentFolder"
-        LogUtil.i(TAG, logStr)
+    private fun searchingStartView() {
         searchCompleted = false
         filesRecyclerView?.visibility = View.GONE
         loadingMsgTextView?.visibility = View.VISIBLE
+    }
+    private fun searchingFinishView() {
+        searchCompleted = true
+        filesRecyclerView?.visibility = View.VISIBLE
+        loadingMsgTextView?.visibility = View.GONE
+    }
+
+    fun searchCurrentFolder() {
+        val logStr = "searchCurrentFolder"
+        LogUtil.i(TAG, logStr)
+        searchingStartView()
         lifecycleScope.launch(Dispatchers.IO) {
             val tempList: ArrayList<FileDescription> = ArrayList()
             MySingleton.currentPath.let {
@@ -270,26 +366,12 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             MySingleton.fileList.clear()
             MySingleton.fileList.addAll(tempList)
             LogUtil.d(TAG, "$logStr.FileDesList.fileList.size = ${MySingleton.fileList.size}")
-
             // Update the UI
             withContext(Dispatchers.Main) {
                 pathTextView?.text = MySingleton.currentPath
                 // myRecyclerViewAdapter?.myNotifyDataSetChanged()
                 updateRecyclerView()
-                // filesRecyclerView?.visibility = View.VISIBLE
-                // loadingMsgTextView?.visibility = View.GONE
-                /*
-                if (MySingleton.fileList.isEmpty()) {
-                    LogUtil.d(TAG, "$logStr.MySingleTon.fileList is empty")
-                    filesRecyclerView?.visibility = View.GONE
-                    val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
-                    val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                    LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
-                    backKeyButton?.requestFocus()
-                }
-                */
             }
-            searchCompleted = true  // searching thread finished
         }
     }
 
