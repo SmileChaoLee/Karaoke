@@ -156,6 +156,10 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
         }
 
+        fileSearchEditText?.post {
+            LogUtil.d(TAG, "fileSearchEditText.setText()")
+            fileSearchEditText?.setText("")
+        }
         initFilesRecyclerView()
         viewModel.handleIntent(
             OpenFileUiIntent.SearchCurrentFolder(
@@ -282,6 +286,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         } else {
             LogUtil.d(TAG, "onItemClick.fileDes.file is not file")
             MySingleton.currentPath = fileDes.file.path
+            fileSearchEditText?.setText("")
             viewModel.handleIntent(
                 OpenFileUiIntent.SearchCurrentFolder(
                     activity, videoThumbNailsWidth, videoThumbNailsHeight
@@ -323,6 +328,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     if (index >= 0 ) MySingleton.currentPath.substring(0, index) else "/"
                 }
             if (MySingleton.currentPath.isEmpty()) MySingleton.currentPath = "/"
+            fileSearchEditText?.setText("")
             viewModel.handleIntent(
                 OpenFileUiIntent.SearchCurrentFolder(
                     activity, videoThumbNailsWidth, videoThumbNailsHeight
