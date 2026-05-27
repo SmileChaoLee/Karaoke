@@ -10,18 +10,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.scale
 import androidx.lifecycle.lifecycleScope
 import com.smile.karaoke.R
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.PlayMyFavorites
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
+import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.ContentUriUtil
+import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.smilelibraries.utilities.ScreenUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SafPickerFragment: ComOpenFragment() {
 
@@ -64,7 +70,7 @@ class SafPickerFragment: ComOpenFragment() {
                             LogUtil.e(TAG, "openDocumentLauncher.setDataSource.Exception:",ex)
                         }
                         if (bm == null) bm = dirBm
-                        bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                        bm = bm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                         MySingleton.fileList.add(FileDescription(file, bm, true))
                     }
                     LogUtil.d(TAG, "openDocumentLauncher.size = ${MySingleton.fileList.size}")
@@ -120,5 +126,23 @@ class SafPickerFragment: ComOpenFragment() {
     override fun setButtonsSize() {
         LogUtil.i(TAG, "setButtonsSize")
         // do nothing, just follow the xml view file
+    }
+
+    private suspend fun startPlaySelectedSong(songs: ArrayList<SongInfo>) {
+        LogUtil.d(TAG, "startPlaySelectedSong")
+        val act = activity ?: return
+        if (songs.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                ScreenUtil.showToast(act,
+                    getString(R.string.noFilesSelectedString),
+                    textFontSize, Toast.LENGTH_SHORT)
+            }
+        } else {
+            // Check if song is in database
+            val vSongs = ArrayList(songs.take(MySingleton.MAX_SONGS))
+            DatabaseUtil.getSongsToPlay(act,
+                CommonConstants.FAVORITE_DB_NAME, vSongs)
+            playSongs?.playSelectedSongList(vSongs)
+        }
     }
 }

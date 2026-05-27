@@ -25,8 +25,8 @@ abstract class ItemsBaseFragment : Fragment() {
     var searchCompleted = true
     var fragmentView : View? = null
     var textFontSize = 0.0f
-    var videoThumbnailsWidth = 0
-    var videoThumbnailsHeight = 0
+    var videoThumbNailsWidth = 0
+    var videoThumbNailsHeight = 0
     var buttonLayout: LinearLayout? = null
     var buttonLayoutWidthPercent = 1.0f
     var showVideoButton: ImageButton? = null
@@ -44,8 +44,8 @@ abstract class ItemsBaseFragment : Fragment() {
             textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
             val screen = ScreenUtil.getScreenSize(it)
             val aWidth = screen.x.toFloat() / gridSpanCount().toFloat()
-            videoThumbnailsWidth = aWidth.toInt()
-            videoThumbnailsHeight = videoThumbnailsWidth
+            videoThumbNailsWidth = aWidth.toInt()
+            videoThumbNailsHeight = videoThumbNailsWidth
             if (it is PlaySongs) playSongs = it
             LogUtil.d(TAG, "onCreate.playSongs = $playSongs")
         }

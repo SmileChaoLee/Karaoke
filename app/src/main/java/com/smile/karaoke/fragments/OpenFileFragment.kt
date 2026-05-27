@@ -1,8 +1,5 @@
 package com.smile.karaoke.fragments
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,8 +10,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.graphics.scale
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,20 +18,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.adapters.OpenFilesRecyclerViewAdapter
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
-import com.smile.karaoke.models.SongInfo
+import com.smile.karaoke.ui_intents.OpenFileUiIntent
 import com.smile.karaoke.ui_states.OpenFileUiState
-import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.viewmodels.OpenFileViewModel
 import com.smile.smilelibraries.utilities.ScreenUtil
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 
 abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
 
@@ -56,16 +46,23 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
     private var addToFavoriteButton: ImageButton? = null
-    private val selectedSongs : ArrayList<SongInfo> = ArrayList()
-    private val viewModel: OpenFileViewModel by viewModels()
+
+    /**
+     * Do not use viewModels() because the viewModelScope will be killed
+     * when switching tab away from this fragment because viewModelScope
+     * depending on the lifecycle of the fragment. The viewModelScope is not active
+     * when switching tab back to this fragment
+     * Important:
+     * Use activityViewModels() to share the same viewModel and viewModelScope with the activity
+     * because the lifecycle of the activity is longer than the fragment
+     */
+    private val viewModel: OpenFileViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
-        // FileDesList.currentPath = Environment.getExternalStorageDirectory().toString()
         LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleton.currentPath}")
-
         activity?.applicationContext?.externalCacheDirs?.let {
             LogUtil.d(TAG, "externalCacheDirs = $it, externalCacheDirs.size = ${it.size}")
             MySingleton.rootPathSet.clear()
@@ -122,20 +119,24 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             fileSearchEditText?.let { sEt ->
                 ScreenUtil.resizeTextSize(sEt, textFontSize)
                 sEt.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
-                        LogUtil.d(TAG, "addTextChangedListener.beforeTextChanged")
-                    }
-                    override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {
-                        LogUtil.d(TAG, "addTextChangedListener.onTextChanged")
-                    }
+                    override fun beforeTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
+                    override fun onTextChanged(charSequence: CharSequence?, i: Int, i1: Int, i2: Int) {}
                     override fun afterTextChanged(editable: Editable) {
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
+                        if (!sEt.hasFocus()) {
+                            LogUtil.d(TAG, "addTextChangedListener.no focus")
+                            return
+                        }
                         val content = editable.toString().trim()
                         if (content.isEmpty()) {
-                            searchCurrentFolder()
+                            viewModel.handleIntent(
+                                OpenFileUiIntent.SearchCurrentFolder(
+                                    activity, videoThumbNailsWidth, videoThumbNailsHeight
+                                )
+                            )
                         } else {
                             searchingStartView()
-                            viewModel.searchFiles(activity, content)
+                            viewModel.handleIntent(OpenFileUiIntent.SearchFiles(activity, content))
                         }
                     }
                 })
@@ -154,10 +155,13 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 }
             }
         }
-        //
 
-        searchCurrentFolder()
         initFilesRecyclerView()
+        viewModel.handleIntent(
+            OpenFileUiIntent.SearchCurrentFolder(
+                activity, videoThumbNailsWidth, videoThumbNailsHeight
+            )
+        )
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -176,9 +180,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             }
             is OpenFileUiState.FinishLoading -> {
                 LogUtil.d(TAG, "$logStr.OpenFileUiState.FinishLoading")
-                selectedSongs.clear()
-                MySingleton.fileList.clear()
-                MySingleton.fileList.addAll(state.list)
+                pathTextView?.text = MySingleton.currentPath
                 updateRecyclerView()
             }
             is OpenFileUiState.ShowToast -> {
@@ -192,7 +194,23 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                             Toast.LENGTH_SHORT
                         )
                     }
+                    OpenFileUiState.NO_FILES_SELECTED -> {
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.noFilesSelectedString),
+                            textFontSize, Toast.LENGTH_SHORT
+                        )
+                    }
+                    OpenFileUiState.ADD_TO_FAVORITES -> {
+                        ScreenUtil.showToast(
+                            activity, getString(R.string.add_to_favorites),
+                            textFontSize, Toast.LENGTH_SHORT
+                        )
+                    }
                 }
+            }
+            is OpenFileUiState.UpdateSelectedSong -> {
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.UpdateSelectedSong")
+                myRecyclerViewAdapter?.myNotifyItemChanged(state.position)
             }
         }
     }
@@ -250,37 +268,19 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
-        val fileDes = MySingleton.fileList[position]
-        if (fileDes.file.isFile) {
-            var isUpdated = false
-            if (fileDes.selected) {
-                selectedSongs.remove(fileDescriptionToSongInfo(fileDes))
-                fileDes.selected = false
-                isUpdated = true
-            } else {
-                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
-                    ScreenUtil.showToast(
-                        activity, getString(R.string.excess_max) +
-                                " ${MySingleton.MAX_SONGS}", textFontSize,
-                        Toast.LENGTH_SHORT)
-                } else {
-                    selectedSongs.add(fileDescriptionToSongInfo(fileDes))
-                    fileDes.selected = true
-                    isUpdated = true
-                }
-            }
-            if (isUpdated) myRecyclerViewAdapter?.myNotifyItemChanged(position)
-        } else {
-            MySingleton.currentPath = fileDes.file.path
-            searchCurrentFolder()
-        }
+        // val fileDes = MySingleton.fileList[position]
+        viewModel.handleIntent(
+            OpenFileUiIntent.SongOnClicked(
+                position, activity, videoThumbNailsWidth, videoThumbNailsHeight
+            )
+        )
     }
 
-    fun clearFileList() {
+    private fun clearFileList() {
         MySingleton.fileList.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
         filesRecyclerView?.visibility = View.GONE
-        selectedSongs.clear()
+        viewModel.handleIntent(OpenFileUiIntent.ClearSelectedSongs)
     }
 
     private fun searchingStartView() {
@@ -292,87 +292,6 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         searchCompleted = true
         filesRecyclerView?.visibility = View.VISIBLE
         loadingMsgTextView?.visibility = View.GONE
-    }
-
-    fun searchCurrentFolder() {
-        val logStr = "searchCurrentFolder"
-        LogUtil.i(TAG, logStr)
-        searchingStartView()
-        lifecycleScope.launch(Dispatchers.IO) {
-            val tempList: ArrayList<FileDescription> = ArrayList()
-            MySingleton.currentPath.let {
-                var index = 0
-                val dirBm = BitmapFactory.decodeResource(resources, R.drawable.folder_open_icon)
-                if (it == "/") {
-                    val bm = dirBm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
-                    for (element in MySingleton.rootPathSet) {
-                        LogUtil.d(TAG, "$logStr.element = $element")
-                        tempList.add(FileDescription(File(element), bm, false))
-                        index++
-                        if (index >= MySingleton.MAX_FILES) {
-                            // excess the max
-                            withContext(Dispatchers.Main) {
-                                ScreenUtil.showToast(
-                                    activity, getString(R.string.excess_max) +
-                                            " ${MySingleton.MAX_FILES}", textFontSize,
-                                    Toast.LENGTH_SHORT
-                                )
-                            }
-                            break
-                        }
-                    }
-                } else {
-                    try {
-                        val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
-                        File(it).listFiles()?.also { fIt ->
-                            LogUtil.d(TAG, "$logStr.file.list().size() = ${fIt.size}")
-                            for (f in fIt) {
-                                LogUtil.d(TAG, "$logStr.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
-                                var bm: Bitmap? = null
-                                if (!f.isDirectory) {
-                                    try {
-                                        mediaRetriever.setDataSource(f.path)
-                                        bm = mediaRetriever.getFrameAtTime(0,
-                                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                    } catch (ex: Exception) {
-                                        LogUtil.e(TAG, "$logStr.setDataSource.Exception:", ex)
-                                    }
-                                    if (bm == null) bm = fileBm
-                                } else {
-                                    bm = dirBm
-                                }
-                                bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
-                                tempList.add(FileDescription(f, bm, false))
-                                index++
-                                if (index >= MySingleton.MAX_FILES) {
-                                    // excess the max
-                                    withContext(Dispatchers.Main) {
-                                        ScreenUtil.showToast(
-                                            activity, getString(R.string.excess_max) +
-                                                    " ${MySingleton.MAX_FILES}", textFontSize,
-                                            Toast.LENGTH_SHORT
-                                        )
-                                    }
-                                    break
-                                }
-                            }
-                        }
-                    } catch (ex: Exception) {
-                        LogUtil.e(TAG, "$logStr.Exception", ex )
-                    }
-                }
-            }
-            selectedSongs.clear()
-            MySingleton.fileList.clear()
-            MySingleton.fileList.addAll(tempList)
-            LogUtil.d(TAG, "$logStr.FileDesList.fileList.size = ${MySingleton.fileList.size}")
-            // Update the UI
-            withContext(Dispatchers.Main) {
-                pathTextView?.text = MySingleton.currentPath
-                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                updateRecyclerView()
-            }
-        }
     }
 
     // overriding the methods of ItemsBaseFragment
@@ -389,7 +308,11 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                     if (index >= 0 ) MySingleton.currentPath.substring(0, index) else "/"
                 }
             if (MySingleton.currentPath.isEmpty()) MySingleton.currentPath = "/"
-            searchCurrentFolder()
+            viewModel.handleIntent(
+                OpenFileUiIntent.SearchCurrentFolder(
+                    activity, videoThumbNailsWidth, videoThumbNailsHeight
+                )
+            )
         }
         selectAllButton?.setOnClickListener {
             val logStr = "selectAllButton.setOnClickListener"
@@ -399,7 +322,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 MySingleton.fileList[i].run {
                     if (!file.isDirectory && !selected) {
                         selected = true
-                        myRecyclerViewAdapter?.notifyItemChanged(i)
+                        myRecyclerViewAdapter?.myNotifyItemChanged(i)
                     }
                 }
             }
@@ -412,7 +335,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 MySingleton.fileList[i].run {
                     if (!file.isDirectory && selected) {
                         selected = false
-                        myRecyclerViewAdapter?.notifyItemChanged(i)
+                        myRecyclerViewAdapter?.myNotifyItemChanged(i)
                     }
                 }
             }
@@ -430,34 +353,14 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             val logStr = "playSelectedButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            lifecycleScope.launch(Dispatchers.Main) {
-                // open the files to play
-                startPlaySelectedSong(selectedSongs)
-            }
+            viewModel.handleIntent(OpenFileUiIntent.AddToFavorites(activity))
+            viewModel.handleIntent(OpenFileUiIntent.StartPlaySelectedSong(activity, playSongs))
         }
         addToFavoriteButton?.setOnClickListener {
             val logStr = "addToFavoriteButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            val act = activity ?: return@setOnClickListener
-            if (selectedSongs.isEmpty()) {
-                ScreenUtil.showToast(act,
-                    getString(R.string.noFilesSelectedString),
-                    textFontSize,Toast.LENGTH_SHORT)
-            } else {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    if (DatabaseUtil.addSongsToFavorites(act,
-                            CommonConstants.FAVORITE_DB_NAME, selectedSongs)) {
-                        withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(
-                                act,
-                                getString(R.string.add_to_favorites),
-                                textFontSize, Toast.LENGTH_SHORT
-                            )
-                        }
-                    }
-                }
-            }
+            viewModel.handleIntent(OpenFileUiIntent.AddToFavorites(activity))
         }
 
         super.setClickListeners()
@@ -476,7 +379,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     // end of overriding the methods of ItemsBaseFragment
 
     private fun initFilesRecyclerView() {
-        LogUtil.i(TAG, "initFilesRecyclerView() is called")
+        LogUtil.i(TAG, "initFilesRecyclerView")
         activity?.let {
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
                 this, MySingleton.fileList, textFontSize)

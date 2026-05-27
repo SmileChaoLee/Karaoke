@@ -175,7 +175,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
                     }
                 }
                 if (bm == null) bm = fileBm
-                bm = bm.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                bm = bm.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                 val songDes = SongDescription(songInfo, bm)
                 U2bSingleton.videos.add(songDes)
             }

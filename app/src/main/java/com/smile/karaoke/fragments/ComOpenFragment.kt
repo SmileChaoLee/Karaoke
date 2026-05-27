@@ -1,18 +1,13 @@
 package com.smile.karaoke.fragments
 
 import android.widget.Toast
-import androidx.core.net.toUri
 import com.smile.karaoke.R
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.models.FileDescription
 import com.smile.karaoke.models.MySingleton
 import com.smile.karaoke.models.SongInfo
 import com.smile.karaoke.utilities.CommonUtil
-import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 open class ComOpenFragment: ItemsBaseFragment() {
 
@@ -26,37 +21,6 @@ open class ComOpenFragment: ItemsBaseFragment() {
         return CommonUtil.gridSpanCount(act)
     }
     // end of overriding the methods of ItemsBaseFragment
-
-    suspend fun startPlaySelectedSong(songs: ArrayList<SongInfo>) {
-        LogUtil.d(TAG, "startPlaySelectedSong")
-        val act = activity ?: return
-        if (songs.isEmpty()) {
-            withContext(Dispatchers.Main) {
-                ScreenUtil.showToast(act,
-                    getString(R.string.noFilesSelectedString),
-                    textFontSize, Toast.LENGTH_SHORT)
-            }
-        } else {
-            // Check if song is in database
-            val vSongs = ArrayList(songs.take(MySingleton.MAX_SONGS))
-            DatabaseUtil.getSongsToPlay(act,
-                CommonConstants.FAVORITE_DB_NAME, vSongs)
-            playSongs?.playSelectedSongList(vSongs)
-        }
-    }
-
-    fun fileDescriptionToSongInfo(fileDes: FileDescription): SongInfo {
-        val fileUri = fileDes.file.toUri().toString()
-        return SongInfo().apply {
-            songName = fileDes.file.name
-            filePath = fileUri
-            musicTrackNo = 1    // guess
-            musicChannel = CommonConstants.STEREO
-            vocalTrackNo = 2    // guess
-            vocalChannel = CommonConstants.STEREO
-            included = "0"
-        }
-    }
 
     fun fileDescriptionsToSongList(files: ArrayList<FileDescription>): ArrayList<SongInfo> {
         val logStr = "fileDescriptionsToSongList"
@@ -74,7 +38,7 @@ open class ComOpenFragment: ItemsBaseFragment() {
                 break
             } else {
                 if (fileDes.selected) {
-                    songs.add(fileDescriptionToSongInfo(fileDes))
+                    songs.add(CommonUtil.fileDescriptionToSongInfo(fileDes))
                     index++
                 }
             }

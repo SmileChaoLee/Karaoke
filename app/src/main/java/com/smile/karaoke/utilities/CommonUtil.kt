@@ -8,9 +8,12 @@ import android.os.Looper
 import android.view.Menu
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.net.toUri
 import androidx.core.view.get
 import androidx.core.view.size
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.models.FileDescription
+import com.smile.karaoke.models.SongInfo
 import com.smile.smilelibraries.utilities.ScreenUtil
 
 object CommonUtil {
@@ -67,5 +70,18 @@ object CommonUtil {
             button.isEnabled = true
         }
         handler.postDelayed(runnable, (seconds * 1000.0).toLong())
+    }
+
+    fun fileDescriptionToSongInfo(fileDes: FileDescription): SongInfo {
+        val fileUri = fileDes.file.toUri().toString()
+        return SongInfo().apply {
+            songName = fileDes.file.name
+            filePath = fileUri
+            musicTrackNo = 1    // guess
+            musicChannel = CommonConstants.STEREO
+            vocalTrackNo = 2    // guess
+            vocalChannel = CommonConstants.STEREO
+            included = "0"
+        }
     }
 }

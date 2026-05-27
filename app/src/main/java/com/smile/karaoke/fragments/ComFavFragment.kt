@@ -274,7 +274,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                     LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                     var bm = getVideoThumbNail(element)
                     if (bm == null) bm = fileBm
-                    bm = bm?.scale(videoThumbnailsWidth, videoThumbnailsHeight)
+                    bm = bm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                     element.included = "0"
                     tempList.add(SongDescription(element, bm))
                     index++
