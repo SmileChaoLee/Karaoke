@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -37,32 +36,257 @@ class OpenFileViewModel: ViewModel() {
         private const val TAG = "OpenFileViewModel"
     }
 
+    inner class SearchFolderThread(
+        val activity: Activity?,
+        val videoThumbNailsWidth: Int,
+        val videoThumbNailsHeight: Int): Thread()
+    {
+        private val logStr = "SearchFolderThread"
+        var keepRunning = true
+        override fun run() {
+            val act = activity ?: run {
+                LogUtil.d(TAG, "$logStr.activity is null")
+                return
+            }
+            if (!keepRunning) return
+            val fileList = ArrayList<FileDescription>()
+            _uiState.update {
+                OpenFileUiState.StartLoading
+            }
+            LogUtil.d(TAG, "$logStr.MySingleton.currentPath = ${MySingleton.currentPath}")
+            MySingleton.currentPath.let {
+                var index = 0
+                val dirBm = BitmapFactory.decodeResource(act.resources, R.drawable.folder_open_icon)
+                if (it == "/") {
+                    val bm = dirBm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
+                    for (element in MySingleton.rootPathSet) {
+                        if (!keepRunning) break
+                        LogUtil.d(TAG, "$logStr.element = $element")
+                        fileList.add(FileDescription(File(element), bm, false))
+                        index++
+                        if (index >= MySingleton.MAX_FILES) {
+                            // excess the max
+                            if (!keepRunning) break
+                            _uiState.update {
+                                OpenFileUiState.ShowToast(OpenFileUiState.EXCESS_MAX)
+                            }
+                            break
+                        }
+                    }
+                } else {
+                    try {
+                        val fileBm = BitmapFactory.decodeResource(act.resources, R.drawable.video_image)
+                        File(it).listFiles()?.also { fIt ->
+                            // LogUtil.d(TAG, "$logStr.file.list().size() = ${fIt.size}")
+                            for (f in fIt) {
+                                if (!keepRunning) break
+                                // LogUtil.d(TAG, "$logStr.isDirectory = ${f.isDirectory}, f.path = ${f.path}")
+                                var bm: Bitmap? = null
+                                if (!f.isDirectory) {
+                                    try {
+                                        mediaRetriever.setDataSource(f.path)
+                                        bm = mediaRetriever.getFrameAtTime(0,
+                                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                    } catch (ex: Exception) {
+                                        LogUtil.w(TAG, "$logStr.setDataSource.Exception:", ex)
+                                    }
+                                    if (bm == null) bm = fileBm
+                                } else {
+                                    bm = dirBm
+                                }
+                                bm = bm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
+                                if (!keepRunning) break
+                                fileList.add(FileDescription(f, bm, false))
+                                index++
+                                if (index >= MySingleton.MAX_FILES) {
+                                    // excess the max
+                                    if (!keepRunning) break
+                                    _uiState.update {
+                                        OpenFileUiState.ShowToast(OpenFileUiState.EXCESS_MAX)
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        LogUtil.w(TAG, "$logStr.Exception", ex )
+                    }
+                }
+            }
+            if (keepRunning) {
+                _uiState.update {
+                    OpenFileUiState.FinishLoading(fileList)
+                }
+                selectedSongs.clear()
+            } else {
+                LogUtil.d(TAG, "$logStr stopped, not updating UI")
+                _uiState.update {
+                    OpenFileUiState.StopLoading
+                }
+            }
+        }
+    }
+
+    inner class SearchFilesThread(val activity: Activity?, val searchStr: String): Thread() {
+        private val logStr = "SearchFilesThread"
+        var keepRunning = true
+        override fun run() {
+            val act = activity ?: run {
+                LogUtil.d(TAG, "$logStr.activity is null")
+                return
+            }
+            if (!keepRunning) return
+            val fileList = ArrayList<FileDescription>()
+            _uiState.update {
+                OpenFileUiState.StartLoading
+            }
+            val pathQueue: Queue<String> = LinkedList(MySingleton.rootPathSet)
+            while (pathQueue.isNotEmpty() && keepRunning) {
+                val path = pathQueue.poll() ?: continue
+                try {
+                    val fList = File(path).listFiles()
+                    fList?.let { fIt ->
+                        for (f in fIt) {
+                            if (!keepRunning) break
+                            if (f.isDirectory) {
+                                // LogUtil.d(TAG, "$logStr.isDirectory")
+                                pathQueue.add(f.path)
+                            } else {
+                                var bm: Bitmap? = null
+                                val fileBm = BitmapFactory.decodeResource(
+                                    act.resources,
+                                    R.drawable.video_image
+                                )
+                                // LogUtil.d(TAG, "$logStr.searchStr = searchStr")
+                                // LogUtil.w(TAG, "$logStr.f.name = ${f.name}")
+                                if (!keepRunning) break
+                                if (f.name.contains(searchStr, ignoreCase = true)) {
+                                    LogUtil.d(TAG, "$logStr.found file: ${f.path}")
+                                    try {
+                                        mediaRetriever.setDataSource(f.path)
+                                        bm = mediaRetriever.getFrameAtTime(
+                                            0,
+                                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                                        )
+                                    } catch (ex: Exception) {
+                                        LogUtil.w(TAG, "$logStr.setDataSource.Exception:", ex)
+                                    }
+                                    if (bm == null) bm = fileBm
+                                    if (!keepRunning) break
+                                    // add to fileList
+                                    fileList.add(FileDescription(f, bm, false))
+                                    if (fileList.size >= MySingleton.MAX_FILES) {
+                                        _uiState.update {
+                                            OpenFileUiState.ShowToast(OpenFileUiState.EXCESS_MAX)
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (ex: Exception) {
+                    LogUtil.w(TAG, "$logStr.Exception", ex)
+                }
+            }
+            if (keepRunning) {
+                LogUtil.w(TAG, "$logStr.fileList.size = ${fileList.size}")
+                // _uiState.emit(OpenFileUiState.FinishLoading(fileList))
+                //or
+                // _uiState.value = OpenFileUiState.FinishLoading(fileList)
+                // or
+                _uiState.update {
+                    OpenFileUiState.FinishLoading(fileList)
+                }
+                selectedSongs.clear()
+            } else {
+                LogUtil.d(TAG, "$logStr stopped, not updating UI")
+                _uiState.update {
+                    OpenFileUiState.StopLoading
+                }
+            }
+        }
+    }
+
     private val _uiState = MutableStateFlow<OpenFileUiState>(OpenFileUiState.Initial)
     val uiState = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+
+    private var searchFolderTh: SearchFolderThread? = null
+    private fun stopSearchFolderTh() {
+        val logStr = "stopSearchFolderTh"
+        LogUtil.w(TAG, logStr)
+        searchFolderTh?.let {
+            it.keepRunning = false
+            var retry = true
+            while (retry) {
+                try {
+                    LogUtil.d(TAG, "$logStr.Join()")
+                    it.join()
+                    retry = false
+                } catch (ex: InterruptedException) {
+                    LogUtil.e(TAG, "$logStr.InterruptedException", ex)
+                } // continue processing until the thread ends
+            }
+        }
+    }
+
+    private var searchFilesTh: SearchFilesThread? = null
+    private fun stopSearchFilesTh() {
+        val logStr = "stopSearchFilesTh"
+        LogUtil.w(TAG, logStr)
+        searchFilesTh?.let {
+            it.keepRunning = false
+            var retry = true
+            while (retry) {
+                try {
+                    LogUtil.d(TAG, "$logStr.Join()")
+                    it.join()
+                    retry = false
+                } catch (ex: InterruptedException) {
+                    LogUtil.e(TAG, "$logStr.InterruptedException", ex)
+                } // continue processing until the thread ends
+            }
+        }
+    }
+
     private val mediaRetriever = MediaMetadataRetriever()
     private val selectedSongs : ArrayList<SongInfo> = ArrayList()
 
     fun handleIntent(intent: OpenFileUiIntent) {
         when (intent) {
-            is OpenFileUiIntent.SearchFiles -> searchFiles(intent.activity, intent.content)
-            is OpenFileUiIntent.SearchCurrentFolder -> searchCurrentFolder(
-                intent.activity,
-                intent.videoThumbNailsWidth,
-                intent.videoThumbNailsHeight
-            )
-            is OpenFileUiIntent.SongOnClicked -> songOnClicked(
-                intent.position,
-                intent.activity,
-                intent.videoThumbNailsWidth,
-                intent.videoThumbNailsHeight
-            )
+            is OpenFileUiIntent.SearchFiles -> {
+                // searchFiles(intent.activity, intent.searchStr)
+                stopSearchFolderTh()
+                stopSearchFilesTh()
+                searchFilesTh = SearchFilesThread(intent.activity, intent.searchStr)
+                searchFilesTh?.start()
+            }
+            is OpenFileUiIntent.SearchCurrentFolder -> {
+                /*
+                searchCurrentFolder(
+                    intent.activity,
+                    intent.videoThumbNailsWidth,
+                    intent.videoThumbNailsHeight
+                )
+                */
+                stopSearchFolderTh()
+                stopSearchFilesTh()
+                searchFolderTh = SearchFolderThread(
+                    intent.activity,
+                    intent.videoThumbNailsWidth,
+                    intent.videoThumbNailsHeight
+                )
+                searchFolderTh?.start()
+            }
+            is OpenFileUiIntent.SongOnClicked -> songOnClicked(intent.position)
             is OpenFileUiIntent.AddToFavorites -> addToFavorites(intent.activity)
             is OpenFileUiIntent.ClearSelectedSongs -> {
                 selectedSongs.clear()
                 _uiState.update {
-                    OpenFileUiState.FinishLoading
+                    // Only for refreshing the UI, the fileList is not changed, so pass null
+                    OpenFileUiState.FinishLoading(null)
                 }
             }
             is OpenFileUiIntent.StartPlaySelectedSong -> startPlaySelectedSong(
@@ -72,20 +296,20 @@ class OpenFileViewModel: ViewModel() {
         }
     }
 
-    private fun searchFiles(activity: Activity?, content: String) {
-        val logStr = "searchFiles"
+    private fun searchFiles(activity: Activity?, searchStr: String) {
+        val logStr = "searchFiles.searchStr = $searchStr"
         val act = activity ?: run {
             LogUtil.d(TAG, "$logStr.activity is null")
             return
         }
-        viewModelScope.launch {
+        val fileList = ArrayList<FileDescription>()
+        _uiState.update {
+            OpenFileUiState.StartLoading
+        }
+        viewModelScope.launch(Dispatchers.IO) {
             searchJob?.cancelAndJoin()
             LogUtil.w(TAG, "$logStr.searchJob cancelled and joined")
-            searchJob = launch(Dispatchers.IO) {
-                val fileList = ArrayList<FileDescription>()
-                _uiState.update {
-                    OpenFileUiState.StartLoading
-                }
+            searchJob = launch {
                 val pathQueue: Queue<String> = LinkedList(MySingleton.rootPathSet)
                 while (pathQueue.isNotEmpty()) {
                     val path = pathQueue.poll() ?: continue
@@ -98,15 +322,20 @@ class OpenFileViewModel: ViewModel() {
                                     pathQueue.add(f.path)
                                 } else {
                                     var bm: Bitmap? = null
-                                    val fileBm = BitmapFactory.decodeResource(act.resources, R.drawable.video_image)
-                                    // LogUtil.d(TAG, "$logStr.content = $content")
+                                    val fileBm = BitmapFactory.decodeResource(
+                                        act.resources,
+                                        R.drawable.video_image
+                                    )
+                                    // LogUtil.d(TAG, "$logStr.searchStr = searchStr")
                                     // LogUtil.w(TAG, "$logStr.f.name = ${f.name}")
-                                    if (f.name.contains(content, ignoreCase = true)) {
+                                    if (f.name.contains(searchStr, ignoreCase = true)) {
                                         LogUtil.d(TAG, "$logStr.found file: ${f.path}")
                                         try {
                                             mediaRetriever.setDataSource(f.path)
-                                            bm = mediaRetriever.getFrameAtTime(0,
-                                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                            bm = mediaRetriever.getFrameAtTime(
+                                                0,
+                                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                                            )
                                         } catch (ex: Exception) {
                                             LogUtil.w(TAG, "$logStr.setDataSource.Exception:", ex)
                                         }
@@ -129,14 +358,12 @@ class OpenFileViewModel: ViewModel() {
                     }
                 }
                 LogUtil.w(TAG, "$logStr.fileList.size = ${fileList.size}")
-                MySingleton.fileList.clear()
-                MySingleton.fileList.addAll(fileList)
                 // _uiState.emit(OpenFileUiState.FinishLoading(fileList))
                 //or
                 // _uiState.value = OpenFileUiState.FinishLoading(fileList)
                 // or
                 _uiState.update {
-                    OpenFileUiState.FinishLoading
+                    OpenFileUiState.FinishLoading(fileList)
                 }
                 selectedSongs.clear()
             }
@@ -222,52 +449,39 @@ class OpenFileViewModel: ViewModel() {
                         }
                     }
                 }
-                ensureActive() // 👈 Final sanity check before modifying global singleton state
-                MySingleton.fileList.clear()
-                MySingleton.fileList.addAll(fileList)
+                // ensureActive() // 👈 Final sanity check before modifying global singleton state
                 _uiState.update {
-                    OpenFileUiState.FinishLoading
+                    OpenFileUiState.FinishLoading(fileList)
                 }
+                selectedSongs.clear()
             }
         }
     }
 
-    private fun songOnClicked(
-        position: Int,
-        activity: Activity?,
-        videoThumbNailsWidth: Int,
-        videoThumbNailsHeight: Int) {
+    private fun songOnClicked(position: Int) {
         val logStr = "songOnClicked"
         LogUtil.d(TAG, logStr)
         val fileDes = MySingleton.fileList[position]
-        if (fileDes.file.isFile) {
-            var isUpdated = false
-            if (fileDes.selected) {
-                selectedSongs.remove(CommonUtil.fileDescriptionToSongInfo(fileDes))
-                fileDes.selected = false
-                isUpdated = true
-            } else {
-                if (selectedSongs.size >= MySingleton.MAX_SONGS) {
-                    _uiState.update {
-                        OpenFileUiState.ShowToast(OpenFileUiState.EXCESS_MAX)
-                    }
-                } else {
-                    selectedSongs.add(CommonUtil.fileDescriptionToSongInfo(fileDes))
-                    fileDes.selected = true
-                    isUpdated = true
-                }
-            }
-            if (isUpdated) {
-                _uiState.update {
-                    OpenFileUiState.UpdateSelectedSong(position = position)
-                }
-            }
+        var isUpdated = false
+        if (fileDes.selected) {
+            selectedSongs.remove(CommonUtil.fileDescriptionToSongInfo(fileDes))
+            fileDes.selected = false
+            isUpdated = true
         } else {
-            LogUtil.d(TAG, "$logStr.fileDes.file is not file")
-            MySingleton.currentPath = fileDes.file.path
-            searchCurrentFolder(
-                activity, videoThumbNailsWidth, videoThumbNailsHeight
-            )
+            if (selectedSongs.size >= MySingleton.MAX_SONGS) {
+                _uiState.update {
+                    OpenFileUiState.ShowToast(OpenFileUiState.EXCESS_MAX)
+                }
+            } else {
+                selectedSongs.add(CommonUtil.fileDescriptionToSongInfo(fileDes))
+                fileDes.selected = true
+                isUpdated = true
+            }
+        }
+        if (isUpdated) {
+            _uiState.update {
+                OpenFileUiState.UpdateSelectedSong(position = position)
+            }
         }
     }
 

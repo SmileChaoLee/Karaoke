@@ -10,7 +10,8 @@ sealed interface OpenFileUiState {
     }
     object Initial: OpenFileUiState
     object StartLoading: OpenFileUiState
-    object FinishLoading: OpenFileUiState
+    object StopLoading: OpenFileUiState
+    data class FinishLoading(val fileList: List<FileDescription>?): OpenFileUiState
     data class ShowToast(val event: Int): OpenFileUiState
     data class UpdateSelectedSong(val position: Int): OpenFileUiState
 }

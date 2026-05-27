@@ -127,16 +127,16 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                             LogUtil.d(TAG, "addTextChangedListener.no focus")
                             return
                         }
-                        val content = editable.toString().trim()
-                        if (content.isEmpty()) {
+                        val searchStr = editable.toString().trim()
+                        LogUtil.d(TAG, "addTextChangedListener.searchStr = $searchStr")
+                        if (searchStr.isEmpty()) {
                             viewModel.handleIntent(
                                 OpenFileUiIntent.SearchCurrentFolder(
                                     activity, videoThumbNailsWidth, videoThumbNailsHeight
                                 )
                             )
                         } else {
-                            searchingStartView()
-                            viewModel.handleIntent(OpenFileUiIntent.SearchFiles(activity, content))
+                            viewModel.handleIntent(OpenFileUiIntent.SearchFiles(activity, searchStr))
                         }
                     }
                 })
@@ -178,9 +178,17 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 LogUtil.d(TAG, "$logStr.OpenFileUiState.StartLoading")
                 searchingStartView()
             }
+            is OpenFileUiState.StopLoading -> {
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.StopLoading")
+                searchingFinishView()
+            }
             is OpenFileUiState.FinishLoading -> {
                 LogUtil.d(TAG, "$logStr.OpenFileUiState.FinishLoading")
                 pathTextView?.text = MySingleton.currentPath
+                state.fileList?.let { fileList ->
+                    MySingleton.fileList.clear()
+                    MySingleton.fileList.addAll(fileList)
+                }
                 updateRecyclerView()
             }
             is OpenFileUiState.ShowToast -> {
@@ -268,12 +276,18 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     override fun onItemClick(v: View?, position: Int) {
         LogUtil.i(TAG, "onItemClick.position = $position")
         if (position < 0) return
-        // val fileDes = MySingleton.fileList[position]
-        viewModel.handleIntent(
-            OpenFileUiIntent.SongOnClicked(
-                position, activity, videoThumbNailsWidth, videoThumbNailsHeight
+        val fileDes = MySingleton.fileList[position]
+        if (fileDes.file.isFile) {
+            viewModel.handleIntent(OpenFileUiIntent.SongOnClicked(position))
+        } else {
+            LogUtil.d(TAG, "onItemClick.fileDes.file is not file")
+            MySingleton.currentPath = fileDes.file.path
+            viewModel.handleIntent(
+                OpenFileUiIntent.SearchCurrentFolder(
+                    activity, videoThumbNailsWidth, videoThumbNailsHeight
+                )
             )
-        )
+        }
     }
 
     private fun clearFileList() {
@@ -292,6 +306,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         searchCompleted = true
         filesRecyclerView?.visibility = View.VISIBLE
         loadingMsgTextView?.visibility = View.GONE
+        setProperFocus()
     }
 
     // overriding the methods of ItemsBaseFragment
