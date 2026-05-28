@@ -33,6 +33,7 @@
 
         <activity
             android:name="com.smile.videoplayer.PhVlcPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +43,7 @@
 
         <activity
             android:name="com.smile.videoplayer.TvVlcPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

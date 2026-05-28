@@ -36,6 +36,7 @@
 
         <activity
             android:name="com.smile.karaokeplayer.PhExoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,6 +46,7 @@
 
         <activity
             android:name="com.smile.karaokeplayer.TvExoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -26,8 +26,8 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1013
-        versionName "10.13"
+        versionCode 1014
+        versionName "10.14"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
