@@ -79,7 +79,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     companion object {
         private const val TAG: String = "PlayerBaseFragment"
-        private const val PlayerView_Timeout = 5000 //  5 seconds
+        private const val PlayerView_Timeout = 10000 //  10 seconds
     }
 
     interface PlayBaseFragmentFunc {
@@ -156,7 +156,8 @@ abstract class PlayerBaseFragment : Fragment(),
     private var oldMotionEventY = 0.0f
     private var currentAudioPosition = 0L
     private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
-    private var lastFocusView: ImageButton? = null
+    private var lastFocusView: View? = null
+    private val focusHashSet: HashSet<View?> = HashSet()
     /**
      * this function will double the timeout PlayerView_Timeout = 5000 //  5 seconds
      */
@@ -170,11 +171,9 @@ abstract class PlayerBaseFragment : Fragment(),
                 unknowId
             }
             LogUtil.d(TAG,"focusChangeListener.View gained focus.$viewIdName (Type: ${newFocus.javaClass.simpleName})")
-            // Handle specific views here
-            // when (newFocus.id) {
-            // }
-            if (viewIdName != unknowId) {
-                LogUtil.d(TAG,"focusChangeListener.View.change timer")
+            if (focusHashSet.contains(newFocus)) {
+                LogUtil.d(TAG,"focusChangeListener.focusHashSet contains newFocus")
+                lastFocusView = newFocus
                 showSupportToolbarAudioControlSetTimer()
             }
         }
@@ -366,22 +365,36 @@ abstract class PlayerBaseFragment : Fragment(),
 
             audioControllerView = it.findViewById(R.id.audioControllerView)
             volumeImageButton = it.findViewById(R.id.volumeImageButton)
+            focusHashSet.add(volumeImageButton)
             previousMediaImageButton = it.findViewById(R.id.previousMediaImageButton)
+            focusHashSet.add(previousMediaImageButton)
             playMediaImageButton = it.findViewById(R.id.playMediaImageButton)
+            focusHashSet.add(playMediaImageButton)
             replayMediaImageButton = it.findViewById(R.id.replayMediaImageButton)
+            focusHashSet.add(replayMediaImageButton)
             stopMediaImageButton = it.findViewById(R.id.stopMediaImageButton)
+            focusHashSet.add(stopMediaImageButton)
             nextMediaImageButton = it.findViewById(R.id.nextMediaImageButton)
+            focusHashSet.add(nextMediaImageButton)
             heartImageButton = it.findViewById(R.id.heartImageButton)
+            focusHashSet.add(heartImageButton)
+            actionMenuImageButton = it.findViewById(R.id.actionMenuImageButton)
+            focusHashSet.add(actionMenuImageButton)
 
             orientationImageButton = it.findViewById(R.id.orientationImageButton)
+            focusHashSet.add(orientationImageButton)
             repeatImageButton = it.findViewById(R.id.repeatImageButton)
+            focusHashSet.add(repeatImageButton)
             switchToMusicImageButton = it.findViewById(R.id.switchToMusicImageButton)
+            focusHashSet.add(switchToMusicImageButton)
             switchToVocalImageButton = it.findViewById(R.id.switchToVocalImageButton)
+            focusHashSet.add(switchToVocalImageButton)
             hideVideoImageButton = it.findViewById(R.id.hideVideoImageButton)
-            actionMenuImageButton = it.findViewById(R.id.actionMenuImageButton)
-
+            focusHashSet.add(hideVideoImageButton)
             audioChannelImageButton = it.findViewById(R.id.audioChannelImageButton)
+            focusHashSet.add(audioChannelImageButton)
             audioTrackImageButton = it.findViewById(R.id.audioTrackImageButton)
+            focusHashSet.add(audioTrackImageButton)
 
             bannerLinearLayout = it.findViewById(R.id.bannerLinearLayout)
 
@@ -396,6 +409,7 @@ abstract class PlayerBaseFragment : Fragment(),
             playingTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(playingTimeTextView, durationTextSize)
             playerDurationSeekbar = it.findViewById(R.id.player_duration_seekbar)
+            focusHashSet.add(playerDurationSeekbar)
             durationTimeTextView = it.findViewById(R.id.durationTimeTextView)
             durationTimeTextView?.text = "000:00"
             ScreenUtil.resizeTextSize(durationTimeTextView, durationTextSize)
@@ -1137,13 +1151,6 @@ abstract class PlayerBaseFragment : Fragment(),
                     actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
                     lastFocusView = actionMenuImageButton
                 }
-                /*
-                lastFocusView?.setOnKeyListener { view, _, _ ->
-                    LogUtil.d(TAG, "supportToolbar.lastFocusView.setOnKeyListener.view = $view")
-                    showSupportToolbarAudioControlSetTimer()
-                    return@setOnKeyListener false
-                }
-                */
             }
         }
         playerViewLinearLayout?.let { it->
