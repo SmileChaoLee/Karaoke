@@ -11,7 +11,6 @@ object MyPlayerConstants {
     const val CanShowNotSupportedFormatState = "CanShowNotSupportedFormat"
     const val AudioTrackIndicesListState = "AudioTrackIndicesList"
     const val PrivacyPolicyActivityRequestCode = 10
-    const val PlayerView_Timeout = 10000 //  10 seconds
     const val NoAudioTrack = 0
     const val NoAudioChannel = 0
     const val MAX_PROGRESS = 100

@@ -22,6 +22,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewTreeObserver
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.FrameLayout
@@ -36,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.scale
@@ -71,11 +73,14 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.abs
 
-private const val TAG: String = "PlayerBaseFragment"
-
 @UnstableApi
 abstract class PlayerBaseFragment : Fragment(),
     BasePresentView {
+
+    companion object {
+        private const val TAG: String = "PlayerBaseFragment"
+        private const val PlayerView_Timeout = 5000 //  5 seconds
+    }
 
     interface PlayBaseFragmentFunc {
         fun baseHidePlayerView()
@@ -95,7 +100,7 @@ abstract class PlayerBaseFragment : Fragment(),
     var toolbarAudioLayout: LinearLayout? = null
     var adsMsgLayout: LinearLayout? = null
     private var supportToolbar // use customized ToolBar
-            : androidx.appcompat.widget.Toolbar? = null
+            : Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
     var audioControllerView: LinearLayout? = null
     private var volumeImageButton: ImageButton? = null
@@ -152,6 +157,28 @@ abstract class PlayerBaseFragment : Fragment(),
     private var currentAudioPosition = 0L
     private var orgOrientation = Configuration.ORIENTATION_PORTRAIT
     private var lastFocusView: ImageButton? = null
+    /**
+     * this function will double the timeout PlayerView_Timeout = 5000 //  5 seconds
+     */
+    private val focusChangeListener = ViewTreeObserver.OnGlobalFocusChangeListener { oldFocus, newFocus ->
+        if (newFocus != null) {
+            // A child view just gained focus
+            val unknowId = "Unknown ID"
+            val viewIdName = try {
+                resources.getResourceEntryName(newFocus.id)
+            } catch (e: Exception) {
+                unknowId
+            }
+            LogUtil.d(TAG,"focusChangeListener.View gained focus.$viewIdName (Type: ${newFocus.javaClass.simpleName})")
+            // Handle specific views here
+            // when (newFocus.id) {
+            // }
+            if (viewIdName != unknowId) {
+                LogUtil.d(TAG,"focusChangeListener.View.change timer")
+                showSupportToolbarAudioControlSetTimer()
+            }
+        }
+    }
 
     private val controllerTimerHandler = Handler(Looper.getMainLooper())
     private val controllerTimerRunnable = Runnable {
@@ -322,8 +349,9 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.i(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
-        fragmentView = view
+        view.viewTreeObserver.addOnGlobalFocusChangeListener(focusChangeListener)
 
+        fragmentView = view
         val screen = ScreenUtil.getScreenSize(activity)
         screenSizeX = screen.x
         screenSizeY = screen.y
@@ -379,13 +407,8 @@ abstract class PlayerBaseFragment : Fragment(),
             it.requestFocus()
             it.setOnKeyListener {
                     _, keyCode, _ ->
-                LogUtil.d(TAG, "setOnKeyListener.keyCode = $keyCode")
+                LogUtil.d(TAG, "fragmentView.setOnKeyListener.keyCode = $keyCode")
                 if (playerViewLinearLayout?.visibility == View.VISIBLE) {
-                    /*
-                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        lastFocusView = actionMenuImageButton
-                    }
-                    */
                     supportToolbar?.performClick()
                 }
                 return@setOnKeyListener false
@@ -676,6 +699,7 @@ abstract class PlayerBaseFragment : Fragment(),
         myBannerAdView?.destroy()
         nativeTemplate?.release()
         unbindAndStopPlayService()
+        fragmentView?.viewTreeObserver?.removeOnGlobalFocusChangeListener(focusChangeListener)
         super.onDestroy()
     }
 
@@ -752,7 +776,7 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.d(TAG, "screenSize.x = $screenSizeX, screenSize.y = $screenSizeX, buttonMarginLeft = $buttonMarginLeft")
 
         val audioControllerViewLP = audioControllerView?.layoutParams as ConstraintLayout.LayoutParams
-        audioControllerViewLP.matchConstraintPercentHeight = 0.18f
+        audioControllerViewLP.matchConstraintPercentHeight = 0.45f
         val emptyLinearLayout = fragmentView?.findViewById<LinearLayout>(R.id.emptyLinearLayout)
         val emptyLinearLayoutLP = emptyLinearLayout?.layoutParams as ConstraintLayout.LayoutParams
         emptyLinearLayoutLP.matchConstraintPercentHeight = 0.03f
@@ -760,7 +784,7 @@ abstract class PlayerBaseFragment : Fragment(),
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
                 (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
-            audioControllerViewLP.matchConstraintPercentHeight = 0.30f
+            audioControllerViewLP.matchConstraintPercentHeight = 0.75f
             emptyLinearLayoutLP.matchConstraintPercentHeight = 0.05f
         }
         if (buttonMarginLeft<0) buttonMarginLeft = 0
@@ -876,8 +900,8 @@ abstract class PlayerBaseFragment : Fragment(),
         bannerAdsLayout?.visibility = View.GONE
         hideNativeAd()
         supportToolbar?.visibility = View.VISIBLE
-        audioControllerView?.visibility = View.VISIBLE
         nativeAdsFrameLayout?.visibility = nativeAdViewVisibility
+        audioControllerView?.visibility = View.VISIBLE
     }
 
     private fun hideSupportToolbarAndAudioController() {
@@ -897,7 +921,7 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             }
         }
-        fragmentView?.requestFocus()
+        fragmentView?.let { it.post { it.requestFocus() } }
     }
 
     open fun switchToMusicVisibility(): Int {
@@ -1105,14 +1129,21 @@ abstract class PlayerBaseFragment : Fragment(),
         })
         supportToolbar?.let {
             it.setOnClickListener { _: View ->
-                LogUtil.i(TAG, "supportToolbar.onClick() is called.")
+                LogUtil.d(TAG, "supportToolbar.onClick")
                 showSupportToolbarAudioControlSetTimer()
-                if (lastFocusView != null) {
-                    lastFocusView!!.post { lastFocusView!!.requestFocus() }
-                } else {
+                lastFocusView?.let { last ->
+                    last.post { last.requestFocus() }
+                } ?: run {
                     actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
                     lastFocusView = actionMenuImageButton
                 }
+                /*
+                lastFocusView?.setOnKeyListener { view, _, _ ->
+                    LogUtil.d(TAG, "supportToolbar.lastFocusView.setOnKeyListener.view = $view")
+                    showSupportToolbarAudioControlSetTimer()
+                    return@setOnKeyListener false
+                }
+                */
             }
         }
         playerViewLinearLayout?.let { it->
@@ -1381,7 +1412,7 @@ abstract class PlayerBaseFragment : Fragment(),
             controllerTimerHandler.removeCallbacksAndMessages(null)
             // 10 seconds
             controllerTimerHandler.postDelayed(controllerTimerRunnable,
-                    MyPlayerConstants.PlayerView_Timeout.toLong())
+                PlayerView_Timeout.toLong())
         }
     }
 

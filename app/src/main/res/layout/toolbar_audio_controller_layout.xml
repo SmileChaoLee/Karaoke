@@ -16,20 +16,44 @@
         android:layout_height="0dp"
         android:layout_margin="0dp"
         android:gravity="center"
-        android:weightSum="90"
-        app:layout_constraintHeight_percent="0.18"
+        android:weightSum="7.5"
+        app:layout_constraintHeight_percent="0.45"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/emptyLinearLayout">
-
+        <!-- Brightness adjustment seekbar -->
+        <com.smile.karaoke.models.VerticalSeekBar
+            android:id="@+id/brightAdjustSeekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="4.5"
+            android:thumbOffset="0dp"
+            android:indeterminate="false"
+            android:indeterminateOnly="false"
+            android:thumb="@drawable/volume_seekbar_thumb"
+            android:progressDrawable="@drawable/volume_seekbar_progressdrawable"
+            android:background="@android:color/transparent"
+            android:maxWidth="1000dp"
+            android:maxHeight="1000dp"
+            android:layout_margin="0dp"
+            android:padding="0dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusUp="@id/brightAdjustSeekbar"
+            android:nextFocusLeft="@id/volumeImageButton"
+            android:nextFocusRight="@id/previousMediaImageButton"
+            android:nextFocusDown="@id/actionMenuImageButton"
+            android:layout_gravity="center_horizontal"
+            android:visibility="invisible">
+        </com.smile.karaoke.models.VerticalSeekBar>
         <!-- Player control buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/transparentMediumDark"
             android:gravity="center"
-            android:layout_weight="30">
+            android:background="@color/transparentMediumDark"
+            android:layout_weight="1">
             <ImageButton
                 android:id="@+id/volumeImageButton"
                 android:layout_width="wrap_content"
@@ -40,10 +64,10 @@
                 android:src="@drawable/non_volume"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusUp="@id/volumeImageButton"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/volumeImageButton"
                 android:nextFocusRight="@id/previousMediaImageButton"
-                android:nextFocusDown="@id/repeatImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:layout_gravity="center"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
@@ -59,8 +83,10 @@
                 android:src="@drawable/previous_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/volumeImageButton"
                 android:nextFocusRight="@id/playMediaImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -73,8 +99,10 @@
                 android:src="@drawable/play_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/previousMediaImageButton"
                 android:nextFocusRight="@id/replayMediaImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:visibility="visible"
                 android:layout_gravity="center"
                 android:background="@drawable/main_menu_item_background_color">
@@ -91,8 +119,10 @@
                 android:src="@drawable/replay_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/playMediaImageButton"
                 android:nextFocusRight="@id/stopMediaImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -107,8 +137,10 @@
                 android:src="@drawable/stop_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/replayMediaImageButton"
                 android:nextFocusRight="@id/nextMediaImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -123,8 +155,10 @@
                 android:src="@drawable/next_media_button_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/stopMediaImageButton"
                 android:nextFocusRight="@id/heartImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -139,8 +173,10 @@
                 android:src="@drawable/heart"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/nextMediaImageButton"
                 android:nextFocusRight="@id/actionMenuImageButton"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
             <ImageButton
@@ -155,22 +191,21 @@
                 android:src="@drawable/circle_and_three_dots"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusUp="@id/actionMenuImageButton"
+                android:nextFocusUp="@id/brightAdjustSeekbar"
                 android:nextFocusLeft="@id/heartImageButton"
                 android:nextFocusRight="@id/actionMenuImageButton"
-                android:nextFocusDown="@id/media_route_button"
+                android:nextFocusDown="@id/hideVideoImageButton"
                 android:background="@drawable/main_menu_item_background_color">
             </ImageButton>
         </LinearLayout>
-
         <!-- menu control buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/transparentMediumDark"
             android:gravity="center"
-            android:layout_weight="30">
+            android:background="@color/transparentMediumDark"
+            android:layout_weight="1">
             <ImageButton
                 android:id="@+id/orientationImageButton"
                 android:layout_width="wrap_content"
@@ -183,7 +218,7 @@
                 android:src="@drawable/phone_portrait"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusUp="@id/volumeImageButton"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/orientationImageButton"
                 android:nextFocusRight="@id/repeatImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -201,6 +236,7 @@
                 android:src="@drawable/repeat_no"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/orientationImageButton"
                 android:nextFocusRight="@id/switchToMusicImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -218,6 +254,7 @@
                 android:src="@drawable/music_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/repeatImageButton"
                 android:nextFocusRight="@id/switchToVocalImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -235,6 +272,7 @@
                 android:src="@drawable/vocal_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/switchToMusicImageButton"
                 android:nextFocusRight="@id/hideVideoImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -252,6 +290,7 @@
                 android:src="@drawable/hide_video"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/switchToVocalImageButton"
                 android:nextFocusRight="@id/audioChannelImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -269,6 +308,7 @@
                 android:src="@drawable/audio_channel_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/hideVideoImageButton"
                 android:nextFocusRight="@id/audioTrackImageButton"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -286,6 +326,7 @@
                 android:src="@drawable/audio_track_image_button_source"
                 android:focusable="true"
                 android:clickable="true"
+                android:nextFocusUp="@id/actionMenuImageButton"
                 android:nextFocusLeft="@id/audioChannelImageButton"
                 android:nextFocusRight="@id/media_route_button"
                 android:nextFocusDown="@id/player_duration_seekbar"
@@ -293,16 +334,16 @@
             </ImageButton>
             <include layout="@layout/media_route_button_layout" />
         </LinearLayout>
-
+        <!-- Playing time, duration time and seekbar -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="0dp"
             android:padding="0dp"
-            android:background="@color/transparentMediumDark"
             android:gravity="center"
-            android:layout_weight="30"
+            android:background="@color/transparentMediumDark"
+            android:layout_weight="1"
             android:weightSum="100">
             <TextView
                 android:id="@+id/playingTimeTextView"
@@ -345,9 +386,7 @@
                 android:layout_weight="15">
             </TextView>
         </LinearLayout>
-
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/emptyLinearLayout"
@@ -356,7 +395,7 @@
         android:layout_height="0dp"
         android:background="@color/transparentMediumDark"
         android:gravity="center"
-        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHeight_percent="0.03"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

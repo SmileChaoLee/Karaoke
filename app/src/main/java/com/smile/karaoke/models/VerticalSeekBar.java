@@ -1,5 +1,6 @@
 package com.smile.karaoke.models;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
@@ -48,6 +49,7 @@ public class VerticalSeekBar extends AppCompatSeekBar {
         this.onChangeListener = onChangeListener;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnabled()) {
