@@ -424,7 +424,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
             it.isFocusable = true
             it.isFocusableInTouchMode = true
-            it.requestFocus()
+            it.post { it.requestFocus() }
             it.setOnKeyListener {
                     _, keyCode, _ ->
                 LogUtil.d(TAG, "fragmentView.setOnKeyListener.keyCode = $keyCode")
@@ -1068,13 +1068,13 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = volumeImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         previousMediaImageButton?.setOnClickListener {
             mPresenter.playPreviousSong()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = previousMediaImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         playMediaImageButton?.setOnClickListener {
             if (mPresenter.playingParam.currentPlaybackState ==
@@ -1085,25 +1085,25 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = playMediaImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         replayMediaImageButton?.setOnClickListener {
             mPresenter.replayMedia()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = replayMediaImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         stopMediaImageButton?.setOnClickListener {
             mPresenter.stopPlay(MyPlayerConstants.STOPPED_BY_USER)
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = stopMediaImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         nextMediaImageButton?.setOnClickListener {
             mPresenter.playNextSong()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = nextMediaImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         heartImageButton?.setOnClickListener {
             // add this media file to my favorite
@@ -1126,7 +1126,7 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = heartImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
 
         orientationImageButton?.setOnClickListener {
@@ -1139,26 +1139,26 @@ abstract class PlayerBaseFragment : Fragment(),
                 CommonUtil.setScreenOrientation(actIt, orientation)
                 CommonUtil.disableButtonForSometime(it)
                 lastFocusView = orientationImageButton
-                fragmentView?.requestFocus()
+                fragmentView?.post { fragmentView?.requestFocus() }
             }
         }
         repeatImageButton?.setOnClickListener {
             mPresenter.setRepeatSongStatus()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = repeatImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         switchToMusicImageButton?.setOnClickListener {
             mPresenter.switchAudioToMusic()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = switchToMusicImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         switchToVocalImageButton?.setOnClickListener {
             mPresenter.switchAudioToVocal()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = switchToVocalImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         hideVideoImageButton?.setOnClickListener {
             LogUtil.d(TAG, "hideVideoImageButton.setOnClickListener")
@@ -1169,14 +1169,14 @@ abstract class PlayerBaseFragment : Fragment(),
             }
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = hideVideoImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
 
         audioChannelImageButton?.setOnClickListener {
             audioChannelButtonListener()
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = audioChannelImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         audioTrackListener()
 
@@ -1188,13 +1188,13 @@ abstract class PlayerBaseFragment : Fragment(),
             setTimerToHideSupportAudioControl()   // reset the timer
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = actionMenuImageButton
-            fragmentView?.requestFocus()
+            fragmentView?.post { fragmentView?.requestFocus() }
         }
         actionMenuView?.setOnMenuItemClickListener { item: MenuItem? ->
             item?.let { itemIt->
                 onOptionsItemSelected(itemIt)
                 // lastFocusView = actionMenuView
-                fragmentView?.requestFocus()
+                fragmentView?.post { fragmentView?.requestFocus() }
             } == true
         }
         playerDurationSeekbar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -1534,8 +1534,10 @@ abstract class PlayerBaseFragment : Fragment(),
             }
         }
         LogUtil.d(TAG, "showPlayerView.fragmentView?.requestFocus()")
-        fragmentView?.requestFocus()
-        hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
+        fragmentView?.post {
+            fragmentView?.requestFocus()
+            hideVideoImageButton?.post { hideVideoImageButton?.requestFocus() }
+        }
     }
 
     override fun showToastNoFilesSelected() {
