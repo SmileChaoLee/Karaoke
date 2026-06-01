@@ -1,0 +1,11 @@
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/yuv.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/yuv_shared.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/yuvconvert.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/package.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/package_source.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/edit_cache.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/rebuild_cache.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/list_install_components.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/install.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/install/local.dir
+/home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/build-x86_64/CMakeFiles/install/strip.dir

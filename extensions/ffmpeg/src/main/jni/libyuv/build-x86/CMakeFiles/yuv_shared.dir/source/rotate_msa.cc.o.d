@@ -1,0 +1,25 @@
+CMakeFiles/yuv_shared.dir/source/rotate_msa.cc.o: \
+  /home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/source/rotate_msa.cc \
+  /home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/include/libyuv/rotate_row.h \
+  /home/chaolee/AndroidStudioProjects/Karaoke/extensions/ffmpeg/src/main/jni/libyuv/include/libyuv/basic_types.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/stddef.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__config \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__config_site \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/features.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/stddef.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_ptrdiff_t.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_size_t.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_wchar_t.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_nullptr_t.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_max_align_t.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_offsetof.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/stdint.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/stdint.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdint.h \
+  /home/chaolee/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wchar_limits.h
