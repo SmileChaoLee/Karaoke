@@ -7,7 +7,6 @@ app/google-services.json
 .idea/modules/app/KaraokePlayer.app.unitTest.iml
 .idea/workspace.xml
 extensions/ffmpeg/.cxx/
-extensions/vp9/src/main/obj/
 /.gradle/
 /app/build/
 /app/build/intermediates/javac/exoplayerDebug/classes/
