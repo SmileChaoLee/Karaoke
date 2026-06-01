@@ -44,10 +44,10 @@
 #endif
 
 /* Define to the commit date of the current git HEAD */
-#define GIT_COMMIT_DATE "20250701"
+/* #undef GIT_COMMIT_DATE */
 
 /* Define to the short hash of the current git HEAD */
-#define GIT_COMMIT_HASH "901195b1"
+/* #undef GIT_COMMIT_HASH */
 
 /* Define to the tag of the current git HEAD */
 /* #undef GIT_COMMIT_TAG */

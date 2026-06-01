@@ -4,6 +4,8 @@
     <dimen name="actionButtonTextSize">22dp</dimen>
     <dimen name="volume_seekbar_thumb_size">26dp</dimen>
     <dimen name="volume_pressed_seekbar_thumb_size">21dp</dimen>
+    <dimen name="bright_seekbar_thumb_size">26dp</dimen>
+    <dimen name="bright_pressed_seekbar_thumb_size">21dp</dimen>
     <dimen name="volume_seekbar_height">173dp</dimen>
     <dimen name="volume_progress_background_width">6dp</dimen>
     <dimen name="duration_seekbar_thumb_size">18dp</dimen>

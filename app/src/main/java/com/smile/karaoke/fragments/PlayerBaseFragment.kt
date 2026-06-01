@@ -23,6 +23,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.ViewTreeObserver
+import android.view.WindowManager
+import android.provider.Settings
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.FrameLayout
@@ -79,7 +81,8 @@ abstract class PlayerBaseFragment : Fragment(),
 
     companion object {
         private const val TAG: String = "PlayerBaseFragment"
-        private const val PlayerView_Timeout = 10000 //  10 seconds
+        private const val PLAY_VIEW_TIMEOUT = 10000 //  10 seconds
+        private const val MAX_BRIGHTNESS = 100
     }
 
     interface PlayBaseFragmentFunc {
@@ -103,6 +106,7 @@ abstract class PlayerBaseFragment : Fragment(),
             : Toolbar? = null
     private var actionMenuView: ActionMenuView? = null
     var audioControllerView: LinearLayout? = null
+    private var brightAdjustSeekbar: AppCompatSeekBar? = null
     private var volumeImageButton: ImageButton? = null
     private var previousMediaImageButton: ImageButton? = null
     private var playMediaImageButton: ImageButton? = null
@@ -364,6 +368,8 @@ abstract class PlayerBaseFragment : Fragment(),
             adsMsgLayout = it.findViewById(R.id.adsMsgLayout)
 
             audioControllerView = it.findViewById(R.id.audioControllerView)
+            brightAdjustSeekbar = it.findViewById(R.id.brightAdjustSeekbar)
+            focusHashSet.add(brightAdjustSeekbar)
             volumeImageButton = it.findViewById(R.id.volumeImageButton)
             focusHashSet.add(volumeImageButton)
             previousMediaImageButton = it.findViewById(R.id.previousMediaImageButton)
@@ -675,8 +681,6 @@ abstract class PlayerBaseFragment : Fragment(),
         val logStr = "onConfigurationChanged"
         LogUtil.i(TAG, logStr)
         CommonUtil.closeMenu(mainMenu)
-        setOrientationImageButton(newConfig.orientation)
-        setButtonsPositionAndSize(newConfig)
         activity?.let {actIt ->
             val screen = ScreenUtil.getScreenSize(actIt)
             screenSizeX = screen.x
@@ -689,6 +693,8 @@ abstract class PlayerBaseFragment : Fragment(),
                 showBannerAd()
             }
         }
+        setOrientationImageButton(newConfig.orientation)
+        setButtonsPositionAndSize(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             bannerAdsLayout?.visibility = View.GONE
         } else {
@@ -790,17 +796,22 @@ abstract class PlayerBaseFragment : Fragment(),
         LogUtil.d(TAG, "screenSize.x = $screenSizeX, screenSize.y = $screenSizeX, buttonMarginLeft = $buttonMarginLeft")
 
         val audioControllerViewLP = audioControllerView?.layoutParams as ConstraintLayout.LayoutParams
-        audioControllerViewLP.matchConstraintPercentHeight = 0.45f
+        audioControllerViewLP.matchConstraintPercentHeight = 0.24f
         val emptyLinearLayout = fragmentView?.findViewById<LinearLayout>(R.id.emptyLinearLayout)
         val emptyLinearLayoutLP = emptyLinearLayout?.layoutParams as ConstraintLayout.LayoutParams
         emptyLinearLayoutLP.matchConstraintPercentHeight = 0.03f
 
+        val barParams = brightAdjustSeekbar?.layoutParams
+        barParams?.width = screenSizeX * 2 / 3
+
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             buttonMarginLeft =
                 (buttonMarginLeft.toFloat() * (screenSizeX.toFloat() / screenSizeY.toFloat())).toInt()
-            audioControllerViewLP.matchConstraintPercentHeight = 0.75f
+            audioControllerViewLP.matchConstraintPercentHeight = 0.40f
             emptyLinearLayoutLP.matchConstraintPercentHeight = 0.05f
+            barParams?.width = screenSizeX / 2
         }
+
         if (buttonMarginLeft<0) buttonMarginLeft = 0
         LogUtil.d(TAG, "buttonMarginLeft = $buttonMarginLeft")
         val buttonNum = 8 // 8 buttons
@@ -984,8 +995,64 @@ abstract class PlayerBaseFragment : Fragment(),
         }
     }
 
+    private fun onBrightSeekBarProgressChanged(progress: Int, fromUser: Boolean) {
+        val logStr = "onBrightSeekBarProgressChanged"
+        LogUtil.d(TAG, "$logStr.progress = $progress, fromUser = $fromUser")
+
+        // Protect against zero max (use 100 as fallback)
+        // val max = brightAdjustSeekbar?.max?.takeIf { it > 0 } ?: MAX_BRIGHTNESS
+        val rawBrightness = progress.toFloat() / MAX_BRIGHTNESS.toFloat() // 0.0 .. 1.0
+        // avoid a completely-black screen accidentally; allow 0.0 if you prefer
+        val brightness = when {
+            rawBrightness <= 0f -> 0.01f
+            rawBrightness > 1f -> 1.0f
+            else -> rawBrightness
+        }
+
+        // Apply to this window only (no system permission required)
+        activity?.window?.let { win ->
+            val lp = win.attributes
+            lp.screenBrightness = brightness // -1 = system default, 0..1 = explicit brightness
+            win.attributes = lp
+            LogUtil.d(TAG, "$logStr.applied screenBrightness = $brightness (max = $MAX_BRIGHTNESS)")
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setOnClickEvents() {
+        brightAdjustSeekbar?.let {
+            it.max = MAX_BRIGHTNESS
+            val currentBrightnessFloat: Float = run {
+                // Try per-window brightness first
+                val lp = activity?.window?.attributes
+                val windowBrightness = lp?.screenBrightness
+                    ?: WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+                if (windowBrightness >= 0f) {
+                    // explicit per-window brightness (0..1)
+                    windowBrightness.coerceIn(0f, 1f)
+                } else {
+                    // window uses system default -> read system brightness (0..255)
+                    try {
+                        val sysBrightnessInt = Settings.System.getInt(requireContext().contentResolver,
+                            Settings.System.SCREEN_BRIGHTNESS)
+                        (sysBrightnessInt.coerceIn(0, 255) / 255.0f).coerceIn(0f, 1f)
+                    } catch (ex: Exception) {
+                        // fallback to full bright on failure
+                        1.0f
+                    }
+                }
+            }
+            it.progress = (currentBrightnessFloat * it.max).toInt()
+            it.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    LogUtil.d(TAG, "brightAdjustSeekbar.onProgressChanged.progress = $progress")
+                    // update the duration on controller UI
+                    onBrightSeekBarProgressChanged(progress, fromUser)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            })
+        }
         volumeImageButton?.setOnClickListener {
             LogUtil.d(TAG,"volumeImageButton.onClick")
             mPresenter.playingParam.let { pIt->
@@ -1134,7 +1201,6 @@ abstract class PlayerBaseFragment : Fragment(),
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 LogUtil.d(TAG, "playerDurationSeekbar.onProgressChanged.progress = $progress")
                 // update the duration on controller UI
-                // mPresenter.onDurationSeekBarProgressChanged(progress, fromUser)
                 onDurationSeekBarProgressChanged(progress, fromUser)
             }
 
@@ -1419,7 +1485,7 @@ abstract class PlayerBaseFragment : Fragment(),
             controllerTimerHandler.removeCallbacksAndMessages(null)
             // 10 seconds
             controllerTimerHandler.postDelayed(controllerTimerRunnable,
-                PlayerView_Timeout.toLong())
+                PLAY_VIEW_TIMEOUT.toLong())
         }
     }
 

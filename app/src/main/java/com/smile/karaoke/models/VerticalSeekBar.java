@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatSeekBar;
@@ -97,13 +98,55 @@ public class VerticalSeekBar extends AppCompatSeekBar {
         return true;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (!isEnabled()) {
+            return false;
+        }
+
+        int progress = getProgress();
+        int increment = getKeyProgressIncrement(); // uses SeekBar/ProgressBar increment
+
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP:
+                progress += increment;
+                if (progress > getMax()) progress = getMax();
+                setProgressAndThumb(progress);
+                return true;
+
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                progress -= increment;
+                if (progress < 0) progress = 0;
+                setProgressAndThumb(progress);
+                return true;
+
+            // Optional: preserve Left/Right behaviour (maps to same actions)
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                progress -= increment;
+                if (progress < 0) progress = 0;
+                setProgressAndThumb(progress);
+                return true;
+
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                progress += increment;
+                if (progress > getMax()) progress = getMax();
+                setProgressAndThumb(progress);
+                return true;
+
+            default:
+                return super.onKeyDown(keyCode, event);
+        }
+    }
+
     public synchronized void setProgressAndThumb(int progress) {
         setProgress(progress);
         onSizeChanged(getWidth(), getHeight() , 0, 0);
         if(progress != lastProgress) {
             // Only enact listener if the progress has actually changed
             lastProgress = progress;
-            onChangeListener.onProgressChanged(this, progress, true);
+            if (onChangeListener != null) {
+                onChangeListener.onProgressChanged(this, progress, true);
+            }
         }
     }
 }

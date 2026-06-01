@@ -16,25 +16,18 @@
         android:layout_height="0dp"
         android:layout_margin="0dp"
         android:gravity="center"
-        android:weightSum="7.5"
-        app:layout_constraintHeight_percent="0.45"
+        android:background="@color/transparentMediumDark"
+        android:weightSum="4"
+        app:layout_constraintHeight_percent="0.24"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/emptyLinearLayout">
         <!-- Brightness adjustment seekbar -->
-        <com.smile.karaoke.models.VerticalSeekBar
+        <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/brightAdjustSeekbar"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4.5"
-            android:thumbOffset="0dp"
-            android:indeterminate="false"
-            android:indeterminateOnly="false"
-            android:thumb="@drawable/volume_seekbar_thumb"
-            android:progressDrawable="@drawable/volume_seekbar_progressdrawable"
-            android:background="@android:color/transparent"
-            android:maxWidth="1000dp"
-            android:maxHeight="1000dp"
+            android:layout_weight="1"
             android:layout_margin="0dp"
             android:padding="0dp"
             android:focusable="true"
@@ -43,16 +36,23 @@
             android:nextFocusLeft="@id/volumeImageButton"
             android:nextFocusRight="@id/previousMediaImageButton"
             android:nextFocusDown="@id/actionMenuImageButton"
-            android:layout_gravity="center_horizontal"
-            android:visibility="invisible">
-        </com.smile.karaoke.models.VerticalSeekBar>
+            android:layout_gravity="center"
+            android:thumbOffset="0dp"
+            android:indeterminate="false"
+            android:indeterminateOnly="false"
+            android:thumb="@drawable/bright_seekbar_thumb"
+            android:background="@drawable/main_menu_item_background_color"
+            android:progressDrawable="@drawable/bright_seekbar_progressdrawable"
+            android:maxWidth="1000dp"
+            android:maxHeight="1000dp"
+            android:visibility="visible">
+        </androidx.appcompat.widget.AppCompatSeekBar>
         <!-- Player control buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="center"
-            android:background="@color/transparentMediumDark"
             android:layout_weight="1">
             <ImageButton
                 android:id="@+id/volumeImageButton"
@@ -204,7 +204,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="center"
-            android:background="@color/transparentMediumDark"
             android:layout_weight="1">
             <ImageButton
                 android:id="@+id/orientationImageButton"
@@ -342,7 +341,6 @@
             android:layout_margin="0dp"
             android:padding="0dp"
             android:gravity="center"
-            android:background="@color/transparentMediumDark"
             android:layout_weight="1"
             android:weightSum="100">
             <TextView
