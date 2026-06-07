@@ -42,6 +42,8 @@
             </intent-filter>
         </receiver>
 
+        <!-- BaseActivity must be here for chrome cast to work -->
+        <activity android:name=".BaseActivity" />
         <activity android:name=".BaseSongDataActivity" />
         <activity
             android:name=".smileapps.SmileAppsActivity"
