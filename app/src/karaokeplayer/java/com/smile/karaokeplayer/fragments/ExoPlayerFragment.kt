@@ -13,7 +13,9 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.R
+import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaokeplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.services.ExoPlayService
@@ -196,6 +198,13 @@ class ExoPlayerFragment : PlayerBaseFragment(),
 
     override fun getFavDatabaseName(): String {
         return DatabaseUtil.getFavDatabaseName()
+    }
+
+    override fun obtainCastContext(): CastContext? {
+        activity?.let {
+            return (it.application as SmileAppBase).castContext
+        }
+        return null
     }
     // end of implementing abstract methods of super class
 }

@@ -81,7 +81,7 @@ abstract class SmileAppBase : MultiDexApplication() {
 
     override fun onTerminate() {
         super.onTerminate()
-        castContext == null
+        castContext = null
     }
 
     override fun onTrimMemory(level: Int) {

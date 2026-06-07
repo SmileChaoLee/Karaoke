@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
+import com.google.android.gms.cast.framework.CastContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.presenters.PlayerBasePresenter
@@ -19,6 +20,7 @@ import com.smile.u2bplayer.services.U2bService
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.ChromecastYouTubePlayerContext
 import com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.chromecastsender.io.infrastructure.ChromecastConnectionListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.smile.karaoke.SmileAppBase
 import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import com.smile.u2bplayer.listeners.FScreenListener
 import com.smile.u2bplayer.listeners.U2bCastPlayerListener
@@ -46,7 +48,6 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         presenter = U2bPresenter(this)
         // must be after YouTubePresenter(this)
         super.onCreate(savedInstanceState)
-        castContext = null  // disable cast for VLC player for now
         LogUtil.i(TAG, "onCreate.finished")
     }
 
@@ -192,7 +193,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     // overriding methods of super class
-    override fun getPlayerPresenter(): PlayerBasePresenter? {
+    override fun getPlayerPresenter(): PlayerBasePresenter {
         LogUtil.i(TAG, "getPlayerPresenter")
         return presenter
     }
@@ -229,6 +230,13 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     override fun getFavDatabaseName(): String {
         return U2bPlayerUtil.getFavDatabaseName()
+    }
+
+    override fun obtainCastContext(): CastContext? {
+        activity?.let {
+            return (it.application as SmileAppBase).castContext
+        }
+        return null
     }
 
     override fun switchToMusicVisibility(): Int {

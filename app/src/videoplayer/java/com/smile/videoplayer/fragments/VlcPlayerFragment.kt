@@ -11,8 +11,8 @@ import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
+import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.R
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
@@ -38,7 +38,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         presenter = VlcPlayerPresenter(this)
         // must be after VlcPlayerPresenter(this)
         super.onCreate(savedInstanceState)
-        castContext = null  // disable cast for VLC player for now
         LogUtil.i(TAG, "onCreate.finished")
     }
 
@@ -148,6 +147,10 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
 
     override fun getFavDatabaseName(): String {
         return DatabaseUtil.getFavDatabaseName()
+    }
+
+    override fun obtainCastContext(): CastContext? {
+        return null  // disable cast for VLC player for now
     }
     // end of implementing abstract methods of super class
 

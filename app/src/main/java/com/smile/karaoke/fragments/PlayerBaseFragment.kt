@@ -207,6 +207,7 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun onPlayServiceConnected(service: IBinder)
     abstract fun audioChannelButtonListener()
     abstract fun getFavDatabaseName(): String
+    abstract fun obtainCastContext(): CastContext?
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -283,7 +284,7 @@ abstract class PlayerBaseFragment : Fragment(),
             textFontSize = ScreenUtil.getPxTextFontSizeNeeded(activity)
             fontScale = ScreenUtil.getPxFontScale(activity)
             toastTextSize = textFontSize * 0.7f
-            castContext = (it.application as SmileAppBase).castContext
+            castContext = obtainCastContext()
             deviceType = ScreenUtil.getDeviceType(it)
             if (deviceType != ScreenUtil.DEVICE_TYPE_PHONE) {
                 LogUtil.d(TAG, "onCreate.deviceType is not phone")
