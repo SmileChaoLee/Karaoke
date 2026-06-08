@@ -467,6 +467,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                 if (playingParam.preparedStatus == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
+                    LogUtil.d(TAG, "$msgStr.STATE_NONE.setAudioActionSubMenu()")
                     setAudioActionSubMenu()
                 }
                 playingParam.preparedStatus = 0
@@ -480,10 +481,10 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
             PlaybackStateCompat.STATE_PLAYING -> {
                 // when playing
                 LogUtil.d(TAG, "$msgStr.PlaybackStateCompat.STATE_PLAYING")
-                LogUtil.d(TAG, "$msgStr.PlaybackStateCompat.STATE_PLAYING")
                 if (playingParam.preparedStatus == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
+                    LogUtil.d(TAG, "$msgStr.STATE_PLAYING.setAudioActionSubMenu()")
                     setAudioActionSubMenu()
                 }
                 playingParam.preparedStatus = 2 // has been prepared and playing
@@ -501,6 +502,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                 if (playingParam.preparedStatus == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
+                    LogUtil.d(TAG, "$msgStr.STATE_PAUSED.setAudioActionSubMenu()")
                     setAudioActionSubMenu()
                 }
                 // new add, need to be tested more, especially ExoPlayer
@@ -516,6 +518,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
                 if (playingParam.preparedStatus == 1) {
                     // the first time of STATE_PLAYING means just prepared
                     // or just came back from background
+                    LogUtil.d(TAG, "$msgStr.STATE_STOPPED.setAudioActionSubMenu()")
                     setAudioActionSubMenu()
                 }
                 playingParam.preparedStatus = 0
@@ -560,12 +563,13 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
         val isShown = mPresentView.showNativeAndHideBannerAd()
         if (playSong) {
             if (getActivity() == null || !isShown) {
+                LogUtil.d(TAG, "$msgStr.startAutoPlay")
                 startAutoPlay(isSelfFinished)
             } else {
-                val act = getActivity()!!
-                act.lifecycleScope.launch {
+                getActivity()?.lifecycleScope?.launch {
                     LogUtil.d(TAG, "$msgStr.delay(2000)")
                     delay(2000)
+                    LogUtil.d(TAG, "$msgStr.startAutoPlay")
                     startAutoPlay(isSelfFinished)
                     // playingParam.finishState = MyPlayerConstants.FINISHED_NORMALLY
                 }

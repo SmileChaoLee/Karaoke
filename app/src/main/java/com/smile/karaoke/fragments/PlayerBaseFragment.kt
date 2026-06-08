@@ -647,7 +647,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
         activity?.let {
@@ -1413,7 +1413,7 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.playingParam.let {
                 LogUtil.d(TAG, "${msgStr}.playbackState = ${it.currentPlaybackState}")
                 if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING
-                    || numVideoTracks == 0 || playService.isCastSessionAvailable) {
+                    || numVideoTracks == 0 || playService.isCastSession) {
                     // Not playing, No video tracks, or casting session is available
                     nativeAdViewVisibility = View.VISIBLE
                     bannerAdsLayout?.visibility = View.GONE // hide the banner ad

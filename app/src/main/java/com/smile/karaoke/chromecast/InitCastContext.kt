@@ -8,9 +8,11 @@ object InitCastContext {
     private const val TAG = "InitCastContext"
     fun getInstance(context: Context): CastContext? {
         try {
-            return CastContext.getSharedInstance(context)
-        } catch (e: RuntimeException) {
-            LogUtil.e(TAG, "getInstance.Failed initialize CastContext", e)
+            val instance = CastContext.getSharedInstance(context)
+            LogUtil.i(TAG, "getInstance.CastContext initialized: $instance")
+            return instance
+        } catch (e: Exception) {
+            LogUtil.e(TAG, "getInstance.Failed initialize CastContext: ${e.message}", e)
             return null
         }
     }

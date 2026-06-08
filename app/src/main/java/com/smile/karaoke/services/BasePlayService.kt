@@ -46,16 +46,14 @@ abstract class BasePlayService : Service() {
     var mediaSessionCompat: MediaSessionCompat? = null
     var mediaControllerCompat: MediaControllerCompat? = null
     var controllerCallback: MediaControllerCallback? = null
-    var isCastSessionAvailable = false
+    var isCastSession = false
     val webServerAndCast = WebServerAndCast()
     var castContext: CastContext? = null
-    private lateinit var setupCast: SetupChromeCast
 
     override fun onCreate() {
         LogUtil.i(TAG, "onCreate")
         castContext = (application as SmileAppBase).castContext
         stopCasting()
-        setupCast = SetupChromeCast(this)
         initMediaSessionCompat()
         super.onCreate()
     }
@@ -91,7 +89,7 @@ abstract class BasePlayService : Service() {
             LogUtil.d(TAG, "stopCasting.endCurrentSession")
             sessionManager.endCurrentSession(true)
         }
-        isCastSessionAvailable = false
+        isCastSession = false
     }
 
     private fun initMediaSessionCompat() {
@@ -171,7 +169,7 @@ abstract class BasePlayService : Service() {
             return
         }
         //
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             val tempMediaUri = convertUriToHttpUri(mediaUri)
             if (tempMediaUri == mediaUri) {
                 // no change, then skip this song
@@ -247,7 +245,7 @@ abstract class BasePlayService : Service() {
         val repeatStatus = playingParam.repeatStatus
         val currentSongIndex = playingParam.currentSongIndex
         var songIndex = currentSongIndex + 1 // preparing this song
-        LogUtil.d(TAG, "startAutoPlay.songIndex = $songIndex")
+        LogUtil.i(TAG, "startAutoPlay.songIndex = $songIndex")
         if (orderedSongsSize == 0) {
             stillPlayNext = false // no more songs
         } else {

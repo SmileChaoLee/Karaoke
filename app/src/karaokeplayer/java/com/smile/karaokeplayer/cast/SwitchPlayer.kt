@@ -10,6 +10,10 @@ import java.io.File
 @OptIn(UnstableApi::class)
 class SwitchPlayer(private val playService: ExoPlayService) {
 
+    companion object {
+        private const val TAG = "SwitchPlayer"
+    }
+
     fun transferPlaybackToCast() {
         val msgString = "transferPlaybackToCast"
         LogUtil.i(TAG, msgString)
@@ -42,11 +46,11 @@ class SwitchPlayer(private val playService: ExoPlayService) {
                         playService.stopCasting()
                         return
                     }
-                    playService.isCastSessionAvailable = true
+                    playService.isCastSession = true
                     // remove all the players listeners
                     playService.removeExoPlayerListener()
                     playService.removeCastPlayerListener()
-                    // must after isCastSessionAvailable = true
+                    // must after isCastSession = true
                     presenter.presentView.setCurrentPlayerToPlayerView()
 
                     exoP.stop() // do not use playService.stopPlay()
@@ -79,7 +83,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
         // remove all the players listeners
         playService.removeCastPlayerListener()
         playService.removeExoPlayerListener()
-        playService.stopCasting()   // isCastSessionAvailable -> false
+        playService.stopCasting()   // isCastSession -> false
         // must after stopCasting()
         presenter.presentView.setCurrentPlayerToPlayerView()
 
@@ -116,9 +120,5 @@ class SwitchPlayer(private val playService: ExoPlayService) {
             }
         }
         playService.addExoPlayerListener()
-    }
-
-    companion object {
-        private const val TAG = "SwitchPlayer"
     }
 }

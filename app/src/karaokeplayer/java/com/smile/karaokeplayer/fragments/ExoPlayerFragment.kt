@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
@@ -201,10 +202,12 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun obtainCastContext(): CastContext? {
+        var castCtx: CastContext? = null
         activity?.let {
-            return (it.application as SmileAppBase).castContext
+            castCtx = (it.application as SmileAppBase).castContext
+            castCtx?.setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
         }
-        return null
+        return castCtx
     }
     // end of implementing abstract methods of super class
 }

@@ -21,7 +21,7 @@ class CastPlayerListener(private val playService: ExoPlayService)
 
     override fun onPlayerPaused() {
         // when onPlayWhenReadyChanged()
-        val msgStr = "onPlaybackStateChanged"
+        val msgStr = "onPlayWhenReadyChanged.onPlayerPaused()"
         val finishState = playService.presenter?.playingParam?.finishState
             ?: MyPlayerConstants.FINISHED_NORMALLY
         LogUtil.d(mTAG, "${msgStr}.finishState = $finishState")

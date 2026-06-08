@@ -40,6 +40,10 @@ import java.util.Arrays
 @UnstableApi
 class ExoPlayService : BasePlayService() {
 
+    companion object {
+        private const val TAG = "ExoPlayService"
+    }
+
     var presenter: ExoPlayerPresenter? = null
     var exoPlayer: ExoPlayer? = null
     var castPlayer: CastPlayer? = null
@@ -229,8 +233,8 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getCurrentPlayer(): Player? {
-        LogUtil.i(TAG, "getCurrentPlayer.isCastSessionAvailable = $isCastSessionAvailable")
-        return if (isCastSessionAvailable) {
+        LogUtil.i(TAG, "getCurrentPlayer.isCastSession = $isCastSession")
+        return if (isCastSession) {
             castPlayer
         } else {
             exoPlayer
@@ -238,7 +242,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getPlayWhenReady(): Boolean {
-        return if (isCastSessionAvailable) {
+        return if (isCastSession) {
             castPlayer?.playWhenReady ?: false
         } else {
             exoPlayer?.playWhenReady ?: false
@@ -264,7 +268,7 @@ class ExoPlayService : BasePlayService() {
         val parametersBuilder: TrackSelectionParameters.Builder =
             trackSelParam.buildUpon()
         // val trackGroup = mappedTrackInfo.getTrackGroups(audioRendererIndex)[audioTrackGroupIndex]
-        val currentTracks: Tracks? = if (isCastSessionAvailable) castPlayer?.currentTracks
+        val currentTracks: Tracks? = if (isCastSession) castPlayer?.currentTracks
         else exoPlayer?.currentTracks
 
         currentTracks?.let {
@@ -274,7 +278,7 @@ class ExoPlayService : BasePlayService() {
                     audioTrackIndex)
                 val trackSelectionParam = parametersBuilder.setOverrideForType(override)
                     .build()
-                if (isCastSessionAvailable) {
+                if (isCastSession) {
                     LogUtil.d(TAG, "${msgString}.castPlayer?.trackSelectionParameters" +
                             " = trackSelectionParam")
                     castPlayer?.trackSelectionParameters = trackSelectionParam
@@ -299,7 +303,7 @@ class ExoPlayService : BasePlayService() {
 
         var currentTracks: Tracks? = null
         // Example: Check if connected (this might vary based on your specific implementation)
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             if (castPlayer?.isCommandAvailable(Player.COMMAND_GET_TRACKS) == true) {
                 LogUtil.d(TAG, "{msgString}.COMMAND_GET_TRACKS")
                 currentTracks = castPlayer?.currentTracks
@@ -351,7 +355,7 @@ class ExoPlayService : BasePlayService() {
 
     // For ExoMediaSessionCallback.kt
     fun getMediaItemCount(): Int? {
-        return if (isCastSessionAvailable) {
+        return if (isCastSession) {
             castPlayer?.mediaItemCount
         } else {
             exoPlayer?.mediaItemCount
@@ -359,7 +363,7 @@ class ExoPlayService : BasePlayService() {
     }
     /*
     fun setTrackSelectionParameters(trackSelParam: TrackSelectionParameters) {
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.trackSelectionParameters = trackSelParam
         } else {
             exoPlayer?.trackSelectionParameters = trackSelParam
@@ -367,7 +371,7 @@ class ExoPlayService : BasePlayService() {
     }
     */
     fun setMediaItem(mediaItem: MediaItem, position: Long) {
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.setMediaItem(mediaItem, position)
         } else {
             exoPlayer?.setMediaItem(mediaItem, position)
@@ -377,22 +381,22 @@ class ExoPlayService : BasePlayService() {
         setMediaItem(mediaItem, 0)
     }
     fun prepare() {
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.prepare()
         } else {
             exoPlayer?.prepare()
         }
     }
     fun setPlayWhenReady(whenReady: Boolean) {
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.playWhenReady = whenReady
         } else {
             exoPlayer?.playWhenReady = whenReady
         }
     }
     override fun onPlay() {
-        LogUtil.i(TAG, "onPlay.isCastSessionAvailable = $isCastSessionAvailable")
-        if (isCastSessionAvailable) {
+        LogUtil.i(TAG, "onPlay.isCastSession = $isCastSession")
+        if (isCastSession) {
             castPlayer?.apply {
                 presenter?.let {
                     if ((it.playingParam.currentPlaybackState == PlaybackStateCompat.STATE_NONE
@@ -428,7 +432,7 @@ class ExoPlayService : BasePlayService() {
     }
     override fun onPause() {
         LogUtil.i(TAG, "onPause")
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.pause()
         } else {
             exoPlayer?.pause()
@@ -436,7 +440,7 @@ class ExoPlayService : BasePlayService() {
     }
     override fun onStop() {
         LogUtil.i(TAG, "onStop")
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             // setPlayerTime(getMediaDuration()) will trigger playing from the beginning
             // castPlayer?.seekTo() will trigger playing from the beginning
             // after castPlayer?.stop(), everything stopped including listener
@@ -462,7 +466,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun isPlaying(): Boolean {
-        return if (isCastSessionAvailable) {
+        return if (isCastSession) {
             castPlayer?.isPlaying ?: false
         } else {
             exoPlayer?.isPlaying ?: false
@@ -471,7 +475,7 @@ class ExoPlayService : BasePlayService() {
 
     override fun setPlayerTime(progress: Long) {
         LogUtil.d(TAG, "setPlayerTime")
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.seekTo(progress)
         } else {
             exoPlayer?.seekTo(progress)
@@ -480,7 +484,7 @@ class ExoPlayService : BasePlayService() {
 
     override fun isSeekable(): Boolean {
         LogUtil.d(TAG, "isSeekable")
-        val seekAble: Boolean = if (isCastSessionAvailable) {
+        val seekAble: Boolean = if (isCastSession) {
             castPlayer?.isCurrentMediaItemSeekable ?: false
         } else {
             exoPlayer?.isCurrentMediaItemSeekable ?: false
@@ -525,7 +529,7 @@ class ExoPlayService : BasePlayService() {
             if (!useAudioProcessor) {
                 // exoPlayer?.volume = volumeTmp
                 LogUtil.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
-                if (isCastSessionAvailable) {
+                if (isCastSession) {
                     castPlayer?.volume = volumeTmp
                 } else {
                     exoPlayer?.volume = volumeTmp
@@ -538,7 +542,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun getMediaDuration(): Long {
-        var duration: Long = if (isCastSessionAvailable) {
+        var duration: Long = if (isCastSession) {
             castPlayer?.duration ?: 0
         } else {
             exoPlayer?.duration ?: 0
@@ -549,7 +553,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun getCurrentPosition(): Long {
-        val currPosition: Long = if (isCastSessionAvailable) {
+        val currPosition: Long = if (isCastSession) {
             castPlayer?.currentPosition ?: 0
         } else {
             exoPlayer?.currentPosition ?: 0
@@ -559,7 +563,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun getPlaybackState(): Int {
-        val state: Int = if (isCastSessionAvailable) {
+        val state: Int = if (isCastSession) {
             castPlayer?.playbackState ?: Player.STATE_IDLE
         } else {
             exoPlayer?.playbackState ?: Player.STATE_IDLE
@@ -576,7 +580,7 @@ class ExoPlayService : BasePlayService() {
         // Play.STATE_ENDED event
         // currentPlayer.setPlayWhenReady(false)
         LogUtil.i(TAG, "specificPlayerReplayMedia")
-        if (isCastSessionAvailable) {
+        if (isCastSession) {
             castPlayer?.apply {
                 LogUtil.d(TAG,"specificPlayerReplayMedia.castPlayer.seekTo.")
                 seekTo(currentAudioPosition)
@@ -607,9 +611,5 @@ class ExoPlayService : BasePlayService() {
             it.playingParam.preparedStatus = 0
             replayMedia(it) // regardless to the playback state
         }
-    }
-
-    companion object {
-        private const val TAG = "ExoPlayService"
     }
 }

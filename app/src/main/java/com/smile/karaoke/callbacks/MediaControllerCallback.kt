@@ -21,7 +21,7 @@ class MediaControllerCallback(private val mPresenter: PlayerBasePresenter) :
         LogUtil.d(TAG, "onPlaybackStateChanged().state = $state")
         super.onPlaybackStateChanged(state)
         state?.let {
-            LogUtil.d(TAG, "onPlaybackStateChanged().mPresenter.updateStatusAndUi(state)")
+            LogUtil.d(TAG, "onPlaybackStateChanged().mPresenter.updateStatusAndUi(state=${it.playbackState})")
             mPresenter.updateStatusAndUi(it)
         }
     }

@@ -27,7 +27,7 @@ public class ExoPlayerListener implements Player.Listener {
     }
 
     public void onPlayerPaused() {
-        String msgStr = "onPlayWhenReadyChanged";
+        String msgStr = "onPlayWhenReadyChanged.onPlayerPaused()";
         LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_PAUSED");
         mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
     }
@@ -35,7 +35,7 @@ public class ExoPlayerListener implements Player.Listener {
     @Override
     public synchronized void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
         String msgStr = "onPlayWhenReadyChanged";
-        LogUtil.d(mTAG, msgStr + "playWhenReady = " + playWhenReady
+        LogUtil.d(mTAG, msgStr + ", playWhenReady = " + playWhenReady
                         + ", reason = " + reason);
         int state = mService.getPlaybackState();
         LogUtil.d(mTAG, msgStr + ".state = " + state);
