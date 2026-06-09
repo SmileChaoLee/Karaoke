@@ -209,5 +209,8 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         }
         return castCtx
     }
+    override fun isCasting(): Boolean {
+        return getPlayService()?.isCastSession ?: false
+    }
     // end of implementing abstract methods of super class
 }

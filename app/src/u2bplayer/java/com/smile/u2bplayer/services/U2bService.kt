@@ -32,8 +32,9 @@ class U2bService : BasePlayService() {
     var presenter : U2bPresenter? = null
     private var duration = 0L
     private var currentAudioPosition = 0L
+    private var currentVideoId = ""
+    private var oldVideoId = ""
     var u2bPlayer: YouTubePlayer? = null
-    // do not use
     var u2bCastPlayer: YouTubePlayer? = null
     var isU2bCast = false
 
@@ -47,7 +48,7 @@ class U2bService : BasePlayService() {
     override fun onCreate() {
         super.onCreate()
         LogUtil.i(TAG, "onCreate")
-        // do not use this variable, isCastSessionAvailable because it is for local file
+        // do not use this variable, isU2bCast because it is for local file
         /*
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
@@ -164,8 +165,39 @@ class U2bService : BasePlayService() {
         return 1    // temporary
     }
 
+    fun pauseU2bPlayer(): Boolean {
+        LogUtil.d(TAG, "pauseU2bPlayer")
+        try {
+            u2bPlayer?.pause()
+            isU2bCast = true
+        } catch (e: Exception) {
+            LogUtil.w(TAG, "pauseU2bPlayer.Exception", e)
+            isU2bCast = false
+        }
+        return isU2bCast
+    }
+
+    fun switchToU2bPlayer() {
+        val logStr = "switchToU2bPlayer"
+        LogUtil.d(TAG, logStr)
+        isU2bCast = false
+        try {
+            u2bCastPlayer?.pause()
+            u2bCastPlayer = null
+            val currentPosition = getCurrentPosition() / 1000f // convert to seconds
+            if (currentVideoId == oldVideoId) {
+                u2bPlayer?.seekTo(currentPosition)
+            } else {
+                u2bPlayer?.loadVideo(currentVideoId, currentPosition)
+            }
+        } catch (e: Exception) {
+            LogUtil.w(TAG, "$logStr.Exception", e)
+        }
+        u2bPlayer?.play()
+    }
+
     override fun onPlay() {
-        LogUtil.i(TAG, "onPlay.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "onPlay.isU2bCast = $isU2bCast")
         if (isU2bCast) {
             u2bCastPlayer?.play()
         } else {
@@ -297,6 +329,20 @@ class U2bService : BasePlayService() {
 
     fun setCurrentPosition(currentPosition: Long) {
         currentAudioPosition = currentPosition
+    }
+
+    fun setOldVideoId() {
+        oldVideoId = currentVideoId
+        LogUtil.d(TAG, "setOldVideoId.oldVideoId = $oldVideoId")
+    }
+
+    fun setCurrentVideoId(videoId: String) {
+        currentVideoId = videoId
+        LogUtil.d(TAG, "setCurrentVideoId.currentVideoId = $currentVideoId")
+    }
+
+    fun getCurrentVideoId(): String {
+        return currentVideoId
     }
 
     override fun getCurrentPosition(): Long {

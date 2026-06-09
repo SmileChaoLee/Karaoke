@@ -33,6 +33,21 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         private const val TAG = "U2bPlayFragment"
     }
 
+    /**
+     * Application ID
+     * 385894C9
+     * Application Name
+     * Smile YouTube Player
+     * Application Type
+     * Custom Receiver
+     * Receiver Application URL
+     * https://smilechaolee.github.io/youtube-cast-receiver/index.html
+     * Status
+     * Unpublished
+     * This application is currently unpublished and can only be launched on your authorized devices. Learn More
+     * Chrome cast ID: 4801101RTT9J
+    */
+
     private lateinit var presenter: U2bPresenter
     private var playService: U2bService? = null
     private var youTubeView: YouTubePlayerView? = null
@@ -41,7 +56,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     private var fScreenListener: FScreenListener? = null
     private var u2bPlayerListener: U2bPlayerListener? = null
     private var chromecastContext: ChromecastYouTubePlayerContext? = null
-    private var castPlayerListener: U2bPlayerListener? = null
+    private var castPlayerListener: U2bCastPlayerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -52,9 +67,9 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-        LogUtil.i(TAG, "onViewCreated.finished")
+        LogUtil.d(TAG, "onViewCreated.finished")
     }
 
     override fun onResume() {
@@ -93,6 +108,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
             }
             release()
         }
+        chromecastContext?.release()
         super.onDestroy()
     }
 
@@ -175,8 +191,12 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     private fun initChromecastContext() {
-        LogUtil.i(TAG, "initChromecastContext")
+        val logStr = "initChromecastContext"
+        LogUtil.d(TAG, logStr)
+        if (chromecastContext != null) return
+        castContext = obtainCastContext()
         castContext?.let {
+            LogUtil.d(TAG, "$logStr.castContext is not null")
             chromecastContext = ChromecastYouTubePlayerContext(it.sessionManager)
             chromecastContext?.addChromecastConnectionListener(
                 CastConnectListener()
@@ -184,12 +204,17 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         }
     }
 
-    private fun initU2bCastPlayer() {
-        LogUtil.i(TAG, "initU2bCastPlayer")
-        // The context is ready. Now initialize the player with it.
+    private fun initU2bCastPlayer(activeContext: ChromecastYouTubePlayerContext) {
+        val logStr = "initU2bCastPlayer"
+        LogUtil.i(TAG, logStr)
         val ps = playService ?: return
         castPlayerListener = U2bCastPlayerListener(ps)
-        chromecastContext?.initialize(castPlayerListener!!)
+        try {
+            activeContext.initialize(castPlayerListener!!)
+            LogUtil.d(TAG, "$logStr.activeContext.initialize() called")
+        } catch (e: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", e)
+        }
     }
 
     // overriding methods of super class
@@ -233,10 +258,16 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun obtainCastContext(): CastContext? {
+        var castCtx: CastContext? = null
         activity?.let {
-            return (it.application as SmileAppBase).castContext
+            castCtx = (it.application as SmileAppBase).castContext
+            castCtx?.setReceiverApplicationId("385894C9")
         }
-        return null
+        return castCtx
+    }
+
+    override fun isCasting(): Boolean {
+        return getPlayService()?.isU2bCast ?: false
     }
 
     override fun switchToMusicVisibility(): Int {
@@ -273,16 +304,28 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     private inner class CastConnectListener: ChromecastConnectionListener {
         val logStr = "CastConnectListener"
+
+        init {
+            LogUtil.d(TAG, "$logStr.init")
+        }
+
         override fun onChromecastConnecting() {
             // Optional: Show a "connecting" message to the user
-            LogUtil.i(TAG, "$logStr.onChromecastConnecting")
+            LogUtil.d(TAG, "$logStr.onChromecastConnecting")
         }
 
         override fun onChromecastConnected(
-            chromecastYouTubePlayerContext: ChromecastYouTubePlayerContext) {
-            LogUtil.i(TAG, "$logStr.onChromecastConnected")
+            chromecastYouTubePlayerContext: ChromecastYouTubePlayerContext
+        ) {
+            LogUtil.d(TAG, "$logStr.onChromecastConnected")
             // This is the key part! A connection has been established.
-            initU2bCastPlayer()
+            playService?.let { ps ->
+                if (ps.pauseU2bPlayer()) {
+                    ps.setOldVideoId()  // Set old video id before switching to cast player
+                    LogUtil.d(TAG, "$logStr.onChromecastConnected.initU2bCastPlayer()")
+                    initU2bCastPlayer(chromecastYouTubePlayerContext)
+                }
+            }
         }
 
         override fun onChromecastDisconnected() {
@@ -290,6 +333,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
             // Connection lost. Switch back to the local player.
             // playerContainer.removeAllViews()
             // playerContainer.addView(youTubePlayerView)
+            playService?.switchToU2bPlayer()
         }
     }
 }

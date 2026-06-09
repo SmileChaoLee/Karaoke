@@ -152,6 +152,10 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     override fun obtainCastContext(): CastContext? {
         return null  // disable cast for VLC player for now
     }
+
+    override fun isCasting(): Boolean {
+        return getPlayService()?.isCastSession ?: false
+    }
     // end of implementing abstract methods of super class
 
     // Implement VlcPlayerPresenter.VlcPresentView

@@ -14,74 +14,77 @@ import com.smile.u2bplayer.services.U2bService
 open class U2bPlayerListener (private val playService: U2bService) :
     YouTubePlayerListener {
 
-    companion object {
-        private const val TAG = "U2bPlayerListener"
+    private var mTAG = "U2bPlayerListener"
+
+    fun setTag(tag: String) {
+        LogUtil.d(mTAG, "setTag.tag = $tag")
+        mTAG = tag
     }
 
     override fun onReady(youTubePlayer: YouTubePlayer) {
-        LogUtil.d(TAG, "onReady")
+        LogUtil.d(mTAG, "onReady")
         // mYouTubePlayer = youTubePlayer   // will be set from YouTubeFragment
         // val videoId = "hPNJ7Ge6-uk"
         // youTubePlayer.loadVideo(videoId, 0f)
     }
 
     override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerConstants.PlayerState) {
-        LogUtil.d(TAG, "onStateChange.state = $state")
+        LogUtil.d(mTAG, "onStateChange.state = $state")
         when (state) {
             PlayerConstants.PlayerState.VIDEO_CUED -> {
                 // to do
             }
             PlayerConstants.PlayerState.BUFFERING -> {
-                LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_BUFFERING")
+                LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_BUFFERING")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING)
             }
             PlayerConstants.PlayerState.PLAYING -> {
-                LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_PLAYING")
+                LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_PLAYING")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING)
             }
             PlayerConstants.PlayerState.PAUSED -> {
                 playService.presenter?.playingParam?.let {
                     if (it.finishState == MyPlayerConstants.STOPPED_BY_USER) {
                         // User stop the playing
-                        LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_NONE")
+                        LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_NONE")
                         playService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE)
                         return
                     } else if (it.finishState == MyPlayerConstants.FINISHED_BY_PROGRAM) {
-                        LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_STOPPED")
+                        LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_STOPPED")
                         playService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
                         return
                     }
                 }
-                LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_PAUSED")
+                LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_PAUSED")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED)
             }
             PlayerConstants.PlayerState.ENDED -> {
-                LogUtil.d(TAG, "onStateChange.send PlaybackStateCompat.STATE_STOPPED")
+                LogUtil.d(mTAG, "onStateChange.send PlaybackStateCompat.STATE_STOPPED")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
                 // playService.hideYoutubeFeatures()    // screen will be black after this
             }
             PlayerConstants.PlayerState.UNSTARTED -> {
-                LogUtil.d(TAG, "onStateChange.UNSTARTED.send No event")
+                LogUtil.d(mTAG, "onStateChange.UNSTARTED.send No event")
             }
             PlayerConstants.PlayerState.UNKNOWN -> {
-                LogUtil.d(TAG, "onStateChange.UNKNOWN.send No event")
+                LogUtil.d(mTAG, "onStateChange.UNKNOWN.send No event")
             }
         }
     }
 
     override fun onPlaybackQualityChange(youTubePlayer: YouTubePlayer,
         playbackQuality: PlayerConstants.PlaybackQuality) {
-        LogUtil.d(TAG, "onPlaybackQualityChange")
+        LogUtil.d(mTAG, "onPlaybackQualityChange")
     }
 
     override fun onPlaybackRateChange(youTubePlayer: YouTubePlayer,
                                       playbackRate: PlayerConstants.PlaybackRate) {
-        LogUtil.d(TAG, "onPlaybackRateChange")
+        LogUtil.d(mTAG, "onPlaybackRateChange")
     }
 
     override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
-        LogUtil.d(TAG, "onError.error = $error")
-        LogUtil.d(TAG,"onError.send PlaybackStateCompat.STATE_ERROR");
+        LogUtil.d(mTAG, "onError.error = $error")
+        LogUtil.d(mTAG,"onError.send PlaybackStateCompat.STATE_ERROR");
         playService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR)
     }
 
@@ -92,7 +95,7 @@ open class U2bPlayerListener (private val playService: U2bService) :
 
     override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
         // duration is measured in seconds
-        LogUtil.d(TAG, "onVideoDuration.duration = $duration")
+        LogUtil.d(mTAG, "onVideoDuration.duration = $duration")
         playService.setMediaDuration((duration * 1000f).toLong())
     }
 
@@ -101,10 +104,11 @@ open class U2bPlayerListener (private val playService: U2bService) :
     }
 
     override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
-        LogUtil.d(TAG, "onVideoId.videoId = $videoId")
+        LogUtil.d(mTAG, "onVideoId.videoId = $videoId")
+        playService.setCurrentVideoId(videoId)
     }
 
     override fun onApiChange(youTubePlayer: YouTubePlayer) {
-        LogUtil.d(TAG, "onApiChange")
+        LogUtil.d(mTAG, "onApiChange")
     }
 }

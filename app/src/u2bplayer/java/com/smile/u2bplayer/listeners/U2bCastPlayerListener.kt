@@ -9,14 +9,25 @@ import com.smile.u2bplayer.services.U2bService
 @OptIn(UnstableApi::class)
 class U2bCastPlayerListener
     (private val playService: U2bService): U2bPlayerListener(playService) {
-    companion object {
-        private const val TAG = "U2bCastPlayerListener"
+
+    private val mTAG = "U2bCastPlayerListener"
+
+    init {
+        LogUtil.d(mTAG, "U2bCastPlayerListener.init")
+        setTag(mTAG)
     }
 
     override fun onReady(youTubePlayer: YouTubePlayer) {
-        LogUtil.d(TAG, "onReady")
+        LogUtil.d(mTAG, "onReady - cast player ready")
         playService.u2bCastPlayer = youTubePlayer
-        // playService.isU2bCast
-        youTubePlayer.play()
+        // Load the current video from local player onto cast player
+        val currentVideoId = playService.getCurrentVideoId()
+        if (currentVideoId.isNotEmpty()) {
+            LogUtil.d(mTAG, "onReady - loading currentVideoId=$currentVideoId on cast player")
+            val currentPosition = playService.getCurrentPosition() / 1000f // convert to seconds
+            youTubePlayer.loadVideo(currentVideoId, currentPosition)
+        } else {
+            LogUtil.d(mTAG, "onReady - no current video to load")
+        }
     }
 }
