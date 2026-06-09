@@ -18,8 +18,8 @@ class MediaControllerCallback(private val mPresenter: PlayerBasePresenter) :
     @SuppressLint("LongLogTag")
     @Synchronized
     override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-        LogUtil.d(TAG, "onPlaybackStateChanged().state = $state")
-        super.onPlaybackStateChanged(state)
+        // super.onPlaybackStateChanged(state)
+        LogUtil.d(TAG, "onPlaybackStateChanged().state = ${state?.playbackState}")
         state?.let {
             LogUtil.d(TAG, "onPlaybackStateChanged().mPresenter.updateStatusAndUi(state=${it.playbackState})")
             mPresenter.updateStatusAndUi(it)

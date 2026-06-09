@@ -560,7 +560,8 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
 
             else -> LogUtil.d(TAG, "$msgStr.other PlaybackStateCompat")
         }
-        val isShown = mPresentView.showNativeAndHideBannerAd()
+        // val isShown = mPresentView.showNativeAndHideBannerAd()
+        val isShown = false
         if (playSong) {
             if (getActivity() == null || !isShown) {
                 LogUtil.d(TAG, "$msgStr.startAutoPlay")

@@ -14,7 +14,7 @@ import com.smile.karaoke.utilities.LogUtil;
 public class ExoPlayerListener implements Player.Listener {
 
     private String mTAG = "ExoPlayerListener";
-    private final ExoPlayService mService;
+    final ExoPlayService mService;
 
     public ExoPlayerListener(ExoPlayService service) {
         mService = service;
@@ -30,6 +30,13 @@ public class ExoPlayerListener implements Player.Listener {
         String msgStr = "onPlayWhenReadyChanged.onPlayerPaused()";
         LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_PAUSED");
         mService.setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+    }
+
+    public void onPlayerStateIdle(int finishState) {
+        String msgStr = "onPlaybackStateChanged.onPlayerStateIdle()";
+        // finishState = MyPlayerConstants.FINISHED_BY_PROGRAM (2), stopped by program
+        LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_STOPPED");
+        mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
     }
 
     @Override
@@ -63,6 +70,12 @@ public class ExoPlayerListener implements Player.Listener {
         LogUtil.d(mTAG, msgStr + ".playWhenReady = " + playWhenReady);
         float duration = mService.getMediaDuration();
         LogUtil.d(mTAG, msgStr + ".duration = " + duration);
+        if (mService.getPresenter() == null) {
+            LogUtil.d(mTAG, msgStr + ".mService.getPresenter() = null");
+            return;
+        }
+        int finishState = mService.getPresenter().getPlayingParam().getFinishState();
+        LogUtil.d(mTAG, msgStr + ".finishState = " + finishState);
         switch (state) {
             case Player.STATE_BUFFERING:
                 LogUtil.d(mTAG, msgStr + "send .Player.STATE_BUFFERING");
@@ -81,7 +94,7 @@ public class ExoPlayerListener implements Player.Listener {
             case Player.STATE_ENDED:
                 // playing is finished and send PlaybackStateCompat.STATE_STOPPED
                 // to MediaControllerCallback
-                // this casse: finishState = PlayerConstants.FINISHED_NORMALLY (0)
+                // this casse: finishState = MyPlayerConstants.FINISHED_NORMALLY (0)
                 LogUtil.d(mTAG, msgStr + ".Player.STATE_ENDED");
                 LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_STOPPED");
                 mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
@@ -89,18 +102,14 @@ public class ExoPlayerListener implements Player.Listener {
             case Player.STATE_IDLE:
                 // user stops the playing and send PlaybackStateCompat.STATE_NONE
                 // to MediaControllerCallback
-                // or stopPlay(PlayerConstants.FINISHED_BY_PROGRAM) because of playPreviousSong() or playNextSong()
+                // or stopPlay(MyPlayerConstants.FINISHED_BY_PROGRAM) because of playPreviousSong() or playNextSong()
                 LogUtil.d(mTAG, msgStr + ".Player.STATE_IDLE");
-                if (mService.getPresenter() != null
-                        && mService.getPresenter().getPlayingParam().getFinishState()
-                        == MyPlayerConstants.STOPPED_BY_USER) {
+                if (finishState == MyPlayerConstants.STOPPED_BY_USER) {
                     // stopped by user
                     LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_NONE");
                     mService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE);
                 } else {
-                    // finishState = PlayerConstants.FINISHED_BY_PROGRAM (2), stopped by program
-                    LogUtil.d(mTAG, msgStr + ".send PlaybackStateCompat.STATE_STOPPED");
-                    mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED);
+                    onPlayerStateIdle(finishState);
                 }
                 break;
             default:

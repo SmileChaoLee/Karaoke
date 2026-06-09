@@ -27,19 +27,33 @@ class CastPlayerListener(private val playService: ExoPlayService)
         LogUtil.d(mTAG, "${msgStr}.finishState = $finishState")
         when(finishState) {
             MyPlayerConstants.STOPPED_BY_USER -> {
-                // stopped by PlayerConstants.STOPPED_BY_USER
+                // stopped by MyPlayerConstants.STOPPED_BY_USER
                 // use castPlay.pause() in playService.stop() for carPlayer
                 // then no playing next song
                 LogUtil.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_NONE")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_NONE)
             }
             else -> {
-                // stopped by PlayerConstants.FINISHED_BY_PROGRAM
+                // stopped by MyPlayerConstants.FINISHED_BY_PROGRAM
                 // use castPlay.pause() in playService.stop() for carPlayer
                 // then playing next song
                 LogUtil.d(mTAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED")
                 playService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
             }
+        }
+    }
+
+    override fun onPlayerStateIdle(finishState: Int) {
+        val msgStr = "onPlaybackStateChanged.onPlayerStateIdle()"
+        LogUtil.d(mTAG, "$msgStr.finishState = $finishState")
+        if (finishState == MyPlayerConstants.FINISHED_BY_PROGRAM) {
+            // finishState = MyPlayerConstants.FINISHED_BY_PROGRAM (2), stopped by program
+            LogUtil.d(mTAG, "$msgStr.send PlaybackStateCompat.STATE_STOPPED")
+            mService.setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+        } else {
+            // finishState = MyPlayerConstants.FINISHED_NORMALLY(0)
+            // stopped by program because of playPreviousSong() or playNextSong()
+            LogUtil.d(mTAG, "$msgStr.FINISHED_NORMALLY do nothing")
         }
     }
 

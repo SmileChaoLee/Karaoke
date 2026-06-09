@@ -26,6 +26,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.extractor.DefaultExtractorsFactory
 import com.smile.karaoke.callbacks.MediaControllerCallback
 import com.smile.karaoke.constants.CommonConstants
+import com.smile.karaoke.constants.MyPlayerConstants
 import com.smile.karaokeplayer.audioProcessors.StereoVolumeAudioProcessor
 import com.smile.karaokeplayer.callbacks.ExoMediaSessionCallback
 import com.smile.karaokeplayer.cast.SwitchPlayer
@@ -440,14 +441,33 @@ class ExoPlayService : BasePlayService() {
     }
     override fun onStop() {
         LogUtil.i(TAG, "onStop")
+        val pnt = presenter ?: run {
+            LogUtil.e(TAG, "presenter is null")
+            return
+        }
+        val finishState = pnt.playingParam.finishState
+        val msg = when(finishState) {
+            MyPlayerConstants.FINISHED_NORMALLY -> "FINISHED_NORMALLY"
+            MyPlayerConstants.STOPPED_BY_USER -> "STOPPED_BY_USER"
+            MyPlayerConstants.FINISHED_BY_PROGRAM -> "FINISHED_BY_PROGRAM"
+            else -> "Unknown"
+        }
+        LogUtil.e(TAG, "onStop.msg = $msg")
         if (isCastSession) {
             // setPlayerTime(getMediaDuration()) will trigger playing from the beginning
             // castPlayer?.seekTo() will trigger playing from the beginning
             // after castPlayer?.stop(), everything stopped including listener
             // so do not use castPlayer?.stop()
             // use castPlayer?.pause(), then process in listener
-            LogUtil.d(TAG, "onStop.castPlayer?.pause()")
-            castPlayer?.pause()
+            // LogUtil.d(TAG, "onStop.castPlayer?.pause()")
+            if (finishState == MyPlayerConstants.STOPPED_BY_USER) {
+                LogUtil.e(TAG, "onStop.castPlayer?.pause()")
+                castPlayer?.pause()
+            } else {
+                LogUtil.e(TAG, "onStop.send PlaybackStateCompat.STATE_STOPPED")
+                pnt.playingParam.finishState = MyPlayerConstants.FINISHED_NORMALLY
+                setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+            }
         } else {
             exoPlayer?.stop()
         }
