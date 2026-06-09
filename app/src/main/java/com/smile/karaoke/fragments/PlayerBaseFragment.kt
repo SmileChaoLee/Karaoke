@@ -74,6 +74,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.abs
+import androidx.core.view.isVisible
 
 @UnstableApi
 abstract class PlayerBaseFragment : Fragment(),
@@ -208,6 +209,7 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun audioChannelButtonListener()
     abstract fun getFavDatabaseName(): String
     abstract fun obtainCastContext(): CastContext?
+    abstract fun isCasting(): Boolean
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -1211,12 +1213,16 @@ abstract class PlayerBaseFragment : Fragment(),
         supportToolbar?.let {
             it.setOnClickListener { _: View ->
                 LogUtil.d(TAG, "supportToolbar.onClick")
-                showSupportToolbarAudioControlSetTimer()
-                lastFocusView?.let { last ->
-                    last.post { last.requestFocus() }
-                } ?: run {
-                    actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
-                    lastFocusView = actionMenuImageButton
+                if (it.isVisible) {
+                    hideSupportToolbarAndAudioController()
+                } else {
+                    showSupportToolbarAudioControlSetTimer()
+                    lastFocusView?.let { last ->
+                        last.post { last.requestFocus() }
+                    } ?: run {
+                        actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
+                        lastFocusView = actionMenuImageButton
+                    }
                 }
             }
         }
@@ -1413,7 +1419,7 @@ abstract class PlayerBaseFragment : Fragment(),
             mPresenter.playingParam.let {
                 LogUtil.d(TAG, "${msgStr}.playbackState = ${it.currentPlaybackState}")
                 if (it.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING
-                    || numVideoTracks == 0 || playService.isCastSession) {
+                    || numVideoTracks == 0 || isCasting()) {
                     // Not playing, No video tracks, or casting session is available
                     nativeAdViewVisibility = View.VISIBLE
                     bannerAdsLayout?.visibility = View.GONE // hide the banner ad
