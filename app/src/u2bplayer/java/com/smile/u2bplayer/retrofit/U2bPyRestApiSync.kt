@@ -2,14 +2,14 @@ package com.smile.u2bplayer.retrofit
 
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bplayer.models.VideoList
+import com.smile.u2bplayer.u2bplay_constants.PrivateConstants
 import retrofit2.Response
 
 object U2bPyRestApiSync {
 
     private const val TAG = "U2bPyReApiSync"
-    // Android Key: AIzaSyAaBRrr0Ei1lucLN0W5hlLNYnAXQslrKck
+    private const val API_KEY = PrivateConstants.API_KEY
     private const val HTTP_OK = 200
-    private const val API_KEY = "AIzaSyAaBRrr0Ei1lucLN0W5hlLNYnAXQslrKck"
 
     private fun getApiInstance(packageName: String): U2bPyApiInterface {
         LogUtil.d(TAG, "getApiInstance")
