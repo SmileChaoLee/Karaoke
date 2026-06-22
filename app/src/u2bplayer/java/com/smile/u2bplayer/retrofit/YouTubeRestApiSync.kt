@@ -5,15 +5,15 @@ import com.smile.u2bplayer.models.VideoList
 import com.smile.u2bplayer.u2bplay_constants.PrivateConstants
 import retrofit2.Response
 
-object U2bPyRestApiSync {
+object YouTubeRestApiSync {
 
-    private const val TAG = "U2bPyReApiSync"
+    private const val TAG = "YTRestApiSync"
     private const val API_KEY = PrivateConstants.API_KEY
     private const val HTTP_OK = 200
 
-    private fun getApiInstance(packageName: String): U2bPyApiInterface {
+    private fun getApiInstance(packageName: String): YouTubeApiInterface {
         LogUtil.d(TAG, "getApiInstance")
-        return U2bPyRetrofitClient.getRetrofit(packageName).create(U2bPyApiInterface::class.java)
+        return YouTubeRetrofitClient.getRetrofit(packageName).create(YouTubeApiInterface::class.java)
     }
 
     fun getVideoList(packageName: String, searchTerm: String, maxResult: Int): VideoList {
