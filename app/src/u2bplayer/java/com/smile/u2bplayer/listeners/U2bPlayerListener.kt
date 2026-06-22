@@ -84,7 +84,7 @@ open class U2bPlayerListener (private val playService: U2bService) :
 
     override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
         LogUtil.d(mTAG, "onError.error = $error")
-        LogUtil.d(mTAG,"onError.send PlaybackStateCompat.STATE_ERROR");
+        LogUtil.d(mTAG,"onError.send PlaybackStateCompat.STATE_ERROR")
         playService.setMediaPlaybackState(PlaybackStateCompat.STATE_ERROR)
     }
 
