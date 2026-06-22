@@ -26,7 +26,7 @@
         </activity>
 
         <activity
-            android:name="com.smile.u2bkktool.U2bKkPlayActivity"
+            android:name="com.smile.u2bkktool.U2bKTPlayActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>

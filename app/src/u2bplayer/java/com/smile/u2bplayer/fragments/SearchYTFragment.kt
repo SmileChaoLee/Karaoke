@@ -1,5 +1,6 @@
 package com.smile.u2bplayer.fragments
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -37,10 +38,10 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
+open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     companion object {
-        private const val TAG : String = "SearchVideosFragment"
+        private const val TAG : String = "SearchYTFragment"
     }
 
     private var searchButton: ImageButton? = null
@@ -141,19 +142,8 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         mediaRetriever.release()
     }
 
-    private fun searchYouTubeVideos(searchTerm: String, maxResult: Int = 50) {
-        val logStr = "searchYouTubeVideos"
-        LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
-        if (searchTerm.isEmpty()) return
-        val act = activity?: return
-        searchCompleted = false
-
-        // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
-        U2bPlayerUtil.saveKeyword(act, searchTerm)
-
-        LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
-        searchRecyclerView?.visibility = View.GONE
-        loadingMsgTextView?.visibility = View.VISIBLE
+    open fun searchedToU2bVideos(act: Activity, searchTerm: String, maxResult: Int = 50) {
+        val logStr = "searchedToU2bVideos"
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
             val videoList = YouTubeRestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
@@ -187,6 +177,20 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
     }
 
+    private fun searchYouTubeVideos(searchTerm: String, maxResult: Int = 50) {
+        val logStr = "searchYouTubeVideos"
+        LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
+        if (searchTerm.isEmpty()) return
+        val act = activity?: return
+        searchCompleted = false
+        // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
+        U2bPlayerUtil.saveKeyword(act, searchTerm)
+        LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
+        searchRecyclerView?.visibility = View.GONE
+        loadingMsgTextView?.visibility = View.VISIBLE
+        searchedToU2bVideos(act, searchTerm, maxResult)
+    }
+
     private fun setProperFocus() {
         if (U2bSingleton.videos.isEmpty()) {
             searchRecyclerView?.visibility = View.GONE
@@ -197,7 +201,7 @@ open class SearchVideosFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
     }
 
-    private fun updateRecyclerView() {
+    fun updateRecyclerView() {
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
         loadingMsgTextView?.visibility = View.GONE
         setProperFocus()

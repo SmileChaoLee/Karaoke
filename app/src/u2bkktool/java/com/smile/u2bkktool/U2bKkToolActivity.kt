@@ -16,8 +16,8 @@ class U2bKkToolActivity : U2bKkBaseActivity() {
         return true
     }
 
-    override fun intentU2bKkPlayActivity(): Intent {
-        return Intent(this@U2bKkToolActivity,U2bKkPlayActivity::class.java)
+    override fun intentU2bKTPlayActivity(): Intent {
+        return Intent(this@U2bKkToolActivity,U2bKTPlayActivity::class.java)
     }
 
     override fun onStart() {

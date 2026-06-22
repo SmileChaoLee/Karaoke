@@ -16,7 +16,7 @@ open class U2bKaOkActivity : U2bKkBaseActivity() {
         return false
     }
 
-    override fun intentU2bKkPlayActivity(): Intent {
+    override fun intentU2bKTPlayActivity(): Intent {
         // do nothing
         return Intent()
     }

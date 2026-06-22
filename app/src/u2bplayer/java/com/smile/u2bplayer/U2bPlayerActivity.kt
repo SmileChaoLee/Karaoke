@@ -3,7 +3,8 @@ package com.smile.u2bplayer
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.u2bplayer.fragments.SearchVideosFragment
+import com.smile.u2bplayer.fragments.BkSearchFragment
+import com.smile.u2bplayer.fragments.SearchYTFragment
 
 @OptIn(UnstableApi::class)
 open class U2bPlayerActivity : U2bBaseActivity() {
@@ -15,5 +16,5 @@ open class U2bPlayerActivity : U2bBaseActivity() {
         mTAG = tag
     }
 
-    override fun getSearchFragment() = SearchVideosFragment()
+    override fun getSearchFragment() = BkSearchFragment()
 }

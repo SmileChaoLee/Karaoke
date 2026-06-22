@@ -14,13 +14,13 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkktool.utilities.U2bKkToUtil
-import com.smile.u2bplayer.fragments.SearchVideosFragment
+import com.smile.u2bplayer.fragments.SearchYTFragment
 import com.smile.u2bplayer.models.U2bSingleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchToolFragment : SearchVideosFragment() {
+class SearchToolFragment : SearchYTFragment() {
 
     companion object {
         private const val TAG : String = "SearchToolFragment"

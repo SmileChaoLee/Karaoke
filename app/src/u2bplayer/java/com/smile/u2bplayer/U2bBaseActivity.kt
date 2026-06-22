@@ -11,7 +11,7 @@ import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
-import com.smile.u2bplayer.fragments.SearchVideosFragment
+import com.smile.u2bplayer.fragments.SearchYTFragment
 import com.smile.u2bplayer.fragments.U2bPlayFavFragment
 import com.smile.u2bplayer.fragments.U2bPlayFragment
 import com.smile.u2bplayer.models.U2bSingleton
@@ -24,9 +24,9 @@ abstract class U2bBaseActivity : BaseActivity() {
         private const val SEARCH_FRAGMENT_TAG : String = "SEARCH_VIDEOS"
         private const val U2B_FAV_FRAGMENT_TAG : String = "U2B_FAVORITE"
     }
-    abstract fun getSearchFragment(): SearchVideosFragment
+    abstract fun getSearchFragment(): SearchYTFragment
 
-    private lateinit var searchFragment: SearchVideosFragment
+    private lateinit var searchFragment: SearchYTFragment
     private val u2bPFFragment = U2bPlayFavFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {

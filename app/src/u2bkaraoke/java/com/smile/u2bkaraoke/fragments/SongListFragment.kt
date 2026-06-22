@@ -52,7 +52,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
 
     interface U2bKkFunc {
         fun isU2bKkTool(): Boolean
-        fun intentU2bKkPlayActivity(): Intent
+        fun intentU2bKTPlayActivity(): Intent
     }
 
     @JvmField
@@ -278,7 +278,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 val song = selectedSongs[0].first
                 val position = selectedSongs[0].second
                 U2bPlayerUtil.saveKeyword(act, songSearchTerm(song))
-                val nIntent = it.intentU2bKkPlayActivity()
+                val nIntent = it.intentU2bKTPlayActivity()
                 nIntent.putExtra(U2bKKConstants.SONG_LIST_POSITION, position)
                 nIntent.putExtra(U2bKKConstants.SEARCHED_SONG, song)
                 searchToolLauncher.launch(nIntent)
