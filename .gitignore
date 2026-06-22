@@ -1,5 +1,6 @@
 # Project exclude paths
 app/google-services.json
+app/src/u2bplayer/java/com/smile/u2bplayer/u2bplay_constants/PrivateConstants.kt
 .idea/deploymentTargetSelector.xml
 .idea/misc.xml
 .idea/modules/app/KaraokePlayer.app.iml
