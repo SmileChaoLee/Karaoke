@@ -6,12 +6,12 @@ import com.google.gson.annotations.SerializedName
  * Represents a single video result item in the list.
  */
 data class YouTubeVideo(
-    @SerializedName("Id")
+    @SerializedName("id")
     val id: String,
-    @SerializedName("Title")
+    @SerializedName("title")
     val title: String,
-    @SerializedName("Thumbnail")
+    @SerializedName("thumbnail")
     val thumbnail: String,
-    @SerializedName("ChannelTitle")
+    @SerializedName("channelTitle")
     val channelTitle: String
 )

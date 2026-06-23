@@ -27,20 +27,11 @@ class BkSearchFragment : SearchYTFragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
             val ytVideos = U2bPlayerRestApiSync.getVideos(searchTerm)
-            if (ytVideos == null) {
-                LogUtil.d(TAG, "$logStr.videos is null")
-                return@launch
-            }
-            LogUtil.d(TAG, "$logStr.videos.videos = ${ytVideos.videos}")
-            if (ytVideos.videos == null) {
-                LogUtil.d(TAG, "$logStr.videos.videos is null")
-                return@launch
-            }
-            LogUtil.d(TAG, "$logStr.videoList.videos.size = ${ytVideos.videos.size}")
+            LogUtil.d(TAG, "$logStr.ytVideos.size = ${ytVideos.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
             var songInfo: SongInfo
             var bm: Bitmap?
-            for (item in ytVideos.videos) {
+            for (item in ytVideos) {
                 songInfo = SongInfo()
                 bm = null
                 songInfo.apply {
