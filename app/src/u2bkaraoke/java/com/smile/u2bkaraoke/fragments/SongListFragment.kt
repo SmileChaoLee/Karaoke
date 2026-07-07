@@ -698,7 +698,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
         }
-        searchTerm = " $searchTerm, 有人聲"
+        // searchTerm = " $searchTerm KTV"
 
         LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
         return searchTerm
