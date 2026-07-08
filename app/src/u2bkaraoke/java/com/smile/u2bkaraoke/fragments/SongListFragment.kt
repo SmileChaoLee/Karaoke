@@ -691,6 +691,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     private fun songSearchTerm(song: Song): String {
+        /*
         var searchTerm = "\"" + song.songNa.trim() + "\" "
         if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
             searchTerm += song.singer1Na.trim()
@@ -698,6 +699,15 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
             searchTerm = searchTerm + " " + song.singer2Na.trim()
         }
+        */
+        var searchTerm = ""
+        if (song.singer1Na.isNotEmpty() && song.singer1Na.uppercase() != "UNKNOWN") {
+            searchTerm += ("\"" + song.singer1Na.trim() + "\" ")
+        }
+        if (song.singer2Na.isNotEmpty() && song.singer2Na.uppercase() != "UNKNOWN") {
+            searchTerm += ("\"" + song.singer2Na.trim() + "\" ")
+        }
+        searchTerm += ("\"" + song.songNa.trim() + "\"")
         // searchTerm = " $searchTerm KTV"
 
         LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
