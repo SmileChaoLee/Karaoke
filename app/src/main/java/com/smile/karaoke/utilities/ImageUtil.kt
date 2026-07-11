@@ -3,7 +3,6 @@ package com.smile.karaoke.utilities
 import android.app.Activity
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
-import coil.Coil.imageLoader
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult

@@ -26,8 +26,16 @@ abstract class UpBaseActivity: BaseActivity() {
     abstract fun getFavoriteFragment(): ComFavFragment
 
     private val openFragment = getOpenFileFragment()
-    private val safPickerFragment = SafPickerFragment()
-    private val favoriteFragment = getFavoriteFragment()
+    // private val safPickerFragment = SafPickerFragment()
+    // private val favoriteFragment = getFavoriteFragment()
+    private var safPickerFragment: SafPickerFragment? = null
+    private var favoriteFragment: ComFavFragment? = null
+
+    override fun onDestroy() {
+        safPickerFragment = null
+        favoriteFragment = null
+        super.onDestroy()
+    }
 
     override fun askPermissions(activity: Activity): Boolean {
         LogUtil.d(TAG, "askPermissions")
@@ -53,16 +61,22 @@ abstract class UpBaseActivity: BaseActivity() {
                         }
                         1-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            val existing = supportFragmentManager
+                                .findFragmentByTag(PICKER_FRAGMENT_TAG) as? SafPickerFragment
+                            safPickerFragment = existing ?: SafPickerFragment()
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(containerId, safPickerFragment,
+                                replace(containerId, safPickerFragment!!,
                                     PICKER_FRAGMENT_TAG)
                                 commit()
                             }
                         }
                         2-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            val existing = supportFragmentManager
+                                .findFragmentByTag(FAVORITE_FRAGMENT_TAG) as? ComFavFragment
+                            favoriteFragment = existing ?: getFavoriteFragment()
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(containerId, favoriteFragment,
+                                replace(containerId, favoriteFragment!!,
                                     FAVORITE_FRAGMENT_TAG)
                                 commit()
                             }
@@ -105,10 +119,10 @@ abstract class UpBaseActivity: BaseActivity() {
         tabView?.let {
             when (index) {
                 1 -> {
-                    it.post { safPickerFragment.showVideoButton?.requestFocus() }
+                    it.post { safPickerFragment?.showVideoButton?.requestFocus() }
                 }
                 2 -> {
-                    it.post { favoriteFragment.showVideoButton?.requestFocus() }
+                    it.post { favoriteFragment?.showVideoButton?.requestFocus() }
                 }
                 else -> {
                     it.post { openFragment.showVideoButton?.requestFocus() }

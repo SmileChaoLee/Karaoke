@@ -18,18 +18,19 @@ object U2bKaOkUtil {
 
     fun beginTransaction(fm: FragmentManager,
                          fragContainerId: Int,
-                         nFragment: Fragment) {
-        LogUtil.d(TAG, "beginTransaction")
+                         nFragment: Fragment,
+                         fragmentTag: String? = null) {
         LogUtil.d(TAG, "beginTransaction.fm.isStateSaved = ${fm.isStateSaved}")
         Handler(Looper.getMainLooper()).post {
+            val fTag = fragmentTag ?: FRAGMENT_TAG
             fm.beginTransaction().apply {
-                replace(fragContainerId, nFragment, FRAGMENT_TAG)
+                replace(fragContainerId, nFragment, fTag)
                 addToBackStack(null)
                 commit()
             }
             fm.executePendingTransactions()
-            val curF = fm.findFragmentByTag(FRAGMENT_TAG)
-            LogUtil.d(TAG, "beginTransaction.curF = $curF")
+            // val curF = fm.findFragmentByTag(fTag)
+            // LogUtil.d(TAG, "beginTransaction.curF = $curF")
         }
     }
 }

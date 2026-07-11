@@ -23,9 +23,10 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
 
     companion object {
         private const val TAG = "U2bKkBaseActivity"
+        private const val FAV_FRAGMENT_TAG = "U2bPlayFavFragmentTag"
     }
 
-    private val u2bPFFragment = U2bPlayFavFragment()
+    private var u2bPFFragment: U2bPlayFavFragment? = null
     private val nFragment = U2bKaOkFragment()
     var u2bPlayerFragment = U2bPlayFragment()
     private var fmContainerId: Int = 0
@@ -76,7 +77,6 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
                         0-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
                             supportFragmentManager.apply {
-                                // val curF = findFragmentByTag(U2bKaOkUtil.FRAGMENT_TAG)
                                 val curF = findFragmentById(fmContainerId)
                                 LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0.curF = $curF")
                                 if (curF == null) {
@@ -91,8 +91,12 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
                         }
                         1-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 1")
+                            val existing = supportFragmentManager
+                                .findFragmentByTag(FAV_FRAGMENT_TAG) as? U2bPlayFavFragment
+                            u2bPFFragment = existing ?: U2bPlayFavFragment()
                             U2bKaOkUtil.beginTransaction(supportFragmentManager,
-                                fmContainerId, u2bPFFragment)
+                                fmContainerId, u2bPFFragment!!,
+                                FAV_FRAGMENT_TAG)
                         }
                         else->{
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.others")
@@ -167,7 +171,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
                 }
                 1 -> {
                     LogUtil.d(TAG, "becomeVisible.index.1")
-                    tab.post { u2bPFFragment.showVideoButton?.requestFocus() }
+                    tab.post { u2bPFFragment?.showVideoButton?.requestFocus() }
                 }
             }
         }

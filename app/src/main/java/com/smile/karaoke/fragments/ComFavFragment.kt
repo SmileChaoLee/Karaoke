@@ -73,6 +73,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     private var unselectButton: ImageButton? = null
     private var switchDecoderButton: ImageButton? = null
     private var playSelectedButton: ImageButton? = null
+    private lateinit var fileBm: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -82,6 +83,8 @@ abstract class ComFavFragment : ItemsBaseFragment(),
             if (it is PlayMyFavorites) playMyFavorites = it
             LogUtil.d(TAG, "onCreate.playMyFavorites = $playMyFavorites")
         }
+
+        fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
 
         editSongInfoLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) { result ->
@@ -268,13 +271,12 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                 val songs = DatabaseUtil.readSavedFavorites(act,
                     getFavDatabaseName(), false)
                 var index = 0
-                val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
                 for (element in songs) {
                     LogUtil.d(TAG, "$logStr.element.included = ${element.included}")
                     LogUtil.d(TAG, "$logStr.element.filePath = ${element.filePath}")
                     var bm = getVideoThumbNail(element)
                     if (bm == null) bm = fileBm
-                    bm = bm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
+                    bm = bm.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                     element.included = "0"
                     tempList.add(SongDescription(element, bm))
                     index++
