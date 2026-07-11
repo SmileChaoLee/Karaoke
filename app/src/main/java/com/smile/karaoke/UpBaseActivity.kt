@@ -25,13 +25,15 @@ abstract class UpBaseActivity: BaseActivity() {
     abstract fun getOpenFileFragment(): OpenFileFragment
     abstract fun getFavoriteFragment(): ComFavFragment
 
-    private val openFragment = getOpenFileFragment()
+    // private val openFragment = getOpenFileFragment()
     // private val safPickerFragment = SafPickerFragment()
     // private val favoriteFragment = getFavoriteFragment()
+    private var openFragment: OpenFileFragment? = null
     private var safPickerFragment: SafPickerFragment? = null
     private var favoriteFragment: ComFavFragment? = null
 
     override fun onDestroy() {
+        openFragment = null
         safPickerFragment = null
         favoriteFragment = null
         super.onDestroy()
@@ -53,8 +55,11 @@ abstract class UpBaseActivity: BaseActivity() {
                     when (it.position) {
                         0-> {
                             LogUtil.d(TAG, "OnTabSelectedListener.onTabSelected.position = 0")
+                            val existing = supportFragmentManager
+                                .findFragmentByTag(OPEN_FRAGMENT_TAG) as? OpenFileFragment
+                            openFragment = existing ?: getOpenFileFragment()
                             activity?.supportFragmentManager?.beginTransaction()?.apply {
-                                replace(containerId, openFragment,
+                                replace(containerId, openFragment!!,
                                     OPEN_FRAGMENT_TAG)
                                 commit()
                             }
@@ -125,7 +130,7 @@ abstract class UpBaseActivity: BaseActivity() {
                     it.post { favoriteFragment?.showVideoButton?.requestFocus() }
                 }
                 else -> {
-                    it.post { openFragment.showVideoButton?.requestFocus() }
+                    it.post { openFragment?.showVideoButton?.requestFocus() }
                 }
             }
         }
