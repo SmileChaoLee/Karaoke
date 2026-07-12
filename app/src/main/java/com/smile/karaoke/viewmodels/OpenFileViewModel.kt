@@ -37,17 +37,19 @@ class OpenFileViewModel: ViewModel() {
     }
 
     inner class SearchFolderThread(
-        val activity: Activity?,
-        val videoThumbNailsWidth: Int,
-        val videoThumbNailsHeight: Int): Thread()
+        act: Activity,
+        videoThumbNailsWidth: Int,
+        videoThumbNailsHeight: Int): Thread()
     {
         private val logStr = "SearchFolderThread"
+        private val dirBm: Bitmap = BitmapFactory
+            .decodeResource(act.resources, R.drawable.folder_open_icon)
+            .scale(videoThumbNailsWidth, videoThumbNailsHeight)
+        private val fileBm: Bitmap = BitmapFactory
+            .decodeResource(act.resources, R.drawable.video_image)
+            .scale(videoThumbNailsWidth, videoThumbNailsHeight)
         var keepRunning = true
         override fun run() {
-            val act = activity ?: run {
-                LogUtil.d(TAG, "$logStr.activity is null")
-                return
-            }
             if (!keepRunning) return
             val fileList = ArrayList<FileDescription>()
             _uiState.update {
@@ -56,13 +58,13 @@ class OpenFileViewModel: ViewModel() {
             LogUtil.d(TAG, "$logStr.MySingleton.currentPath = ${MySingleton.currentPath}")
             MySingleton.currentPath.let {
                 var index = 0
-                val dirBm = BitmapFactory.decodeResource(act.resources, R.drawable.folder_open_icon)
+                // val dirBm = BitmapFactory.decodeResource(act.resources, R.drawable.folder_open_icon)
                 if (it == "/") {
-                    val bm = dirBm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                     for (element in MySingleton.rootPathSet) {
+                        // val bm = dirBm.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                         if (!keepRunning) break
                         LogUtil.d(TAG, "$logStr.element = $element")
-                        fileList.add(FileDescription(File(element), bm, false))
+                        fileList.add(FileDescription(File(element), dirBm, false))
                         index++
                         if (index >= MySingleton.MAX_FILES) {
                             // excess the max
@@ -75,7 +77,7 @@ class OpenFileViewModel: ViewModel() {
                     }
                 } else {
                     try {
-                        val fileBm = BitmapFactory.decodeResource(act.resources, R.drawable.video_image)
+                        // val fileBm = BitmapFactory.decodeResource(act.resources, R.drawable.video_image)
                         File(it).listFiles()?.also { fIt ->
                             // LogUtil.d(TAG, "$logStr.file.list().size() = ${fIt.size}")
                             for (f in fIt) {
@@ -94,7 +96,7 @@ class OpenFileViewModel: ViewModel() {
                                 } else {
                                     bm = dirBm
                                 }
-                                bm = bm?.scale(videoThumbNailsWidth, videoThumbNailsHeight)
+                                // bm = bm.scale(videoThumbNailsWidth, videoThumbNailsHeight)
                                 if (!keepRunning) break
                                 fileList.add(FileDescription(f, bm, false))
                                 index++
@@ -273,12 +275,14 @@ class OpenFileViewModel: ViewModel() {
                 */
                 stopSearchFolderTh()
                 stopSearchFilesTh()
-                searchFolderTh = SearchFolderThread(
-                    intent.activity,
-                    intent.videoThumbNailsWidth,
-                    intent.videoThumbNailsHeight
-                )
-                searchFolderTh?.start()
+                intent.activity?.let { act ->
+                    searchFolderTh = SearchFolderThread(
+                        act,
+                        intent.videoThumbNailsWidth,
+                        intent.videoThumbNailsHeight
+                    )
+                    searchFolderTh?.start()
+                }
             }
             is OpenFileUiIntent.SongOnClicked -> songOnClicked(intent.position)
             is OpenFileUiIntent.AddToFavorites -> addToFavorites(intent.activity)
