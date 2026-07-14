@@ -782,7 +782,8 @@ abstract class PlayerBaseFragment : Fragment(),
                 bitmap.scale(imageButtonHeight, imageButtonHeight)
                     .toDrawable(resources)
             mediaRouteButton?.setRemoteIndicatorDrawable(buttonDrawable)
-            val linearParam = LinearLayout.LayoutParams(imageButtonHeight, imageButtonHeight)
+            val linearParam = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, imageButtonHeight)
             linearParam.setMargins(buttonMarginLeft, 0, 0, 0)
             mediaRouteButton?.layoutParams = linearParam
         } catch (ex: Exception) {
