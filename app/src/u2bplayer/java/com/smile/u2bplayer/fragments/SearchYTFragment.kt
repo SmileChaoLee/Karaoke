@@ -15,7 +15,6 @@ import androidx.core.graphics.scale
 
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.smile.karaoke.BuildConfig
 import com.smile.karaoke.R
 import com.smile.karaoke.adapters.MyLayoutManager
 import com.smile.karaoke.fragments.ItemsBaseFragment
@@ -31,6 +30,7 @@ import com.smile.u2bplayer.utilities.U2bPlayerUtil
 import com.smile.u2bplayer.adapters.U2bRecyclerAdapter
 import com.smile.u2bplayer.models.U2bSingleton
 import com.smile.u2bplayer.retrofit.YouTubeRestApiSync
+import com.smile.u2bplayer.u2bplay_constants.PrivateConstants
 import com.smile.u2bplayer.u2bplay_constants.U2bPlayConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,6 +54,8 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     private var loadingMsgTextView: TextView? = null
     var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
     val selectedSongs : ArrayList<SongInfo> = ArrayList()
+    var applicationId = ""
+    var apiKey = PrivateConstants.API_KEY2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.i(TAG, "onCreate")
@@ -144,10 +146,12 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     open fun searchedToU2bVideos(act: Activity, searchTerm: String, maxResult: Int = 50) {
         val logStr = "searchedToU2bVideos"
+        LogUtil.d(TAG, "$logStr.applicationId = $applicationId")
+        LogUtil.d(TAG, "$logStr.apiKey = $apiKey")
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
-            val videoList = YouTubeRestApiSync.getVideoList(BuildConfig.APPLICATION_ID,
-                searchTerm, maxResult)
+            val videoList = YouTubeRestApiSync.getVideoList(applicationId,
+                searchTerm, maxResult, apiKey)
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
             var songInfo: SongInfo
@@ -185,7 +189,6 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         searchCompleted = false
         // save the searchTerm to file, U2bConstants.KEYWORD_FILENAME
         U2bPlayerUtil.saveKeyword(act, searchTerm)
-        LogUtil.i(TAG, "$logStr.APPLICATION_ID = ${BuildConfig.APPLICATION_ID}")
         searchRecyclerView?.visibility = View.GONE
         loadingMsgTextView?.visibility = View.VISIBLE
         searchedToU2bVideos(act, searchTerm, maxResult)
