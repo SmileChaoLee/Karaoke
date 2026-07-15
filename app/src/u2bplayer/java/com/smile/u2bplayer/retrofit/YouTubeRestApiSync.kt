@@ -1,3 +1,7 @@
+/**
+ * This class is used to sync the video list from YouTube.
+ * It is only used by com.smile.u2bkktool and not used by other packages
+ */
 package com.smile.u2bplayer.retrofit
 
 import com.smile.karaoke.utilities.LogUtil
@@ -8,7 +12,7 @@ import retrofit2.Response
 object YouTubeRestApiSync {
 
     private const val TAG = "YTRestApiSync"
-    private const val API_KEY = PrivateConstants.API_KEY
+    private const val API_KEY = PrivateConstants.API_KEY2
     private const val HTTP_OK = 200
 
     private fun getApiInstance(packageName: String): YouTubeApiInterface {

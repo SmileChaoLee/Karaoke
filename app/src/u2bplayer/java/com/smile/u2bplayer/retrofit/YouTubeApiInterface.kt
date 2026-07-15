@@ -1,3 +1,7 @@
+/**
+ * This class is used to sync the video list from YouTube.
+ * It is only used by com.smile.u2bkktool and not used by other packages
+ */
 package com.smile.u2bplayer.retrofit
 
 import com.smile.u2bplayer.models.VideoList
