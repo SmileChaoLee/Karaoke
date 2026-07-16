@@ -13,6 +13,7 @@ import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Retrofit
 import javax.inject.Inject
+import java.util.Date
 
 class U2bKkRestApiSync private constructor() {
 
@@ -54,7 +55,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromLanguage(result)
     }
 
     fun getAllSingerTypes(): SingerTypeList? {
@@ -72,7 +73,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSingerType(result)
     }
 
     fun getSongs(pageSize : Int, pageNo : Int): SongList? {
@@ -92,7 +93,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongs(pageSize : Int, pageNo : Int, numWords: String): SongList? {
@@ -112,7 +113,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int): SongList? {
@@ -131,7 +132,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsBySinger(singer: Singer, pageSize: Int, pageNo: Int,
@@ -151,7 +152,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
@@ -170,7 +171,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getNewSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
@@ -190,7 +191,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int): SongList? {
@@ -209,7 +210,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getHotSongsByLanguage(language: Language, pageSize: Int, pageNo: Int,
@@ -229,7 +230,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int): SongList? {
@@ -250,7 +251,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsByLanguage(language : Language, pageSize : Int, pageNo : Int,
@@ -278,7 +279,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int,
@@ -304,7 +305,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSongsByLanguageNumOfWords(language: Language, numOfWords: Int, pageSize: Int
@@ -331,7 +332,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSong(result)
     }
 
     fun getSingersBySingerType(singerType: SingerType, pageSize: Int, pageNo: Int): SingerList? {
@@ -352,7 +353,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSinger(result)
     }
 
     fun getSingersBySingerType(singerType: SingerType,
@@ -375,7 +376,7 @@ class U2bKkRestApiSync private constructor() {
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
-        return result
+        return removeNullFromSinger(result)
     }
 
     fun updateOneSong(id: Int, song: Song): Int? {
@@ -392,5 +393,95 @@ class U2bKkRestApiSync private constructor() {
         }
         LogUtil.d(TAG, "$logStr.result = $result")
         return result
+    }
+
+    private fun removeNullFromSong(songList: SongList?): SongList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromSong")
+        songList?.let {
+            for (song: Song? in it.songs) {
+                song?.apply {
+                    id = id ?: 0
+                    songNo = songNo ?: ""
+                    songNa = songNa ?: ""
+                    sNumWord = sNumWord ?: 0
+                    numFw = numFw ?: 0
+                    numPw = numPw ?: "0"
+                    chor = chor ?: "N"
+                    nMpeg = nMpeg ?: "11"
+                    mMpeg = mMpeg ?: "12"
+                    vodYn = vodYn ?: "Y"
+                    vodNo = vodNo ?: ""
+                    pathname = pathname ?: ""
+                    ordNo = ordNo ?: 0
+                    orderNum = orderNum ?: 0
+                    ordOldN = ordOldN ?: 0
+                    languageId = languageId ?: 0
+                    languageNo = languageNo ?: ""
+                    languageNa = languageNa ?: ""
+                    singer1Id = singer1Id ?: 0
+                    singer1No = singer1No ?: ""
+                    singer1Na = singer1Na ?: ""
+                    singer2Id = singer2Id ?: 0
+                    singer2No = singer2No ?: ""
+                    singer2Na = singer2Na ?: ""
+                    inDate = inDate ?: Date()
+                }
+            }
+        }
+        return songList
+    }
+
+    private fun removeNullFromSinger(singerList: SingerList?): SingerList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromSinger")
+        singerList?.let {
+            for (singer: Singer? in it.singers) {
+                singer?.apply {
+                    id = id ?: 0
+                    singNo = singNo ?: ""
+                    singNa = singNa ?: ""
+                    sex = sex ?: ""
+                    chor = chor ?: ""
+                    hot = hot ?: ""
+                    numFw = numFw ?: 0
+                    numPw = numPw ?: ""
+                    picFile = picFile ?: ""
+                }
+            }
+        }
+        return singerList
+    }
+
+    private fun removeNullFromLanguage(languageList: LanguageList?): LanguageList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromLanguage")
+        languageList?.let {
+            for (language: Language? in it.languages) {
+                language?.apply {
+                    id = id ?: 0
+                    langNo = langNo ?: ""
+                    langNa = langNa ?: ""
+                    langEn = langEn ?: ""
+                }
+            }
+        }
+        return languageList
+    }
+
+    private fun removeNullFromSingerType(singerTypeList: SingerTypeList?): SingerTypeList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromSingerType")
+        singerTypeList?.let {
+            for (singerType: SingerType? in it.singerTypes) {
+                singerType?.apply {
+                    id = id ?: 0
+                    areaNo = areaNo ?: ""
+                    areaNa = areaNa ?: ""
+                    areaEn = areaEn ?: ""
+                }
+            }
+        }
+        return singerTypeList
     }
 }
