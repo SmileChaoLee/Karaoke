@@ -438,7 +438,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.orderedFrom = $orderedFrom")
         LogUtil.d(TAG, "$logStr.filterString = $filterString")
         val act = activity ?: return
-        /*  // the code is to filter out the songs that are not ready net
+        // the code is to filter out the songs that are not ready net
         var baseFilter = "VideoReady+00"
         LogUtil.d(TAG, "$logStr.mU2bKkFunc = $mU2bKkFunc")
         mU2bKkFunc?.let { funcIt ->
@@ -449,8 +449,8 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         } else {
             if (baseFilter.isEmpty()) filterString!! else "$filterString+$baseFilter"
         }
-        */
-        val vFilter = filterString ?: ""
+        //
+        // vFilter = filterString ?: ""
         LogUtil.d(TAG, "$logStr.vFilter = $vFilter")
         act.lifecycleScope.launch(Dispatchers.Main) {
             searchCompleted = false
