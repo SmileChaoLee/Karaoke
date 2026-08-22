@@ -18,6 +18,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         private const val TAG = "U2bKaOkFragment"
     }
 
+    var allSongOrderButton: Button? = null
     var singerOrderButton: Button? = null
     var newSongOrderButton: Button? = null
     var hotSongOrderButton: Button? = null
@@ -51,6 +52,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         // val fragContainerId = this.id   // container id of the fragment
         // val fragManager = activity?.supportFragmentManager
         view.apply {
+            allSongOrderButton = findViewById(R.id.allSongOrderButton)
             singerOrderButton = findViewById(R.id.singerOrderButton)
             ScreenUtil.resizeTextSize(singerOrderButton, textFontSize)
             newSongOrderButton = findViewById(R.id.newSongOrderButton)
@@ -64,7 +66,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         exitImageButton?.nextFocusUpId = R.id.languageOrderButton
         showVideoButton?.nextFocusUpId = R.id.languageOrderButton
-        singerOrderButton?.nextFocusUpId = selectTab?.view?.id ?: R.id.singerOrderButton
+        allSongOrderButton?.nextFocusUpId = selectTab?.view?.id ?: R.id.allSongOrderButton
         selectTab?.view?.nextFocusDownId = R.id.singerOrderButton
         favoriteTab?.view?.nextFocusDownId = R.id.singerOrderButton
     }
@@ -91,9 +93,15 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
 
     override fun setClickListeners() {
         super.setClickListeners()
-
-        exitImageButton?.setOnClickListener {
-            activity?.finish()
+        allSongOrderButton?.setOnClickListener {
+            mFragManager?.let { fm ->
+                val nFragment = SongListFragment().apply {
+                    arguments = Bundle().apply {
+                        putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.ALL_SONG_ORDERED)
+                    }
+                }
+                U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
+            }
         }
         singerOrderButton?.setOnClickListener {
             mFragManager?.let { fm ->
@@ -126,6 +134,9 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
                 val nFragment = LangListFragment()
                 U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
             }
+        }
+        exitImageButton?.setOnClickListener {
+            activity?.finish()
         }
     }
 }

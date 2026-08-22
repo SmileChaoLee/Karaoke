@@ -173,11 +173,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     override fun afterTextChanged(editable: Editable) {
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged")
                         val content = editable.toString().trim()
-                        filterString = if (orderedFrom != U2bKKConstants.ALL_SONG_ORDERED) {
-                            if (content.isEmpty()) "" else "SongNa+$content"
-                        } else {
-                            content.trim()
-                        }
+                        filterString = if (content.isEmpty()) "" else "SongNa+$content"
                         LogUtil.d(TAG, "addTextChangedListener.afterTextChanged.filterString = $filterString")
                         pageNo = 1
                         retrieveSongList(true)
@@ -464,12 +460,9 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     U2bKKConstants.ALL_SONG_ORDERED -> {
                         LogUtil.d(TAG, "$logStr.ALL_SONG_ORDERED")
                         restApi.let { rApi ->
+                            LogUtil.d(TAG, "retrieveSongList.ALL_SONG_ORDERED.vFilter = $vFilter")
                             val song = objectPassed as? Song ?: Song()
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getSongs(pageSize, pageNo)
-                            } else {
-                                rApi.getSongs(pageSize, pageNo, filterString!!)
-                            }
+                            tempList = rApi.getSongsWithFilter(pageSize, pageNo, vFilter)
                             objectPassed = song
                         }
                     }
@@ -478,13 +471,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         restApi.let { rApi ->
                             val singer = objectPassed as? Singer ?: Singer()
                             tempList = rApi.getSongsBySinger(singer, pageSize, pageNo, vFilter)
-                            /*
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getSongsBySinger(singer, pageSize, pageNo)
-                            } else {
-                                rApi.getSongsBySinger(singer, pageSize, pageNo, filterString!!)
-                            }
-                            */
                             objectPassed = singer
                         }
                     }
@@ -493,18 +479,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
                             tempList = rApi.getNewSongsByLanguage(language, pageSize, pageNo, vFilter)
-                            /*
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getNewSongsByLanguage(language, pageSize, pageNo)
-                            } else {
-                                rApi.getNewSongsByLanguage(
-                                    language,
-                                    pageSize,
-                                    pageNo,
-                                    filterString!!
-                                )
-                            }
-                            */
                             objectPassed = language
                         }
                     }
@@ -513,18 +487,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
                             tempList = rApi.getHotSongsByLanguage(language, pageSize, pageNo, vFilter)
-                            /*
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getHotSongsByLanguage(language, pageSize, pageNo)
-                            } else {
-                                rApi.getHotSongsByLanguage(
-                                    language,
-                                    pageSize,
-                                    pageNo,
-                                    filterString!!
-                                )
-                            }
-                            */
                             objectPassed = language
                         }
                     }
@@ -533,13 +495,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         restApi.let { rApi ->
                             val language = objectPassed as? Language ?: Language()
                             tempList = rApi.getSongsByLanguage(language, pageSize, pageNo, vFilter)
-                            /*
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getSongsByLanguage(language, pageSize, pageNo)
-                            } else {
-                                rApi.getSongsByLanguage(language, pageSize, pageNo, filterString!!)
-                            }
-                            */
                             objectPassed = language
                         }
                     }
@@ -549,24 +504,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                             val language = objectPassed as? Language ?: Language()
                             tempList = rApi.getSongsByLanguageNumOfWords(language, numOfWords, pageSize,
                                 pageNo, vFilter)
-                            /*
-                            tempList = if (filterString.isNullOrEmpty()) {
-                                rApi.getSongsByLanguageNumOfWords(
-                                    language,
-                                    numOfWords,
-                                    pageSize,
-                                    pageNo
-                                )
-                            } else {
-                                rApi.getSongsByLanguageNumOfWords(
-                                    language,
-                                    numOfWords,
-                                    pageSize,
-                                    pageNo,
-                                    filterString!!
-                                )
-                            }
-                            */
                             objectPassed = language
                         }
                     }

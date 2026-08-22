@@ -52,6 +52,15 @@ interface U2bKkApiInterface {
         @Path("numWords") numWords: String?
     ): Call<SongList>
 
+    @GET("api/Songs/{pageSize}/{pageNo}/{orderBy}/{useFilter}/{filter}")
+    fun getSongsWithFilter(
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("useFilter") useFilter: Boolean,
+        @Path("filter") filter: String?
+    ): Call<SongList>
+
     // [HttpGet("{id}/[Action]/{pageSize}/{pageNo}/{orderBy}")] in SingersController.cs
     @GET("api/Singers/{id}/Songs/{pageSize}/{pageNo}/{orderBy}")
     fun getSongsBySingerId(

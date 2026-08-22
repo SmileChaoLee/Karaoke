@@ -9,6 +9,27 @@
     android:background="@color/transparentDarkGray">
 
     <Button
+        android:id="@+id/allSongOrderButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/allSongsString"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@color/my_button_text_color"
+        android:background="@drawable/yellow_square_button"
+        android:layout_margin="10sp"
+        android:focusable="true"
+        android:clickable="true"
+        android:nextFocusUp="@id/allSongOrderButton"
+        android:nextFocusLeft="@id/allSongOrderButton"
+        android:nextFocusRight="@id/allSongOrderButton"
+        android:nextFocusDown="@id/singerOrderButton"
+        app:layout_constraintHeight_percent="0.17"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </Button>
+
+    <Button
         android:id="@+id/singerOrderButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -19,12 +40,12 @@
         android:layout_margin="10sp"
         android:focusable="true"
         android:clickable="true"
-        android:nextFocusUp="@id/singerOrderButton"
+        android:nextFocusUp="@id/allSongOrderButton"
         android:nextFocusLeft="@id/singerOrderButton"
         android:nextFocusRight="@id/singerOrderButton"
         android:nextFocusDown="@id/newSongOrderButton"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.17"
+        app:layout_constraintTop_toBottomOf="@id/allSongOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
     </Button>
@@ -43,7 +64,7 @@
         android:nextFocusLeft="@id/newSongOrderButton"
         android:nextFocusRight="@id/newSongOrderButton"
         android:nextFocusDown="@id/hotSongOrderButton"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.17"
         app:layout_constraintTop_toBottomOf="@id/singerOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
@@ -63,7 +84,7 @@
         android:nextFocusLeft="@id/hotSongOrderButton"
         android:nextFocusRight="@id/hotSongOrderButton"
         android:nextFocusDown="@id/languageOrderButton"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.17"
         app:layout_constraintTop_toBottomOf="@id/newSongOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
@@ -83,7 +104,7 @@
         android:nextFocusLeft="@id/languageOrderButton"
         android:nextFocusRight="@id/languageOrderButton"
         android:nextFocusDown="@id/u2bKExitButton"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.17"
         app:layout_constraintTop_toBottomOf="@id/hotSongOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
@@ -94,7 +115,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.15"
         app:layout_constraintTop_toBottomOf="@id/languageOrderButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
