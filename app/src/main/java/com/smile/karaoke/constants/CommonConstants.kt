@@ -13,4 +13,5 @@ object CommonConstants {
     const val PHONE_SPAN_COUNT = 2
     const val TABLET_SPAN_COUNT = 6
     const val TV_SPAN_COUNT = 8
+    const val POST_DELAY_TIME = 600L    // 600 milliseconds
 }

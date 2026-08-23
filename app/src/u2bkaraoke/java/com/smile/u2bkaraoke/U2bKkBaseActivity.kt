@@ -3,12 +3,14 @@ package com.smile.u2bkaraoke
 import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.OptIn
+import androidx.core.view.postDelayed
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.smile.karaoke.BaseActivity
 import com.smile.karaoke.R
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
 import com.smile.u2bkaraoke.fragments.SongListFragment
@@ -159,6 +161,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
         val index = tabLayout.selectedTabPosition
         LogUtil.d(TAG, "becomeVisible.index = $index")
         LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
+        val delayTime = CommonConstants.POST_DELAY_TIME
         val tabView = tabLayout.getTabAt(index)?.view
         tabView?.let { tab ->
             when (index) {
@@ -166,12 +169,16 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
                     LogUtil.d(TAG, "becomeVisible.index.0")
                     supportFragmentManager.findFragmentById(fmContainerId)?.let { curF ->
                         val exitButton = (curF as U2bKKBaseFragment).exitImageButton
-                        exitButton?.post { exitButton.requestFocus() }
+                        tab.postDelayed({
+                            exitButton?.requestFocus()
+                        }, delayTime)
                     }
                 }
                 1 -> {
                     LogUtil.d(TAG, "becomeVisible.index.1")
-                    tab.post { u2bPFFragment?.showVideoButton?.requestFocus() }
+                    tab.postDelayed({
+                        u2bPFFragment?.showVideoButton?.requestFocus()
+                    }, delayTime)
                 }
             }
         }

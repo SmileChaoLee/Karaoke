@@ -36,7 +36,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     abstract fun decoderButtonVisibility(): Int
 
     private var pathTextView: TextView? = null
-    private var fileSearchEditText: EditText? = null
+    var fileSearchEditText: EditText? = null
     private var filesRecyclerView : RecyclerView? = null
     private var loadingMsgTextView: TextView? = null
     private var myRecyclerViewAdapter : OpenFilesRecyclerViewAdapter? = null

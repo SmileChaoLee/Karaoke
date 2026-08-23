@@ -3,6 +3,7 @@ package com.smile.u2bplayer
 import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.OptIn
+import androidx.core.view.postDelayed
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
@@ -106,16 +107,21 @@ abstract class U2bBaseActivity : BaseActivity() {
         val index = tabLayout.selectedTabPosition
         LogUtil.d(TAG, "becomeVisible.index = $index")
         LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
+        val delayTime = 600L
         val tabView = tabLayout.getTabAt(index)?.view
         tabView?.let { tab ->
             when (index) {
                 0 -> {
                     LogUtil.d(TAG, "becomeVisible.index.0")
-                    tab.post { searchFragment.showVideoButton?.requestFocus() }
+                    tab.postDelayed({
+                        searchFragment.showVideoButton?.requestFocus()
+                    }, delayTime)
                 }
                 1 -> {
                     LogUtil.d(TAG, "becomeVisible.index.1")
-                    tab.post { u2bPFFragment.showVideoButton?.requestFocus() }
+                    tab.postDelayed( {
+                        u2bPFFragment.showVideoButton?.requestFocus()
+                    }, delayTime)
                 }
             }
         }

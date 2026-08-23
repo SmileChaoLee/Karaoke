@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.fragments.ComFavFragment
 import com.smile.karaoke.fragments.OpenFileFragment
 import com.smile.karaoke.fragments.SafPickerFragment
@@ -120,17 +121,24 @@ abstract class UpBaseActivity: BaseActivity() {
         val index = tabLayout.selectedTabPosition
         LogUtil.d(TAG, "becomeVisible.index = $index")
         LogUtil.d(TAG, "becomeVisible.currentFocus = $currentFocus")
+        val delayTime = CommonConstants.POST_DELAY_TIME
         val tabView = tabLayout.getTabAt(index)?.view
         tabView?.let {
             when (index) {
                 1 -> {
-                    it.post { safPickerFragment?.showVideoButton?.requestFocus() }
+                    it.postDelayed({
+                        safPickerFragment?.showVideoButton?.requestFocus()
+                    }, delayTime)
                 }
                 2 -> {
-                    it.post { favoriteFragment?.showVideoButton?.requestFocus() }
+                    it.postDelayed({
+                            favoriteFragment?.showVideoButton?.requestFocus()
+                    }, delayTime)
                 }
                 else -> {
-                    it.post { openFragment?.showVideoButton?.requestFocus() }
+                    it.postDelayed({
+                        openFragment?.fileSearchEditText?.requestFocus()
+                    }, delayTime)
                 }
             }
         }

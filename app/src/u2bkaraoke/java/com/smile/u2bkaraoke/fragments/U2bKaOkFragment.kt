@@ -72,8 +72,11 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
         super.onResume()
+        LogUtil.i(TAG, "onResume")
+        allSongOrderButton?.postDelayed({
+            allSongOrderButton?.requestFocus()
+        }, 1000)
     }
 
     override fun onPause() {
