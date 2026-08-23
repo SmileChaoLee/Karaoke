@@ -53,6 +53,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         // val fragManager = activity?.supportFragmentManager
         view.apply {
             allSongOrderButton = findViewById(R.id.allSongOrderButton)
+            ScreenUtil.resizeTextSize(allSongOrderButton, textFontSize)
             singerOrderButton = findViewById(R.id.singerOrderButton)
             ScreenUtil.resizeTextSize(singerOrderButton, textFontSize)
             newSongOrderButton = findViewById(R.id.newSongOrderButton)
