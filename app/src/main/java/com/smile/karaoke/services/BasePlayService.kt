@@ -124,7 +124,7 @@ abstract class BasePlayService : Service() {
         webServerAndCast.startWebServer(mediaFileName)
         // must after startWebServer
         val localMediaUrl = webServerAndCast.getMediaUrl()
-        LogUtil.d(TAG, "${msgStr}.localMediaUrl = $localMediaUrl")
+        LogUtil.d(TAG, "$msgStr.localMediaUrl = $localMediaUrl")
         if (localMediaUrl.isEmpty()) {
             webServerAndCast.stopWebServer()
             return medUri
@@ -141,10 +141,10 @@ abstract class BasePlayService : Service() {
         }
         var filePath = songInfo.filePath
         filePath = filePath.trim { it <= ' ' }
-        LogUtil.d(TAG, "${msgStr}.filePath = $filePath")
+        LogUtil.d(TAG, "$msgStr.filePath = $filePath")
         if (filePath == "") {
             // skip this song
-            LogUtil.d(TAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED ")
+            LogUtil.d(TAG, "$msgStr.send PlaybackStateCompat.STATE_STOPPED ")
             setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
             return
         }
@@ -154,16 +154,16 @@ abstract class BasePlayService : Service() {
             contentResolver?.let {
                 for (perm in it.persistedUriPermissions) {
                     if (perm.uri == filePath.toUri()) {
-                        LogUtil.d(TAG, "${msgStr}.has URI permission")
+                        LogUtil.d(TAG, "$msgStr.has URI permission")
                         break
                     }
                 }
             }
         } catch (ex: Exception) {
-            LogUtil.e(TAG, "${msgStr}.Exception: ", ex)
+            LogUtil.e(TAG, "$msgStr.Exception: ", ex)
         }
         var mediaUri = filePath.toUri()
-        LogUtil.d(TAG, "${msgStr}.mediaUri = $mediaUri")
+        LogUtil.d(TAG, "$msgStr.mediaUri = $mediaUri")
         if (Uri.EMPTY == mediaUri) {
             return
         }
@@ -172,7 +172,7 @@ abstract class BasePlayService : Service() {
             val tempMediaUri = convertUriToHttpUri(mediaUri)
             if (tempMediaUri == mediaUri) {
                 // no change, then skip this song
-                LogUtil.d(TAG, "${msgStr}.send PlaybackStateCompat.STATE_STOPPED ")
+                LogUtil.d(TAG, "$msgStr.send PlaybackStateCompat.STATE_STOPPED ")
                 setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
                 return
             }
@@ -327,8 +327,8 @@ abstract class BasePlayService : Service() {
         LogUtil.i(TAG, msgStr)
         val mediaUri = presenter.mediaUri
         val playbackState = param.currentPlaybackState
-        LogUtil.d(TAG, "${msgStr}.mediaUri = $mediaUri")
-        LogUtil.d(TAG, "${msgStr}.playbackState = $playbackState")
+        LogUtil.d(TAG, "$msgStr.mediaUri = $mediaUri")
+        LogUtil.d(TAG, "$msgStr.playbackState = $playbackState")
         if (mediaUri != null && Uri.EMPTY != mediaUri) {
             param.currentPlaybackState = MyPlayerConstants.PREPARE_MEDIA
             playMediaFromUri(mediaUri, param)
