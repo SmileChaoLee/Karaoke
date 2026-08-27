@@ -3,7 +3,6 @@ package com.smile.u2bplayer
 import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.OptIn
-import androidx.core.view.postDelayed
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
