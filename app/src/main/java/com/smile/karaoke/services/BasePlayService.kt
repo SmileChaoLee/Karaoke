@@ -18,7 +18,6 @@ import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
 import com.smile.karaoke.SmileAppBase
 import com.smile.karaoke.callbacks.MediaControllerCallback
-import com.smile.karaoke.chromecast.SetupChromeCast
 import com.smile.karaoke.chromecast.WebServerAndCast
 import com.smile.karaoke.utilities.LogUtil
 
