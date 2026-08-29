@@ -307,7 +307,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                     var song: Song
                     for (songP in songPs) {
                         song = songP.first
-                        song.orderNum = song.orderNum + 1
+                        song.orderNum += 1
                         val result = U2bKkRestApiSync.getApiSync().updateOneSong(song.id, song)
                         LogUtil.d(TAG, "playSelectedSongList.result = $result")
                     }
@@ -636,9 +636,6 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             searchTerm += (song.singer2Na.trim() + " ")
         }
         searchTerm += song.songNa.trim()
-        if (song.languageNa.isNotEmpty()) {
-            searchTerm += (" " + song.languageNa.trim().substring(0, 1))
-        }
 
         LogUtil.d(TAG, "songSearchTerm.searchTerm = $searchTerm")
         return searchTerm
