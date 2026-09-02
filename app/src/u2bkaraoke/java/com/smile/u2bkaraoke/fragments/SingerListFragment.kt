@@ -66,14 +66,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 args.getParcelable(U2bKKConstants.SingerTypeParcelable, SingerType::class.java)
             } else args.getParcelable(U2bKKConstants.SingerTypeParcelable)
             singerType?.let {sType ->
-                val act = activity ?: return
-                val sexString = when (sType.sex) {
-                    "1" -> " - ${act.getString(R.string.male)}"
-                    "2" -> " - ${act.getString(R.string.female)}"
-                    else ->                 // "0"
-                        ""
-                }
-                activityTitle = "${sType.areaNa}$sexString"
+                activityTitle = sType.areaNa
             }
         }
     }
@@ -214,13 +207,10 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             withContext(Dispatchers.IO) {
                 U2bKkRestApiSync.getApiSync().let { rApi ->
                     val sType = singerType ?: SingerType()
-                    tempList = if (filterString.isNullOrEmpty()) {
-                        rApi.getSingersBySingerType(sType, pageSize, pageNo)
+                    tempList = if (sType.areaNo == U2bKKConstants.ALL_SINGERS_AREA_NO) {
+                        rApi.getSingers(pageSize, pageNo, "SingNa", filterString)
                     } else {
-                        rApi.getSingersBySingerType(
-                            sType, pageSize, pageNo,
-                            filterString!!
-                        )
+                        rApi.getSingersBySingerType(sType, pageSize, pageNo, filterString)
                     }
                     singerType = sType
                 }

@@ -17,6 +17,7 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerAreaListAdapter
+import com.smile.u2bkaraoke.model.SingerArea
 import com.smile.u2bkaraoke.model.SingerAreaList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
@@ -75,12 +76,25 @@ class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         showVideoButton?.nextFocusUpId = R.id.singerAreaListRecyclerView
 
         // MyRestApi().getAllSingerAreas()
+        singerAreaList = SingerAreaList()
+        singerAreaList?.let {
+            it.singerAreas.clear()
+            it.singerAreas.add(SingerArea().apply {
+                id = 0
+                areaNo = U2bKKConstants.ALL_SINGERS_AREA_NO
+                areaNa = act.getString(R.string.allSingersString)
+                areaEn = "All Singers"
+            })
+        }
         act.lifecycleScope.launch(Dispatchers.Main) {
             mRecyclerView?.visibility = View.GONE
             singerAreaListEmptyTextView?.visibility = View.VISIBLE
             singerAreaListEmptyTextView?.text = act.getString(R.string.loadingString)
             withContext(Dispatchers.IO) {
-                singerAreaList = U2bKkRestApiSync.getApiSync().getAllSingerAreas()
+                val saList = U2bKkRestApiSync.getApiSync().getAllSingerAreas()
+                saList?.let { aList ->
+                    singerAreaList?.singerAreas?.addAll(aList.singerAreas)
+                }
             }
             // update the UI
             withContext(Dispatchers.Main) {

@@ -17,10 +17,9 @@ object U2bKKConstants {
     const val LanguageTitle = "LanguageTitle"
     const val LanguageParcelable = "LanguageParcelable"
     const val NumOfWords = "NumOfWords"
-
     const val SONG_LIST_POSITION = "SongListPosition"
     const val SEARCHED_SONG = "SearchedSong"
-
+    const val ALL_SINGERS_AREA_NO = "AA"
     const val CHAO_URL = "http://137.184.120.171/"
     // const val CHAO_URL = "http://192.168.0.234:5000/"
 }

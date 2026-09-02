@@ -29,6 +29,7 @@
     <string name="newSongLanguagesListString">最新歌曲的語言</string>
     <string name="hotSongLanguagesListString">排行歌曲的語言</string>
     <string name="singerAreasListString">歌星地區</string>
+    <string name="allSingersString">所有歌星</string>
     <string name="songsListString">歌曲</string>
     <string name="singersListString">歌星</string>
     <string name="allSongsString">所有歌曲</string>

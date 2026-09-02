@@ -14,6 +14,7 @@ import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Retrofit
+import retrofit2.http.Path
 import javax.inject.Inject
 import java.util.Date
 
@@ -58,6 +59,25 @@ class U2bKkRestApiSync private constructor() {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
         return removeNullFromLanguage(result)
+    }
+
+    fun getSingers(pageSize : Int, pageNo : Int, orderBy: String?, filter: String?): SingerList? {
+        val logStr = "getAllLSingers"
+        LogUtil.d(TAG, logStr)
+        val orderByTmp = orderBy ?: ""
+        val filterTmp = filter ?: ""
+        var result:SingerList? = null
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getSingers(pageSize, pageNo, orderByTmp, filterTmp).execute()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+        }
+        return removeNullFromSinger(result)
     }
 
     fun getAllSingerAreas(): SingerAreaList? {
@@ -397,7 +417,7 @@ class U2bKkRestApiSync private constructor() {
 
     fun getSingersBySingerType(singerType: SingerType,
                                pageSize: Int, pageNo: Int,
-                               filter: String): SingerList? {
+                               filter: String?): SingerList? {
         val logStr = "getSingersBySingerType.filter = $filter"
         LogUtil.d(TAG, logStr)
         val areaId = singerType.id
@@ -471,6 +491,22 @@ class U2bKkRestApiSync private constructor() {
         return songList
     }
 
+    private fun removeNullFromLanguage(languageList: LanguageList?): LanguageList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromLanguage")
+        languageList?.let {
+            for (language: Language? in it.languages) {
+                language?.apply {
+                    id = id ?: 0
+                    langNo = langNo ?: ""
+                    langNa = langNa ?: ""
+                    langEn = langEn ?: ""
+                }
+            }
+        }
+        return languageList
+    }
+
     private fun removeNullFromSinger(singerList: SingerList?): SingerList? {
         // The data from cloud could have null element
         LogUtil.d(TAG, "removeNullFromSinger")
@@ -490,22 +526,6 @@ class U2bKkRestApiSync private constructor() {
             }
         }
         return singerList
-    }
-
-    private fun removeNullFromLanguage(languageList: LanguageList?): LanguageList? {
-        // The data from cloud could have null element
-        LogUtil.d(TAG, "removeNullFromLanguage")
-        languageList?.let {
-            for (language: Language? in it.languages) {
-                language?.apply {
-                    id = id ?: 0
-                    langNo = langNo ?: ""
-                    langNa = langNa ?: ""
-                    langEn = langEn ?: ""
-                }
-            }
-        }
-        return languageList
     }
 
     private fun removeNullFromSingerArea(singerAreaList: SingerAreaList?): SingerAreaList? {

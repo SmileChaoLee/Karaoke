@@ -16,6 +16,14 @@ interface U2bKkApiInterface {
     @GET("api/Languages")
     fun getAllLanguages(): Call<LanguageList>
 
+    @GET("api/Singers/{pageSize}/{pageNo}/{orderBy}/{filter}")
+    fun getSingers(
+        @Path("pageSize") pageSize: Int,
+        @Path("pageNo") pageNo: Int,
+        @Path("orderBy") orderBy: String?,
+        @Path("filter") filter: String?
+    ): Call<SingerList>
+
     @GET("api/Singareas")
     fun getAllSingerAreas(): Call<SingerAreaList>
 
