@@ -6,6 +6,8 @@ import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.LanguageList
 import com.smile.u2bkaraoke.model.Singer
+import com.smile.u2bkaraoke.model.SingerArea
+import com.smile.u2bkaraoke.model.SingerAreaList
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.SingerTypeList
@@ -56,6 +58,23 @@ class U2bKkRestApiSync private constructor() {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }
         return removeNullFromLanguage(result)
+    }
+
+    fun getAllSingerAreas(): SingerAreaList? {
+        val logStr = "getAllSingerAreas"
+        LogUtil.d(TAG, logStr)
+        var result:SingerAreaList? = null
+        try {
+            // get Call from Retrofit Api
+            val response = apiInterface.getAllSingerAreas().execute()
+            LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
+            val code = response.code()
+            LogUtil.d(TAG, "$logStr.response.code() = $code")
+            if (code == HTTP_OK) result = response.body()
+        } catch (ex: Exception) {
+            LogUtil.e(TAG, "$logStr.Exception", ex)
+        }
+        return removeNullFromSingerArea(result)
     }
 
     fun getAllSingerTypes(): SingerTypeList? {
@@ -487,6 +506,22 @@ class U2bKkRestApiSync private constructor() {
             }
         }
         return languageList
+    }
+
+    private fun removeNullFromSingerArea(singerAreaList: SingerAreaList?): SingerAreaList? {
+        // The data from cloud could have null element
+        LogUtil.d(TAG, "removeNullFromSingerArea")
+        singerAreaList?.let {
+            for (singerArea: SingerArea? in it.singerAreas) {
+                singerArea?.apply {
+                    id = id ?: 0
+                    areaNo = areaNo ?: ""
+                    areaNa = areaNa ?: ""
+                    areaEn = areaEn ?: ""
+                }
+            }
+        }
+        return singerAreaList
     }
 
     private fun removeNullFromSingerType(singerTypeList: SingerTypeList?): SingerTypeList? {

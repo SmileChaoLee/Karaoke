@@ -7,9 +7,9 @@
     android:focusable="true"
     android:clickable="true"
     android:nextFocusDown="@id/u2bKExitButton"
-    android:weightSum="12">
+    android:weightSum="10">
 
-    <TextView android:id="@+id/singerTypeItem_Layout_positionNoTextView"
+    <TextView android:id="@+id/singerAreaItem_Layout_positionNoTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/red"
@@ -21,14 +21,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
         android:gravity="center_vertical|start"
-        android:layout_weight="7">
-    </TextView>
-    <TextView android:id="@+id/singerSexTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="@color/darkGreen"
-        android:gravity="center_vertical|start"
-        android:layout_weight="4">
+        android:layout_weight="9">
     </TextView>
 
 </LinearLayout>

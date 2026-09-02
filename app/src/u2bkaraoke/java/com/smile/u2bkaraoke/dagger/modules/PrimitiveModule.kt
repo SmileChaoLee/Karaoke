@@ -3,10 +3,9 @@ package com.smile.u2bkaraoke.dagger.modules
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
-import com.smile.u2bkaraoke.model.SingerType
+import com.smile.u2bkaraoke.model.SingerArea
 import com.smile.u2bkaraoke.model.Song
 import dagger.Module
 import dagger.Provides
@@ -34,14 +33,6 @@ class PrimitiveModule {
     }
 
     @Provides
-    @Named("SingerTypeListAdapter.SingerTypeItemListener")
-    fun singerTypeItemListenerProvider(@Named("PrimitiveModule")listener :
-                                     SingerTypeListAdapter.SingerTypeItemListener?)
-            : SingerTypeListAdapter.SingerTypeItemListener? {
-        return listener
-    }
-
-    @Provides
     @Named("ArrayList<String>")
     fun arraylistProvider(@Named("PrimitiveModule")list : ArrayList<String>?) : ArrayList<String>? {
         return list
@@ -62,9 +53,9 @@ class PrimitiveModule {
     }
 
     @Provides
-    @Named("SingerTypeArrayList")
-    fun singerTypeArrayListProvider(@Named("PrimitiveModule")list :
-                                    ArrayList<SingerType>?) : ArrayList<SingerType>? {
+    @Named("SingerAreaArrayList")
+    fun singerAreaArrayListProvider(@Named("PrimitiveModule")list :
+                                    ArrayList<SingerArea>?) : ArrayList<SingerArea>? {
         return list
     }
 

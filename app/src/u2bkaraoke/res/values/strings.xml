@@ -5,7 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_song_query">SongQuery</string>
     <string name="title_activity_singer_query">SingerQuery</string>
-    <string name="title_activity_singer_type_query">SingerArea</string>
+    <string name="title_activity_singer_area_query">SingerArea</string>
     <string name="title_activity_language_query">LanguageQuery</string>
     <string name="noResultString">No result.</string>
     <string name="failedMessage">Failed.</string>
@@ -28,7 +28,7 @@
     <string name="wordsListString">Number of Words</string>
     <string name="newSongLanguagesListString">Languages of New Songs</string>
     <string name="hotSongLanguagesListString">Languages of Hot Songs</string>
-    <string name="singerTypesListString">Singer Types</string>
+    <string name="singerAreasListString">Singer Areas</string>
     <string name="songsListString">Songs</string>
     <string name="singersListString">Singers</string>
     <string name="allSongsString">All Songs</string>

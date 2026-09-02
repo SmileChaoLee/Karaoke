@@ -7,27 +7,27 @@
     android:layout_height="match_parent"
     android:background="@color/transparentDarkGray">
     <TextView
-        android:id="@+id/singerTypesListMenuTextView"
+        android:id="@+id/singerAreasListMenuTextView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:textStyle="bold"
         android:textColor="@color/darkOrange"
         android:layout_gravity="center_horizontal|top"
-        android:text="@string/singerTypesListString"
+        android:text="@string/singerAreasListString"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintTop_toTopOf="parent" >
     </TextView>
     <FrameLayout
-        android:id="@+id/singerTypesListView_Layout"
+        android:id="@+id/singerAreasListView_Layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/yellow3"
         app:layout_constraintHeight_percent="0.8"
-        app:layout_constraintTop_toBottomOf="@id/singerTypesListMenuTextView">
+        app:layout_constraintTop_toBottomOf="@id/singerAreasListMenuTextView">
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/singerTypeListRecyclerView"
+            android:id="@+id/singerAreaListRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/yellow3"
@@ -36,7 +36,7 @@
             android:descendantFocusability ="afterDescendants">
         </androidx.recyclerview.widget.RecyclerView>
         <TextView
-            android:id="@+id/singerTypeListEmptyTextView"
+            android:id="@+id/singerAreaListEmptyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textStyle="bold"
@@ -52,7 +52,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintTop_toBottomOf="@id/singerTypesListView_Layout"
+        app:layout_constraintTop_toBottomOf="@id/singerAreasListView_Layout"
         app:layout_constraintBottom_toBottomOf="parent" >
         <include layout="@layout/exit_show_video_layout" />
     </LinearLayout>

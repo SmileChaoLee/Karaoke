@@ -109,7 +109,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
         }
         singerOrderButton?.setOnClickListener {
             mFragManager?.let { fm ->
-                val nFragment = SingerTyListFragment()
+                val nFragment = SingerAreaListFragment()
                 U2bKaOkUtil.beginTransaction(fm, fragContainerId, nFragment)
             }
         }

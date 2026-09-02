@@ -1,6 +1,7 @@
 package com.smile.u2bkaraoke.retrofit
 
 import com.smile.u2bkaraoke.model.LanguageList
+import com.smile.u2bkaraoke.model.SingerAreaList
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.model.Song
@@ -14,6 +15,9 @@ import retrofit2.http.Path
 interface U2bKkApiInterface {
     @GET("api/Languages")
     fun getAllLanguages(): Call<LanguageList>
+
+    @GET("api/Singareas")
+    fun getAllSingerAreas(): Call<SingerAreaList>
 
     @GET("api/Singareas/SingerTypes")
     fun getAllSingerTypes(): Call<SingerTypeList>

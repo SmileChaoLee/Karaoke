@@ -8,33 +8,26 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.smile.karaoke.R
 import com.smile.karaoke.interfaces.RecyclerItemListener
-import com.smile.u2bkaraoke.model.SingerType
 import com.smile.smilelibraries.utilities.ScreenUtil
-import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.adapters.SingerAreaListAdapter.MyViewHolder
+import com.smile.u2bkaraoke.model.SingerArea
 
-class SingerTypeListAdapter(
-    private val itemListener : SingerTypeItemListener,
-    private val mSingerTypes: ArrayList<SingerType>,
+class SingerAreaListAdapter(
+    private val itemListener : RecyclerItemListener,
+    private val mSingerAreas: ArrayList<SingerArea>,
     private val mTextFontSize: Float
 ) : RecyclerView.Adapter<MyViewHolder>() {
-
-    interface SingerTypeItemListener: RecyclerItemListener {
-        fun getSexString(sex: String): String
-    }
 
     inner class MyViewHolder(itemView: View) : ViewHolder(itemView) {
         val positionNoTextView: TextView
         val singerAreaNaTextView: TextView
-        val singerSexTextView: TextView
 
         init {
             positionNoTextView =
-                itemView.findViewById(R.id.singerTypeItem_Layout_positionNoTextView)
+                itemView.findViewById(R.id.singerAreaItem_Layout_positionNoTextView)
             ScreenUtil.resizeTextSize(positionNoTextView, mTextFontSize)
             singerAreaNaTextView = itemView.findViewById(R.id.singerAreaNaTextView)
             ScreenUtil.resizeTextSize(singerAreaNaTextView, mTextFontSize)
-            singerSexTextView = itemView.findViewById(R.id.singerSexTextView)
-            ScreenUtil.resizeTextSize(singerSexTextView, mTextFontSize)
 
             itemView.setOnClickListener {
                 itemListener.onItemClick(it, bindingAdapterPosition)
@@ -54,18 +47,16 @@ class SingerTypeListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
 
-        // inflate the singerType item view
-        return MyViewHolder(layoutInflater.inflate(R.layout.singer_type_list_item,
+        return MyViewHolder(layoutInflater.inflate(R.layout.singer_area_list_item,
             parent, false))
     }
 
     // Involves populating data into the item through holder
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val singerType = mSingerTypes[position]
+        val singerArea = mSingerAreas[position]
         holder.apply {
             positionNoTextView.text = position.toString()
-            singerAreaNaTextView.text = singerType.areaNa
-            singerSexTextView.text = itemListener.getSexString(singerType.sex)
+            singerAreaNaTextView.text = singerArea.areaNa
             if (position == 0) {
                 itemView.post { itemView.requestFocus() }
             }
@@ -73,6 +64,6 @@ class SingerTypeListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return mSingerTypes.size
+        return mSingerAreas.size
     }
 }

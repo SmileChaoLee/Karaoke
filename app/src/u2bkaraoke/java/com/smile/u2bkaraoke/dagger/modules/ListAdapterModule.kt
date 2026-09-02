@@ -3,13 +3,13 @@ package com.smile.u2bkaraoke.dagger.modules
 import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.model.Singer
-import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.adapters.LangListAdapter
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
-import com.smile.u2bkaraoke.adapters.SingerTypeListAdapter
+import com.smile.u2bkaraoke.adapters.SingerAreaListAdapter
 import com.smile.u2bkaraoke.adapters.SongListAdapter
 import com.smile.u2bkaraoke.adapters.WordListAdapter
+import com.smile.u2bkaraoke.model.SingerArea
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -41,12 +41,11 @@ class ListAdapterModule {
     }
 
     @Provides
-    fun singerTypeListAdapterProvider(@Named("SingerTypeListAdapter.SingerTypeItemListener")listener :
-                                      SingerTypeListAdapter.SingerTypeItemListener?,
-                                      @Named("SingerTypeArrayList")types : ArrayList<SingerType>?,
+    fun singerAreaListAdapterProvider(@Named("RecyclerItemListener")listener : RecyclerItemListener?,
+                                      @Named("SingerAreaArrayList")types : ArrayList<SingerArea>?,
                                       @Named("FloatValue")textFontSize : Float?
-    ) : SingerTypeListAdapter {
-        return SingerTypeListAdapter(listener!!, types!!, textFontSize!!)
+    ) : SingerAreaListAdapter {
+        return SingerAreaListAdapter(listener!!, types!!, textFontSize!!)
     }
 
     @Provides

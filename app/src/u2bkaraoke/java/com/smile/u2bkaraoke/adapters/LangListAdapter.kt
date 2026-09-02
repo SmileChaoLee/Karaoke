@@ -48,7 +48,6 @@ class LangListAdapter (
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // LogUtil.d(TAG, "onCreateViewHolder")
         val layoutInflater = LayoutInflater.from(parent.context)
-        // inflate the singerType item view
         return MyViewHolder(layoutInflater.inflate(R.layout.language_list_item,
             parent, false))
     }
