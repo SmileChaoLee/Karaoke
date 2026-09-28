@@ -28,8 +28,8 @@ class SmileKaraokeApp : SmileAppBase() {
         // facebookInterstitial = new FacebookInterstitial(appContext,
         //         facebookInterstitialID);
         // for debug mode and for facebook
-        val testString = if (BuildConfig.DEBUG) "IMG_16_9_APP_INSTALL#" else ""
-        facebookBannerID = testString + "1712962715503258_2019623008170559"
+        // val testString = if (BuildConfig.DEBUG) "IMG_16_9_APP_INSTALL#" else ""
+        // facebookBannerID = testString + "1712962715503258_2019623008170559"
         // googleAdMobAppID = "ca-app-pub-8354869049759576~5549171584"
         adMobBannerID = "ca-app-pub-8354869049759576/8267060571"
         adMobNativeID = "ca-app-pub-8354869049759576/7985456524"
