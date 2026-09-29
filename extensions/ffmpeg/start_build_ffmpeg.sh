@@ -11,7 +11,8 @@ HOST_PLATFORM="linux-x86_64"
 echo ${HOST_PLATFORM}
 ANDROID_ABI=23
 echo ${ANDROID_ABI}
-ENABLED_DECODERS=(vorbis opus flac alac pcm_mulaw pcm_alaw aac mp3 amrnb amrwb ac3 eac3 dca mlp truehd h264 hevc)
+# ENABLED_DECODERS=(vorbis opus flac alac pcm_mulaw pcm_alaw aac mp3 amrnb amrwb ac3 eac3 dca mlp truehd h264 hevc)
+ENABLED_DECODERS=(vorbis opus flac alac pcm_mulaw pcm_alaw aac mp1 mp2 mp3 amrnb amrwb ac3 eac3 dca mlp truehd mpeg1video mpeg2video mpegvideo h264 hevc)
 # ENABLED_DECODERS=(vorbis opus flac mp3)
 # ENABLED_DECODERS=(vorbis opus flac h264 hevc)
 

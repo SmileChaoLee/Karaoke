@@ -124,77 +124,31 @@ public final class FfmpegLibrary {
   @Nullable
   /* package */ static String getCodecName(String mimeType) {
     Log.i(TAG, "getCodecName.mimeType = " + mimeType);
-    String codecName;
-    switch (mimeType) {
-      case MimeTypes.AUDIO_AAC:
-        codecName = "aac";
-        break;
-      case MimeTypes.AUDIO_MPEG:
-      case MimeTypes.AUDIO_MPEG_L1:
-      case MimeTypes.AUDIO_MPEG_L2:
-        codecName = "mp3";
-        break;
-      case MimeTypes.AUDIO_AC3:
-        codecName = "ac3";
-        break;
-      case MimeTypes.AUDIO_E_AC3:
-      case MimeTypes.AUDIO_E_AC3_JOC:
-        codecName = "eac3";
-        break;
-      case MimeTypes.AUDIO_TRUEHD:
-        codecName = "truehd";
-        break;
-      case MimeTypes.AUDIO_DTS:
-      case MimeTypes.AUDIO_DTS_HD:
-        codecName = "dca";
-        break;
-      case MimeTypes.AUDIO_VORBIS:
-        codecName = "vorbis";
-        break;
-      case MimeTypes.AUDIO_OPUS:
-        codecName = "opus";
-        break;
-      case MimeTypes.AUDIO_AMR_NB:
-        codecName = "amrnb";
-        break;
-      case MimeTypes.AUDIO_AMR_WB:
-        codecName = "amrwb";
-        break;
-      case MimeTypes.AUDIO_FLAC:
-        codecName = "flac";
-        break;
-      case MimeTypes.AUDIO_ALAC:
-        codecName = "alac";
-        break;
-      case MimeTypes.AUDIO_MLAW:
-        codecName = "pcm_mulaw";
-        break;
-      case MimeTypes.AUDIO_ALAW:
-        codecName = "pcm_alaw";
-        break;
-      case MimeTypes.VIDEO_MPEG:
-        codecName = "mpeg1video";
-        break;
-      case MimeTypes.VIDEO_MPEG2:
-        codecName = "mpeg2video";
-        break;
-      case MimeTypes.VIDEO_H264:
-        codecName = "h264";
-        break;
-      case MimeTypes.VIDEO_H265:
-      case MimeTypes.VIDEO_DOLBY_VISION:
-        codecName = "hevc";
-        break;
-      case MimeTypes.VIDEO_MP4:
-      case MimeTypes.VIDEO_MP42:
-      case MimeTypes.VIDEO_MP43:
-      case MimeTypes.VIDEO_MP4V:
-        codecName = "mpeg4";
-        break;
-      default:
-        codecName = null;
-        break;
-    }
+    String codecName = switch (mimeType) {
+        case MimeTypes.AUDIO_AAC -> "aac";
+        case MimeTypes.AUDIO_MPEG -> "mp3";
+        case MimeTypes.AUDIO_MPEG_L1 -> "mp1";
+        case MimeTypes.AUDIO_MPEG_L2 -> "mp2";
+        case MimeTypes.AUDIO_AC3 -> "ac3";
+        case MimeTypes.AUDIO_E_AC3, MimeTypes.AUDIO_E_AC3_JOC -> "eac3";
+        case MimeTypes.AUDIO_TRUEHD -> "truehd";
+        case MimeTypes.AUDIO_DTS, MimeTypes.AUDIO_DTS_HD -> "dca";
+        case MimeTypes.AUDIO_VORBIS -> "vorbis";
+        case MimeTypes.AUDIO_OPUS -> "opus";
+        case MimeTypes.AUDIO_AMR_NB -> "amrnb";
+        case MimeTypes.AUDIO_AMR_WB -> "amrwb";
+        case MimeTypes.AUDIO_FLAC -> "flac";
+        case MimeTypes.AUDIO_ALAC -> "alac";
+        case MimeTypes.AUDIO_MLAW -> "pcm_mulaw";
+        case MimeTypes.AUDIO_ALAW -> "pcm_alaw";
+        case MimeTypes.VIDEO_MPEG -> "mpeg1video";
+        case MimeTypes.VIDEO_MPEG2 -> "mpeg2video";
+        case MimeTypes.VIDEO_H264 -> "h264";
+        case MimeTypes.VIDEO_H265, MimeTypes.VIDEO_DOLBY_VISION -> "hevc";
+        case MimeTypes.VIDEO_MP4, MimeTypes.VIDEO_MP42, MimeTypes.VIDEO_MP43,
+             MimeTypes.VIDEO_MP4V -> "mpeg4";
+        default -> null;
+    };
     Log.i(TAG, "getCodecName.codecName = " + codecName);
     return codecName;
   }
