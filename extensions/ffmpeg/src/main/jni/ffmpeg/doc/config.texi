@@ -1132,7 +1132,7 @@
 @set config-mlp-decoder yes
 @c @set config-mp1-decoder no
 @c @set config-mp1float-decoder no
-@c @set config-mp2-decoder no
+@set config-mp2-decoder yes
 @c @set config-mp2float-decoder no
 @c @set config-mp3float-decoder no
 @set config-mp3-decoder yes

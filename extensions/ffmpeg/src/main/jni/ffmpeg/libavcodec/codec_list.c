@@ -18,6 +18,7 @@ static const FFCodec * const codec_list[] = {
     &ff_eac3_decoder,
     &ff_flac_decoder,
     &ff_mlp_decoder,
+    &ff_mp2_decoder,
     &ff_mp3_decoder,
     &ff_opus_decoder,
     &ff_truehd_decoder,

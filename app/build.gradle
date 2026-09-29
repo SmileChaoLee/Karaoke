@@ -26,14 +26,15 @@ android {
         targetSdk sdk_version.target
         minSdk sdk_version.min
 
-        versionCode 1020
-        versionName "10.20"
+        versionCode 1021
+        versionName "10.21"
 
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
     }
 
+    /*
     // Configure native CMake build only when building video player flavors
     gradle.startParameter.taskNames.each { task ->
         if (task.containsIgnoreCase("videoplayer")
@@ -47,6 +48,7 @@ android {
             }
         }
     }
+    */
 
     flavorDimensions += ["karaoke"]
     productFlavors {
