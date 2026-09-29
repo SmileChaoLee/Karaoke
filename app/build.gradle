@@ -21,14 +21,14 @@ android {
 
     compileSdk = sdk_version.compile
 
-    defaultConfig {
+    // Force Gradle to use your healthy NDK 27 installation
+    ndkVersion '27.3.13750724'
 
+    defaultConfig {
         targetSdk sdk_version.target
         minSdk sdk_version.min
-
         versionCode 1021
         versionName "10.21"
-
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release

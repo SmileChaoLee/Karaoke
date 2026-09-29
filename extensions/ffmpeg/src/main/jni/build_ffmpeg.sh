@@ -28,7 +28,7 @@ ENABLED_DECODERS=("${@:5}")
 echo "Enabled decoders are ${ENABLED_DECODERS[@]}"
 JOBS="$(nproc 2> /dev/null || sysctl -n hw.ncpu 2> /dev/null || echo 4)"
 echo "Using $JOBS jobs for make"
-COMMON_OPTIONS="
+COMMON_OPTIONS="\
     --target-os=android \
     --enable-static \
     --disable-shared \
@@ -48,8 +48,11 @@ COMMON_OPTIONS="
     --enable-gpl \
     --enable-decoder=mpegvideo \
     --enable-decoder=mpeg1video \
+    --enable-decoder=mp1 \
+    --enable-decoder=mp1float \
     --enable-decoder=mpeg2video \
     --enable-decoder=mp2 \
+    --enable-decoder=mp2float \
     --enable-decoder=ac3 \
     --enable-decoder=msmpeg4v1 \
     --enable-decoder=msmpeg4v2 \
@@ -61,8 +64,7 @@ COMMON_OPTIONS="
     --enable-muxer=mpeg,mpegts,vob,avi,mp4 \
     --enable-decoder=h264 \
     --enable-decoder=hevc \
-    --extra-ldexeflags=-pie
-    "
+    --extra-ldexeflags=-pie"
 TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
 if [[ ! -d "${TOOLCHAIN_PREFIX}" ]]
 then
