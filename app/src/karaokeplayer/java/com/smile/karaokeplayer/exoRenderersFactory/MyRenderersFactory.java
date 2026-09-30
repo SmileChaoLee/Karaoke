@@ -36,7 +36,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON);   // default is using extension
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_OFF);     // do not use extension
         // setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER);
-        LogUtil.i(TAG, "MyRenderersFactory.created");
+        LogUtil.d(TAG, "MyRenderersFactory.created");
     }
 
     public StereoVolumeAudioProcessor getStereoVolumeAudioProcessor() {
@@ -48,7 +48,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
     protected AudioSink buildAudioSink(@NonNull Context context,
                                        boolean enableFloatOutput,
                                        boolean enableAudioTrackPlaybackParams) {
-        LogUtil.i(TAG, "buildAudioSink");
+        LogUtil.d(TAG, "buildAudioSink");
         return new DefaultAudioSink.Builder(context)
                 // .setAudioCapabilities(AudioCapabilities.DEFAULT_AUDIO_CAPABILITIES)
                 .setAudioProcessors(audioProcessors)
@@ -97,7 +97,7 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
                     eventListener,
                     MAX_DROPPED_VIDEO_FRAME_COUNT_TO_NOTIFY);
             out.add(extensionRendererIndex++, renderer);
-            LogUtil.i(TAG, "Loaded ExperimentalFfmpegVideoRenderer.");
+            LogUtil.d(TAG, "Loaded ExperimentalFfmpegVideoRenderer.");
         } catch (ClassNotFoundException e) {
             // Extension not included
         } catch (Exception e) {

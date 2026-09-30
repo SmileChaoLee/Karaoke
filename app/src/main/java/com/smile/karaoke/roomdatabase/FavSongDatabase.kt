@@ -21,13 +21,13 @@ abstract class FavSongDatabase : RoomDatabase() {
         val MIGRATION_4_5: Migration = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Example: Add a new column to the 'users' table
-                LogUtil.i(TAG, "MIGRATION_4_5.ALTER TABLE")
+                LogUtil.d(TAG, "MIGRATION_4_5.ALTER TABLE")
                 val sqlString = "ALTER TABLE $TABLE_NAME ADD COLUMN bitmapUrl TEXT"
                 db.execSQL(sqlString)
             }
         }
         fun getDatabase(context: Context, databaseName: String): FavSongDatabase {
-            LogUtil.i(TAG, "getDatabase.databaseName = $databaseName")
+            LogUtil.d(TAG, "getDatabase.databaseName = $databaseName")
             return synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -43,7 +43,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun addSongToSongList(songInfo: SongInfo): Long {
-        LogUtil.i(TAG, "addSongToSongList")
+        LogUtil.d(TAG, "addSongToSongList")
         val tempScore = songInfo.copy(  // use the default value, null for id
             id = null)
         try {
@@ -55,7 +55,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun getAllSongs(): ArrayList<SongInfo> {
-        LogUtil.i(TAG, "getAllSongs")
+        LogUtil.d(TAG, "getAllSongs")
         try {
             return ArrayList(favSongDao().getAllSongs())
         } catch (ex: Exception) {
@@ -65,7 +65,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun recordsOfPlayList(): Int {
-        LogUtil.i(TAG, "recordsOfPlayList")
+        LogUtil.d(TAG, "recordsOfPlayList")
         try {
             return favSongDao().recordsOfPlayList()
         } catch (ex: Exception) {
@@ -75,7 +75,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun getSongById(songId: Long): SongInfo? {
-        LogUtil.i(TAG, "getSongById")
+        LogUtil.d(TAG, "getSongById")
         try {
             return favSongDao().getSongById(songId)
         } catch (ex: Exception) {
@@ -85,7 +85,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun readPlaylist(isIncluded: Boolean): ArrayList<SongInfo> {
-        LogUtil.i(TAG, "readPlaylist.isIncluded = $isIncluded")
+        LogUtil.d(TAG, "readPlaylist.isIncluded = $isIncluded")
         var list = ArrayList<SongInfo>()
         try {
             list = if (isIncluded) {
@@ -100,7 +100,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun updateOneSongFromSongList(songInfo: SongInfo): Int {
-        LogUtil.i(TAG, "updateOneSongFromSongList")
+        LogUtil.d(TAG, "updateOneSongFromSongList")
         try {
             return favSongDao().updateOneSongFromSongList(songInfo)
         } catch (ex: Exception) {
@@ -110,7 +110,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun findOneSongByFilepath(filePath: String): SongInfo? {
-        LogUtil.i(TAG, "findOneSongByFilepath.filePath = $filePath")
+        LogUtil.d(TAG, "findOneSongByFilepath.filePath = $filePath")
         try {
             return favSongDao().findOneSongByFilepath(filePath)
         } catch (ex: Exception) {
@@ -120,7 +120,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun deleteOneSongFromSongList(songInfo: SongInfo): Int {
-        LogUtil.i(TAG, "deleteOneSongFromSongList")
+        LogUtil.d(TAG, "deleteOneSongFromSongList")
         try {
             return favSongDao().deleteOneSongFromSongList(songInfo)
         } catch (ex: Exception) {
@@ -130,7 +130,7 @@ abstract class FavSongDatabase : RoomDatabase() {
     }
 
     suspend fun deleteAllSongList(): Int {
-        LogUtil.i(TAG, "deleteAllSongList")
+        LogUtil.d(TAG, "deleteAllSongList")
         try {
             return favSongDao().deleteAllSongList()
         } catch (ex: Exception) {

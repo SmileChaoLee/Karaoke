@@ -21,7 +21,7 @@ class SmileVideoApp : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
     }
 
     override fun initAds() {
@@ -38,7 +38,7 @@ class SmileVideoApp : SmileAppBase() {
         // google
         MobileAds.initialize(applicationContext
         ) { initializationStatus: InitializationStatus? ->
-            LogUtil.i(TAG, "Google AdMob was initialized successfully.")
+            LogUtil.d(TAG, "Google AdMob was initialized successfully.")
         }
         // for the chrome cast
     }
@@ -62,7 +62,7 @@ class SmileVideoApp : SmileAppBase() {
     override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.i(TAG, "getNativeTemplate")
+        LogUtil.d(TAG, "getNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
             adMobNativeID,

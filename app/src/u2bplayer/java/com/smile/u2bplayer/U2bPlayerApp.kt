@@ -21,7 +21,7 @@ class U2bPlayerApp : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
     }
 
     override fun initAds() {
@@ -34,7 +34,7 @@ class U2bPlayerApp : SmileAppBase() {
         // google
         MobileAds.initialize(applicationContext) {
             initializationStatus: InitializationStatus? ->
-            LogUtil.i(TAG, "Google AdMob was initialized successfully.")
+            LogUtil.d(TAG, "Google AdMob was initialized successfully.")
         }
     }
 
@@ -61,7 +61,7 @@ class U2bPlayerApp : SmileAppBase() {
     override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                    nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.i(TAG, "getNativeTemplate")
+        LogUtil.d(TAG, "getNativeTemplate")
         return GoogleAdMobNativeTemplate(activity,
             nativeLayout,
             adMobNativeID,

@@ -35,7 +35,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     public ExoPlayerPresenter(ExoPlayerPresentView presentView) {
         super(presentView);
         mPresentView = presentView;
-        LogUtil.i(TAG, "ExoPlayerPresenter is created");
+        LogUtil.d(TAG, "ExoPlayerPresenter is created");
     }
 
     public ExoPlayerPresentView getPresentView() {
@@ -52,7 +52,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     @SuppressWarnings("unchecked")
     @Override
     public void initializeVariables(Bundle savedInstanceState, boolean isAutoPlay) {
-        LogUtil.i(TAG, "initializeVariables");
+        LogUtil.d(TAG, "initializeVariables");
         initializeVariablesBase(savedInstanceState, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
@@ -77,48 +77,50 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
         int numOfAudioTracks = audioTrackIndicesList.size();
-        String msgStr = "setAudioTrackAndChannel";
-        LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);
+        String logStr = "setAudioTrackAndChannel";
+        LogUtil.d(TAG, logStr + ".numOfAudioTracks = " + numOfAudioTracks);
         if (numOfAudioTracks > 0) {
             // select audio track
-            LogUtil.d(TAG, msgStr + ".audioTrackIndex = " + audioTrackIndex);
+            LogUtil.d(TAG, logStr + ".audioTrackIndex = " + audioTrackIndex);
             if (audioTrackIndex<=0) {
-                LogUtil.d(TAG, msgStr + ".No such audio Track Index = " + audioTrackIndex);
+                LogUtil.d(TAG, logStr + ".No such audio Track Index = " + audioTrackIndex);
                 return;
             }
             if (audioTrackIndex> numOfAudioTracks) {
-                LogUtil.d(TAG, msgStr + ".No such audio Track Index = " + audioTrackIndex);
+                LogUtil.d(TAG, logStr + ".No such audio Track Index = " + audioTrackIndex);
                 // set to first track
                 audioTrackIndex = 1;
             }
             int indexInArrayList = audioTrackIndex - 1;
 
             Integer[] trackIndicesCombination = audioTrackIndicesList.get(indexInArrayList);
-            LogUtil.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
-            if (getPlayService() != null) {
-                LogUtil.d(TAG, msgStr + ".getPlayService().selectAudioTrack()");
-                mTrackSelectionParameters = getPlayService().selectAudioTrack(trackIndicesCombination,
-                        mTrackSelectionParameters);
-            }
-
-            // set audio track
-            PlayingParameters pm = getPlayingParam();
-            LogUtil.d(TAG, msgStr + ".audioTrackIndex = " + audioTrackIndex);
-            pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
-            // set audio channel
-            LogUtil.d(TAG, msgStr + ".audioChannel = " + audioChannel);
-            pm.setCurrentChannelPlayed(audioChannel);
-            LogUtil.d(TAG, msgStr + ".getPlayService() = " + getPlayService());
-            if (getPlayService() != null) {
-                LogUtil.d(TAG, msgStr + ".getPlayService().setAudioVolume");
-                getPlayService().setAudioVolume(pm.getCurrentVolume());
+            ExoPlayService playService = getPlayService();
+            LogUtil.d(TAG, logStr + ".playService = " + playService);
+            if (playService != null) {
+                PlayingParameters pm = getPlayingParam();
+                LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() = " + pm.getCurrentAudioTrackIndexPlayed());
+                if (pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex) {
+                    // set audio track
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex");
+                    mTrackSelectionParameters = playService.selectAudioTrack(trackIndicesCombination,
+                            mTrackSelectionParameters);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() = " + pm.getCurrentAudioTrackIndexPlayed());
+                }
+                LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() = " + pm.getCurrentChannelPlayed());
+                if (pm.getCurrentChannelPlayed() != audioChannel) {
+                    // set audio channel
+                    pm.setCurrentChannelPlayed(audioChannel);
+                    // playService.setAudioVolume() must be after pm.setCurrentChannelPlayed()
+                    playService.setAudioVolume(pm.getCurrentVolume());
+                }
             }
         }
     }
 
     @Override
     public void switchAudioToMusic() {
-        LogUtil.i(TAG, "switchAudioToMusic");
+        LogUtil.d(TAG, "switchAudioToMusic");
         PlayingParameters pm = getPlayingParam();
         if (!pm.isInSongList()) {
             // not in the database and show message
@@ -131,7 +133,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
     }
     @Override
     public void switchAudioToVocal() {
-        LogUtil.i(TAG, "switchAudioToVocal");
+        LogUtil.d(TAG, "switchAudioToVocal");
         PlayingParameters pm = getPlayingParam();
         if (!pm.isInSongList()) {
             // not in the database and show message
@@ -230,7 +232,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
-        LogUtil.i(TAG,"saveInstanceState.getPlayService()");
+        LogUtil.d(TAG,"saveInstanceState.getPlayService()");
         PlayingParameters pm = getPlayingParam();
         if (getPlayService() != null) {
             pm.setCurrentAudioPosition(getPlayService().getCurrentPosition());

@@ -87,7 +87,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private lateinit var searchToolLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         activity?.let {
             if (it is U2bKkFunc) mU2bKkFunc = it
@@ -119,7 +119,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                         args.getParcelable(U2bKKConstants.LanguageParcelable, Language::class.java)
                     } else args.getParcelable(U2bKKConstants.LanguageParcelable)
                     objectPassed = language
-                    LogUtil.i(TAG, "onCreate.NewSongLanguageOrdered.language = $language")
+                    LogUtil.d(TAG, "onCreate.NewSongLanguageOrdered.language = $language")
                 }
                 // Constants.HotSongOrdered -> objectPassed = null
                 U2bKKConstants.LanguageOrdered, U2bKKConstants.LanguageWordsOrdered -> {
@@ -140,7 +140,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_song_list,
             container, false)
@@ -247,13 +247,13 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
         setFucusDirection()
     }
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         selectedSongInfos.clear()
         selectedSongs.clear()
         songList.songs.clear()
@@ -261,7 +261,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     private fun addToFavoriteDatabase() {
-        LogUtil.i(TAG, "addToFavoriteDatabase")
+        LogUtil.d(TAG, "addToFavoriteDatabase")
         val act = activity?: return
         if (selectedSongInfos.isEmpty()) {
             ScreenUtil.showToast(act,
@@ -371,7 +371,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
         // val fragContainerId = this.id   // container id of the fragment
@@ -395,7 +395,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val songInfo = dataSongToSongInfo(song)
             var isUpdated = false
             if (song.vodYn.uppercase() == "Y") {
-                LogUtil.i(TAG, "onItemClick.remove")
+                LogUtil.d(TAG, "onItemClick.remove")
                 song.vodYn = "N"
                 selectedSongInfos.remove(songInfo)
                 selectedSongs.remove(Pair(song, position))
@@ -407,15 +407,15 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                                 " ${MySingleton.MAX_SONGS}", textFontSize,
                         Toast.LENGTH_SHORT)
                 } else {
-                    LogUtil.i(TAG, "onItemClick.add")
+                    LogUtil.d(TAG, "onItemClick.add")
                     song.vodYn = "Y"
                     selectedSongInfos.add(songInfo)
                     selectedSongs.add(Pair(song, position))
                     isUpdated = true
                 }
             }
-            LogUtil.i(TAG, "onItemClick.selectedSongInfos.size = ${selectedSongInfos.size}")
-            LogUtil.i(TAG, "onItemClick.selectedSongs.size = ${selectedSongs.size}")
+            LogUtil.d(TAG, "onItemClick.selectedSongInfos.size = ${selectedSongInfos.size}")
+            LogUtil.d(TAG, "onItemClick.selectedSongs.size = ${selectedSongs.size}")
             if (isUpdated) myViewAdapter?.notifyItemChanged(position)
         }
     }
@@ -615,7 +615,7 @@ class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 index++
                 if (index >= MySingleton.MAX_SONGS) {
                     // excess the max
-                    LogUtil.i(TAG, "$logStr.excess the max")
+                    LogUtil.d(TAG, "$logStr.excess the max")
                     ScreenUtil.showToast(
                         activity, getString(R.string.excess_max) +
                                 " ${MySingleton.MAX_SONGS}", textFontSize,

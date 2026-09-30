@@ -49,7 +49,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     @SuppressWarnings("unchecked")
     public void initializeVariables(Bundle savedInstanceState, boolean isAutoPlay) {
-        LogUtil.i(TAG, "initializeVariables");
+        LogUtil.d(TAG, "initializeVariables");
         initializeVariablesBase(savedInstanceState, isAutoPlay);
         if (savedInstanceState == null) {
             audioTrackIndicesList = new ArrayList<>();
@@ -63,8 +63,9 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
+        String logStr = "setAudioTrackAndChannel";
         int numOfAudioTracks = audioTrackIndicesList.size();
-        LogUtil.i(TAG, "setAudioTrackAndChannel.audioTrackIndex = " + audioTrackIndex +
+        LogUtil.d(TAG, logStr + ".audioTrackIndex = " + audioTrackIndex +
                 ", audioChannel = " + audioChannel + ", numOfAudioTracks = " +
                 numOfAudioTracks);
         if (audioTrackIndex <= 0) {
@@ -76,22 +77,30 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 // set to first track
                 audioTrackIndex = 1;
             }
-            int audioTrackId = audioTrackIndicesList.get(audioTrackIndex - 1);
-            LogUtil.d(TAG, "setAudioTrackAndChannel.playService = " + getPlayService());
-            if (getPlayService() != null) {
+            VlcPlayService playService = getPlayService();
+            LogUtil.d(TAG, logStr + ".playService = " + playService);
+            if (playService != null) {
                 PlayingParameters pm = getPlayingParam();
-                getPlayService().setAudioTrack(audioTrackId);
-                pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
-                // select audio channel
-                pm.setCurrentChannelPlayed(audioChannel);
-                getPlayService().setAudioVolume(pm.getCurrentVolume());
+                if (pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex) {
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex");
+                    int audioTrackId = audioTrackIndicesList.get(audioTrackIndex - 1);
+                    playService.setAudioTrack(audioTrackId);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+                }
+                LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() = " + pm.getCurrentChannelPlayed());
+                if (pm.getCurrentChannelPlayed() != audioChannel) {
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() != audioChannel");
+                    // select audio channel
+                    playService.setAudioChannel(audioChannel);
+                    pm.setCurrentChannelPlayed(audioChannel);
+                }
             }
         }
     }
 
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
-        LogUtil.i(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
+        LogUtil.d(TAG, "saveInstanceState.getPlayService() = " + getPlayService());
         if (getPlayService() != null) {
             PlayingParameters pm = getPlayingParam();
             if (getPlayService().getVlcPlayer() != null) {
@@ -107,7 +116,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public void switchAudioToMusic() {
-        LogUtil.i(TAG, "switchAudioToMusic");
+        LogUtil.d(TAG, "switchAudioToMusic");
         PlayingParameters pm = getPlayingParam();
         if (!pm.isInSongList()) {
             // not in the database and show message
@@ -122,7 +131,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void switchAudioToVocal() {
         // do nothing because it does not have this functionality yet
-        LogUtil.i(TAG, "switchAudioToVocal() is called.");
+        LogUtil.d(TAG, "switchAudioToVocal() is called.");
         PlayingParameters pm = getPlayingParam();
         if (!pm.isInSongList()) {
             // not in the database and show message
@@ -149,7 +158,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
     @Override
     public void setAudioActionSubMenu() {
         final String msgStr = "setAudioActionSubMenu";
-        LogUtil.i(TAG, msgStr);
+        LogUtil.d(TAG, msgStr);
         getPlayingMediaInfo();
         if (audioTrackIndicesList.isEmpty()) {
             final Handler handler = new Handler(Looper.getMainLooper());
@@ -179,7 +188,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     private void getPlayingMediaInfo() {
         String msgStr = "getPlayingMediaInfo";
-        LogUtil.i(TAG, msgStr);
+        LogUtil.d(TAG, msgStr);
         int[] result = new int[] {1, CommonConstants.STEREO};
         setNumberOfVideoTracks(0);
         int numOfAudioTracks = 0;
@@ -244,7 +253,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
 
     @Override
     public int getNumberOfAudioTracks() {
-        LogUtil.i(TAG, "getNumberOfAudioTracks.audioTrackIndicesList.size() = " +
+        LogUtil.d(TAG, "getNumberOfAudioTracks.audioTrackIndicesList.size() = " +
                 audioTrackIndicesList.size());
         return audioTrackIndicesList.size();
     }

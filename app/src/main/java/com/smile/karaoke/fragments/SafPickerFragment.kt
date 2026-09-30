@@ -40,7 +40,7 @@ class SafPickerFragment: ComOpenFragment() {
     private var pickerButton: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         activity?.let {
             if (it is PlayMyFavorites) playMyFavorites = it
@@ -91,13 +91,13 @@ class SafPickerFragment: ComOpenFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_saf_picker,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
 
         view.let {
             pickerButton = it.findViewById(R.id.safPickerImageView)
@@ -110,7 +110,7 @@ class SafPickerFragment: ComOpenFragment() {
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         pickerButton?.post {  pickerButton?.requestFocus() }
     }
 
@@ -124,7 +124,7 @@ class SafPickerFragment: ComOpenFragment() {
     }
 
     override fun setButtonsSize() {
-        LogUtil.i(TAG, "setButtonsSize")
+        LogUtil.d(TAG, "setButtonsSize")
         // do nothing, just follow the xml view file
     }
 

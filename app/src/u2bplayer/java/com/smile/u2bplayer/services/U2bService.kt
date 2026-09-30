@@ -47,29 +47,29 @@ class U2bService : BasePlayService() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         // do not use this variable, isU2bCast because it is for local file
         /*
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         restoreAudioVolume()
-        LogUtil.i(TAG, "onCreate.curAudioVolume = $curAudioVolume")
+        LogUtil.d(TAG, "onCreate.curAudioVolume = $curAudioVolume")
         */
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        LogUtil.i(TAG, "onBind.binder = $binder")
+        LogUtil.d(TAG, "onBind.binder = $binder")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        LogUtil.i(TAG, "onUnbind.intent = $intent")
+        LogUtil.d(TAG, "onUnbind.intent = $intent")
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         // restore the original audio volume before starting this app
         // restoreAudioVolume()
         //
@@ -130,11 +130,11 @@ class U2bService : BasePlayService() {
     }
 
     fun prepare(videoId: String) {
-        LogUtil.i(TAG, "prepare.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "prepare.isU2bCast = $isU2bCast")
         if (isU2bCast) {
             u2bCastPlayer?.loadVideo(videoId, 0f)   // play immediately
         } else {
-            LogUtil.i(TAG, "prepare.u2bPlayer = $u2bPlayer")
+            LogUtil.d(TAG, "prepare.u2bPlayer = $u2bPlayer")
             u2bPlayer?.loadVideo(videoId, 0f)   // play immediately
         }
     }
@@ -206,7 +206,7 @@ class U2bService : BasePlayService() {
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "onPause.isU2bCast = $isU2bCast")
         if (isU2bCast) {
             u2bCastPlayer?.pause()
         } else {
@@ -215,7 +215,7 @@ class U2bService : BasePlayService() {
     }
 
     override fun onStop() {
-        LogUtil.i(TAG, "onStop.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "onStop.isU2bCast = $isU2bCast")
         // YouTubePlayer does not have stop() method
         presenter?.playingParam?.let {
             val playbackState = it.currentPlaybackState
@@ -254,7 +254,7 @@ class U2bService : BasePlayService() {
     }
 
     override fun initMediaCallback() {
-        LogUtil.i(TAG, "initMediaCallback.presenter = $presenter")
+        LogUtil.d(TAG, "initMediaCallback.presenter = $presenter")
         presenter?.let {
             mediaSessionCallback = U2bSessionCallback(this@U2bService)
             mediaSessionCompat?.setCallback(mediaSessionCallback)
@@ -292,7 +292,7 @@ class U2bService : BasePlayService() {
 
     /*
     override fun setAudioVolume(volumeTmp: Float) {
-        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+        LogUtil.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
             // val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
             // An integer from 0 to max volume, volumeTmp is between 0.0 and 1.0
@@ -304,14 +304,14 @@ class U2bService : BasePlayService() {
             it.currentVolume = volumeTmp
             return
         }
-        LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
+        LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is null")
     }
     */
 
     override fun setAudioVolume(volumeTmp: Float) {
-        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+        LogUtil.d(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
         val percentage = (volumeTmp * 100f).toInt()
-        LogUtil.i(TAG, "setAudioVolume.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "setAudioVolume.isU2bCast = $isU2bCast")
         if (isU2bCast) {
             u2bCastPlayer?.setVolume(percentage)
         } else {
@@ -361,11 +361,11 @@ class U2bService : BasePlayService() {
 
     override fun specificPlayerReplayMedia(currentAudioPosition: Long) {
         val logStr = "specificPlayerReplayMedia"
-        LogUtil.i(TAG, "$logStr.currentAudioPosition = $currentAudioPosition")
+        LogUtil.d(TAG, "$logStr.currentAudioPosition = $currentAudioPosition")
         // song is playing, paused, or finished playing
         // switchAudioToVocal() // implement after VlcPlayer can be run
         val seconds = currentAudioPosition / 1000f
-        LogUtil.i(TAG, "$logStr.isU2bCast = $isU2bCast")
+        LogUtil.d(TAG, "$logStr.isU2bCast = $isU2bCast")
         if (isU2bCast) {
             u2bCastPlayer?.apply {
                 seekTo(seconds)

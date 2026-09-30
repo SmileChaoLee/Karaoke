@@ -59,7 +59,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     // private var restApi: MyRestApi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
             singerType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -74,7 +74,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_singer_list,
             container, false)
@@ -159,7 +159,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
         setFucusDirection()
     }
@@ -173,14 +173,14 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
         val fragContainerId = this.id   // container id of the fragment
         val fragManager = act.supportFragmentManager
         singerList.let { list ->
             val singer = list.singers[position]
-            LogUtil.i(TAG, "onItemClick.singer.singNa = ${singer.singNa}")
+            LogUtil.d(TAG, "onItemClick.singer.singNa = ${singer.singNa}")
             ScreenUtil.showToast(act, singer.singNa,
                 textFontSize,  Toast.LENGTH_SHORT)
             val nFragment = SongListFragment().apply {

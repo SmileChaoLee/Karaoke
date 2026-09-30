@@ -41,7 +41,7 @@ class U2bKkToolApp : SmileAppBase() {
     override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.i(TAG, "getNativeTemplate")
+        LogUtil.d(TAG, "getNativeTemplate")
         return null
     }
 }

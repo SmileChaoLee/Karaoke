@@ -43,7 +43,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
 
     @Override
     public synchronized void onPrepareFromUri(Uri uri, Bundle extras) {
-        LogUtil.i(TAG, "onPrepareFromUri.uri = " + uri);
+        LogUtil.d(TAG, "onPrepareFromUri.uri = " + uri);
         super.onPrepareFromUri(uri, extras);
         VlcPlayerPresenter presenter = mPlayService.getPresenter();
         if (presenter == null) return;
@@ -117,7 +117,7 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
     @Override
     public synchronized void onPlay() {
         super.onPlay();
-        LogUtil.i(TAG, "onPlay() is called.");
+        LogUtil.d(TAG, "onPlay() is called.");
         mPlayService.onPlay();
     }
 
@@ -136,14 +136,14 @@ public class VlcMediaSessionCallback extends MediaSessionCompat.Callback {
     @Override
     public synchronized void onPause() {
         super.onPause();
-        LogUtil.i(TAG, "onPause() is called.");
+        LogUtil.d(TAG, "onPause() is called.");
         mPlayService.onPause();
     }
 
     @Override
     public synchronized void onStop() {
         super.onStop();
-        LogUtil.i(TAG, "onStop() is called.");
+        LogUtil.d(TAG, "onStop() is called.");
         mPlayService.onStop();
     }
 

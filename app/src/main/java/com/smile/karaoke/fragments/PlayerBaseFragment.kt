@@ -167,17 +167,19 @@ abstract class PlayerBaseFragment : Fragment(),
      * this function will double the timeout PlayerView_Timeout = 5000 //  5 seconds
      */
     private val focusChangeListener = ViewTreeObserver.OnGlobalFocusChangeListener { oldFocus, newFocus ->
+        val logStr = "focusChangeListener"
         if (newFocus != null) {
             // A child view just gained focus
             val unknowId = "Unknown ID"
             val viewIdName = try {
                 resources.getResourceEntryName(newFocus.id)
             } catch (e: Exception) {
+                LogUtil.e(TAG,"$logStr.Exception", e)
                 unknowId
             }
-            LogUtil.d(TAG,"focusChangeListener.View gained focus.$viewIdName (Type: ${newFocus.javaClass.simpleName})")
+            LogUtil.d(TAG,"$logStr.View gained focus.$viewIdName (Type: ${newFocus.javaClass.simpleName})")
             if (focusHashSet.contains(newFocus)) {
-                LogUtil.d(TAG,"focusChangeListener.focusHashSet contains newFocus")
+                LogUtil.d(TAG,"$logStr.focusHashSet contains newFocus")
                 lastFocusView = newFocus
                 showSupportToolbarAudioControlSetTimer()
             }
@@ -206,10 +208,46 @@ abstract class PlayerBaseFragment : Fragment(),
     abstract fun setupMenuItems()
     abstract fun getPlayServiceIntent(): Intent?
     abstract fun onPlayServiceConnected(service: IBinder)
-    abstract fun audioChannelButtonListener()
     abstract fun getFavDatabaseName(): String
     abstract fun obtainCastContext(): CastContext?
     abstract fun isCasting(): Boolean
+
+    open fun audioChannelButtonListener() {
+        val logStr = "audioChannelButtonListener"
+        val pm = mPresenter.playingParam
+        LogUtil.d(TAG, "$logStr.pm.currentChannelPlayed = ${pm.currentChannelPlayed}")
+        val channel = when (pm.currentChannelPlayed) {
+            CommonConstants.LEFT_CHANNEL -> CommonConstants.RIGHT_CHANNEL
+            CommonConstants.RIGHT_CHANNEL -> CommonConstants.STEREO
+            CommonConstants.STEREO -> CommonConstants.LEFT_CHANNEL
+            else -> CommonConstants.STEREO
+        }
+        activity?.let{
+            val str = when (channel) {
+                CommonConstants.LEFT_CHANNEL -> it.getString(R.string.leftChannelString)
+                CommonConstants.RIGHT_CHANNEL -> it.getString(R.string.rightChannelString)
+                CommonConstants.STEREO -> it.getString(R.string.stereoChannelString)
+                else -> it.getString(R.string.unknown)
+            }
+            ScreenUtil.showToast(it, str,
+                toastTextSize, ScreenUtil.FontSize_Pixel_Type,
+                Toast.LENGTH_SHORT)
+        }
+        mPresenter.setAudioTrackAndChannel(pm.currentAudioTrackIndexPlayed,
+            channel)
+    }
+
+    open fun switchToMusicVisibility(): Int {
+        return View.VISIBLE
+    }
+
+    open fun switchToVocalVisibility(): Int {
+        return View.VISIBLE
+    }
+
+    open fun audioChannelVisibility(): Int {
+        return View.VISIBLE
+    }
 
     var mPlayServiceIntent: Intent? = null
     private fun startAndBindPlayService() {
@@ -250,7 +288,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     private fun onPlayServiceDisconnected() {
-        LogUtil.i(TAG, "onPlayServiceDisconnected")
+        LogUtil.d(TAG, "onPlayServiceDisconnected")
         /*
         activity?.stopService(mPlayServiceIntent)
         isServiceDestroyed = true
@@ -261,7 +299,7 @@ abstract class PlayerBaseFragment : Fragment(),
     var isServiceDestroyed: Boolean = true
     val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            LogUtil.i(TAG, "onServiceConnected")
+            LogUtil.d(TAG, "onServiceConnected")
             onPlayServiceConnected(service)
             isServiceBound = true
             isServiceDestroyed = false
@@ -270,7 +308,7 @@ abstract class PlayerBaseFragment : Fragment(),
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
-            LogUtil.i(TAG, "onServiceDisconnected")
+            LogUtil.d(TAG, "onServiceDisconnected")
             isServiceBound = false
             onPlayServiceDisconnected()
         }
@@ -278,7 +316,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
         MySingleton.clearSingleton()
@@ -336,7 +374,7 @@ abstract class PlayerBaseFragment : Fragment(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_player_base_view,
             container, false)
@@ -352,7 +390,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         view.viewTreeObserver.addOnGlobalFocusChangeListener(focusChangeListener)
@@ -485,7 +523,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        LogUtil.i(TAG, "onCreateOptionsMenu")
+        LogUtil.d(TAG, "onCreateOptionsMenu")
         // Inflate the menu; this adds items to the action bar if it is present.
         // mainMenu = menu;
         // menu.clear() does not work for the issue of onCreateOptionsMenu being called multiple times
@@ -637,7 +675,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onStart() {
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
         super.onStart()
         mPresenter.playingParam.let {
             LogUtil.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
@@ -661,14 +699,14 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
         bannerAdsLayout?.visibility = View.GONE
     }
 
     override fun onStop() {
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
         super.onStop()
         mPresenter.playingParam.let {
             LogUtil.d(TAG, "onStop.isPlaySingleSong = ${it.isPlaySingleSong}")
@@ -678,14 +716,14 @@ abstract class PlayerBaseFragment : Fragment(),
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         val logStr = "onConfigurationChanged"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         CommonUtil.closeMenu(mainMenu)
         activity?.let {actIt ->
             val screen = ScreenUtil.getScreenSize(actIt)
             screenSizeX = screen.x
-            LogUtil.i(TAG, "$logStr.screenSizeX = $screenSizeX")
+            LogUtil.d(TAG, "$logStr.screenSizeX = $screenSizeX")
             screenSizeY = screen.y
-            LogUtil.i(TAG, "$logStr.screenSizeY = $screenSizeY")
+            LogUtil.d(TAG, "$logStr.screenSizeY = $screenSizeY")
             myBannerAdView?.destroy()
             bannerLinearLayout?.also {layoutIt ->
                 layoutIt.visibility = View.VISIBLE // Show Banner Ad
@@ -699,13 +737,13 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        LogUtil.i(TAG, "onSaveInstanceState")
+        LogUtil.d(TAG, "onSaveInstanceState")
         mPresenter.saveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         MySingleton.clearSingleton()
         // cancel the timer
         mPresenter.removeMsgFromDurationBarHandler()
@@ -741,7 +779,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     fun setMainMenu() {
-        LogUtil.i(TAG, "setMainMenu")
+        LogUtil.d(TAG, "setMainMenu")
         softDecoderFirstMenuItem?.isVisible = true    // always visible
         // val isVisible = !mPresenter.playingParam.isPlaySingleSong // no more playing single song
         // val isVisible = true
@@ -756,14 +794,14 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     private fun setMediaRouteButtonVisible() {
-        LogUtil.i(TAG, "setMediaRouteButtonVisible")
+        LogUtil.d(TAG, "setMediaRouteButtonVisible")
         mediaRouteButton?.visibility =
             if (castContext != null)
             View.VISIBLE else View.GONE
     }
 
     private fun setMediaRouteButtonView(buttonMarginLeft: Int, imageButtonHeight: Int) {
-        LogUtil.i(TAG, "setMediaRouteButtonView.castContext = $castContext")
+        LogUtil.d(TAG, "setMediaRouteButtonView.castContext = $castContext")
         if (castContext == null) return
         try {
             mediaRouteButton = fragmentView?.findViewById(R.id.media_route_button)
@@ -789,7 +827,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     private fun setButtonsPositionAndSize(config: Configuration) {
-        LogUtil.i(TAG, "setButtonsPositionAndSize")
+        LogUtil.d(TAG, "setButtonsPositionAndSize")
         var buttonMarginLeft = (50.0f * fontScale).toInt() // 60 pixels = 20dp on Nexus 5
         var buttonMarginLeft2 = buttonMarginLeft
         // val screenSize = ScreenUtil.getScreenSize(activity)
@@ -899,7 +937,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     private fun closeFragment() {
         val pm = mPresenter.playingParam
-        LogUtil.i(TAG, "closeFragment.isPlaySingleSong = " + pm.isPlaySingleSong)
+        LogUtil.d(TAG, "closeFragment.isPlaySingleSong = " + pm.isPlaySingleSong)
         playSongs?.returnToPrevious(pm.isPlaySingleSong)
     }
 
@@ -946,46 +984,33 @@ abstract class PlayerBaseFragment : Fragment(),
         fragmentView?.let { it.post { it.requestFocus() } }
     }
 
-    open fun switchToMusicVisibility(): Int {
-        return View.VISIBLE
-    }
-
-    open fun switchToVocalVisibility(): Int {
-        return View.VISIBLE
-    }
-
-    open fun audioChannelVisibility(): Int {
-        return View.VISIBLE
-    }
-
     private fun audioTrackListener() {
-        val logStr = "audioTrackImageButton"
+        val logStr = "audioTrackListener"
         audioTrackImageButton?.setOnClickListener {
-            mPresenter.playingParam.apply {
-                LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                currentAudioTrackIndexPlayed++
-                LogUtil.d(TAG, "$logStr.currentAudioTrackIndexPlayed = $currentAudioTrackIndexPlayed")
-                val numAudioTracks = mPresenter.getNumberOfAudioTracks()
-                LogUtil.d(TAG, "$logStr.numAudioTracks = $numAudioTracks")
-                if (currentAudioTrackIndexPlayed > numAudioTracks)
-                    currentAudioTrackIndexPlayed = 1
-                val str: String? =
-                    when (currentAudioTrackIndexPlayed) {
-                        1 -> activity?.getString(R.string.audioTrack1String)
-                        2 -> activity?.getString(R.string.audioTrack2String)
-                        3 -> activity?.getString(R.string.audioTrack3String)
-                        4 -> activity?.getString(R.string.audioTrack4String)
-                        5 -> activity?.getString(R.string.audioTrack5String)
-                        6 -> activity?.getString(R.string.audioTrack6String)
-                        7 -> activity?.getString(R.string.audioTrack7String)
-                        8 -> activity?.getString(R.string.audioTrack8String)
-                        else -> activity?.getString(R.string.unknown)
-                    }
-                ScreenUtil.showToast(activity, str, toastTextSize,
-                    Toast.LENGTH_SHORT)
-                mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed,
-                    currentChannelPlayed)
-            }
+            val pm = mPresenter.playingParam
+            LogUtil.d(TAG, "$logStr.pm.currentAudioTrackIndexPlayed = ${pm.currentAudioTrackIndexPlayed}")
+            var newTrack = pm.currentAudioTrackIndexPlayed + 1
+            LogUtil.d(TAG, "$logStr.newTrack = $newTrack")
+            val numAudioTracks = mPresenter.getNumberOfAudioTracks()
+            LogUtil.d(TAG, "$logStr.numAudioTracks = $numAudioTracks")
+            if (newTrack > numAudioTracks) newTrack = 1
+            LogUtil.d(TAG, "$logStr.newTrack = $newTrack")
+            val str: String? = when (newTrack) {
+                    1 -> activity?.getString(R.string.audioTrack1String)
+                    2 -> activity?.getString(R.string.audioTrack2String)
+                    3 -> activity?.getString(R.string.audioTrack3String)
+                    4 -> activity?.getString(R.string.audioTrack4String)
+                    5 -> activity?.getString(R.string.audioTrack5String)
+                    6 -> activity?.getString(R.string.audioTrack6String)
+                    7 -> activity?.getString(R.string.audioTrack7String)
+                    8 -> activity?.getString(R.string.audioTrack8String)
+                    else -> activity?.getString(R.string.unknown)
+                }
+            ScreenUtil.showToast(activity, str, toastTextSize,
+                Toast.LENGTH_SHORT)
+            mPresenter.setAudioTrackAndChannel(newTrack,
+                pm.currentChannelPlayed)
+
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = audioTrackImageButton
             fragmentView?.requestFocus()
@@ -1310,7 +1335,7 @@ abstract class PlayerBaseFragment : Fragment(),
 
     // implementing PlayerBasePresenter.BasePresentView
     override fun setImageButtonStatus() {
-        LogUtil.i(TAG, "setImageButtonStatus")
+        LogUtil.d(TAG, "setImageButtonStatus")
         val pm = mPresenter.playingParam
         if (pm.currentVolume > 0.0f) volumeImageButton?.setImageResource(R.drawable.non_volume)
         else volumeImageButton?.setImageResource(R.drawable.volume)
@@ -1506,7 +1531,7 @@ abstract class PlayerBaseFragment : Fragment(),
     }
 
     override fun showPlayerView() {
-        LogUtil.i(TAG, "showPlayerView")
+        LogUtil.d(TAG, "showPlayerView")
         playerViewLinearLayout?.visibility = View.VISIBLE
         mPresenter.run {
             if ( (playingParam.currentPlaybackState != PlaybackStateCompat.STATE_PLAYING) ||

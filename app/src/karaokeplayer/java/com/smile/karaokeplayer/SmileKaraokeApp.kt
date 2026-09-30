@@ -18,7 +18,7 @@ class SmileKaraokeApp : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
     }
 
     override fun initAds() {

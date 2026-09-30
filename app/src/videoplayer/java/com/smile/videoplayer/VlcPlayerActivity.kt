@@ -19,7 +19,7 @@ open class VlcPlayerActivity : UpBaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(mTAG, "onCreate")
+        LogUtil.d(mTAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 

@@ -16,7 +16,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
 
     fun transferPlaybackToCast() {
         val msgString = "transferPlaybackToCast"
-        LogUtil.i(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         if (playService.presenter == null) {
             LogUtil.d(TAG, "${msgString}.presenter is null")
             return
@@ -73,7 +73,7 @@ class SwitchPlayer(private val playService: ExoPlayService) {
 
     fun transferPlaybackToLocal() {
         val msgString = "transferPlaybackToLocal"
-        LogUtil.i(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         if (playService.presenter == null) {
             LogUtil.d(TAG, "${msgString}.presenter is null")
             return

@@ -19,6 +19,7 @@ import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.util.VLCVideoLayout
 import com.smile.videoplayer.callbacks.VlcMediaSessionCallback
+import com.smile.videoplayer.native.VlcNativeBridge
 import com.smile.videoplayer.listeners.VlcPlayerListener
 import com.smile.videoplayer.presenters.VlcPlayerPresenter
 
@@ -45,28 +46,28 @@ class VlcPlayService : BasePlayService() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         /*
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         curAudioVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         restoreAudioVolume()
-        LogUtil.i(TAG, "onCreate.curAudioVolume = $curAudioVolume")
+        LogUtil.d(TAG, "onCreate.curAudioVolume = $curAudioVolume")
         */
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        LogUtil.i(TAG, "onBind.binder = $binder")
+        LogUtil.d(TAG, "onBind.binder = $binder")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        LogUtil.i(TAG, "onUnbind.intent = $intent")
+        LogUtil.d(TAG, "onUnbind.intent = $intent")
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         // restore the original audio volume before starting this app
         // restoreAudioVolume()
         //
@@ -90,18 +91,29 @@ class VlcPlayService : BasePlayService() {
     */
 
     fun initVlcPlayer() {
-        LogUtil.i(TAG, "initVlcPlayer.presenter = $presenter")
+        LogUtil.d(TAG, "initVlcPlayer.presenter = $presenter")
+        VlcNativeBridge.loadVlcBridge()
         presenter?.let {
-            libVLC = LibVLC(it.getActivity())
+            val options = ArrayList<String>()
+            // options.add("-vvv") // Enables detailed logcat debugging
+            options.add("--extraintf=")
+            // 1 = Stereo
+            // 2 = Reverse Stereo
+            // 3 = Left Channel
+            // 4 = Right Channel
+            // 5 = Dolby
+            options.add("--stereo-mode=1")  // works for changing the audio mode
+            libVLC = LibVLC(it.getActivity(), options)
             vlcPlayer = MediaPlayer(libVLC)
             vlcPlayer?.apply {
+                audioDelay = 0
                 setEventListener(VlcPlayerListener(this@VlcPlayService))
             }
         }
     }
 
     private fun releaseVlcPlayer() {
-        LogUtil.i(TAG, "releaseVlcPlayer.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG, "releaseVlcPlayer.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             stop()
             media?.release()
@@ -114,7 +126,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun attachPlayerViews(videoVLCPlayerView: VLCVideoLayout) {
-        LogUtil.i(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG,"attachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             val isAttached = vlcVout.areViewsAttached()
             LogUtil.d(TAG,"attachPlayerViews.areViewsAttached = $isAttached")
@@ -126,7 +138,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun detachPlayerViews() {
-        LogUtil.i(TAG,"detachPlayerViews.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG,"detachPlayerViews.vlcPlayer = $vlcPlayer")
         vlcPlayer?.apply {
             LogUtil.d(TAG,"detachPlayerViews.areViewsAttached = ${vlcVout.areViewsAttached()}")
             if (vlcVout.areViewsAttached()) {
@@ -137,7 +149,7 @@ class VlcPlayService : BasePlayService() {
 
     fun setVideoWindowSize(videoVLCPlayerView: VLCVideoLayout) {
         val msgStr = "setVideoWindowSize"
-        LogUtil.i(TAG,msgStr)
+        LogUtil.d(TAG,msgStr)
         presenter?.let {
             attachPlayerViews(videoVLCPlayerView)   // must be the first statement
             it.getActivity()?.let { actIt ->
@@ -163,16 +175,22 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun prepare(med: IMedia) {
-        LogUtil.i(TAG, "prepare.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG, "prepare.vlcPlayer = $vlcPlayer")
         vlcPlayer?.media = med
     }
 
     fun createMedia(uri: Uri): IMedia {
-        return Media(libVLC, uri)
+        LogUtil.d(TAG, "createMedia")
+        val media = Media(libVLC, uri)
+        // media.addOption(":stereo-mode=4") // does not work
+        media.addOption(":audio-filter=remap")
+        media.addOption(":remap-channel-left=1")  // Send Input Left to Output Left
+        media.addOption(":remap-channel-right=1") // Send Input Left to Output Right (Mono Left Mode)
+        return media
     }
 
     fun getAudioTrack(): Int {
-        LogUtil.i(TAG, "getAudioTrack")
+        LogUtil.d(TAG, "getAudioTrack")
         /*
         val tracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
         LogUtil.d(TAG, "getAudioTrack.tracks.size = ${tracks?.size}")
@@ -190,7 +208,7 @@ class VlcPlayService : BasePlayService() {
     }
 
     fun setAudioTrack(audioTrackId: Int) {
-        LogUtil.i(TAG, "setAudioTrack")
+        LogUtil.d(TAG, "setAudioTrack")
         /*
         val selectedTracks = vlcPlayer?.getTracks(IMedia.Track.Type.Audio)
         selectedTracks?.also {
@@ -201,14 +219,36 @@ class VlcPlayService : BasePlayService() {
             }
         }
         */
-        vlcPlayer?.audioTrack = audioTrackId
+        vlcPlayer?.apply {
+            audioDelay = 0
+            audioTrack = audioTrackId
+        }
+    }
+
+    fun setAudioChannel(channel: Int) {
+        LogUtil.d(TAG, "setAudioChannel.channel = $channel")
+        vlcPlayer?.let { player ->
+            player.audioDelay = 0
+            // This instructs the native C++ audio sink to re-route structural layouts instantly
+            // Mode 1: Plays both tracks cleanly (Stereo)
+            // Mode 3: Routes Left stream data to both left and right ears
+            // Mode 4: Routes Right stream data to both left and right ears
+            val ch = when (channel) {
+                CommonConstants.LEFT_CHANNEL -> VlcNativeBridge.LEFT_CHANNEL
+                CommonConstants.RIGHT_CHANNEL -> VlcNativeBridge.RIGHT_CHANNEL
+                else -> VlcNativeBridge.STEREO
+            }
+
+            val result = VlcNativeBridge.setNativeAudioChannel(player.instance, ch)
+            LogUtil.d(TAG, "setAudioChannel.channel = $channel, result = $result")
+        }
     }
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Int>):Int {
         val msgStr = "getPlayingMediaInfo"
-        LogUtil.i(TAG, msgStr)
+        LogUtil.d(TAG, msgStr)
         if (vlcPlayer == null) {
-            LogUtil.i(TAG, "${msgStr}.vlcPlayer is null")
+            LogUtil.d(TAG, "${msgStr}.vlcPlayer is null")
             return 0
         }
         val vPlayer = vlcPlayer!!
@@ -271,28 +311,28 @@ class VlcPlayService : BasePlayService() {
     }
 
     override fun onPlay() {
-        LogUtil.i(TAG, "onPlay.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG, "onPlay.vlcPlayer = $vlcPlayer")
         vlcPlayer?.play()
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG, "onPause.vlcPlayer = $vlcPlayer")
         vlcPlayer?.pause()
     }
 
     override fun onStop() {
-        LogUtil.i(TAG, "onStop.vlcPlayer = $vlcPlayer")
+        LogUtil.d(TAG, "onStop.vlcPlayer = $vlcPlayer")
         val playbackState = presenter?.playingParam?.currentPlaybackState
-        LogUtil.i(TAG, "onStop.playbackState = $playbackState")
+        LogUtil.d(TAG, "onStop.playbackState = $playbackState")
         if (playbackState == PlaybackStateCompat.STATE_PLAYING ||
             playbackState == PlaybackStateCompat.STATE_PAUSED) {
-            LogUtil.i(TAG, "onStop.vlcPlayer?.stop()")
+            LogUtil.d(TAG, "onStop.vlcPlayer?.stop()")
             vlcPlayer?.stop()
         }
     }
 
     override fun initMediaCallback() {
-        LogUtil.i(TAG, "initMediaCallback")
+        LogUtil.d(TAG, "initMediaCallback")
         presenter?.let {
             mediaSessionCallback = VlcMediaSessionCallback(this@VlcPlayService)
             mediaSessionCompat?.setCallback(mediaSessionCallback)
@@ -319,44 +359,16 @@ class VlcPlayService : BasePlayService() {
         return isSeekable
     }
 
-    /*
     override fun setAudioVolume(volumeTmp: Float) {
-        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
+        val logStr = "setAudioVolume"
+        LogUtil.d(TAG, "$logStr.volumeTmp = $volumeTmp")
         presenter?.playingParam?.let {
-            // val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            // An integer from 0 to max volume, volumeTmp is between 0.0 and 1.0
-            val volumeLevel = (volumeTmp * curAudioVolume).toInt()
-            audioManager.setStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                volumeLevel,
-                AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)  // Shows the volume slider UI
+            LogUtil.d(TAG, "$logStr..presenter?.playingParam is not null")
             it.currentVolume = volumeTmp
-            return
-        }
-        LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
-    }
-    */
-
-    override fun setAudioVolume(volumeTmp: Float) {
-        LogUtil.i(TAG, "setAudioVolume.volumeTmp = $volumeTmp")
-        presenter?.playingParam?.let {
-            LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
-            // get current channel
-            val audioChannel: Int = it.currentChannelPlayed
-            var leftVolume: Float = volumeTmp
-            var rightVolume: Float = volumeTmp
-            when (audioChannel) {
-                CommonConstants.LEFT_CHANNEL -> rightVolume = 0f
-                CommonConstants.RIGHT_CHANNEL -> leftVolume = 0f
-                CommonConstants.STEREO -> leftVolume = rightVolume
-            }
-            it.currentVolume = volumeTmp
-            // this method does not work any more for version above eap21
-            // have to disable the volume button
             vlcPlayer?.volume = (volumeTmp * MyPlayerConstants.MAX_PROGRESS).toInt()
             return
         }
-        LogUtil.i(TAG, "setAudioVolume.presenter?.playingParam is null")
+        LogUtil.d(TAG, "$logStr..presenter?.playingParam is null")
     }
 
     override fun getMediaDuration(): Long {

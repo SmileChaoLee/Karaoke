@@ -26,14 +26,14 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_u2bkaok,
             container, false)
@@ -48,7 +48,7 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         // val fragContainerId = this.id   // container id of the fragment
         // val fragManager = activity?.supportFragmentManager
         view.apply {
@@ -74,24 +74,24 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         allSongOrderButton?.postDelayed({
             allSongOrderButton?.requestFocus()
         }, 1000)
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         super.onPause()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         super.onDestroy()
     }
 

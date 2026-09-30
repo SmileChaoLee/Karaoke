@@ -64,7 +64,7 @@ abstract class BaseActivity : AppCompatActivity(),
     abstract fun askPermissions(activity: Activity): Boolean
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG,"onCreate")
+        LogUtil.d(TAG,"onCreate")
         settingBeforeCreate()
         MySingleton.clearSingleton()
         super.onCreate(savedInstanceState)
@@ -163,7 +163,7 @@ abstract class BaseActivity : AppCompatActivity(),
             })
         }
 
-        LogUtil.i(TAG,"onCreate.finished")
+        LogUtil.d(TAG,"onCreate.finished")
     }
 
     @Deprecated(
@@ -177,7 +177,7 @@ abstract class BaseActivity : AppCompatActivity(),
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied",
                 60f, Toast.LENGTH_LONG)
-            LogUtil.i(TAG, "onRequestPermissionsResult.Permission Denied")
+            LogUtil.d(TAG, "onRequestPermissionsResult.Permission Denied")
             finish()
         }
     }
@@ -192,28 +192,28 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onStart() {
-        LogUtil.i(TAG, "onStart()")
+        LogUtil.d(TAG, "onStart()")
         super.onStart()
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume()")
+        LogUtil.d(TAG, "onResume()")
         super.onResume()
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause()")
+        LogUtil.d(TAG, "onPause()")
         super.onPause()
     }
 
     override fun onStop() {
-        LogUtil.i(TAG, "onStop()")
+        LogUtil.d(TAG, "onStop()")
         super.onStop()
     }
 
     override fun onSaveInstanceState(
         outState: Bundle, outPersistentState: PersistableBundle) {
-        LogUtil.i(TAG, "onSaveInstanceState()")
+        LogUtil.d(TAG, "onSaveInstanceState()")
         outState.putBoolean(IS_PLAY_TO_PAUSE, isPlayToPause)
         outState.putParcelable(CALLING_COMPONENT, callingComponentName)
         outState.putParcelable(PLAY_DATA, playData)
@@ -221,14 +221,14 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged()")
+        LogUtil.d(TAG, "onConfigurationChanged()")
         settingBeforeCreate()
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy()")
+        LogUtil.d(TAG, "onDestroy()")
         interstitialAd?.releaseInterstitial()
         MySingleton.clearSingleton()
         // clear the screen on, added on 2021-02-18
@@ -248,7 +248,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     fun onReceiveFunc(isSingleSong: Boolean, needPlay: Boolean,
                       intent : Intent?, pData : Bundle?) {
-        LogUtil.i(TAG, "onReceiveFunc.needPlay = $needPlay")
+        LogUtil.d(TAG, "onReceiveFunc.needPlay = $needPlay")
         playerFragment?.run {
             mPresenter.let{ mpIt ->
                 mpIt.initializeVariables(pData,
@@ -273,7 +273,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // implementing interface PlayerBaseViewFragment.PlayBaseFragmentFunc
     override fun baseHidePlayerView() {
-        LogUtil.i(TAG, "baseHidePlayerView()")
+        LogUtil.d(TAG, "baseHidePlayerView()")
         basePlayViewLayout.clearFocus()
         basePlayViewLayout.visibility = View.INVISIBLE
         tablayoutViewLayout.visibility = View.VISIBLE
@@ -282,7 +282,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun baseShowPlayerView() {
-        LogUtil.i(TAG, "baseShowPlayerView()")
+        LogUtil.d(TAG, "baseShowPlayerView()")
         tablayoutViewLayout.clearFocus()
         tablayoutViewLayout.visibility = View.INVISIBLE
         basePlayViewLayout.visibility = View.VISIBLE
@@ -293,7 +293,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     // implementing interface PlayMyFavorites
     override fun onSavePlayingState(compName : ComponentName?) {
-        LogUtil.i(TAG, "onSavePlayingState.compName = $compName")
+        LogUtil.d(TAG, "onSavePlayingState.compName = $compName")
         callingComponentName = compName
         playerFragment?.let {
             playData.clear()
@@ -312,7 +312,7 @@ abstract class BaseActivity : AppCompatActivity(),
 
     override fun restorePlayingState() {
         val msgStr = "restorePlayingState"
-        LogUtil.i(TAG, "${msgStr}.return from BaseFavoriteListActivity")
+        LogUtil.d(TAG, "${msgStr}.return from BaseFavoriteListActivity")
         // come Back From Favorite
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             playData.getParcelable(MyPlayerConstants.PlayingParamState, PlayingParameters::class.java)
@@ -335,7 +335,7 @@ abstract class BaseActivity : AppCompatActivity(),
     // implementing interface PlaySongs
     override fun playSelectedSongList(songs: ArrayList<SongInfo>, isClearNeeded: Boolean) {
         val msgStr = "playSelectedSongList"
-        LogUtil.i(TAG, "$msgStr.songs.size = ${songs.size}")
+        LogUtil.d(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
             if (isClearNeeded) MySingleton.orderedSongs.clear()
             val preOrderedSize = MySingleton.orderedSongs.size
@@ -354,7 +354,7 @@ abstract class BaseActivity : AppCompatActivity(),
                 LogUtil.d(TAG, "$msgStr.found = $found")
                 if (!found) MySingleton.orderedSongs.add(songInfo)
             }
-            LogUtil.i(TAG, "$msgStr.MySingleton.orderedSongs.size = ${MySingleton.orderedSongs.size}")
+            LogUtil.d(TAG, "$msgStr.MySingleton.orderedSongs.size = ${MySingleton.orderedSongs.size}")
             playerFragment?.let {
                 it.showPlayerView()
                 it.mPresenter.let { pIt ->
@@ -389,7 +389,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun switchToPlayerView() {
-        LogUtil.i(TAG, "switchToPlayerView")
+        LogUtil.d(TAG, "switchToPlayerView")
         playerFragment?.showPlayerView()
     }
 
@@ -401,7 +401,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     override fun switchBetweenSoftAndHardDecoder() {
-        LogUtil.i(TAG, "switchBetweenSoftAndHardDecoder")
+        LogUtil.d(TAG, "switchBetweenSoftAndHardDecoder")
         playerFragment?.let {
             it.mPresenter.playingParam.softDecoderFirst = !it.mPresenter.playingParam.softDecoderFirst
             it.getPlayService()?.switchDecoder()
@@ -450,12 +450,12 @@ abstract class BaseActivity : AppCompatActivity(),
     // Finish implementing interface PlaySongs
 
     private fun showInterstitialAd() {
-        LogUtil.i(TAG, "showInterstitialAd = $interstitialAd")
+        LogUtil.d(TAG, "showInterstitialAd = $interstitialAd")
         interstitialAd?.ShowAdThread()?.startShowAd(0) // AdMob first
     }
 
     private fun finishThisActivity() {
-        // LogUtil.i(TAG, "finishThisActivity = $interstitialAd")
+        // LogUtil.d(TAG, "finishThisActivity = $interstitialAd")
         finish()
         /*  // do not use this because it does not work sometimes
             because the executeDismiss does not happen
@@ -476,7 +476,7 @@ abstract class BaseActivity : AppCompatActivity(),
     }
 
     private fun createViewDependingOnOrientation() {
-        LogUtil.i(TAG, "createViewDependingOnOrientation")
+        LogUtil.d(TAG, "createViewDependingOnOrientation")
         playerFragment?.hidePlayerView()
     }
 }

@@ -58,7 +58,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     var apiKey = PrivateConstants.API_KEY2
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         // U2bSingleton.videos.clear() moved to U2bPlayerActivity
     }
@@ -68,13 +68,13 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_youtube_video,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
 
         view.let {
             searchEditTextView = it.findViewById(R.id.videoSearchEditText)
@@ -119,28 +119,28 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     override fun onStart() {
         super.onStart()
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         setProperFocus()
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         mediaRetriever.release()
     }
 
@@ -183,7 +183,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
 
     private fun searchYouTubeVideos(searchTerm: String, maxResult: Int = 50) {
         val logStr = "searchYouTubeVideos"
-        LogUtil.i(TAG, "$logStr.searchTerm = $searchTerm")
+        LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
         if (searchTerm.isEmpty()) return
         val act = activity?: return
         searchCompleted = false
@@ -237,7 +237,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
 
     private fun startSearchVideos() {
-        LogUtil.i(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
+        LogUtil.d(TAG, "startSearchVideos.searchCompleted = $searchCompleted")
         if (!searchCompleted) {
             ScreenUtil.showToast(
                 activity, getString(R.string.loadingWaitStr),
@@ -252,7 +252,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
 
     private fun videosToSongs(): ArrayList<SongInfo> {
-        LogUtil.i(TAG, "videosToSongs")
+        LogUtil.d(TAG, "videosToSongs")
         return ArrayList<SongInfo>().also { songIt ->
             var index = 0
             for (i in 0 until U2bSingleton.videos.size) {
@@ -317,10 +317,10 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         playSelectedButton?.setOnClickListener {
             val logStr = "playSelectedButton.setOnClickListener"
-            LogUtil.i(TAG, "$logStr.searchCompleted = $searchCompleted")
+            LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             // val songs = videosToSongs()
-            LogUtil.i(TAG, "$logStr.selectedSongs.size = ${selectedSongs.size}")
+            LogUtil.d(TAG, "$logStr.selectedSongs.size = ${selectedSongs.size}")
             if (selectedSongs.isEmpty()) {
                 ScreenUtil.showToast(activity,
                     getString(R.string.noFilesSelectedString),
@@ -332,7 +332,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         addToFavoriteButton?.setOnClickListener {
             it.post { it.requestFocus() }
-            LogUtil.i(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
+            LogUtil.d(TAG, "addToFavoriteButton.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
             val act = activity?: return@setOnClickListener
             if (selectedSongs.isEmpty()) {
@@ -347,7 +347,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
 
     override fun setButtonsSize() {
-        LogUtil.i(TAG, "setButtonsSize")
+        LogUtil.d(TAG, "setButtonsSize")
         buttonLayout = fragmentView?.findViewById(R.id.searchButtonLayout)
         super.setButtonsSize()
         searchButton?.layoutParams = buttonParam
@@ -364,9 +364,9 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     // end of overriding the methods of ItemsBaseFragment
 
     private fun initRecyclerAdapter() {
-        LogUtil.i(TAG, "initRecyclerAdapter")
+        LogUtil.d(TAG, "initRecyclerAdapter")
         val size = U2bSingleton.videos.size
-        LogUtil.i(TAG, "initRecyclerAdapter.size = $size")
+        LogUtil.d(TAG, "initRecyclerAdapter.size = $size")
         activity?.let {
             myRecyclerViewAdapter = U2bRecyclerAdapter(this,
                 U2bSingleton.videos, textFontSize)

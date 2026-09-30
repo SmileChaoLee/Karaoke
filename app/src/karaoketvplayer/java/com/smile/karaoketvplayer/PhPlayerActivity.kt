@@ -27,7 +27,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     }
 
     override fun startU2bPlayer() {
-        LogUtil.i(mTAG, "startU2bPlayer")
+        LogUtil.d(mTAG, "startU2bPlayer")
         Intent(
             this@PhPlayerActivity,
             U2bPlayerActivity::class.java
@@ -38,7 +38,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     }
 
     override fun startU2bKaraoke() {
-        LogUtil.i(mTAG, "startU2bKaraoke")
+        LogUtil.d(mTAG, "startU2bKaraoke")
         Intent(
             this@PhPlayerActivity,
             U2bKaOkActivity::class.java
@@ -57,7 +57,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     }
 
     override fun startExoPlayer() {
-        LogUtil.i(mTAG, "startExoPlayer()")
+        LogUtil.d(mTAG, "startExoPlayer()")
         Intent(
             this@PhPlayerActivity,
             ExoPlayerActivity::class.java
@@ -68,7 +68,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     }
 
     override fun startVlcPlayer() {
-        LogUtil.i(mTAG, "startVlcPlayer()")
+        LogUtil.d(mTAG, "startVlcPlayer()")
         Intent(
             this@PhPlayerActivity,
             VlcPlayerActivity::class.java

@@ -50,7 +50,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
 
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         super.onDestroy()
     }
 

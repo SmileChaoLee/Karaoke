@@ -38,7 +38,7 @@ abstract class U2bKKBaseFragment : Fragment() {
     var buttonParam: LinearLayout.LayoutParams? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         activity?.let {
             textFontSize = ScreenUtil.getPxTextFontSizeNeeded(it)
@@ -53,7 +53,7 @@ abstract class U2bKKBaseFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         fragmentView = view
@@ -73,18 +73,18 @@ abstract class U2bKKBaseFragment : Fragment() {
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         setButtonsSize()
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
         exitImageButton?.post {
             exitImageButton?.requestFocus()
-            LogUtil.i(TAG, "onResume.selectTab = $selectTab")
-            LogUtil.i(TAG, "onResume.selectTab.view = ${selectTab?.view}")
+            LogUtil.d(TAG, "onResume.selectTab = $selectTab")
+            LogUtil.d(TAG, "onResume.selectTab.view = ${selectTab?.view}")
             selectTab?.view?.let {
                 it.nextFocusRightId = favoriteTab?.view?.id ?: it.id
             }
@@ -95,13 +95,13 @@ abstract class U2bKKBaseFragment : Fragment() {
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         super.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
     }
 
     open fun setClickListeners() {

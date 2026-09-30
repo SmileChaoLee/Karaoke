@@ -65,22 +65,22 @@ class ExoPlayService : BasePlayService() {
     override fun onCreate() {
         super.onCreate()
         switchPlayer = SwitchPlayer(this)
-        LogUtil.i(TAG, "onCreate.switchPlayer = $switchPlayer")
+        LogUtil.d(TAG, "onCreate.switchPlayer = $switchPlayer")
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        LogUtil.i(TAG, "onBind.binder = $binder")
+        LogUtil.d(TAG, "onBind.binder = $binder")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        LogUtil.i(TAG, "onUnbind.intent = $intent")
+        LogUtil.d(TAG, "onUnbind.intent = $intent")
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         releasePlayers()
         mediaControllerCompat?.apply {
             controllerCallback?.let {
@@ -90,26 +90,26 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun initPlayers() {
-        LogUtil.i(TAG, "initPlayers")
+        LogUtil.d(TAG, "initPlayers")
         initExoPlayer()
         initCastPlayer()
     }
 
     private fun releasePlayers() {
-        LogUtil.i(TAG, "releasePlayers")
+        LogUtil.d(TAG, "releasePlayers")
         releaseExoPlayer()
         releaseCastPlayer()
     }
 
     fun setVideoWindowSize() {
-        LogUtil.i(TAG, "setVideoWindowSize")
+        LogUtil.d(TAG, "setVideoWindowSize")
         exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
         // or
         // exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
     }
 
     fun addExoPlayerListener() {
-        LogUtil.i(TAG, "addExoPlayerListener")
+        LogUtil.d(TAG, "addExoPlayerListener")
         if (exoPlayerListener == null) {
             exoPlayerListener = ExoPlayerListener(this@ExoPlayService)
         }
@@ -119,7 +119,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun removeExoPlayerListener() {
-        LogUtil.i(TAG, "removeExoPlayerListener")
+        LogUtil.d(TAG, "removeExoPlayerListener")
         if (exoPlayerListener != null) {
             exoPlayer?.apply {
                 removeListener(exoPlayerListener!!)
@@ -129,7 +129,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun initExoPlayer() {
-        LogUtil.i(TAG, "initExoPlayer.presenter = $presenter")
+        LogUtil.d(TAG, "initExoPlayer.presenter = $presenter")
         presenter?.let {
             val trackSelectionParams = it.trackSelectionParameters
             val trackSelector =
@@ -170,7 +170,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun releaseExoPlayer() {
-        LogUtil.i(TAG, "releaseExoPlayer")
+        LogUtil.d(TAG, "releaseExoPlayer")
         exoPlayer?.apply {
             removeExoPlayerListener()
             stop()
@@ -180,7 +180,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun addCastPlayerListener() {
-        LogUtil.i(TAG, "addCastPlayerListener")
+        LogUtil.d(TAG, "addCastPlayerListener")
         if (castPlayerListener == null) {
             castPlayerListener = CastPlayerListener(this@ExoPlayService)
         }
@@ -190,7 +190,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun removeCastPlayerListener() {
-        LogUtil.i(TAG, "removeCastPlayerListener")
+        LogUtil.d(TAG, "removeCastPlayerListener")
         if (castPlayerListener != null) {
             castPlayer?.apply {
                 removeListener(castPlayerListener!!)
@@ -200,7 +200,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun initCastPlayer() {
-        LogUtil.i(TAG, "initCastPlayer.presenter = $presenter")
+        LogUtil.d(TAG, "initCastPlayer.presenter = $presenter")
         if (presenter == null) return
         val tempPresenter = presenter!!
         castContext?.let { castIt ->
@@ -224,7 +224,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     private fun releaseCastPlayer() {
-        LogUtil.i(TAG, "releaseCastPlayer")
+        LogUtil.d(TAG, "releaseCastPlayer")
         castPlayer?.apply {
             removeCastPlayerListener()
             stop()
@@ -234,7 +234,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     fun getCurrentPlayer(): Player? {
-        LogUtil.i(TAG, "getCurrentPlayer.isCastSession = $isCastSession")
+        LogUtil.d(TAG, "getCurrentPlayer.isCastSession = $isCastSession")
         return if (isCastSession) {
             castPlayer
         } else {
@@ -298,7 +298,7 @@ class ExoPlayService : BasePlayService() {
 
     fun getPlayingMediaInfo(audioTrackIndicesList: ArrayList<Array<Int>>): Int {
         val msgString = "getPlayingMediaInfo"
-        LogUtil.i(TAG, msgString)
+        LogUtil.d(TAG, msgString)
         var mNumberOfVideoTracks = 0
         var trackIndicesCombination: Array<Int>
 
@@ -396,7 +396,7 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onPlay() {
-        LogUtil.i(TAG, "onPlay.isCastSession = $isCastSession")
+        LogUtil.d(TAG, "onPlay.isCastSession = $isCastSession")
         if (isCastSession) {
             castPlayer?.apply {
                 presenter?.let {
@@ -432,7 +432,7 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         if (isCastSession) {
             castPlayer?.pause()
         } else {
@@ -440,7 +440,7 @@ class ExoPlayService : BasePlayService() {
         }
     }
     override fun onStop() {
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
         val pnt = presenter ?: run {
             LogUtil.e(TAG, "presenter is null")
             return
@@ -474,7 +474,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun initMediaCallback() {
-        LogUtil.i(TAG, "initMediaCallback.presenter = $presenter")
+        LogUtil.d(TAG, "initMediaCallback.presenter = $presenter")
         presenter?.let {
             mediaSessionCallback = ExoMediaSessionCallback(it, this@ExoPlayService)
             LogUtil.d(TAG,"initMediaCallback.mediaSessionCallback = $mediaSessionCallback")
@@ -514,7 +514,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun setAudioVolume(volumeTmp: Float) {
-        LogUtil.i(TAG, "setAudioVolume")
+        LogUtil.d(TAG, "setAudioVolume")
         presenter?.playingParam?.let {
             LogUtil.d(TAG, "setAudioVolume.presenter?.playingParam is not null")
             // get current channel
@@ -599,7 +599,7 @@ class ExoPlayService : BasePlayService() {
         // but the playing was stopped in the middle of playing then won't send
         // Play.STATE_ENDED event
         // currentPlayer.setPlayWhenReady(false)
-        LogUtil.i(TAG, "specificPlayerReplayMedia")
+        LogUtil.d(TAG, "specificPlayerReplayMedia")
         if (isCastSession) {
             castPlayer?.apply {
                 LogUtil.d(TAG,"specificPlayerReplayMedia.castPlayer.seekTo.")
@@ -618,7 +618,7 @@ class ExoPlayService : BasePlayService() {
     }
 
     override fun switchDecoder() {
-        LogUtil.i(TAG, "switchDecoder")
+        LogUtil.d(TAG, "switchDecoder")
         presenter?.let {
             // it.playingParam.finishState = PlayerConstants.STOPPED_BY_USER
             // stopPlay()

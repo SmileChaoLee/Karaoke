@@ -34,21 +34,21 @@ android {
         signingConfig signingConfigs.release
     }
 
-    /*
-    // Configure native CMake build only when building video player flavors
-    gradle.startParameter.taskNames.each { task ->
-        if (task.containsIgnoreCase("videoplayer")
-                || task.containsIgnoreCase("karaoketvplayer")) {
-            ndkVersion '27.3.13750724'
-            externalNativeBuild {
-                cmake {
-                    path file('src/videoplayer/java/com/smile/videoplayer/jni/CMakeLists.txt')
-                    version '3.22.1'
-                }
+    // Configure native CMake build for video player flavors AND during IDE sync
+    boolean isIdeSync = gradle.startParameter.taskNames.isEmpty() ||
+            Boolean.parseBoolean(findProperty("android.injected.build.model.only")?.toString())
+    boolean isVideoTask = gradle.startParameter.taskNames.any { task ->
+        task.containsIgnoreCase("videoplayer") || task.containsIgnoreCase("karaoketvplayer")
+    }
+    if (isIdeSync || isVideoTask) {
+        // ndkVersion '27.3.13750724'
+        externalNativeBuild {
+            cmake {
+                path file('src/videoplayer/jni/CMakeLists.txt')
+                version '3.22.1'
             }
         }
     }
-    */
 
     flavorDimensions += ["karaoke"]
     productFlavors {
@@ -365,12 +365,14 @@ dependencies {
                 }
                 if (flavor.name.containsIgnoreCase("videoplayer")   // includes videoplayer2
                         || flavor.name.containsIgnoreCase("karaoketvplayer")) {
-                    dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:3.6.5")
+                    dependencies.add(variant.name + "Implementation", "org.videolan.android:libvlc-all:3.7.6")
                     // Note: You use the full variant name (e.g., "videoDebugImplementation")
                 }
             }
         }
     }
+
+    // implementation "org.videolan.android:libvlc-all:3.7.6"
 
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.12.1'

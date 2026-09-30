@@ -59,11 +59,11 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     private var castPlayerListener: U2bCastPlayerListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         presenter = U2bPresenter(this)
         // must be after YouTubePresenter(this)
         super.onCreate(savedInstanceState)
-        LogUtil.i(TAG, "onCreate.finished")
+        LogUtil.d(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,17 +73,17 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         super.onPause()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         setVideoWindowSize()
     }
@@ -91,11 +91,11 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     //  for testing
     override fun onStop() {
         super.onStop()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         if (mPlayServiceIntent != null) {
             activity?.stopService(mPlayServiceIntent)
         }
@@ -138,7 +138,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     // for U2bKkTool
     fun removeU2bListeners() {
-        LogUtil.i(TAG, "removeU2bListeners")
+        LogUtil.d(TAG, "removeU2bListeners")
         val pListener = u2bPlayerListener ?: return
         val fListener = fScreenListener ?: return
         youTubeView?.apply {
@@ -148,16 +148,16 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     fun releaseYouTubePlayer() {
-        LogUtil.i(TAG, "releaseYouTubePlayer")
+        LogUtil.d(TAG, "releaseYouTubePlayer")
         val player = youTubeView ?: return
-        LogUtil.i(TAG, "releaseYouTubePlayer.youTubeView initialized")
+        LogUtil.d(TAG, "releaseYouTubePlayer.youTubeView initialized")
         removeU2bListeners()
         player.release()
     }
 
     fun initYouTubePlayerView() {
         val logStr = "initYouTubePlayerView"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         val act = activity ?: return
         val ps = playService ?: return
         u2bPlayerListener = ps.initU2bPlayerListener()
@@ -206,7 +206,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     private fun initU2bCastPlayer(activeContext: ChromecastYouTubePlayerContext) {
         val logStr = "initU2bCastPlayer"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         val ps = playService ?: return
         castPlayerListener = U2bCastPlayerListener(ps)
         try {
@@ -219,7 +219,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     // overriding methods of super class
     override fun getPlayerPresenter(): PlayerBasePresenter {
-        LogUtil.i(TAG, "getPlayerPresenter")
+        LogUtil.d(TAG, "getPlayerPresenter")
         return presenter
     }
 
@@ -235,7 +235,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun onPlayServiceConnected(service: IBinder) {
-        LogUtil.i(TAG, "onPlayServiceConnected")
+        LogUtil.d(TAG, "onPlayServiceConnected")
         val binder = service as U2bService.LocalBinder
         playService = binder.getService()
         playService?.presenter = this.presenter
@@ -250,7 +250,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
     }
 
     override fun audioChannelButtonListener() {
-        LogUtil.i(TAG, "audioChannelButtonListener")
+        LogUtil.d(TAG, "audioChannelButtonListener")
     }
 
     override fun getFavDatabaseName(): String {
@@ -285,18 +285,18 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
 
     // Implement U2bPresenter.YouTubePresentView
     override fun setCurrentPlayerToPlayerView() {
-        LogUtil.i(TAG, "setCurrentPlayerToPlayerView")
+        LogUtil.d(TAG, "setCurrentPlayerToPlayerView")
     }
 
     override fun getPlayService(): U2bService? {
-        // LogUtil.i(TAG, "getPlayService")
+        // LogUtil.d(TAG, "getPlayService")
         return playService
     }
     // End of implementing YouTubePresenter.YouTubePresentView
 
     private fun setVideoWindowSize() {
         val logStr = "setVideoWindowSize"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         val nLayParams = FrameLayout.LayoutParams(screenSizeX, screenSizeY)
         nLayParams.gravity = Gravity.CENTER
         youTubeView?.layoutParams = nLayParams
@@ -329,7 +329,7 @@ class U2bPlayFragment: PlayerBaseFragment(), U2bPresenter.U2bPresentView {
         }
 
         override fun onChromecastDisconnected() {
-            LogUtil.i(TAG, "$logStr.onChromecastDisconnected")
+            LogUtil.d(TAG, "$logStr.onChromecastDisconnected")
             // Connection lost. Switch back to the local player.
             // playerContainer.removeAllViews()
             // playerContainer.addView(youTubePlayerView)

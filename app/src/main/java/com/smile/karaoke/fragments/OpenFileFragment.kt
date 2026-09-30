@@ -59,7 +59,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     private val viewModel: OpenFileViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
         LogUtil.d(TAG, "onCreate.FileDesList.currentPath = ${MySingleton.currentPath}")
@@ -80,7 +80,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 }
             }
         }
-        LogUtil.i(TAG, "onCreate.FileDesList.fileList.size = ${MySingleton.fileList.size}")
+        LogUtil.d(TAG, "onCreate.FileDesList.fileList.size = ${MySingleton.fileList.size}")
     }
 
     override fun onCreateView(
@@ -88,13 +88,13 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_open_file,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         view.let {
             filesRecyclerView = it.findViewById(R.id.openFilesRecyclerView)
             filesRecyclerView?.setHasFixedSize(true)
@@ -230,29 +230,29 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
 
     override fun onStart() {
         super.onStart()
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
         setupSwitchDecoderButton()
     }
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         setProperFocus()
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         clearFileList()
         mediaRetriever.release()
     }
@@ -279,11 +279,11 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val fileDes = MySingleton.fileList[position]
         if (fileDes.file.isFile) {
-            LogUtil.i(TAG, "onItemClick.position = $position isFile")
+            LogUtil.d(TAG, "onItemClick.position = $position isFile")
             viewModel.handleIntent(OpenFileUiIntent.SongOnClicked(position))
         } else {
             LogUtil.d(TAG, "onItemClick.fileDes.file is not file")
@@ -401,7 +401,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     // end of overriding the methods of ItemsBaseFragment
 
     private fun initFilesRecyclerView() {
-        LogUtil.i(TAG, "initFilesRecyclerView")
+        LogUtil.d(TAG, "initFilesRecyclerView")
         activity?.let {
             myRecyclerViewAdapter = OpenFilesRecyclerViewAdapter(
                 this, MySingleton.fileList, textFontSize)
@@ -413,7 +413,7 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
     }
 
     private fun setupSwitchDecoderButton() {
-        LogUtil.i(TAG, "setupSwitchDecoderButton")
+        LogUtil.d(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             visibility = decoderButtonVisibility()
             playSongs?.let {

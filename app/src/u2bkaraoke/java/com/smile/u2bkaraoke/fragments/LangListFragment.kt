@@ -41,7 +41,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var orderedFrom = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         orderedFrom = U2bKKConstants.WordsOrdered
         arguments?.let { args ->
@@ -52,7 +52,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_language_list,
             container, false)
@@ -133,7 +133,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
         val fragContainerId = this.id   // container id of the fragment

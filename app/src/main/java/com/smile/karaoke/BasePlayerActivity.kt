@@ -206,7 +206,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
         permissionExternalStorage = PermissionUtil.onRequestPermResult(requestCode, grantResults)
         if (!permissionExternalStorage) {
             ScreenUtil.showToast(this, "Permission Denied", 60f, ScreenUtil.FontSize_Pixel_Type, Toast.LENGTH_LONG)
-            LogUtil.i(TAG, "onRequestPermissionsResult.Permission Denied")
+            LogUtil.d(TAG, "onRequestPermissionsResult.Permission Denied")
             exitApp()
         }
     }
@@ -220,7 +220,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     private fun exitApp() {
-        LogUtil.i(TAG, "exitApp.isBackPressedEnabled = $isBackPressedEnabled")
+        LogUtil.d(TAG, "exitApp.isBackPressedEnabled = $isBackPressedEnabled")
         if (isBackPressedEnabled) finish()
     }
 
@@ -481,10 +481,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     @Composable
     fun CreateMainUI() {
-        LogUtil.i(TAG, "CreateMainUI")
+        LogUtil.d(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
         val maxWidth = ScreenUtil.pixelToDp(screenSize.x.toFloat())
-        LogUtil.i(TAG, "CreateMainUI.maxWidth = $maxWidth")
+        LogUtil.d(TAG, "CreateMainUI.maxWidth = $maxWidth")
         val maxHeight = ScreenUtil.pixelToDp(screenSize.y.toFloat())
         LogUtil.d(TAG, "CreateMainUI.maxHeight = $maxHeight")
         var verSpacerWeight = 1.0f
@@ -497,10 +497,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
             buttonWidth = maxWidth * ((10.0f - horSpacerWeight * 2.0f) / 10.0f)
             buttonWidth = if (hasU2bPlayer()) buttonWidth / 2.0f else buttonWidth
         }
-        LogUtil.i(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
+        LogUtil.d(TAG, "CreateMainUI.buttonWidth = $buttonWidth")
         // 1 in 5
         val buttonHeight = maxHeight * ((10.0f - verSpacerWeight * 2.0f) / 10.0f) / 5.0f
-        LogUtil.i(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
+        LogUtil.d(TAG, "CreateMainUI.buttonHeight = $buttonHeight")
         val textLineHeight = (KaraokeComposable.toastFontSize.value + 5.0f).sp
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

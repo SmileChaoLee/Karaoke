@@ -13,8 +13,10 @@ find_library(
         log
 )
 
+target_link_options(vlcbridge PRIVATE "-Wl,-z,max-page-size=16384")
 target_link_libraries(
         vlcbridge
         ${log-lib}
         dl
 )
+

@@ -37,29 +37,29 @@ class TablayoutFragment : Fragment() {
     var playTabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
         activity?.let {
             if (it is TabFragmentFunc) tabFragmentFunc = it
-            LogUtil.i(TAG, "onCreate.tabFragmentFunc = $tabFragmentFunc")
+            LogUtil.d(TAG, "onCreate.tabFragmentFunc = $tabFragmentFunc")
         }
-        LogUtil.i(TAG, "onCreate.finished")
+        LogUtil.d(TAG, "onCreate.finished")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tablayout,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         bannerLayoutForTab = view.findViewById(R.id.bannerLayoutForTab)
         activity?.let {actIt ->
             val textFontSize = ScreenUtil.getPxTextFontSizeNeeded(actIt)
@@ -73,55 +73,55 @@ class TablayoutFragment : Fragment() {
             tabFragmentFunc?.setTabs(activity, it, R.id.tablayout_container)
         }
 
-        LogUtil.i(TAG, "onViewCreated.finished")
+        LogUtil.d(TAG, "onViewCreated.finished")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         showBannerAd()
         CommonUtil.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onStart() {
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
         super.onStart()
     }
 
     override fun onResume() {
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         super.onResume()
         myBannerAdView?.resume()
         CommonUtil.setVisible(bannerLayoutForTab, View.GONE)
     }
 
     override fun onPause() {
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
         super.onPause()
         myBannerAdView?.pause()
         bannerLayoutForTab?.visibility = View.GONE
     }
 
     override fun onStop() {
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
         super.onStop()
     }
 
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         myBannerAdView?.destroy()
         super.onDestroy()
     }
 
     fun becomeVisible() {
-        LogUtil.i(TAG, "becomeVisible")
+        LogUtil.d(TAG, "becomeVisible")
         playTabLayout?.let {
             tabFragmentFunc?.becomeVisible(it)
         }
     }
 
     fun becomeInVisible() {
-        LogUtil.i(TAG, "becomeInVisible")
+        LogUtil.d(TAG, "becomeInVisible")
         tabFragmentFunc?.becomeInVisible()
     }
 

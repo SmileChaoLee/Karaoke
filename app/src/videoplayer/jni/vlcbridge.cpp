@@ -16,7 +16,7 @@
 typedef int (*libvlc_audio_set_channel_fn)(void* p_mi, int channel);
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_smile_videoplayer_jni_VlcNativeBridge_setNativeAudioChannel(
+Java_com_smile_videoplayer_native_VlcNativeBridge_setNativeAudioChannel(
         JNIEnv* env, jobject thiz, jlong player_instance_ptr, jint channel) {
 
     if (player_instance_ptr == 0) {

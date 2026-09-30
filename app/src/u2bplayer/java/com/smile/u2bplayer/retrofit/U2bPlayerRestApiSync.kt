@@ -2,7 +2,6 @@ package com.smile.u2bplayer.retrofit
 
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bplayer.models.YouTubeVideo
-import retrofit2.Call
 import retrofit2.Response
 
 object U2bPlayerRestApiSync {

@@ -151,7 +151,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     @Suppress("UNCHECKED_CAST")
     fun initializeVariablesBase(savedInstanceState: Bundle?, isAutoPlay: Boolean) {
         val logStr = "initializeVariablesBase"
-        LogUtil.i(TAG, "$logStr.savedInstanceState = $savedInstanceState")
+        LogUtil.d(TAG, "$logStr.savedInstanceState = $savedInstanceState")
         LogUtil.d(TAG, "$logStr.isAutoPlay = $isAutoPlay")
         if (savedInstanceState == null) {
             numberOfVideoTracks = 0
@@ -337,7 +337,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     fun playSongPlayedBeforeActivityCreated() {
         val logStr = "playSongPlayedBeforeActivityCreated"
         val playService = getBasePlayService() ?: return
-        LogUtil.i(TAG, "$logStr.isPlaySingleSong = ${playingParam.isPlaySingleSong}")
+        LogUtil.d(TAG, "$logStr.isPlaySingleSong = ${playingParam.isPlaySingleSong}")
         LogUtil.d(TAG, "$logStr.preparedStatus = ${playingParam.preparedStatus}")
         mPresentView.updateVolumeSeekBarProgress()
         LogUtil.d(TAG, "$logStr.mediaUri = $mediaUri")
@@ -393,23 +393,23 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     }
 
     fun startPlay() {
-        LogUtil.i(TAG, "startPlay")
+        LogUtil.d(TAG, "startPlay")
         val playService = getBasePlayService() ?: return
         LogUtil.d(TAG, "startPlay.playService.startPlay() ")
         playService.startPlay(this)
     }
 
     fun pausePlay() {
-        LogUtil.i(TAG, "pausePlay")
+        LogUtil.d(TAG, "pausePlay")
         val playService = getBasePlayService() ?: return
         LogUtil.d(TAG, "pausePlay.playService.pausePlay() ")
         playService.pausePlay()
     }
 
     fun stopPlay(finishState: Int) {
-        LogUtil.i(TAG, "stopPlay")
+        LogUtil.d(TAG, "stopPlay")
         val playService = getBasePlayService() ?: return
-        LogUtil.i(TAG, "stopPlay.finishState = $finishState")
+        LogUtil.d(TAG, "stopPlay.finishState = $finishState")
         val state = when (finishState) {
             MyPlayerConstants.FINISHED_NORMALLY -> {
                 "FINISHED_NORMALLY"
@@ -429,7 +429,7 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
     }
 
     fun replayMedia() {
-        LogUtil.i(TAG, "replayMedia")
+        LogUtil.d(TAG, "replayMedia")
         val playService = getBasePlayService() ?: return
         LogUtil.d(TAG, "replayMedia.playService.replayMedia() ")
         playService.replayMedia(this)

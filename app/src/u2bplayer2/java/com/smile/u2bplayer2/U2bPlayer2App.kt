@@ -18,7 +18,7 @@ class U2bPlayer2App : SmileAppBase() {
 
     override fun onCreate() {
         super.onCreate()
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
     }
 
     override fun initAds() {
@@ -41,7 +41,7 @@ class U2bPlayer2App : SmileAppBase() {
     override fun getNativeTemplate(activity: Activity?, nativeLayout: FrameLayout?,
                                   nativeAdView: TemplateView?)
             : GoogleAdMobNativeTemplate? {
-        LogUtil.i(TAG, "getNativeTemplate")
+        LogUtil.d(TAG, "getNativeTemplate")
         return null
     }
 }

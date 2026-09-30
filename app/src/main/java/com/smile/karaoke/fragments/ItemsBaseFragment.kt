@@ -37,7 +37,7 @@ abstract class ItemsBaseFragment : Fragment() {
     var playSongs: PlaySongs? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         arguments?.let { }
         activity?.let {
@@ -55,7 +55,7 @@ abstract class ItemsBaseFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         fragmentView = view
 
@@ -73,14 +73,14 @@ abstract class ItemsBaseFragment : Fragment() {
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         setButtonsSize()
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         mediaRetriever.release()
     }
 

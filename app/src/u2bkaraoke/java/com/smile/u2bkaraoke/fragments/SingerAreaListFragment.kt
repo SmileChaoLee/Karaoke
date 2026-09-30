@@ -43,14 +43,14 @@ class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var singerAreaList: SingerAreaList? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_singer_area_list,
             container, false)
@@ -137,7 +137,7 @@ class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     }
 
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
         val fragContainerId = this.id   // container id of the fragment
@@ -151,7 +151,7 @@ class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 areaEn = singerArea.areaEn
                 sex = "0"
             }
-            LogUtil.i(TAG, "onItemClick.sType.areaNa = ${sType.areaNa}")
+            LogUtil.d(TAG, "onItemClick.sType.areaNa = ${sType.areaNa}")
             ScreenUtil.showToast(act, sType.areaNa,
                 textFontSize, Toast.LENGTH_SHORT)
             val nFragment = SingerListFragment().apply {

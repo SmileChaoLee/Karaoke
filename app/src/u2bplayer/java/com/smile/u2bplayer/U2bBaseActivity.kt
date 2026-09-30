@@ -36,7 +36,7 @@ abstract class U2bBaseActivity : BaseActivity() {
         searchFragment = getSearchFragment()
     }
     override fun onDestroy() {
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         U2bSingleton.videos.clear() // moved from SearchVideosFragment
         super.onDestroy()
     }

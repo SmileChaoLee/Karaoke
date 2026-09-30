@@ -7,16 +7,13 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import com.google.android.gms.cast.framework.CastContext
-import com.smile.karaoke.R
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 import org.videolan.libvlc.util.VLCVideoLayout
 import com.smile.videoplayer.presenters.VlcPlayerPresenter
 import com.smile.videoplayer.services.VlcPlayService
@@ -34,16 +31,16 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     private var playService: VlcPlayService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate() is called")
+        LogUtil.d(TAG, "onCreate() is called")
         presenter = VlcPlayerPresenter(this)
         // must be after VlcPlayerPresenter(this)
         super.onCreate(savedInstanceState)
-        LogUtil.i(TAG, "onCreate.finished")
+        LogUtil.d(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LogUtil.i(TAG, "onViewCreated() is called.")
+        LogUtil.d(TAG, "onViewCreated() is called.")
         // Video player view
         val layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -58,12 +55,12 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
             playerViewLinearLayout?.addView(videoVLCPlayerView)
             videoVLCPlayerView.visibility = View.VISIBLE
         }
-        LogUtil.i(TAG, "onViewCreated() is finished.")
+        LogUtil.d(TAG, "onViewCreated() is finished.")
     }
 
     override fun onStart() {
         super.onStart()
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
         presenter.playingParam.let {
             LogUtil.d(TAG, "onStart.preparedStatus = ${it.preparedStatus}")
             LogUtil.d(TAG, "onStart.isPlaySingleSong = ${it.isPlaySingleSong}")
@@ -81,28 +78,28 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged() is called.")
+        LogUtil.d(TAG, "onConfigurationChanged() is called.")
         super.onConfigurationChanged(newConfig)
         setVideoWindowSize()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         playService?.detachPlayerViews()
         if (mPlayServiceIntent != null) {
             activity?.stopService(mPlayServiceIntent)
@@ -117,8 +114,8 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     override fun setupMenuItems() {
         softDecoderFirstMenuItem?.isVisible = false
         softDecoderFirstMenuItem?.isEnabled = false
-        channelMenuItem?.isVisible = false
-        channelMenuItem?.isEnabled = false
+        channelMenuItem?.isVisible = true
+        channelMenuItem?.isEnabled = true
     }
 
     override fun getPlayServiceIntent(): Intent {
@@ -126,7 +123,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     override fun onPlayServiceConnected(service: IBinder) {
-        LogUtil.i(TAG, "onPlayServiceConnected")
+        LogUtil.d(TAG, "onPlayServiceConnected")
         val binder = service as LocalBinder
         playService = binder.getService()
         // Test code here for ExoPlayService
@@ -134,15 +131,6 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
         playService?.initVlcPlayer()
         playService?.initMediaControllerCompat(this.presenter)
         presenter.playSongPlayedBeforeActivityCreated()
-    }
-
-    override fun audioChannelButtonListener() {
-        // not support yet
-        activity?.let {
-            val str = it.getString(R.string.notSupportedString)
-            ScreenUtil.showToast(it, str, toastTextSize, ScreenUtil.FontSize_Pixel_Type,
-                Toast.LENGTH_SHORT)
-        }
     }
 
     override fun getFavDatabaseName(): String {
@@ -168,7 +156,7 @@ class VlcPlayerFragment : PlayerBaseFragment(), VlcPlayerPresenter.VlcPresentVie
     }
 
     override fun setVideoWindowSize() {
-        LogUtil.i(TAG, "setVideoWindowSize")
+        LogUtil.d(TAG, "setVideoWindowSize")
         playService?.apply {
             setVideoWindowSize(videoVLCPlayerView)
         }

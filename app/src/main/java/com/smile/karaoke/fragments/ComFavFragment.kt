@@ -76,7 +76,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     private lateinit var fileBm: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
 
         activity?.let {
@@ -123,13 +123,13 @@ abstract class ComFavFragment : ItemsBaseFragment(),
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         return inflater.inflate(R.layout.fragment_my_favorites,
             container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
 
         view.let {
             myListRecyclerView = it.findViewById(R.id.myListRecyclerView)
@@ -156,35 +156,35 @@ abstract class ComFavFragment : ItemsBaseFragment(),
 
     override fun onStart() {
         super.onStart()
-        LogUtil.i(TAG, "onStart")
+        LogUtil.d(TAG, "onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
         setupSwitchDecoderButton()
         setProperFocus()
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         setButtonsSize()
         super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onStop")
+        LogUtil.d(TAG, "onStop")
         clearFavoriteList()
         mediaRetriever.release()
     }
@@ -207,7 +207,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
 
     // implementing FavoriteRecyclerViewAdapter.FavItemListener
     override fun onItemClick(v: View?, position: Int) {
-        LogUtil.i(TAG, "onItemClick.position = $position")
+        LogUtil.d(TAG, "onItemClick.position = $position")
         val songDesc = MySingleton.favorites[position]
         songDesc.apply {
             var isUpdated = false
@@ -233,14 +233,14 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     }
 
     override fun startEditSongInfo(position: Int) {
-        LogUtil.i(TAG, "startEditSongInfo.position = $position")
+        LogUtil.d(TAG, "startEditSongInfo.position = $position")
         val song = MySingleton.favorites[position].song
         val act = activity?: return
         playMyFavorites?.let { playIt ->
             Intent(act, BaseSongDataActivity::class.java).apply {
                 playIt.onSavePlayingState(component)
                 MySingleton.backupSelectedFavorites()
-                LogUtil.i(TAG, "startEditSongInfo.backupSelectedId.size" +
+                LogUtil.d(TAG, "startEditSongInfo.backupSelectedId.size" +
                         "= ${MySingleton.backupSelectedId.size}")
                 putExtra(MyPlayerConstants.SINGLE_SONG_INFO_STATE, song)
                 editSongInfoLauncher.launch(this@apply)
@@ -250,7 +250,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     // end of implementing FavoriteRecyclerViewAdapter.FavItemListener
 
     fun clearFavoriteList() {
-        LogUtil.i(TAG, "clearFavoriteList")
+        LogUtil.d(TAG, "clearFavoriteList")
         selectedSongs.clear()
         MySingleton.favorites.clear()
         myRecyclerViewAdapter?.myNotifyDataSetChanged()
@@ -259,7 +259,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
 
     fun searchFavorites() {
         val logStr = "searchFavorites"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         lifecycleScope.launch(Dispatchers.Main) {
             val act = activity?: return@launch
             searchCompleted = false
@@ -393,7 +393,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     // end of overriding the methods of ItemsBaseFragment
 
     private fun initFavoriteRecyclerView() {
-        LogUtil.i(TAG, "initFavoriteRecyclerView")
+        LogUtil.d(TAG, "initFavoriteRecyclerView")
         activity?.let {
             myRecyclerViewAdapter = FavoriteRecyclerViewAdapter(this,
                 MySingleton.favorites, textFontSize)
@@ -405,7 +405,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
     }
 
     private fun setupSwitchDecoderButton() {
-        LogUtil.i(TAG, "setupSwitchDecoderButton")
+        LogUtil.d(TAG, "setupSwitchDecoderButton")
         switchDecoderButton?.apply {
             visibility = decoderButtonVisibility()
             playSongs?.let {

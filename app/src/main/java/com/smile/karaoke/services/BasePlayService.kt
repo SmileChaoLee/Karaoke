@@ -50,7 +50,7 @@ abstract class BasePlayService : Service() {
     var castContext: CastContext? = null
 
     override fun onCreate() {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         castContext = (application as SmileAppBase).castContext
         stopCasting()
         initMediaSessionCompat()
@@ -58,30 +58,30 @@ abstract class BasePlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        LogUtil.i(TAG, "onStartCommand")
+        LogUtil.d(TAG, "onStartCommand")
         // return super.onStartCommand(intent, flags, startId)
         return START_STICKY
     }
 
     override fun onLowMemory() {
-        LogUtil.i(TAG, "onLowMemory")
+        LogUtil.d(TAG, "onLowMemory")
         super.onLowMemory()
     }
 
     override fun onTrimMemory(level: Int) {
-        LogUtil.i(TAG, "onTrimMemory.level = $level")
+        LogUtil.d(TAG, "onTrimMemory.level = $level")
         super.onTrimMemory(level)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         releaseMediaSessionCompat()
         stopCasting()
     }
 
     fun stopCasting() {
-        LogUtil.i(TAG, "stopCasting")
+        LogUtil.d(TAG, "stopCasting")
         webServerAndCast.stopWebServer()
         castContext?.apply {
             // stop casting
@@ -92,7 +92,7 @@ abstract class BasePlayService : Service() {
     }
 
     private fun initMediaSessionCompat() {
-        LogUtil.i(TAG, "initMediaSessionCompat")
+        LogUtil.d(TAG, "initMediaSessionCompat")
         // Create a MediaSessionCompat
         mediaSessionCompat = MediaSessionCompat(this, MyPlayerConstants.LOG_TAG)
         LogUtil.d(TAG, "initMediaSessionCompat.mediaSessionCompat = $mediaSessionCompat")
@@ -103,7 +103,7 @@ abstract class BasePlayService : Service() {
     }
 
     private fun releaseMediaSessionCompat() {
-        LogUtil.i(TAG, "releaseMediaSessionCompat")
+        LogUtil.d(TAG, "releaseMediaSessionCompat")
         mediaSessionCompat?.apply {
             isActive = false
             release()
@@ -114,7 +114,7 @@ abstract class BasePlayService : Service() {
 
     private fun convertUriToHttpUri(medUri: Uri): Uri {
         val msgStr = "convertUriToHttpUri"
-        LogUtil.i(TAG, msgStr)
+        LogUtil.d(TAG, msgStr)
         val mediaFileName = medUri.path
         LogUtil.d(TAG, "${medUri}.mediaFileName = $mediaFileName")
         if (mediaFileName.isNullOrEmpty()) {
@@ -135,7 +135,7 @@ abstract class BasePlayService : Service() {
     private fun playSingleSong(presenter: PlayerBasePresenter,
                                songInfo: SongInfo?) {
         val msgStr = "playSingleSong"
-        LogUtil.i(TAG, msgStr)
+        LogUtil.d(TAG, msgStr)
         if (songInfo == null) {
             return
         }
@@ -193,7 +193,7 @@ abstract class BasePlayService : Service() {
 
     fun initMediaControllerCompat(presenter: PlayerBasePresenter) {
         // Create a MediaControllerCompat
-        LogUtil.i(TAG, "initMediaControllerCompat")
+        LogUtil.d(TAG, "initMediaControllerCompat")
         presenter.getActivity()?.let {
             LogUtil.d(TAG, "initMediaControllerCompat.activity not null")
             mediaSessionCompat?.apply {
@@ -206,7 +206,7 @@ abstract class BasePlayService : Service() {
     }
 
     fun setMediaPlaybackState(state: Int) {
-        LogUtil.i(TAG, "setMediaPlaybackState = $state")
+        LogUtil.d(TAG, "setMediaPlaybackState = $state")
         val playbackStateBuilder = PlaybackStateCompat.Builder()
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PAUSE)
@@ -221,7 +221,7 @@ abstract class BasePlayService : Service() {
 
     fun playMediaFromUri(mediaUri: Uri?, playingParam: PlayingParameters) {
         val logStr = "playMediaFromUri"
-        LogUtil.i(TAG, "$logStr.mediaUri = $mediaUri")
+        LogUtil.d(TAG, "$logStr.mediaUri = $mediaUri")
         mediaUri?.let { mediaIt ->
             LogUtil.d(TAG, "$logStr.mediaSessionCompat = $mediaSessionCompat")
             mediaSessionCompat?.let {
@@ -239,12 +239,12 @@ abstract class BasePlayService : Service() {
     fun startAutoPlay(presenter: PlayerBasePresenter, isSelfFinished: Boolean): Boolean {
         val playingParam = presenter.playingParam
         val orderedSongsSize = orderedSongs.size
-        LogUtil.i(TAG, "startAutoPlay.orderedSongs = $orderedSongsSize")
+        LogUtil.d(TAG, "startAutoPlay.orderedSongs = $orderedSongsSize")
         var stillPlayNext = true
         val repeatStatus = playingParam.repeatStatus
         val currentSongIndex = playingParam.currentSongIndex
         var songIndex = currentSongIndex + 1 // preparing this song
-        LogUtil.i(TAG, "startAutoPlay.songIndex = $songIndex")
+        LogUtil.d(TAG, "startAutoPlay.songIndex = $songIndex")
         if (orderedSongsSize == 0) {
             stillPlayNext = false // no more songs
         } else {
@@ -279,7 +279,7 @@ abstract class BasePlayService : Service() {
     }
 
     fun replayMedia(presenter: PlayerBasePresenter) {
-        LogUtil.i(TAG, "replayMedia")
+        LogUtil.d(TAG, "replayMedia")
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         // val numberOfAudioTracks = presenter.numberOfAudioTracks
@@ -311,7 +311,7 @@ abstract class BasePlayService : Service() {
         val mediaUri = presenter.mediaUri
         val playingParam = presenter.playingParam
         val playbackState = playingParam.currentPlaybackState
-        LogUtil.i(TAG, "startPlay.mediaUri = $mediaUri")
+        LogUtil.d(TAG, "startPlay.mediaUri = $mediaUri")
         LogUtil.d(TAG, "startPlay.playbackState = $playbackState")
         if (mediaUri != null && Uri.EMPTY != mediaUri) {
             mediaSessionCompat?.controller?.transportControls?.let {
@@ -324,7 +324,7 @@ abstract class BasePlayService : Service() {
     fun startPlayWithParam(presenter: PlayerBasePresenter,
                   param: PlayingParameters) {
         val msgStr = "startPlayWithParam"
-        LogUtil.i(TAG, msgStr)
+        LogUtil.d(TAG, msgStr)
         val mediaUri = presenter.mediaUri
         val playbackState = param.currentPlaybackState
         LogUtil.d(TAG, "$msgStr.mediaUri = $mediaUri")
@@ -336,7 +336,7 @@ abstract class BasePlayService : Service() {
     }
 
     fun pausePlay() {
-        LogUtil.i(TAG, "pausePlay")
+        LogUtil.d(TAG, "pausePlay")
         mediaSessionCompat?.controller?.transportControls?.let {
             LogUtil.d(TAG, "pausePlay.mediaTransportControls.pause().")
             it.pause()
@@ -344,7 +344,7 @@ abstract class BasePlayService : Service() {
     }
 
     fun stopPlay() {
-        LogUtil.i(TAG, "stopPlay")
+        LogUtil.d(TAG, "stopPlay")
         mediaSessionCompat?.controller?.transportControls?.let {
             LogUtil.d(TAG, "stopPlay.mediaTransportControls.stop().")
             it.stop()

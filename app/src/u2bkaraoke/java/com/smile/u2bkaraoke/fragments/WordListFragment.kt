@@ -36,7 +36,7 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var orderedFrom = U2bKKConstants.WordsOrdered
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         orderedFrom = U2bKKConstants.WordsOrdered
         languageTitle = ""
@@ -54,7 +54,7 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        LogUtil.i(TAG, "onCreateView")
+        LogUtil.d(TAG, "onCreateView")
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_word_list,
             container, false)

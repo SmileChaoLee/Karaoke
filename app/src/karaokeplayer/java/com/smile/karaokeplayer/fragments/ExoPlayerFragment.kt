@@ -8,22 +8,18 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.CastContext
-import com.smile.karaoke.R
 import com.smile.karaoke.SmileAppBase
-import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaokeplayer.presenters.ExoPlayerPresenter
 import com.smile.karaokeplayer.services.ExoPlayService
 import com.smile.karaoke.fragments.PlayerBaseFragment
 import com.smile.karaoke.utilities.DatabaseUtil
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.smilelibraries.utilities.ScreenUtil
 
 @UnstableApi
 class ExoPlayerFragment : PlayerBaseFragment(),
@@ -36,38 +32,38 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     private var playService: ExoPlayService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onCreate")
+        LogUtil.d(TAG, "onCreate")
         presenter = ExoPlayerPresenter(this)
         // must be after ExoPlayerPresenter(this)
         super.onCreate(savedInstanceState)
-        LogUtil.i(TAG, "onCreate.finished")
+        LogUtil.d(TAG, "onCreate.finished")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LogUtil.i(TAG, "onViewCreated")
+        LogUtil.d(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-        LogUtil.i(TAG, "onViewCreated.finished")
+        LogUtil.d(TAG, "onViewCreated.finished")
     }
 
     override fun onResume() {
         super.onResume()
-        LogUtil.i(TAG, "onResume")
+        LogUtil.d(TAG, "onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        LogUtil.i(TAG, "onPause")
+        LogUtil.d(TAG, "onPause")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.i(TAG, "onConfigurationChanged")
+        LogUtil.d(TAG, "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         setVideoWindowSize()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.i(TAG, "onDestroy")
+        LogUtil.d(TAG, "onDestroy")
         if (mPlayServiceIntent != null) {
             activity?.stopService(mPlayServiceIntent)
         }
@@ -77,7 +73,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
 
     // implementing methods of ExoPlayerPresenter.ExoPlayerPresentView
     override fun setVideoPlayerView() {
-        LogUtil.i(TAG, "setVideoPlayerView")
+        LogUtil.d(TAG, "setVideoPlayerView")
         val layParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT)
         layParams.gravity = Gravity.CENTER
@@ -104,7 +100,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun removeVideoPlayerView() {
-        LogUtil.i(TAG, "removeVideoPlayerView")
+        LogUtil.d(TAG, "removeVideoPlayerView")
         playerView?.apply {
             playerViewLinearLayout?.removeView(this)
             player = null
@@ -114,7 +110,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
 
     override fun setVideoWindowSize() {
         val logStr = "setVideoWindowSize"
-        LogUtil.i(TAG, logStr)
+        LogUtil.d(TAG, logStr)
         playerView?.resizeMode =
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
                 AspectRatioFrameLayout.RESIZE_MODE_FIT
@@ -123,7 +119,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun setCurrentPlayerToPlayerView() {
-        LogUtil.i(TAG, "setCurrentPlayerToPlayerView")
+        LogUtil.d(TAG, "setCurrentPlayerToPlayerView")
         playerView?.apply {
             LogUtil.d(TAG, "setCurrentPlayerToPlayerView.playService?.currentPlayer")
             player = playService?.getCurrentPlayer()
@@ -153,7 +149,7 @@ class ExoPlayerFragment : PlayerBaseFragment(),
     }
 
     override fun onPlayServiceConnected(service: IBinder) {
-        LogUtil.i(TAG, "onPlayServiceConnected")
+        LogUtil.d(TAG, "onPlayServiceConnected")
         val binder = service as ExoPlayService.LocalBinder
         playService = binder.getService()
         // Test code here for ExoPlayService
@@ -165,36 +161,6 @@ class ExoPlayerFragment : PlayerBaseFragment(),
         setVideoPlayerView()
         LogUtil.d(TAG, "onPlayServiceConnected.presenter.playSongPlayedBeforeActivityCreated()")
         presenter.playSongPlayedBeforeActivityCreated()
-    }
-
-    override fun audioChannelButtonListener() {
-        mPresenter.playingParam.apply {
-            when (currentChannelPlayed) {
-                CommonConstants.LEFT_CHANNEL -> {
-                    currentChannelPlayed = CommonConstants.RIGHT_CHANNEL
-                }
-                CommonConstants.RIGHT_CHANNEL -> {
-                    currentChannelPlayed = CommonConstants.STEREO
-                }
-                CommonConstants.STEREO -> {
-                    currentChannelPlayed = CommonConstants.LEFT_CHANNEL
-                }
-            }
-            activity?.let{
-                val str =
-                    when (currentChannelPlayed) {
-                        CommonConstants.LEFT_CHANNEL -> it.getString(R.string.leftChannelString)
-                        CommonConstants.RIGHT_CHANNEL -> it.getString(R.string.rightChannelString)
-                        CommonConstants.STEREO -> it.getString(R.string.stereoChannelString)
-                        else -> it.getString(R.string.unknown)
-                    }
-                ScreenUtil.showToast(it, str,
-                    toastTextSize, ScreenUtil.FontSize_Pixel_Type,
-                    Toast.LENGTH_SHORT)
-            }
-            mPresenter.setAudioTrackAndChannel(currentAudioTrackIndexPlayed,
-                currentChannelPlayed)
-        }
     }
 
     override fun getFavDatabaseName(): String {
