@@ -1240,14 +1240,25 @@ abstract class PlayerBaseFragment : Fragment(),
             it.setOnClickListener { _: View ->
                 LogUtil.d(TAG, "supportToolbar.onClick")
                 if (it.isVisible) {
+                    LogUtil.d(TAG, "supportToolbar.isVisible")
                     hideSupportToolbarAndAudioController()
                 } else {
+                    LogUtil.d(TAG, "supportToolbar.is not Visible")
+                    LogUtil.d(TAG, "supportToolbar.isFocusableInTouchMode = ${it.isFocusableInTouchMode}")
                     showSupportToolbarAudioControlSetTimer()
-                    lastFocusView?.let { last ->
-                        last.post { last.requestFocus() }
-                    } ?: run {
-                        actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
-                        lastFocusView = actionMenuImageButton
+                    it.post {
+                        // it.isFocusableInTouchMode = false    // the default value
+                        it.requestFocus()
+                        lastFocusView?.let { last ->
+                            last.post {
+                                // last.isFocusableInTouchMode = false
+                                last.requestFocus()
+                            }
+                        } ?: run {
+                            LogUtil.d(TAG, "supportToolbar.lastFocusView is null")
+                            actionMenuImageButton?.post { actionMenuImageButton?.requestFocus() }
+                            lastFocusView = actionMenuImageButton
+                        }
                     }
                 }
             }
