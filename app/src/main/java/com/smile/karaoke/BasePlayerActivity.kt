@@ -93,7 +93,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private var isVlcEnabled by mutableStateOf(true)
     private var isU2bKaOkEnabled by mutableStateOf(true)
     private var isU2bPlayEnabled by mutableStateOf(true)
-    private val focusRequester = mutableStateOf(FocusRequester())
+    private val focusRequester = FocusRequester()
     private fun hasU2bPlayer() = true
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
@@ -291,7 +291,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         exoClicked.value = false
                     }
                 },
-                modifier = Modifier.focusRequester(focusRequester.value)
+                modifier = Modifier.focusRequester(focusRequester)
                     .width(width = buttonWidth.dp)
                     .height(height = buttonHeight.dp)
                     .background(color = buttonBackground),
@@ -318,7 +318,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
         LaunchedEffect(true) {
             delay(2000L)
-            focusRequester.value.requestFocus()
+            focusRequester.requestFocus()
         }
     }
 
