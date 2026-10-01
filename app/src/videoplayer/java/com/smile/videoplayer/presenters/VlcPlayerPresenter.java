@@ -61,6 +61,7 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
         }
     }
 
+    /*
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
         String logStr = "setAudioTrackAndChannel";
@@ -97,6 +98,53 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             }
         }
     }
+    */
+
+    @Override
+    public void setAudioTrack(int audioTrackIndex) {
+        String logStr = "setAudioTrack";
+        int numOfAudioTracks = audioTrackIndicesList.size();
+        LogUtil.d(TAG, logStr + ".audioTrackIndex = " + audioTrackIndex +
+                ", numOfAudioTracks = " + numOfAudioTracks);
+        if (audioTrackIndex <= 0) {
+            return;
+        }
+        if (numOfAudioTracks > 0) {
+            // select audio track
+            if (audioTrackIndex > numOfAudioTracks) {
+                // set to first track
+                audioTrackIndex = 1;
+            }
+            VlcPlayService playService = getPlayService();
+            LogUtil.d(TAG, logStr + ".playService = " + playService);
+            if (playService != null) {
+                PlayingParameters pm = getPlayingParam();
+                if (pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex) {
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex");
+                    int audioTrackId = audioTrackIndicesList.get(audioTrackIndex - 1);
+                    playService.setAudioTrack(audioTrackId);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setAudioChannel(int audioChannel) {
+        String logStr = "setAudioChannel";
+        VlcPlayService playService = getPlayService();
+        LogUtil.d(TAG, logStr + ".playService = " + playService);
+        if (playService != null) {
+            PlayingParameters pm = getPlayingParam();
+            LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() = " + pm.getCurrentChannelPlayed());
+            if (pm.getCurrentChannelPlayed() != audioChannel) {
+                LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() != audioChannel");
+                // select audio channel
+                playService.setAudioChannel(audioChannel);
+                pm.setCurrentChannelPlayed(audioChannel);
+            }
+        }
+    }
 
     @Override
     public void saveInstanceState(@NonNull Bundle outState) {
@@ -122,9 +170,8 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = pm.getMusicAudioTrackIndex();
-            int audioChannel = pm.getMusicAudioChannel();
-            setAudioTrackAndChannel(audioTrack, audioChannel);
+            setAudioTrack(pm.getMusicAudioTrackIndex());
+            setAudioChannel(pm.getMusicAudioChannel());
         }
     }
 
@@ -137,9 +184,8 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = pm.getVocalAudioTrackIndex();
-            int audioChannel = pm.getVocalAudioChannel();
-            setAudioTrackAndChannel(audioTrack, audioChannel);
+            setAudioTrack(pm.getVocalAudioTrackIndex());
+            setAudioChannel(pm.getVocalAudioChannel());
         }
     }
 
@@ -242,7 +288,9 @@ public class VlcPlayerPresenter extends PlayerBasePresenter {
                 result[1] = audioChannel;
             }
         }
-        setAudioTrackAndChannel(result[0], result[1]);
+        // setAudioTrackAndChannel(result[0], result[1]);
+        setAudioTrack(result[0]);
+        setAudioChannel(result[1]);
         // update the duration on controller UI
         // build R.id.audioTrack submenu
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);

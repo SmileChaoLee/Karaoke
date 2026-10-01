@@ -32,6 +32,7 @@ class U2bPresenter(private val presentView: U2bPresentView)
         initializeVariablesBase(savedInstanceState, isAutoPlay)
     }
 
+    /*
     override fun setAudioTrackAndChannel(audioTrackIndex: Int, audioChannel: Int) {
         val logStr = "setAudioTrackAndChannel"
         LogUtil.d(TAG, logStr)
@@ -39,6 +40,24 @@ class U2bPresenter(private val presentView: U2bPresentView)
         playService.setAudioTrack(audioTrackIndex)
         playingParam.currentAudioTrackIndexPlayed = audioTrackIndex
         // select audio channel
+        playingParam.currentChannelPlayed = audioChannel
+        playService.setAudioVolume(playingParam.currentVolume)
+    }
+    */
+
+    override fun setAudioTrack(audioTrackIndex: Int) {
+        val logStr = "setAudioTrack"
+        LogUtil.d(TAG, logStr)
+        val playService = getU2bService() ?: return
+        playService.setAudioTrack(audioTrackIndex)
+        playingParam.currentAudioTrackIndexPlayed = audioTrackIndex
+    }
+
+    override fun setAudioChannel(audioChannel: Int) {
+        val logStr = "setAudioChannel"
+        LogUtil.d(TAG, logStr)
+        // select audio channel
+        val playService = getU2bService() ?: return
         playingParam.currentChannelPlayed = audioChannel
         playService.setAudioVolume(playingParam.currentVolume)
     }

@@ -66,7 +66,8 @@ abstract class PlayerBasePresenter(private val mPresentView: BasePresentView) {
         isAutoPlay: Boolean
     )
 
-    abstract fun setAudioTrackAndChannel(audioTrackIndex: Int, audioChannel: Int)
+    abstract fun setAudioTrack(audioTrackIndex: Int)
+    abstract fun setAudioChannel(audioChannel: Int)
     abstract fun switchAudioToMusic()
     abstract fun switchAudioToVocal()
     abstract fun startDurationBarHandler()

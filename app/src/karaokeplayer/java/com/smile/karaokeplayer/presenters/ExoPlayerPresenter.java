@@ -74,6 +74,7 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
         return mTrackSelectionParameters;
     }
 
+    /*
     @Override
     public void setAudioTrackAndChannel(int audioTrackIndex, int audioChannel) {
         int numOfAudioTracks = audioTrackIndicesList.size();
@@ -117,6 +118,61 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             }
         }
     }
+    */
+
+    @Override
+    public void setAudioTrack(int audioTrackIndex) {
+        String logStr = "setAudioTrack";
+        LogUtil.d(TAG, logStr + ".audioTrackIndex = " + audioTrackIndex);
+        int numOfAudioTracks = audioTrackIndicesList.size();
+        LogUtil.d(TAG, logStr + ".numOfAudioTracks = " + numOfAudioTracks);
+        if (numOfAudioTracks > 0) {
+            // select audio track
+            if (audioTrackIndex<=0) {
+                LogUtil.d(TAG, logStr + ".No such audio Track Index = " + audioTrackIndex);
+                return;
+            }
+            if (audioTrackIndex> numOfAudioTracks) {
+                LogUtil.d(TAG, logStr + ".No such audio Track Index = " + audioTrackIndex);
+                // set to first track
+                audioTrackIndex = 1;
+            }
+            int indexInArrayList = audioTrackIndex - 1;
+
+            Integer[] trackIndicesCombination = audioTrackIndicesList.get(indexInArrayList);
+            ExoPlayService playService = getPlayService();
+            LogUtil.d(TAG, logStr + ".playService = " + playService);
+            if (playService != null) {
+                PlayingParameters pm = getPlayingParam();
+                LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() = " + pm.getCurrentAudioTrackIndexPlayed());
+                if (pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex) {
+                    // set audio track
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() != audioTrackIndex");
+                    mTrackSelectionParameters = playService.selectAudioTrack(trackIndicesCombination,
+                            mTrackSelectionParameters);
+                    pm.setCurrentAudioTrackIndexPlayed(audioTrackIndex);
+                    LogUtil.d(TAG, logStr + ".pm.getCurrentAudioTrackIndexPlayed() = " + pm.getCurrentAudioTrackIndexPlayed());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setAudioChannel(int audioChannel) {
+        String logStr = "setAudioChannel";
+        ExoPlayService playService = getPlayService();
+        LogUtil.d(TAG, logStr + ".playService = " + playService);
+        if (playService != null) {
+            PlayingParameters pm = getPlayingParam();
+            LogUtil.d(TAG, logStr + ".pm.getCurrentChannelPlayed() = " + pm.getCurrentChannelPlayed());
+            if (pm.getCurrentChannelPlayed() != audioChannel) {
+                // set audio channel
+                pm.setCurrentChannelPlayed(audioChannel);
+                // playService.setAudioVolume() must be after pm.setCurrentChannelPlayed()
+                playService.setAudioVolume(pm.getCurrentVolume());
+            }
+        }
+    }
 
     @Override
     public void switchAudioToMusic() {
@@ -126,9 +182,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = pm.getMusicAudioTrackIndex();
-            int audioChannel = pm.getMusicAudioChannel();
-            setAudioTrackAndChannel(audioTrack, audioChannel);
+            setAudioTrack(pm.getMusicAudioTrackIndex());
+            setAudioChannel(pm.getMusicAudioChannel());
         }
     }
     @Override
@@ -139,9 +194,8 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             // not in the database and show message
             mPresentView.showMusicAndVocalIsNotSet();
         } else {
-            int audioTrack = pm.getVocalAudioTrackIndex();
-            int audioChannel = pm.getVocalAudioChannel();
-            setAudioTrackAndChannel(audioTrack, audioChannel);
+            setAudioTrack(pm.getVocalAudioTrackIndex());
+            setAudioChannel(pm.getVocalAudioChannel());
         }
     }
 
@@ -215,7 +269,9 @@ public class ExoPlayerPresenter extends PlayerBasePresenter {
             result[0] = audioTrackIdPlayed;
             result[1] = audioChannelPlayed;
         }
-        setAudioTrackAndChannel(result[0], result[1]);
+        // setAudioTrackAndChannel(result[0], result[1]);
+        setAudioTrack(result[0]);
+        setAudioChannel(result[1]);
         mPresentView.setVideoWindowSize();
         // build R.id.audioTrack submenu
         LogUtil.d(TAG, msgStr + ".numOfAudioTracks = " + numOfAudioTracks);

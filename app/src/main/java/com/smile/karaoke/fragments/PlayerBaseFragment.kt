@@ -233,8 +233,8 @@ abstract class PlayerBaseFragment : Fragment(),
                 toastTextSize, ScreenUtil.FontSize_Pixel_Type,
                 Toast.LENGTH_SHORT)
         }
-        mPresenter.setAudioTrackAndChannel(pm.currentAudioTrackIndexPlayed,
-            channel)
+        // mPresenter.setAudioTrackAndChannel(pm.currentAudioTrackIndexPlayed, channel)
+        mPresenter.setAudioChannel(channel)
     }
 
     open fun switchToMusicVisibility(): Int {
@@ -605,21 +605,29 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             }
         } else if (id == R.id.audioTrack1) {
-            mPresenter.setAudioTrackAndChannel(1, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(1, currentChannelPlayed)
+            mPresenter.setAudioTrack(1)
         } else if (id == R.id.audioTrack2) {
-            mPresenter.setAudioTrackAndChannel(2, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(2, currentChannelPlayed)
+            mPresenter.setAudioTrack(2)
         } else if (id == R.id.audioTrack3) {
-            mPresenter.setAudioTrackAndChannel(3, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(3, currentChannelPlayed)
+            mPresenter.setAudioTrack(3)
         } else if (id == R.id.audioTrack4) {
-            mPresenter.setAudioTrackAndChannel(4, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(4, currentChannelPlayed)
+            mPresenter.setAudioTrack(4)
         } else if (id == R.id.audioTrack5) {
-            mPresenter.setAudioTrackAndChannel(5, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(5, currentChannelPlayed)
+            mPresenter.setAudioTrack(5)
         } else if (id == R.id.audioTrack6) {
-            mPresenter.setAudioTrackAndChannel(6, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(6, currentChannelPlayed)
+            mPresenter.setAudioTrack(6)
         } else if (id == R.id.audioTrack7) {
-            mPresenter.setAudioTrackAndChannel(7, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(7, currentChannelPlayed)
+            mPresenter.setAudioTrack(7)
         } else if (id == R.id.audioTrack8) {
-            mPresenter.setAudioTrackAndChannel(8, currentChannelPlayed)
+            // mPresenter.setAudioTrackAndChannel(8, currentChannelPlayed)
+            mPresenter.setAudioTrack(8)
         } else if (id == R.id.channel) {
             val mediaUri = mPresenter.mediaUri
             val numberOfAudioTracks = mPresenter.getNumberOfAudioTracks()
@@ -984,8 +992,8 @@ abstract class PlayerBaseFragment : Fragment(),
         fragmentView?.let { it.post { it.requestFocus() } }
     }
 
-    private fun audioTrackListener() {
-        val logStr = "audioTrackListener"
+    private fun audioTrackButtonListener() {
+        val logStr = "audioTrackButtonListener"
         audioTrackImageButton?.setOnClickListener {
             val pm = mPresenter.playingParam
             LogUtil.d(TAG, "$logStr.pm.currentAudioTrackIndexPlayed = ${pm.currentAudioTrackIndexPlayed}")
@@ -1008,9 +1016,8 @@ abstract class PlayerBaseFragment : Fragment(),
                 }
             ScreenUtil.showToast(activity, str, toastTextSize,
                 Toast.LENGTH_SHORT)
-            mPresenter.setAudioTrackAndChannel(newTrack,
-                pm.currentChannelPlayed)
-
+            // mPresenter.setAudioTrackAndChannel(newTrack, pm.currentChannelPlayed)
+            mPresenter.setAudioTrack(newTrack)
             CommonUtil.disableButtonForSometime(it)
             lastFocusView = audioTrackImageButton
             fragmentView?.requestFocus()
@@ -1200,7 +1207,7 @@ abstract class PlayerBaseFragment : Fragment(),
             lastFocusView = audioChannelImageButton
             fragmentView?.post { fragmentView?.requestFocus() }
         }
-        audioTrackListener()
+        audioTrackButtonListener()
 
         actionMenuImageButton?.setOnClickListener {
             LogUtil.d(TAG, "actionMenuImageButton.setOnClickListener")
