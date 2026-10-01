@@ -14,6 +14,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -466,11 +467,11 @@ abstract class PlayerBaseFragment : Fragment(),
             it.isFocusable = true
             it.isFocusableInTouchMode = true
             it.post { it.requestFocus() }
-            it.setOnKeyListener {
-                    _, keyCode, _ ->
-                LogUtil.d(TAG, "fragmentView.setOnKeyListener.keyCode = $keyCode")
-                if (playerViewLinearLayout?.visibility == View.VISIBLE) {
+            it.setOnKeyListener { _, keyCode, keyEvent ->
+                LogUtil.d(TAG, "fragmentView.setOnKeyListener.keyCode = $keyCode, action = ${keyEvent.action}")
+                if (keyEvent.action == KeyEvent.ACTION_DOWN && playerViewLinearLayout?.visibility == View.VISIBLE) {
                     supportToolbar?.performClick()
+                    return@setOnKeyListener true
                 }
                 return@setOnKeyListener false
             }
