@@ -13,10 +13,6 @@ import com.smile.karaokeplayer.fragments.ExoPlayerFragment
 open class ExoPlayerActivity : UpBaseActivity() {
 
     private var mTAG : String = "ExoPlayerActivity"
-    fun setTag(tag: String) {
-        LogUtil.d(mTAG, "setTag.tag = $tag")
-        mTAG = tag
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(mTAG, "onCreate")

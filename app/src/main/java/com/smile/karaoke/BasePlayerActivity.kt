@@ -70,10 +70,8 @@ abstract class BasePlayerActivity : ComponentActivity() {
     abstract fun getVlcButtonName(): String
     abstract fun startExoPlayer()
     abstract fun startVlcPlayer()
-
-    abstract fun hasU2bPlayer(): Boolean
+        abstract fun startU2bKaraoke()
     abstract fun startU2bPlayer()
-    abstract fun startU2bKaraoke()
 
     private var screenSize = Point(0, 0)
     private var permissionExternalStorage = false
@@ -93,9 +91,10 @@ abstract class BasePlayerActivity : ComponentActivity() {
 
     private var isExoEnabled by mutableStateOf(true)
     private var isVlcEnabled by mutableStateOf(true)
-    private var isU2bPlayEnabled by mutableStateOf(true)
     private var isU2bKaOkEnabled by mutableStateOf(true)
+    private var isU2bPlayEnabled by mutableStateOf(true)
     private val focusRequester = mutableStateOf(FocusRequester())
+    private fun hasU2bPlayer() = true
 
     @SuppressLint("ConfigurationScreenWidthHeight", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -227,15 +226,15 @@ abstract class BasePlayerActivity : ComponentActivity() {
     private fun enableMainButtons() {
         isExoEnabled = true
         isVlcEnabled = true
-        isU2bPlayEnabled = true
         isU2bKaOkEnabled = true
+        isU2bPlayEnabled = true
     }
 
     protected fun disableMainButtons() {
         isExoEnabled = false
         isVlcEnabled = false
-        isU2bPlayEnabled = false
         isU2bKaOkEnabled = false
+        isU2bPlayEnabled = false
     }
 
     private fun startExoActivity() {
@@ -511,11 +510,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     buttonWidth, buttonHeight, textLineHeight)
                 if (hasU2bPlayer()) {
                     val butHeight = buttonHeight * 0.7f
-                    U2bPlayButton(
+                    U2bKaOkButton(
                         modifier = Modifier.weight(1.0f),
                         buttonWidth, butHeight, textLineHeight
                     )
-                    U2bKaOkButton(
+                    U2bPlayButton(
                         modifier = Modifier.weight(1.0f),
                         buttonWidth, butHeight, textLineHeight
                     )
@@ -530,11 +529,11 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         Column( modifier = Modifier.fillMaxHeight().weight(1.0f)
                             .padding(start = 20.dp, end = 20.dp),
                             horizontalAlignment = Alignment.CenterHorizontally) {
-                            U2bPlayButton(
+                            U2bKaOkButton(
                                 modifier = Modifier.weight(1.0f),
                                 buttonWidth, buttonHeight, textLineHeight
                             )
-                            U2bKaOkButton(
+                            U2bPlayButton(
                                 modifier = Modifier.weight(1.0f),
                                 buttonWidth, buttonHeight, textLineHeight
                             )

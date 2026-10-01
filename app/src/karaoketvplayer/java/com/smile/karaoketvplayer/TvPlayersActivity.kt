@@ -2,8 +2,8 @@ package com.smile.karaoketvplayer
 
 import com.smile.karaoke.utilities.LogUtil
 
-class TvPlayerActivity: PhPlayerActivity() {
-    private val mTAG : String = "TvPlayerActivity"
+class TvPlayersActivity: PhPlayersActivity() {
+    private val mTAG : String = "TvPlayersActivity"
     init {
         LogUtil.d(mTAG, "")
         setTag(mTAG)

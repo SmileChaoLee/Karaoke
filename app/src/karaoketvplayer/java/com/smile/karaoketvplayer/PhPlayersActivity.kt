@@ -9,9 +9,9 @@ import com.smile.u2bkaraoke.U2bKaOkActivity
 import com.smile.videoplayer.VlcPlayerActivity
 import com.smile.u2bplayer.U2bPlayerActivity
 
-open class PhPlayerActivity : BasePlayerActivity() {
+open class PhPlayersActivity : BasePlayerActivity() {
 
-    private var mTAG : String = "PhPlayerActivity"
+    private var mTAG : String = "PhPlayersActivity"
 
     fun setTag(tag: String) {
         LogUtil.d(mTAG, "setTag.tag = $tag")
@@ -22,14 +22,10 @@ open class PhPlayerActivity : BasePlayerActivity() {
         return resources.getString(R.string.karaoke_tv_app_name)
     }
 
-    override fun hasU2bPlayer(): Boolean {
-        return true
-    }
-
     override fun startU2bPlayer() {
         LogUtil.d(mTAG, "startU2bPlayer")
         Intent(
-            this@PhPlayerActivity,
+            this@PhPlayersActivity,
             U2bPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -40,7 +36,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     override fun startU2bKaraoke() {
         LogUtil.d(mTAG, "startU2bKaraoke")
         Intent(
-            this@PhPlayerActivity,
+            this@PhPlayersActivity,
             U2bKaOkActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -59,7 +55,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     override fun startExoPlayer() {
         LogUtil.d(mTAG, "startExoPlayer()")
         Intent(
-            this@PhPlayerActivity,
+            this@PhPlayersActivity,
             ExoPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
@@ -70,7 +66,7 @@ open class PhPlayerActivity : BasePlayerActivity() {
     override fun startVlcPlayer() {
         LogUtil.d(mTAG, "startVlcPlayer()")
         Intent(
-            this@PhPlayerActivity,
+            this@PhPlayersActivity,
             VlcPlayerActivity::class.java
         ).also {
             loadingMessage.value = getString(R.string.loadingStr)
