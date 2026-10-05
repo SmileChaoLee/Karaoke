@@ -27,8 +27,8 @@ android {
     defaultConfig {
         targetSdk sdk_version.target
         minSdk sdk_version.min
-        versionCode 1023
-        versionName "10.23"
+        versionCode 1024
+        versionName "10.24"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
@@ -79,21 +79,21 @@ android {
         }
         register("u2bplayer") {
             dimension = "karaoke"
-            versionCode 127
-            versionName "1.27"
+            versionCode 128
+            versionName "1.28"
             applicationId = "com.smile.u2bplayer"
         }
         register("u2bplayer2") {
             // for Amazon app store only
             dimension = "karaoke"
-            versionCode 127
-            versionName "1.27"
+            versionCode 128
+            versionName "1.28"
             applicationId = "com.smile.youtubeplayer"
         }
         register("u2bkaraoke") {
             dimension = "karaoke"
-            versionCode 116
-            versionName "1.16"
+            versionCode 117
+            versionName "1.17"
             applicationId = "com.smile.u2bkaraoke"
         }
         register("u2bkktool") {
