@@ -469,9 +469,13 @@ abstract class PlayerBaseFragment : Fragment(),
             it.post { it.requestFocus() }
             it.setOnKeyListener { _, keyCode, keyEvent ->
                 LogUtil.d(TAG, "fragmentView.setOnKeyListener.keyCode = $keyCode, action = ${keyEvent.action}")
+                if (keyCode == 24 || keyCode == 25) {
+                    // 25 for volume down or 24 for volume up
+                    return@setOnKeyListener false
+                }
                 if (keyEvent.action == KeyEvent.ACTION_DOWN && playerViewLinearLayout?.visibility == View.VISIBLE) {
                     supportToolbar?.performClick()
-                    return@setOnKeyListener true
+                    return@setOnKeyListener false
                 }
                 return@setOnKeyListener false
             }
