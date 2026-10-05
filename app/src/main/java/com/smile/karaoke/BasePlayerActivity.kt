@@ -276,7 +276,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
         LogUtil.d(TAG, "ExoPlayerButton")
 
         Column(modifier = modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
@@ -329,7 +329,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                         textLineHeight: TextUnit) {
         LogUtil.d(TAG, "VlcPlayerButton")
         Column(modifier = modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
@@ -377,7 +377,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                       textLineHeight: TextUnit) {
         LogUtil.d(TAG, "U2bPlayButton")
         Column(modifier = modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
@@ -422,7 +422,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                   textLineHeight: TextUnit) {
         LogUtil.d(TAG, "U2bKaOkButton")
         Column(modifier = modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
@@ -461,24 +461,6 @@ abstract class BasePlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ExoVlcButtons(modifier: Modifier = Modifier,
-                      buttonWidth: Float, buttonHeight: Float,
-                      textLineHeight: TextUnit) {
-        Column(modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
-            ExoPlayerButton(
-                modifier = Modifier.weight(1.0f),
-                buttonWidth, buttonHeight, textLineHeight
-            )
-            VlcPlayerButton(
-                modifier = Modifier.weight(1.0f),
-                buttonWidth, buttonHeight, textLineHeight
-            )
-        }
-    }
-
-    @Composable
     fun CreateMainUI() {
         LogUtil.d(TAG, "CreateMainUI")
         if (loadingMessage.value.isNotEmpty()) return
@@ -506,8 +488,18 @@ abstract class BasePlayerActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center) {
             if (resources.configuration.orientation
                 == Configuration.ORIENTATION_PORTRAIT) {
-                ExoVlcButtons(modifier = Modifier.weight(4.0f),
-                    buttonWidth, buttonHeight, textLineHeight)
+                Column(modifier = Modifier.weight(4.0f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center) {
+                    ExoPlayerButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                    VlcPlayerButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                }
                 if (hasU2bPlayer()) {
                     val butHeight = buttonHeight * 0.7f
                     U2bKaOkButton(
@@ -520,24 +512,31 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     )
                 }
             } else {
-                Row(modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.Top) {
-                    ExoVlcButtons(modifier = Modifier.weight(1.0f),
-                        buttonWidth, buttonHeight, textLineHeight)
-                    if (hasU2bPlayer()) {
-                        Column( modifier = Modifier.fillMaxHeight().weight(1.0f)
-                            .padding(start = 20.dp, end = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally) {
-                            U2bKaOkButton(
-                                modifier = Modifier.weight(1.0f),
-                                buttonWidth, buttonHeight, textLineHeight
-                            )
-                            U2bPlayButton(
-                                modifier = Modifier.weight(1.0f),
-                                buttonWidth, buttonHeight, textLineHeight
-                            )
-                        }
+                Row(modifier = Modifier.weight(1.0f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center) {
+                    ExoPlayerButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                    VlcPlayerButton(
+                        modifier = Modifier.weight(1.0f),
+                        buttonWidth, buttonHeight, textLineHeight
+                    )
+                }
+                if (hasU2bPlayer()) {
+                    Row( modifier = Modifier.weight(1.0f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        U2bKaOkButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
+                        U2bPlayButton(
+                            modifier = Modifier.weight(1.0f),
+                            buttonWidth, buttonHeight, textLineHeight
+                        )
                     }
                 }
             }
