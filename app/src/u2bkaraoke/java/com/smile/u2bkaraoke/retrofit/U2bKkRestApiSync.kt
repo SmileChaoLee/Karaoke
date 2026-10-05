@@ -14,7 +14,6 @@ import com.smile.u2bkaraoke.model.SingerTypeList
 import com.smile.u2bkaraoke.model.Song
 import com.smile.u2bkaraoke.model.SongList
 import retrofit2.Retrofit
-import retrofit2.http.Path
 import javax.inject.Inject
 import java.util.Date
 
@@ -156,15 +155,27 @@ class U2bKkRestApiSync private constructor() {
     }
 
     fun getSongsWithFilter(pageSize : Int, pageNo : Int, filter: String): SongList? {
-        val logStr = "getSongs"
+        val logStr = "getSongsWithFilter"
         LogUtil.d(TAG, logStr)
         // order by (number of words + song's name)
         val orderBy = "NumWordsSongNa"
         var result:SongList? = null
         try {
             // get Call from Retrofit Api
-            val response = apiInterface.getSongsWithFilter(pageSize, pageNo, orderBy, true, filter)
+            /*
+            val response = if (filter.isNotEmpty())
+                apiInterface.getSongsWithFilter(pageSize, pageNo, orderBy, true, filter)
                 .execute()
+            else
+                apiInterface.getSongs(pageSize, pageNo, orderBy).execute()
+            */
+            // Or the following because if filter is empty,
+            // it will go to getSongs(pageSize : Int, pageNo : Int, numWords: String)
+            // So when filter is empty then set useFilter to false and filterTmp to not empty, "NoFilter"
+            val useFilter = filter.isNotEmpty()
+            val filterTmp = if (useFilter) filter else "NoFilter"
+            val response = apiInterface.getSongsWithFilter(pageSize, pageNo, orderBy, useFilter, filterTmp)
+                    .execute()
             LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
             val code = response.code()
             LogUtil.d(TAG, "$logStr.response.code() = $code")
