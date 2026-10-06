@@ -27,8 +27,8 @@ android {
     defaultConfig {
         targetSdk sdk_version.target
         minSdk sdk_version.min
-        versionCode 1024
-        versionName "10.24"
+        versionCode 1025
+        versionName "10.25"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release

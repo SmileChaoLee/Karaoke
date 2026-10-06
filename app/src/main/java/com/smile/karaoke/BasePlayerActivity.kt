@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -512,7 +511,7 @@ abstract class BasePlayerActivity : ComponentActivity() {
                     )
                 }
             } else {
-                Row(modifier = Modifier.weight(1.0f),
+                Row(modifier = Modifier.weight(2.0f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center) {
                     ExoPlayerButton(
