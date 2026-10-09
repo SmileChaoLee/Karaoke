@@ -1,24 +1,33 @@
 # Project exclude paths
 app/google-services.json
 app/src/u2bplayer/java/com/smile/u2bplayer/u2bplay_constants/PrivateConstants.kt
+
+# IDE / Android Studio files
+.idea/.name
+.idea/caches/
 .idea/deploymentTargetSelector.xml
+.idea/markdown.xml
 .idea/misc.xml
 .idea/modules/app/KaraokePlayer.app.iml
 .idea/modules/app/KaraokePlayer.app.main.iml
 .idea/modules/app/KaraokePlayer.app.unitTest.iml
+.idea/planningMode.xml
+.idea/studiobot.xml
 .idea/workspace.xml
-extensions/ffmpeg/.cxx/
-extensions/ffmpeg/src/main/jni/ffmpeg/
+
+# Build & Native output folders
 /.gradle/
-/app/build/
-/app/build/intermediates/javac/exoplayerDebug/classes/
-/extensions/av1/build/
-/extensions/av1/build/intermediates/javac/debug/classes/
-/extensions/ffmpeg/build/
-/extensions/ffmpeg/build/intermediates/javac/debug/classes/
-/extensions/flac/build/
-/extensions/flac/build/intermediates/javac/debug/classes/
-/extensions/opus/build/
-/extensions/opus/build/intermediates/javac/debug/classes/
-/extensions/vp9/build/
-/extensions/vp9/build/intermediates/javac/debug/classes/
+build/
+.cxx/
+extensions/ffmpeg/src/main/jni/ffmpeg/
+
+# App generated folders
+app/karaokeplayer/
+app/karaokeplayer2/
+app/karaoketvplayer/
+app/schemas/
+app/u2bkaraoke/
+app/u2bplayer/
+app/u2bplayer2/
+app/videoplayer/
+app/videoplayer2/
