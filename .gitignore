@@ -8,6 +8,7 @@ app/src/u2bplayer/java/com/smile/u2bplayer/u2bplay_constants/PrivateConstants.kt
 .idea/modules/app/KaraokePlayer.app.unitTest.iml
 .idea/workspace.xml
 extensions/ffmpeg/.cxx/
+extensions/ffmpeg/src/main/jni/ffmpeg/
 /.gradle/
 /app/build/
 /app/build/intermediates/javac/exoplayerDebug/classes/
