@@ -105,15 +105,15 @@ android {
         }
         register("u2bplayer") {
             dimension = "karaoke"
-            versionCode 129
-            versionName "1.29"
+            versionCode 130
+            versionName "1.30"
             applicationId = "com.smile.u2bplayer"
         }
         register("u2bplayer2") {
             // for Amazon app store only
             dimension = "karaoke"
-            versionCode 129
-            versionName "1.29"
+            versionCode 130
+            versionName "1.30"
             applicationId = "com.smile.youtubeplayer"
         }
         register("u2bkaraoke") {

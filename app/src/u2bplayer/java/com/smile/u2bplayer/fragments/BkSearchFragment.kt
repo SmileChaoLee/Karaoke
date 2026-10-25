@@ -26,12 +26,15 @@ class BkSearchFragment : SearchYTFragment() {
         val logStr = "searchedToU2bVideos"
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
-            val ytVideos = U2bPlayerRestApiSync.getVideos(searchTerm)
-            LogUtil.d(TAG, "$logStr.ytVideos.size = ${ytVideos.size}")
+            val nextPToken = nextPageToken ?: "first"    // the initial value for backend
+            val ytVList = U2bPlayerRestApiSync.getVideos(searchTerm, nextPToken)
+            LogUtil.d(TAG, "$logStr.ytVList.ytVideos.size = ${ytVList.ytVideos.size}")
+            nextPageToken = ytVList.nextPageToken
+            LogUtil.d(TAG, "$logStr.nextPageToken = $nextPageToken")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
             var songInfo: SongInfo
             var bm: Bitmap?
-            for (item in ytVideos) {
+            for (item in ytVList.ytVideos) {
                 songInfo = SongInfo()
                 bm = null
                 songInfo.apply {

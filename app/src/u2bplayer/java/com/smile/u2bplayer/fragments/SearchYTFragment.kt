@@ -55,7 +55,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
     val selectedSongs : ArrayList<SongInfo> = ArrayList()
     var applicationId = ""
-    private var nextPageToken : String? = null
+    var nextPageToken : String? = null
     var apiKey = PrivateConstants.API_KEY2
 
     override fun onCreate(savedInstanceState: Bundle?) {

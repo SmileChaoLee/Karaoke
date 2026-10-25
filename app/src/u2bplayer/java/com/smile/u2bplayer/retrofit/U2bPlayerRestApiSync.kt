@@ -1,7 +1,7 @@
 package com.smile.u2bplayer.retrofit
 
 import com.smile.karaoke.utilities.LogUtil
-import com.smile.u2bplayer.models.YouTubeVideo
+import com.smile.u2bplayer.models.YTVideoList
 import retrofit2.Response
 
 object U2bPlayerRestApiSync {
@@ -14,18 +14,19 @@ object U2bPlayerRestApiSync {
         return U2bPlayerRetrofitClient.getRetrofit().create(U2bPlayerApiInterface::class.java)
     }
 
-    fun getVideos(searchTerm: String):  ArrayList<YouTubeVideo> {
+    fun getVideos(searchTerm: String, pageToken: String): YTVideoList {
         val logStr = "getVideos"
         LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
-        var result = ArrayList<YouTubeVideo>()
+        LogUtil.d(TAG, "$logStr.pageToken = $pageToken")
+        var result = YTVideoList(null, emptyList())
         try {
-            val response: Response<ArrayList<YouTubeVideo>> = getApiInstance()
-                .searchVideos(searchTerm).execute()
+            val response: Response<YTVideoList> = getApiInstance()
+                .searchVideos(searchTerm, pageToken).execute()
             LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
             val code = response.code()
             LogUtil.d(TAG, "$logStr.response.code() = $code")
             if (code == HTTP_OK) {
-                result = response.body() ?: ArrayList()
+                result = response.body() ?: result
             }
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
