@@ -55,6 +55,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
     val selectedSongs : ArrayList<SongInfo> = ArrayList()
     var applicationId = ""
+    private var nextPageToken : String? = null
     var apiKey = PrivateConstants.API_KEY2
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,8 +151,15 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.apiKey = $apiKey")
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
-            val videoList = YouTubeRestApiSync.getVideoList(applicationId,
-                searchTerm, maxResult, apiKey)
+            val videoList = YouTubeRestApiSync.getVideoList(
+                packageName = applicationId,
+                searchTerm = searchTerm,
+                maxResult = maxResult,
+                pageToken = nextPageToken,
+                apiKey = apiKey
+            )
+            nextPageToken = videoList.nextPageToken
+            LogUtil.d(TAG, "$logStr.nextPageToken = $nextPageToken")
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
             var songInfo: SongInfo

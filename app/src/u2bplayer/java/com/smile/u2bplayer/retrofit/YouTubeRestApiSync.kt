@@ -18,14 +18,18 @@ object YouTubeRestApiSync {
         return YouTubeRetrofitClient.getRetrofit(packageName).create(YouTubeApiInterface::class.java)
     }
 
-    fun getVideoList(packageName: String, searchTerm: String, maxResult: Int,
+    fun getVideoList(packageName: String,
+                     searchTerm: String,
+                     maxResult: Int,
+                     pageToken: String?,
                      apiKey: String): VideoList {
         val logStr = "getVideoList"
         LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
         LogUtil.d(TAG, "$logStr.packageName = $packageName")
         LogUtil.d(TAG, "$logStr.maxResult = $maxResult")
+        LogUtil.d(TAG, "$logStr.pageToken = $pageToken")
         LogUtil.d(TAG, "$logStr.apiKey = $apiKey")
-        var result = VideoList(items = emptyList())
+        var result = VideoList(pageToken, items = emptyList())
         try {
             val response: Response<VideoList> = getApiInstance(packageName)
                 .searchVideos(
@@ -33,12 +37,13 @@ object YouTubeRestApiSync {
                     "snippet", // part
                     searchTerm, // query (q)
                     "video", // type
-                    maxResult // maxResults    // used to be 25
+                    maxResult, // maxResults
+                    pageToken = pageToken
                 ).execute()
             LogUtil.d(TAG, "$logStr.Successful = ${response.isSuccessful}")
             val code = response.code()
             LogUtil.d(TAG, "$logStr.response.code() = $code")
-            if (code == HTTP_OK) result = response.body() ?: VideoList(items = emptyList())
+            if (code == HTTP_OK) result = response.body() ?: VideoList(nextPageToken = null, items = emptyList())
         } catch (ex: Exception) {
             LogUtil.e(TAG, "$logStr.Exception", ex)
         }

@@ -25,6 +25,7 @@ interface YouTubeApiInterface {
         @Query("part") part: String?,
         @Query("q") query: String?,
         @Query("type") type: String?,
-        @Query("maxResults") maxResults: Int
+        @Query("maxResults") maxResults: Int,
+        @Query("pageToken") pageToken: String?, // Nullable for page 1
     ): Call<VideoList>
 }
