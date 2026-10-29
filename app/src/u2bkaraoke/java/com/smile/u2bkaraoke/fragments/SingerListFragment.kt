@@ -24,6 +24,7 @@ import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.SingerList
 import com.smile.u2bkaraoke.model.SingerType
 import com.smile.u2bkaraoke.adapters.SingerListAdapter
+import com.smile.u2bkaraoke.interfaces.U2bKkFunc
 import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
@@ -56,11 +57,15 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var pageNo = 1
     private var pageSize = 10
     private var totalPages = 0
-    // private var restApi: MyRestApi? = null
+    private var mU2bKkFunc: U2bKkFunc? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is U2bKkFunc) mU2bKkFunc = it
+            LogUtil.d(TAG, "onCreate.u2bKkFunc = $mU2bKkFunc")
+        }
         arguments?.let { args ->
             singerType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 args.getParcelable(U2bKKConstants.SingerTypeParcelable, SingerType::class.java)
@@ -176,6 +181,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
+        val kkFunc = mU2bKkFunc ?: return
         val fragContainerId = this.id   // container id of the fragment
         val fragManager = act.supportFragmentManager
         singerList.let { list ->
@@ -183,7 +189,7 @@ class SingerListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             LogUtil.d(TAG, "onItemClick.singer.singNa = ${singer.singNa}")
             ScreenUtil.showToast(act, singer.singNa,
                 textFontSize,  Toast.LENGTH_SHORT)
-            val nFragment = SongListFragment().apply {
+            val nFragment = kkFunc.getSongListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.SingerOrdered)
                     putString(U2bKKConstants.SongListTitle, singer.singNa)

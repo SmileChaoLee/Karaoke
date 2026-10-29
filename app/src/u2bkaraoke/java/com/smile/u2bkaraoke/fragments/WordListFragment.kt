@@ -18,6 +18,7 @@ import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.Language
 import com.smile.u2bkaraoke.adapters.WordListAdapter
+import com.smile.u2bkaraoke.interfaces.U2bKkFunc
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import javax.inject.Inject
 
@@ -34,10 +35,15 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private lateinit var mWordList: ArrayList<String>
     private lateinit var mLanguage: Language
     private var orderedFrom = U2bKKConstants.WordsOrdered
+    private var mU2bKkFunc: U2bKkFunc? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is U2bKkFunc) mU2bKkFunc = it
+            LogUtil.d(TAG, "onCreate.u2bKkFunc = $mU2bKkFunc")
+        }
         orderedFrom = U2bKKConstants.WordsOrdered
         languageTitle = ""
         var lang: Language? = null
@@ -113,13 +119,14 @@ class WordListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "itemView.position = $position")
         if (position < 0) return
         val act = activity ?: return
+        val kkFunc = mU2bKkFunc ?: return
         val fragContainerId = this.id   // container id of the fragment
         val fragManager = act.supportFragmentManager
         mWordList.let { list ->
             val word = list[position]
             ScreenUtil.showToast(act, word,
                 textFontSize,Toast.LENGTH_SHORT)
-            val nFragment = SongListFragment().apply {
+            val nFragment = kkFunc.getSongListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.LanguageWordsOrdered)
                     putString(U2bKKConstants.SongListTitle, "$languageTitle $word")

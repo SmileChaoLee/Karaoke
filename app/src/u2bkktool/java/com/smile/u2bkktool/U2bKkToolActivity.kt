@@ -1,9 +1,10 @@
 package com.smile.u2bkktool
 
-import android.content.Intent
 import androidx.media3.common.util.UnstableApi
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.u2bkaraoke.U2bKkBaseActivity
+import com.smile.u2bkaraoke.fragments.SongListFragment
+import com.smile.u2bkktool.fragments.ToolSongListFragment
 
 @UnstableApi
 class U2bKkToolActivity : U2bKkBaseActivity() {
@@ -12,12 +13,8 @@ class U2bKkToolActivity : U2bKkBaseActivity() {
         private const val TAG = "U2bKkToolActivity"
     }
 
-    override fun isU2bKkTool(): Boolean {
-        return true
-    }
-
-    override fun intentU2bKTPlayActivity(): Intent {
-        return Intent(this@U2bKkToolActivity,U2bKTPlayActivity::class.java)
+    override fun getSongListFragment(): SongListFragment {
+        return ToolSongListFragment()
     }
 
     override fun onStart() {

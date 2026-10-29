@@ -1,7 +1,7 @@
 package com.smile.u2bkaraoke
 
-import android.content.Intent
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.u2bkaraoke.fragments.SongListFragment
 
 open class U2bKaOkActivity : U2bKkBaseActivity() {
 
@@ -12,12 +12,7 @@ open class U2bKaOkActivity : U2bKkBaseActivity() {
         mTAG = tag
     }
 
-    override fun isU2bKkTool(): Boolean {
-        return false
-    }
-
-    override fun intentU2bKTPlayActivity(): Intent {
-        // do nothing
-        return Intent()
+    override fun getSongListFragment(): SongListFragment {
+        return SongListFragment()
     }
 }

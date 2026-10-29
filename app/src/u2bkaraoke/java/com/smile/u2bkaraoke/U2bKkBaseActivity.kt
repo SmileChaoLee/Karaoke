@@ -3,7 +3,6 @@ package com.smile.u2bkaraoke
 import android.app.Activity
 import android.os.Bundle
 import androidx.annotation.OptIn
-import androidx.core.view.postDelayed
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import com.google.android.material.tabs.TabLayout
@@ -13,18 +12,18 @@ import com.smile.karaoke.R
 import com.smile.karaoke.constants.CommonConstants
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.karaoke.utilities.PermissionUtil
-import com.smile.u2bkaraoke.fragments.SongListFragment
 import com.smile.u2bkaraoke.fragments.U2bKKBaseFragment
 import com.smile.u2bkaraoke.fragments.U2bKaOkFragment
+import com.smile.u2bkaraoke.interfaces.U2bKkFunc
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import com.smile.u2bplayer.fragments.U2bPlayFavFragment
 import com.smile.u2bplayer.fragments.U2bPlayFragment
 
 @OptIn(UnstableApi::class)
-abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
+abstract class U2bKkBaseActivity : BaseActivity(), U2bKkFunc {
 
     companion object {
-        private const val TAG = "U2bKkBaseActivity"
+        private const val TAG = "U2bKkBaseAct"
         private const val FAV_FRAGMENT_TAG = "U2bPlayFavFragmentTag"
     }
 
@@ -136,7 +135,7 @@ abstract class U2bKkBaseActivity : BaseActivity(), SongListFragment.U2bKkFunc {
             val indicatorHeight = ScreenUtil.dpToPixel(3f)
             layoutParams.height = indicatorHeight.toInt()
             // Remove the ripple and hide the indicator
-            // Remove the ripple (grey circle) when clicking empty space
+            // Remove the ripple (gray circle) when clicking empty space
             tabRippleColor = ColorStateList.valueOf(Color.TRANSPARENT)
             // HIDE INDICATOR (Modern non-deprecated way)
             // Setting the indicator to null effectively removes it

@@ -9,6 +9,7 @@ import android.widget.Button
 import com.smile.karaoke.R
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
+import com.smile.u2bkaraoke.interfaces.U2bKkFunc
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 
@@ -23,11 +24,15 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
     var newSongOrderButton: Button? = null
     var hotSongOrderButton: Button? = null
     var languageOrderButton: Button? = null
-
+    private var mU2bKkFunc: U2bKkFunc? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is U2bKkFunc) mU2bKkFunc = it
+            LogUtil.d(TAG, "onCreate.u2bKkFunc = $mU2bKkFunc")
+        }
     }
 
     override fun onCreateView(
@@ -97,9 +102,10 @@ class U2bKaOkFragment: U2bKKBaseFragment() {
 
     override fun setClickListeners() {
         super.setClickListeners()
+        val kkFunc = mU2bKkFunc ?: return
         allSongOrderButton?.setOnClickListener {
             mFragManager?.let { fm ->
-                val nFragment = SongListFragment().apply {
+                val nFragment = kkFunc.getSongListFragment().apply {
                     arguments = Bundle().apply {
                         putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.ALL_SONG_ORDERED)
                     }

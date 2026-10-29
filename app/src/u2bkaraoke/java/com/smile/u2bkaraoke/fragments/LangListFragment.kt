@@ -16,15 +16,13 @@ import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
 import com.smile.u2bkaraoke.u2bkaok_constants.U2bKKConstants
 import com.smile.u2bkaraoke.model.LanguageList
-import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.LangListAdapter
+import com.smile.u2bkaraoke.interfaces.U2bKkFunc
 import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
 import javax.inject.Inject
 
 class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
@@ -39,10 +37,15 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
     private var langListEmptyTextView: TextView? = null
     private var languageList: LanguageList? = null
     private var orderedFrom = 0
+    private var mU2bKkFunc: U2bKkFunc? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LogUtil.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
+        activity?.let {
+            if (it is U2bKkFunc) mU2bKkFunc = it
+            LogUtil.d(TAG, "onCreate.u2bKkFunc = $mU2bKkFunc")
+        }
         orderedFrom = U2bKKConstants.WordsOrdered
         arguments?.let { args ->
             orderedFrom = args.getInt(U2bKKConstants.OrderedFrom, U2bKKConstants.WordsOrdered)
@@ -136,6 +139,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "onItemClick.position = $position")
         if (position < 0) return
         val act = activity ?: return
+        val kkFunc = mU2bKkFunc ?: return
         val fragContainerId = this.id   // container id of the fragment
         val fragManager = act.supportFragmentManager
         languageList?.let { list ->
@@ -159,7 +163,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 U2bKKConstants.NewSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.NewSongOrdered")
-                    val nFragment = SongListFragment().apply {
+                    val nFragment = kkFunc.getSongListFragment().apply {
                         arguments = Bundle().apply {
                             putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.NewSongLanguageOrdered)
                             val listTitle = languageTitle + " " + act.getString(R.string.newString)
@@ -171,7 +175,7 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 }
                 U2bKKConstants.HotSongOrdered -> {
                     LogUtil.d(TAG, "onItemClick.HotSongOrdered")
-                    val nFragment = SongListFragment().apply {
+                    val nFragment = kkFunc.getSongListFragment().apply {
                         arguments = Bundle().apply {
                             putInt(U2bKKConstants.OrderedFrom, U2bKKConstants.HotSongLanguageOrdered)
                             val listTitle = languageTitle + " " + act.getString(R.string.hotString)
@@ -190,43 +194,5 @@ class LangListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         favoriteTab?.view?.nextFocusDownId = R.id.languageListRecyclerView
         // The following line does not work
         v.nextFocusUpId = selectTab?.view?.id ?: R.id.languageListRecyclerView
-    }
-
-    private inner class MyRestApi : U2bKkRestApiAsync<LanguageList>() {
-        override fun onResponse(call: Call<LanguageList?>, response: Response<LanguageList?>) {
-            LogUtil.d(TAG, "MyRestApi.onResponse")
-            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful() = ${response.isSuccessful}")
-            val act = activity ?: return
-            if (response.isSuccessful) {
-                languageList = response.body()
-                languageList?.let {
-                    if (it.languages.isEmpty()) {
-                        langListEmptyTextView?.text = act.getString(R.string.noResultString)
-                        langListEmptyTextView?.visibility = View.VISIBLE
-                    } else {
-                        langListEmptyTextView?.visibility = View.GONE
-                    }
-                } ?: { languageList = LanguageList() }
-            } else {
-                languageList = LanguageList()
-                langListEmptyTextView?.text = act.getString(R.string.failedMessage)
-                langListEmptyTextView?.visibility = View.VISIBLE
-            }
-            LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
-            appCompBuilder
-                .recyclerItemListenerModule(this@LangListFragment)
-                .languageArrayListModule(languageList!!.languages)
-                .floatModule(textFontSize).build()
-                .inject(this@LangListFragment)
-            mRecyclerView?.setAdapter(myViewAdapter)
-            mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-        }
-
-        override fun onFailure(call: Call<LanguageList>, t: Throwable) {
-            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
-            languageList = LanguageList()
-            langListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
-            langListEmptyTextView?.visibility = View.VISIBLE
-        }
     }
 }
