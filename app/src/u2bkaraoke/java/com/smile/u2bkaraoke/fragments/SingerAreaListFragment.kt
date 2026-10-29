@@ -1,6 +1,5 @@
 package com.smile.u2bkaraoke.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import com.smile.karaoke.interfaces.RecyclerItemListener
 import com.smile.karaoke.utilities.LogUtil
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.U2bKaraokeApp.Companion.appCompBuilder
-import com.smile.u2bkaraoke.retrofit.U2bKkRestApiAsync
 import com.smile.u2bkaraoke.adapters.SingerAreaListAdapter
 import com.smile.u2bkaraoke.model.SingerArea
 import com.smile.u2bkaraoke.model.SingerAreaList
@@ -26,8 +24,6 @@ import com.smile.u2bkaraoke.utilities.U2bKaOkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
 import javax.inject.Inject
 
 class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
@@ -168,43 +164,5 @@ class SingerAreaListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         favoriteTab?.view?.nextFocusDownId = R.id.singerAreaListRecyclerView
         // The following line does not work
         v.nextFocusUpId = selectTab?.view?.id ?: R.id.singerAreaListRecyclerView
-    }
-
-    private inner class MyRestApi : U2bKkRestApiAsync<SingerAreaList>() {
-        @SuppressLint("SetTextI18n")
-        override fun onResponse(call: Call<SingerAreaList?>, response: Response<SingerAreaList?>) {
-            LogUtil.d(TAG, "MyRestApi.onResponse.response.isSuccessful = ${response.isSuccessful}")
-            val act = activity ?: return
-            if (response.isSuccessful) {
-                singerAreaList = response.body()
-                singerAreaList?.let {
-                    if (it.singerAreas.isEmpty()) {
-                        singerAreaListEmptyTextView?.text = act.getString(R.string.noResultString)
-                        singerAreaListEmptyTextView?.visibility = View.VISIBLE
-                    } else {
-                        singerAreaListEmptyTextView?.visibility = View.GONE
-                    }
-                } ?: { singerAreaList = SingerAreaList() }
-            } else {
-                singerAreaList = SingerAreaList()
-                singerAreaListEmptyTextView?.text = act.getString(R.string.failedMessage)
-                singerAreaListEmptyTextView?.visibility = View.VISIBLE
-            }
-            LogUtil.d(TAG, "MyRestApi.onResponse.inject().myViewAdapter")
-            appCompBuilder
-                .recyclerItemListenerModule(this@SingerAreaListFragment)
-                .singerAreaArrayListModule(singerAreaList!!.singerAreas)
-                .floatModule(textFontSize).build()
-                .inject(this@SingerAreaListFragment)
-            mRecyclerView?.setAdapter(myViewAdapter)
-            mRecyclerView?.setLayoutManager(LinearLayoutManager(act.applicationContext))
-        }
-
-        override fun onFailure(call: Call<SingerAreaList>, t: Throwable) {
-            LogUtil.e(TAG, "MyRestApi.onFailure.", t)
-            singerAreaList = SingerAreaList()
-            singerAreaListEmptyTextView?.text = activity?.getString(R.string.failedMessage)
-            singerAreaListEmptyTextView?.visibility = View.VISIBLE
-        }
     }
 }
