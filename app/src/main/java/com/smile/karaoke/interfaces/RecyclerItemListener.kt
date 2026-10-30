@@ -6,6 +6,7 @@ import com.smile.karaoke.SmileAppBase
 interface RecyclerItemListener {
 
     fun onItemClick(v: View?, position: Int)
+    fun onItemLongClick(v: View?, position: Int): Boolean = false
     fun nextFocusUpId(v: View) {}
 
     fun onItemViewFocusChanged(v: View?, position: Int, hasFocus: Boolean) {

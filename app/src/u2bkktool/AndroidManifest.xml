@@ -4,9 +4,9 @@
 
     <application
         tools:replace="android:icon"
+        android:icon="${toolAppIcon}"
         android:name="com.smile.u2bkktool.U2bKkToolApp"
-        android:icon="@drawable/u2bkktool_app_icon"
-        android:label="@string/u2bkktool_app_name"
+        android:label="${toolAppName}"
         android:theme="@style/AppTheme"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
@@ -30,6 +30,10 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false">
         </activity>
+
+        <activity
+            android:name="com.smile.u2bkktool.EditSongActivity"
+            android:exported="false" />
 
         <service
             android:name="com.smile.u2bplayer.services.U2bService"

@@ -15,7 +15,7 @@ import com.smile.u2bkaraoke.model.Song
 import com.smile.smilelibraries.utilities.ScreenUtil
 import com.smile.u2bkaraoke.adapters.SongListAdapter.MyViewHolder
 
-class SongListAdapter(
+open class SongListAdapter(
     private val itemListener : RecyclerItemListener,
     private val mSongs: ArrayList<Song>,
     private val mTextFontSize: Float

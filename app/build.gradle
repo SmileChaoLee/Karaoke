@@ -126,6 +126,10 @@ android {
             dimension = "karaoke"
             versionCode 103
             versionName "1.03"
+            manifestPlaceholders = [
+                    toolAppIcon: "@drawable/u2bkktool_app_icon",
+                    toolAppName: "@string/u2bkktool_app_name"
+            ]
             applicationId = "com.smile.u2bkktool"
         }
         register("u2bkktool2") {
@@ -133,6 +137,10 @@ android {
             dimension = "karaoke"
             versionCode 103
             versionName "1.03"
+            manifestPlaceholders = [
+                    toolAppIcon: "@drawable/u2bkktool2_app_icon",
+                    toolAppName: "@string/u2bkktool2_app_name"
+            ]
             applicationId = "com.smile.u2bkktool2"
         }
     }
@@ -227,8 +235,8 @@ android {
         u2bkktool2 {
             java.srcDirs += ["src/u2bkktool/java", "src/u2bkaraoke/java",
                              "src/u2bplayer/java"]
-            res.srcDirs += ["src/u2bkktool2/res", "src/u2bkaraoke/res",
-                            "src/u2bplayer/res"]
+            res.srcDirs += ["src/u2bkktool2/res", "src/u2bkktool/res",
+                            "src/u2bkaraoke/res", "src/u2bplayer/res"]
             manifest {
                 srcFile "src/u2bkktool/AndroidManifest.xml"
             }
