@@ -10,16 +10,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.smile.karaoke.ui.theme.KaraokePlayerTheme
 import com.smile.karaoke.utilities.LogUtil
+import com.smile.u2bkaraoke.model.Language
+import com.smile.u2bkaraoke.model.Singer
 import com.smile.u2bkaraoke.model.Song
+import com.smile.u2bkaraoke.retrofit.U2bKkRestApiSync
 import com.smile.u2bkktool.retrofit.U2bKkToolRestApiSync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -106,67 +116,109 @@ private fun EditSongScreen(
     val succeededMsg = "Succeeded"
     val failedMsg = "Failed"
     val dateFormat = remember { SimpleDateFormat(DATE_PATTERN, Locale.US) }
-    val labels = listOf(
-        "Song No.",
-        "Song Name",
-        "Language",
-        "Num_Of_word",
-        "Num_fw",
-        "Num_pw",
-        "Singer 1",
-        "Singer 2",
-        "Chorus",
-        "Vod_yn",
-        "Music_track",
-        "Vocal_Track",
-        "In_Date"
-    )
+    val songNoIndex = 0
+    val songNaIndex = 1
+    val langIndex = 2
+    val numOfWordIndex = 3
+    val numFwIndex = 4
+    val numPwIndex = 5
+    val sing1Index = 6
+    val sing2Index = 7
+    val chorIndex = 8
+    val vodYnIndex = 9
+    val musicTrackIndex = 10
+    val vocalTrackIndex = 11
+    val inDateIndex = 12
+    val labels = buildList {
+        add(songNoIndex, "Song No.")
+        add(songNaIndex, "Song Name")
+        add(langIndex, "Language")
+        add(numOfWordIndex, "Num_Of_word")
+        add(numFwIndex, "Num_fw")
+        add(numPwIndex, "Num_pw")
+        add(sing1Index, "Singer 1")
+        add(sing2Index, "Singer 2")
+        add(chorIndex, "Chorus")
+        add(vodYnIndex, "Vod_yn")
+        add(musicTrackIndex, "Music_track")
+        add(vocalTrackIndex, "Vocal_Track")
+        add(inDateIndex, "In_Date")
+    }
     var values by remember(initialSong) {
         mutableStateOf(
-            listOf(
-                initialSong.songNo,
-                initialSong.songNa,
-                initialSong.languageNa,
-                initialSong.sNumWord.toString(),
-                initialSong.numFw.toString(),
-                initialSong.numPw.uppercase(Locale.ROOT).filter { it in 'A'..'Z' }.take(1),
-                initialSong.singer1Na,
-                initialSong.singer2Na,
-                initialSong.chor.uppercase(Locale.ROOT).filter { it == 'Y' || it == 'N' }.take(1),
-                initialSong.vodYn.uppercase(Locale.ROOT).filter { it == 'Y' || it == 'N' }.take(1),
-                initialSong.nMpeg,
-                initialSong.mMpeg,
-                dateFormat.format(initialSong.inDate)
-            )
+            buildList {
+                add(songNoIndex, initialSong.songNo)
+                add(songNaIndex, initialSong.songNa)
+                add(langIndex, initialSong.languageNa)
+                add(numOfWordIndex, initialSong.sNumWord.toString())
+                add(numFwIndex, initialSong.numFw.toString())
+                add(numPwIndex, initialSong.numPw.uppercase(Locale.ROOT).filter { it in 'A'..'Z' }.take(1))
+                add(sing1Index, initialSong.singer1Na)
+                add(sing2Index, initialSong.singer2Na)
+                add(chorIndex, initialSong.chor.uppercase(Locale.ROOT).filter { it == 'Y' || it == 'N' }.take(1))
+                add(vodYnIndex, initialSong.vodYn.uppercase(Locale.ROOT).filter { it == 'Y' || it == 'N' }.take(1))
+                add(musicTrackIndex, initialSong.nMpeg)
+                add(vocalTrackIndex, initialSong.mMpeg)
+                add(inDateIndex, dateFormat.format(initialSong.inDate))
+            }
         )
     }
+    var languages by remember { mutableStateOf<List<Language>>(emptyList()) }
+    var singers by remember { mutableStateOf<List<Singer>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val langList = U2bKkRestApiSync.getApiSync().getAllLanguages()?.languages
+                if (!langList.isNullOrEmpty()) {
+                    languages = langList.filter { it.langNa.isNotBlank() }
+                }
+                val singerList = U2bKkRestApiSync.getApiSync().getSingers(10000, 1, "SingNa", null)?.singers
+                if (!singerList.isNullOrEmpty()) {
+                    singers = singerList.filter { it.singNa.isNotBlank() }
+                }
+            }
+        }
+    }
+
     var saving by remember { mutableStateOf(false) }
     var saveStatusMessage by remember { mutableStateOf("") }
-    val integerFields = setOf(3, 4)
+    val integerFields = setOf(numOfWordIndex, numFwIndex)
     val padding = Modifier.padding(horizontal = 16.dp)
 
-    val sNumWord = values[3].toIntOrNull()
-    val numFw = values[4].toIntOrNull()
+    val sNumWord = values[numOfWordIndex].toIntOrNull()
+    val numFw = values[numFwIndex].toIntOrNull()
     val inDate = remember(values) {
         runCatching {
             dateFormat.isLenient = false
-            dateFormat.parse(values[12].trim())
+            dateFormat.parse(values[inDateIndex].trim())
         }.getOrNull()
     }
     val fieldErrors = values.mapIndexed { index, value ->
+        val trimmedValue = value.trim()
         when {
-            value.isBlank() -> "${labels[index]} cannot be empty"
-            index == 0 && !value.matches(Regex("[0-9]{6}")) ->
-                "Song No. must contain exactly 6 digits"
-            index == 3 && (sNumWord == null || sNumWord !in 1..25) ->
+            trimmedValue.isBlank() -> "${labels[index]} cannot be empty"
+            index == songNoIndex && !trimmedValue.matches(Regex("[0-9]{6}")) ->
+                "Song No. must contain 6 digits"
+            index == langIndex && languages.isNotEmpty() && languages.none { it.langNa.equals(trimmedValue, ignoreCase = true) } ->
+                "Language does not exist"
+            index == numOfWordIndex && (sNumWord == null || sNumWord !in 1..25) ->
                 "Num_Of_word must be 1 to 25"
-            index == 4 && (numFw == null || numFw !in 0..50) ->
+            index == numFwIndex && (numFw == null || numFw !in 0..50) ->
                 "Num_fw must be between 0 and 50"
-            index == 5 && (value.length != 1 || value[0] !in 'A'..'Z') ->
+            index == numPwIndex && (trimmedValue.length != 1 || trimmedValue[0] !in 'A'..'Z') ->
                 "Num_pw must be one letter from A to Z"
-            index == 8 && value !in setOf("Y", "N") -> "Chorus must be Y or N"
-            index == 9 && value !in setOf("Y", "N") -> "Vod_yn must be Y or N"
-            index == 12 && inDate == null -> "Invalid date format (yyyy-MM-dd)"
+            index == sing1Index && singers.isNotEmpty() && singers.none { it.singNa.equals(trimmedValue, ignoreCase = true) } ->
+                "Singer 1 does not exist"
+            index == sing2Index && singers.isNotEmpty() && singers.none { it.singNa.equals(trimmedValue, ignoreCase = true) } ->
+                "Singer 2 does not exist"
+            index == chorIndex && trimmedValue !in setOf("Y", "N") -> "Chorus must be Y or N"
+            index == vodYnIndex && trimmedValue !in setOf("Y", "N") -> "Vod_yn must be Y or N"
+            index == musicTrackIndex && !trimmedValue.matches(Regex("[0-9]{2}")) ->
+                "Music_track must contain 2 digits"
+            index == vocalTrackIndex && !trimmedValue.matches(Regex("[0-9]{2}")) ->
+                "Vocal_Track must contain 2 digits"
+            index == inDateIndex && inDate == null -> "Invalid date format (yyyy-MM-dd)"
             else -> null
         }
     }
@@ -187,31 +239,51 @@ private fun EditSongScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             labels.forEachIndexed { index, label ->
-                OutlinedTextField(
-                    value = values[index],
-                    onValueChange = { newValue ->
-                        val inputValue = when (index) {
-                            0 -> newValue.filter { it in '0'..'9' }
-                            5 -> newValue.uppercase(Locale.ROOT).filter { it in 'A'..'Z' }.take(1)
-                            8, 9 -> newValue.uppercase(Locale.ROOT)
-                                .filter { it == 'Y' || it == 'N' }
-                                .take(1)
-                            else -> newValue
-                        }
-                        values = values.toMutableList().also { it[index] = inputValue }
-                        saveStatusMessage = ""
-                    },
-                    label = { Text(label) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = if (index == 0 || index in integerFields) KeyboardType.Number
-                        else KeyboardType.Text,
-                        capitalization = if (index in setOf(5, 8, 9)) KeyboardCapitalization.Characters
-                        else KeyboardCapitalization.None
-                    ),
-                    isError = fieldErrors[index] != null,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().then(padding)
-                )
+                if (index in setOf(langIndex, sing1Index, sing2Index)) {
+                    val options = if (index == langIndex) {
+                        languages.map { it.langNa }.filter { it.isNotBlank() }.distinct()
+                    } else {
+                        singers.map { it.singNa }.filter { it.isNotBlank() }.distinct()
+                    }
+                    SearchableDropdownField(
+                        value = values[index],
+                        onValueChange = { selectedValue ->
+                            values = values.toMutableList().also { it[index] = selectedValue }
+                            saveStatusMessage = ""
+                        },
+                        label = label,
+                        options = options,
+                        isError = fieldErrors[index] != null,
+                        modifier = Modifier.fillMaxWidth().then(padding)
+                    )
+                } else {
+                    OutlinedTextField(
+                        value = values[index],
+                        onValueChange = { newValue ->
+                            val inputValue = when (index) {
+                                songNoIndex -> newValue.filter { it in '0'..'9' }.take(6)
+                                numPwIndex -> newValue.uppercase(Locale.ROOT).filter { it in 'A'..'Z' }.take(1)
+                                chorIndex, vodYnIndex -> newValue.uppercase(Locale.ROOT)
+                                    .filter { it == 'Y' || it == 'N' }
+                                    .take(1)
+                                musicTrackIndex, vocalTrackIndex -> newValue.filter { it in '0'..'9' }.take(2)
+                                else -> newValue
+                            }
+                            values = values.toMutableList().also { it[index] = inputValue }
+                            saveStatusMessage = ""
+                        },
+                        label = { Text(label) },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = if (index == songNoIndex || index in integerFields || index in setOf(musicTrackIndex, vocalTrackIndex)) KeyboardType.Number
+                            else KeyboardType.Text,
+                            capitalization = if (index in setOf(numPwIndex, chorIndex, vodYnIndex)) KeyboardCapitalization.Characters
+                            else KeyboardCapitalization.None
+                        ),
+                        isError = fieldErrors[index] != null,
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().then(padding)
+                    )
+                }
             }
             Text(
                 text = if (isInputValid) saveStatusMessage else inputErrorMessage,
@@ -227,19 +299,35 @@ private fun EditSongScreen(
                 onClick = {
                     if (isInputValid) {
                         saving = true
+                        val selectedLang = languages.firstOrNull {
+                            it.langNa.equals(values[langIndex].trim(), ignoreCase = true)
+                        }
+                        val selectedSinger1 = singers.firstOrNull {
+                            it.singNa.equals(values[sing1Index].trim(), ignoreCase = true)
+                        }
+                        val selectedSinger2 = singers.firstOrNull {
+                            it.singNa.equals(values[sing2Index].trim(), ignoreCase = true)
+                        }
+
                         val editedSong = initialSong.copy(
-                            songNo = values[0],
-                            songNa = values[1],
-                            languageNa = values[2],
+                            songNo = values[songNoIndex],
+                            songNa = values[songNaIndex],
+                            languageId = selectedLang?.id ?: initialSong.languageId,
+                            languageNo = selectedLang?.langNo ?: initialSong.languageNo,
+                            languageNa = values[langIndex].trim(),
                             sNumWord = checkNotNull(sNumWord),
                             numFw = checkNotNull(numFw),
-                            numPw = values[5],
-                            singer1Na = values[6],
-                            singer2Na = values[7],
-                            chor = values[8],
-                            vodYn = values[9],
-                            nMpeg = values[10],
-                            mMpeg = values[11],
+                            numPw = values[numPwIndex],
+                            singer1Id = selectedSinger1?.id ?: initialSong.singer1Id,
+                            singer1No = selectedSinger1?.singNo ?: initialSong.singer1No,
+                            singer1Na = values[sing1Index].trim(),
+                            singer2Id = selectedSinger2?.id ?: initialSong.singer2Id,
+                            singer2No = selectedSinger2?.singNo ?: initialSong.singer2No,
+                            singer2Na = values[sing2Index].trim(),
+                            chor = values[chorIndex],
+                            vodYn = values[vodYnIndex],
+                            nMpeg = values[musicTrackIndex],
+                            mMpeg = values[vocalTrackIndex],
                             inDate = checkNotNull(inDate)
                         )
                         onSave(editedSong) { succeeded ->
@@ -259,6 +347,65 @@ private fun EditSongScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(text = "Cancel")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchableDropdownField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    options: List<String>,
+    isError: Boolean,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val filteredOptions = remember(value, options) {
+        if (value.isBlank()) {
+            options
+        } else {
+            options.filter { it.contains(value, ignoreCase = true) }
+        }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded && filteredOptions.isNotEmpty(),
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = { newValue ->
+                onValueChange(newValue)
+                expanded = true
+            },
+            label = { Text(label) },
+            singleLine = true,
+            isError = isError,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded && filteredOptions.isNotEmpty(),
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.heightIn(max = 250.dp)
+        ) {
+            filteredOptions.take(50).forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onValueChange(option)
+                        expanded = false
+                    }
+                )
             }
         }
     }
