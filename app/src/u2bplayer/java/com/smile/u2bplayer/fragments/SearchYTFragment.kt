@@ -55,6 +55,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     var myRecyclerViewAdapter : U2bRecyclerAdapter? = null
     val selectedSongs : ArrayList<SongInfo> = ArrayList()
     var applicationId = ""
+    var lastSearchTerm = ""
     var nextPageToken : String? = null
     var apiKey = PrivateConstants.API_KEY2
 
@@ -158,7 +159,13 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
                 pageToken = nextPageToken,
                 apiKey = apiKey
             )
-            nextPageToken = videoList.nextPageToken
+            LogUtil.d(TAG, "$logStr.lastSearchTerm = $lastSearchTerm")
+            LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
+            nextPageToken = if (searchTerm == lastSearchTerm) {
+                videoList.nextPageToken
+            } else {
+                null    // first time search
+            }
             LogUtil.d(TAG, "$logStr.nextPageToken = $nextPageToken")
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)
@@ -186,6 +193,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
                 updateRecyclerView()
                 searchCompleted = true
             }
+            lastSearchTerm = searchTerm
         }
     }
 
