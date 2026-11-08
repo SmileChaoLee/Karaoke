@@ -152,20 +152,22 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         LogUtil.d(TAG, "$logStr.apiKey = $apiKey")
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
+            LogUtil.d(TAG, "$logStr.lastSearchTerm = $lastSearchTerm")
+            LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
+            val pageToken = if (searchTerm == lastSearchTerm) {
+                nextPageToken
+            } else {
+                null    // first time search
+            }
+            LogUtil.d(TAG, "$logStr.pageToken = $pageToken")
             val videoList = YouTubeRestApiSync.getVideoList(
                 packageName = applicationId,
                 searchTerm = searchTerm,
                 maxResult = maxResult,
-                pageToken = nextPageToken,
+                pageToken = pageToken,
                 apiKey = apiKey
             )
-            LogUtil.d(TAG, "$logStr.lastSearchTerm = $lastSearchTerm")
-            LogUtil.d(TAG, "$logStr.searchTerm = $searchTerm")
-            nextPageToken = if (searchTerm == lastSearchTerm) {
-                videoList.nextPageToken
-            } else {
-                null    // first time search
-            }
+            nextPageToken = videoList.nextPageToken
             LogUtil.d(TAG, "$logStr.nextPageToken = $nextPageToken")
             LogUtil.d(TAG, "$logStr.videoList.items.size = ${videoList.items.size}")
             val fileBm = BitmapFactory.decodeResource(resources, R.drawable.video_image)

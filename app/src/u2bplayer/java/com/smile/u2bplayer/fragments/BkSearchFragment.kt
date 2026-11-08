@@ -26,13 +26,13 @@ class BkSearchFragment : SearchYTFragment() {
         val logStr = "searchedToU2bVideos"
         lifecycleScope.launch(Dispatchers.IO) {
             U2bSingleton.videos.clear()
-            val nextPToken = if (searchTerm == lastSearchTerm) {
+            val pageToken = if (searchTerm == lastSearchTerm) {
                 nextPageToken ?: "first"
             } else {
                 "first"    // first time search
             }
             // val nextPToken = nextPageToken ?: "first"    // the initial value for backend
-            val ytVList = U2bPlayerRestApiSync.getVideos(searchTerm, nextPToken)
+            val ytVList = U2bPlayerRestApiSync.getVideos(searchTerm, pageToken)
             LogUtil.d(TAG, "$logStr.ytVList.ytVideos.size = ${ytVList.ytVideos.size}")
             nextPageToken = ytVList.nextPageToken
             LogUtil.d(TAG, "$logStr.nextPageToken = $nextPageToken")
