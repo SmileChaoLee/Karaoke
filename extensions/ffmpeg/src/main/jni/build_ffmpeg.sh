@@ -68,6 +68,7 @@ COMMON_OPTIONS="\
     --enable-decoder=hevc \
     --extra-ldexeflags=-pie"
 TOOLCHAIN_PREFIX="${NDK_PATH}/toolchains/llvm/prebuilt/${HOST_PLATFORM}/bin"
+export PATH="${NDK_PATH}/prebuilt/${HOST_PLATFORM}/bin:${PATH}"
 if [[ ! -d "${TOOLCHAIN_PREFIX}" ]]
 then
     echo "Please set correct NDK_PATH, $NDK_PATH is incorrect"
@@ -150,4 +151,3 @@ make clean
     ${COMMON_OPTIONS}
 make -j$JOBS
 make install-libs
-make clean
