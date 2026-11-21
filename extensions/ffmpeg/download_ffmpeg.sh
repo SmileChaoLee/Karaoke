@@ -4,12 +4,13 @@ FFMPEG_EXT_PATH="$(pwd)/src/main"
 echo ${FFMPEG_EXT_PATH}
 
 cd "${FFMPEG_EXT_PATH}/jni" && \
-#(git -C ffmpeg pull || git clone git://source.ffmpeg.org/ffmpeg ffmpeg) && \
-#cd ffmpeg && git checkout release/6.0
-
-git clone git://source.ffmpeg.org/ffmpeg && \
-cd ffmpeg && \
-git checkout release/6.0 && \
+if [ ! -d "ffmpeg" ]; then
+    git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg && \
+    cd ffmpeg && \
+    git checkout release/6.0
+else
+    echo "ffmpeg directory already exists"
+fi
 
 
 echo " "
