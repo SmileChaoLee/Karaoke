@@ -310,6 +310,28 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         playSongs?.playSongList(songInfos, false)
     }
 
+    private fun unSelectAllVideos() {
+        for (i in 0 until U2bSingleton.videos.size) {
+            U2bSingleton.videos[i].run {
+                if (song.included != "0") {
+                    song.included = "0"
+                    myRecyclerViewAdapter?.notifyItemChanged(i)
+                }
+            }
+        }
+    }
+
+    private fun selectAllVideos() {
+        for (i in 0 until U2bSingleton.videos.size) {
+            U2bSingleton.videos[i].run {
+                if (song.included != "1") {
+                    song.included = "1"
+                    myRecyclerViewAdapter?.notifyItemChanged(i)
+                }
+            }
+        }
+    }
+
     // overriding BaseFragment's methods
     override fun setClickListeners() {
         searchButton?.setOnClickListener {
@@ -317,21 +339,11 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
         }
         selectAllButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until U2bSingleton.videos.size) {
-                U2bSingleton.videos[i].run {
-                    song.included = "1"
-                    myRecyclerViewAdapter?.notifyItemChanged(i)
-                }
-            }
+            selectAllVideos()
         }
         unselectButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until U2bSingleton.videos.size) {
-                U2bSingleton.videos[i].run {
-                    song.included = "0"
-                    myRecyclerViewAdapter?.notifyItemChanged(i)
-                }
-            }
+            unSelectAllVideos()
         }
         playSelectedButton?.setOnClickListener {
             val logStr = "playSelectedButton.setOnClickListener"
@@ -346,6 +358,8 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
                 playSelectedSongList(vSongs)
+                selectedSongs.clear()
+                unSelectAllVideos()
             }
         }
         addToFavoriteButton?.setOnClickListener {

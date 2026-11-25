@@ -277,39 +277,13 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             return
         }
         inAddToFavoriteDatabase(act)
-        /*
-        mU2bKkFunc?.let {
-            if (it.isU2bKkTool()) {
-                val song = selectedSongs[0].first
-                val position = selectedSongs[0].second
-                U2bPlayerUtil.saveKeyword(act, songSearchTerm(song))
-                val nIntent = it.intentU2bKTPlayActivity()
-                nIntent.putExtra(U2bKKConstants.SONG_LIST_POSITION, position)
-                nIntent.putExtra(U2bKKConstants.SEARCHED_SONG, song)
-                searchToolLauncher.launch(nIntent)
-            } else {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    if (DatabaseUtil.addSongsToFavorites(act,
-                            U2bPlayConstants.U2B_FAV_DB_NAME,
-                            selectedSongInfos)) {
-                        withContext(Dispatchers.Main) {
-                            ScreenUtil.showToast(
-                                act,
-                                getString(R.string.add_to_favorites),
-                                textFontSize, Toast.LENGTH_SHORT
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        */
     }
 
     open fun inPlaySelectedSongList(songInfos: ArrayList<SongInfo>,
                                     songPs: ArrayList<Pair<Song, Int>>
     ) {
         LogUtil.d(TAG,"inPlaySelectedSongList" )
+        playSongs?.playSongList(songInfos, false)
         // update remote database
         lifecycleScope.launch(Dispatchers.IO) {
             var song: Song
@@ -319,14 +293,27 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 val result = U2bKkRestApiSync.getApiSync().updateOneSong(song.id, song)
                 LogUtil.d(TAG, "inPlaySelectedSongList.result = $result")
             }
+            selectedSongInfos.clear()
+            selectedSongs.clear()
         }
-        playSongs?.playSongList(songInfos, false)
     }
 
     private fun playSelectedSongList(songInfos: ArrayList<SongInfo>,
                                      songPs: ArrayList<Pair<Song, Int>>
     ) {
         inPlaySelectedSongList(songInfos, songPs)
+    }
+
+    private fun unSelectAllSongs() {
+        songList.let { list ->
+            val songs = list.songs
+            for (i in 0 until songs.size) {
+                if (songs[i].vodYn.uppercase() != "N") {
+                    songs[i].vodYn = "N"
+                    myViewAdapter?.myNotifyItemChanged(i)
+                }
+            }
+        }
     }
 
     override fun setClickListeners() {
@@ -338,15 +325,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
             val logStr = "unselectButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            songList.let { list ->
-                val songs = list.songs
-                for (i in 0 until songs.size) {
-                    if (songs[i].vodYn.uppercase() == "Y") {
-                        songs[i].vodYn = "N"
-                        myViewAdapter?.myNotifyItemChanged(i)
-                    }
-                }
-            }
+            unSelectAllSongs()
         }
         playSelectedButton?.setOnClickListener {
             val logStr = "playSelectedButton.setOnClickListener"
@@ -362,6 +341,7 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 val vSongInfos = ArrayList(selectedSongInfos.take(MySingleton.MAX_SONGS))
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
                 playSelectedSongList(vSongInfos, vSongs)
+                unSelectAllSongs()
                 setShowVideoButtonVisibility()
                 setFucusDirection()
             }
@@ -409,21 +389,6 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
         songList.let { list ->
             val song = list.songs[position]
             if (!isItemValid(act, list, song)) return
-            /*
-            mU2bKkFunc?.let {funcIt ->
-                if (!funcIt.isU2bKkTool()) {
-                    if (song.nMpeg != "00" || song.mMpeg != "00") {
-                        // cannot be selected
-                        val notReadyYet = act.getString(R.string.songNotReadyYet)
-                        ScreenUtil.showToast(act,
-                            "${song.songNa}\n$notReadyYet",
-                            textFontSize, Toast.LENGTH_SHORT)
-                        return
-                    }
-                }
-            }
-            */
-
             ScreenUtil.showToast(act, song.songNa,
                 textFontSize, Toast.LENGTH_SHORT)
             val songInfo = dataSongToSongInfo(song)

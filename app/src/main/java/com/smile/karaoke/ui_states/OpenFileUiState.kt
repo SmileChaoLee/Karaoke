@@ -14,4 +14,5 @@ sealed interface OpenFileUiState {
     data class FinishLoading(val fileList: List<FileDescription>?, val timestamp: Long = System.nanoTime()): OpenFileUiState
     data class ShowToast(val event: Int, val timestamp: Long = System.nanoTime()): OpenFileUiState
     data class UpdateSelectedSong(val position: Int, val timestamp: Long = System.nanoTime()): OpenFileUiState
+    data class ReleaseSelectedSongs(val timestamp: Long = System.nanoTime()): OpenFileUiState
 }

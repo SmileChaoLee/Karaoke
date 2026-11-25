@@ -266,13 +266,6 @@ class OpenFileViewModel: ViewModel() {
                 searchFilesTh?.start()
             }
             is OpenFileUiIntent.SearchCurrentFolder -> {
-                /*
-                searchCurrentFolder(
-                    intent.activity,
-                    intent.videoThumbNailsWidth,
-                    intent.videoThumbNailsHeight
-                )
-                */
                 stopSearchFolderTh()
                 stopSearchFilesTh()
                 intent.activity?.let { act ->
@@ -295,7 +288,7 @@ class OpenFileViewModel: ViewModel() {
             }
             is OpenFileUiIntent.StartPlaySelectedSong -> startPlaySelectedSong(
                 intent.activity,
-                intent.playSongs,
+                intent.playSongs
             )
         }
     }
@@ -542,6 +535,10 @@ class OpenFileViewModel: ViewModel() {
                 )
                 withContext(Dispatchers.Main) {
                     playSongs?.playSongList(vSongs)
+                    selectedSongs.clear()
+                    _uiState.update {
+                        OpenFileUiState.ReleaseSelectedSongs()
+                    }
                 }
             }
         }

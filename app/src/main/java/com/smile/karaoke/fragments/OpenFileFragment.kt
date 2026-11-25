@@ -225,6 +225,11 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
                 LogUtil.d(TAG, "$logStr.OpenFileUiState.UpdateSelectedSong")
                 myRecyclerViewAdapter?.myNotifyItemChanged(state.position)
             }
+            is OpenFileUiState.ReleaseSelectedSongs -> {
+                // issued after viewModel.selectedSongs.clear()
+                LogUtil.d(TAG, "$logStr.OpenFileUiState.ReleaseSelectedSongs")
+                unSelectAllFiles()
+            }
         }
     }
 
@@ -316,6 +321,28 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
         setProperFocus()
     }
 
+    private fun unSelectAllFiles() {
+        for (i in 0 until MySingleton.fileList.size) {
+            MySingleton.fileList[i].run {
+                if (!file.isDirectory && selected) {
+                    selected = false
+                    myRecyclerViewAdapter?.myNotifyItemChanged(i)
+                }
+            }
+        }
+    }
+
+    private fun selectAllFiles() {
+        for (i in 0 until MySingleton.fileList.size) {
+            MySingleton.fileList[i].run {
+                if (!file.isDirectory && !selected) {
+                    selected = true
+                    myRecyclerViewAdapter?.myNotifyItemChanged(i)
+                }
+            }
+        }
+    }
+
     // overriding the methods of ItemsBaseFragment
     override fun setClickListeners() {
         backKeyButton?.setOnClickListener {
@@ -341,27 +368,13 @@ abstract class OpenFileFragment : ComOpenFragment(), RecyclerItemListener {
             val logStr = "selectAllButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleton.fileList.size) {
-                MySingleton.fileList[i].run {
-                    if (!file.isDirectory && !selected) {
-                        selected = true
-                        myRecyclerViewAdapter?.myNotifyItemChanged(i)
-                    }
-                }
-            }
+            selectAllFiles()
         }
         unselectButton?.setOnClickListener {
             val logStr = "unselectButton.setOnClickListener"
             LogUtil.d(TAG, "$logStr.searchCompleted = $searchCompleted")
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleton.fileList.size) {
-                MySingleton.fileList[i].run {
-                    if (!file.isDirectory && selected) {
-                        selected = false
-                        myRecyclerViewAdapter?.myNotifyItemChanged(i)
-                    }
-                }
-            }
+            unSelectAllFiles()
         }
         switchDecoderButton?.let {switchIt ->
             val logStr = "switchDecoderButton.setOnClickListener"

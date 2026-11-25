@@ -314,44 +314,46 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                         fav.song.included = "1"
                     }
                 }
-                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                // myListRecyclerView?.visibility = View.VISIBLE
             } else {
                 LogUtil.d(TAG, "$logStr.MySingleTon.favorites is empty")
-                // myRecyclerViewAdapter?.myNotifyDataSetChanged()
-                // myListRecyclerView?.visibility = View.GONE
-                // Change the focus
-                /*
-                val keyEvent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER)
-                val isKeyDown: Boolean? = fragmentView?.dispatchKeyEvent(keyEvent)
-                LogUtil.d(TAG, "$logStr.isKeyDown = $isKeyDown")
-                showVideoButton?.requestFocus()
-                */
             }
             updateRecyclerView()
             searchCompleted = true  // searching thread finished
         }
     }
 
-    // overriding the methods of ItemsBaseFragment
-    override fun setClickListeners() {
-        selectAllButton?.setOnClickListener {
-            if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleton.favorites.size) {
-                MySingleton.favorites[i].run {
+    private fun unSelectAllFavorites() {
+        for (i in 0 until MySingleton.favorites.size) {
+            MySingleton.favorites[i].run {
+                if (song.included != "0") {
+                    song.included = "0"
+                    myRecyclerViewAdapter?.notifyItemChanged(i)
+                }
+            }
+        }
+    }
+
+    private fun selectAllFavorites() {
+        for (i in 0 until MySingleton.favorites.size) {
+            MySingleton.favorites[i].run {
+                if (song.included != "1") {
                     song.included = "1"
                     myRecyclerViewAdapter?.notifyItemChanged(i)
                 }
             }
         }
+    }
+
+
+    // overriding the methods of ItemsBaseFragment
+    override fun setClickListeners() {
+        selectAllButton?.setOnClickListener {
+            if (!searchCompleted) return@setOnClickListener // searching
+            selectAllFavorites()
+        }
         unselectButton?.setOnClickListener {
             if (!searchCompleted) return@setOnClickListener // searching
-            for (i in 0 until MySingleton.favorites.size) {
-                MySingleton.favorites[i].run {
-                    song.included = "0"
-                    myRecyclerViewAdapter?.notifyItemChanged(i)
-                }
-            }
+            unSelectAllFavorites()
         }
         switchDecoderButton?.let {switchIt ->
             switchIt.setOnClickListener {
@@ -370,6 +372,8 @@ abstract class ComFavFragment : ItemsBaseFragment(),
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
                 playSongs?.playSongList(vSongs)
+                selectedSongs.clear()
+                unSelectAllFavorites()
             }
         }
 
