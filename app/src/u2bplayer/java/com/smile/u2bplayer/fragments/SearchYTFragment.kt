@@ -307,7 +307,7 @@ open class SearchYTFragment : ItemsBaseFragment(), RecyclerItemListener {
     }
 
     open fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
-        playSongs?.playSelectedSongList(songInfos, false)
+        playSongs?.playSongList(songInfos, false)
     }
 
     // overriding BaseFragment's methods

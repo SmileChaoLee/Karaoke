@@ -73,7 +73,7 @@ class ToolSongListFragment: SongListFragment() {
                                     songPs: ArrayList<Pair<Song, Int>>
     ) {
         LogUtil.d(TAG,"inPlaySelectedSongList" )
-        playSongs?.playSelectedSongList(songInfos, true)
+        playSongs?.playSongList(songInfos, true)
     }
 
     override fun isItemValid(act: FragmentActivity,

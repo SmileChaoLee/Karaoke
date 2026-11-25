@@ -142,7 +142,7 @@ class SafPickerFragment: ComOpenFragment() {
             val vSongs = ArrayList(songs.take(MySingleton.MAX_SONGS))
             DatabaseUtil.getSongsToPlay(act,
                 CommonConstants.FAVORITE_DB_NAME, vSongs)
-            playSongs?.playSelectedSongList(vSongs)
+            playSongs?.playSongList(vSongs)
         }
     }
 }

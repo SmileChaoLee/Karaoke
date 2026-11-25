@@ -95,7 +95,7 @@ class SearchToolFragment : SearchYTFragment() {
     }
 
     override fun playSelectedSongList(songInfos: ArrayList<SongInfo>) {
-        playSongs?.playSelectedSongList(songInfos, true)
+        playSongs?.playSongList(songInfos, true)
     }
 
     override fun setClickListeners() {

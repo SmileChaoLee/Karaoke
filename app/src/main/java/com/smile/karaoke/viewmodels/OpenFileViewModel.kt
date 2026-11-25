@@ -541,7 +541,7 @@ class OpenFileViewModel: ViewModel() {
                     CommonConstants.FAVORITE_DB_NAME, vSongs
                 )
                 withContext(Dispatchers.Main) {
-                    playSongs?.playSelectedSongList(vSongs)
+                    playSongs?.playSongList(vSongs)
                 }
             }
         }

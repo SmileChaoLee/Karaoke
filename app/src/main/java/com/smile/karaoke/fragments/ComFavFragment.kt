@@ -369,7 +369,7 @@ abstract class ComFavFragment : ItemsBaseFragment(),
                     textFontSize,Toast.LENGTH_SHORT)
             } else {
                 val vSongs = ArrayList(selectedSongs.take(MySingleton.MAX_SONGS))
-                playSongs?.playSelectedSongList(vSongs)
+                playSongs?.playSongList(vSongs)
             }
         }
 

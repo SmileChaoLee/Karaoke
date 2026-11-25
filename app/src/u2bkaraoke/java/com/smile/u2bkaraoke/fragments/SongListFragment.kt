@@ -320,32 +320,13 @@ open class SongListFragment : U2bKKBaseFragment(), RecyclerItemListener {
                 LogUtil.d(TAG, "inPlaySelectedSongList.result = $result")
             }
         }
-        playSongs?.playSelectedSongList(songInfos, false)
+        playSongs?.playSongList(songInfos, false)
     }
 
     private fun playSelectedSongList(songInfos: ArrayList<SongInfo>,
                                      songPs: ArrayList<Pair<Song, Int>>
     ) {
         inPlaySelectedSongList(songInfos, songPs)
-        /*
-        mU2bKkFunc?.let {
-            if (it.isU2bKkTool()) {
-                playSongs?.playSelectedSongList(songInfos, true)
-            } else {
-                // update remote database
-                lifecycleScope.launch(Dispatchers.IO) {
-                    var song: Song
-                    for (songP in songPs) {
-                        song = songP.first
-                        song.orderNum += 1
-                        val result = U2bKkRestApiSync.getApiSync().updateOneSong(song.id, song)
-                        LogUtil.d(TAG, "playSelectedSongList.result = $result")
-                    }
-                }
-                playSongs?.playSelectedSongList(songInfos, false)
-            }
-        }
-        */
     }
 
     override fun setClickListeners() {

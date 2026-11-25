@@ -333,8 +333,8 @@ abstract class BaseActivity : AppCompatActivity(),
     // Finishes implementing interface PlayMyFavorites
 
     // implementing interface PlaySongs
-    override fun playSelectedSongList(songs: ArrayList<SongInfo>, isClearNeeded: Boolean) {
-        val msgStr = "playSelectedSongList"
+    override fun playSongList(songs: ArrayList<SongInfo>, isClearNeeded: Boolean) {
+        val msgStr = "playSongList"
         LogUtil.d(TAG, "$msgStr.songs.size = ${songs.size}")
         if (songs.isNotEmpty()) {
             if (isClearNeeded) MySingleton.orderedSongs.clear()
@@ -365,10 +365,6 @@ abstract class BaseActivity : AppCompatActivity(),
                     if (MySingleton.orderedSongs.size == preOrderedSize) {
                         // no new songs added
                         LogUtil.d(TAG, "$msgStr.no new media files added")
-                        ScreenUtil.showToast(this,
-                            getString(R.string.noSongsAddedStr),
-                            60f, Toast.LENGTH_SHORT)
-                        return
                     }
                     pIt.playingParam.isAutoPlay = false
                     if (pIt.mediaUri == null) {
